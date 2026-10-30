@@ -163,7 +163,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
           <div className="max-w-4xl mx-auto bg-white dark:bg-[#111C2E] border-2 border-slate-300 dark:border-slate-700 rounded-2xl shadow-elevated-cerulean overflow-hidden">
             
             {/* Card Header */}
-            <div className="bg-[#073B4C] px-6 py-4 flex items-center justify-between text-white">
+            <div className="bg-[#073B4C] px-4 sm:px-6 py-3.5 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white">
               <div className="flex items-center space-x-2">
                 <div className="w-3.5 h-3.5 rounded-full bg-[#FF7F50]"></div>
                 <div className="w-3.5 h-3.5 rounded-full bg-[#FFD166]"></div>
