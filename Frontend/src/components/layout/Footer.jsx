@@ -1,6 +1,6 @@
 import { AcademicCapIcon, ShieldCheckIcon } from '../common/Icons';
 
-export const Footer = ({ onNavigate, currentLang = 'en' }) => {
+export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   return (
     <footer className="bg-[#073B4C] dark:bg-[#051822] text-slate-300 border-t-4 border-[#FF7F50] transition-colors duration-200">
       {/* Upper Footer */}
@@ -45,13 +45,25 @@ export const Footer = ({ onNavigate, currentLang = 'en' }) => {
             <h4 className="text-xs font-bold text-[#FFD166] uppercase tracking-wider">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয়সমূহ' : 'Assam Universities'}
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300">
-              <li className="hover:text-white transition-colors cursor-pointer">Gauhati University (GU)</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Dibrugarh University (DU)</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Tezpur Central University (TU)</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Assam University (Silchar)</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Cotton University (CU)</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Bodoland University (BU)</li>
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
+              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
+                Gauhati University (GU)
+              </li>
+              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
+                Dibrugarh University (DU)
+              </li>
+              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
+                Tezpur University (TU)
+              </li>
+              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
+                Assam University (Silchar)
+              </li>
+              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
+                Cotton University (CU)
+              </li>
+              <li onClick={() => onNavigate && onNavigate('universities')} className="text-[#FFD166] font-semibold hover:underline cursor-pointer">
+                + View All 26 Universities ➔
+              </li>
             </ul>
           </div>
 
@@ -60,10 +72,25 @@ export const Footer = ({ onNavigate, currentLang = 'en' }) => {
             <h4 className="text-xs font-bold text-[#06D6A0] uppercase tracking-wider">
               {currentLang === 'as' ? 'মঞ্চ সেৱা' : 'Navigation & Services'}
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300">
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
               <li>
                 <button onClick={() => onNavigate && onNavigate('home')} className="hover:text-white transition-colors cursor-pointer text-left">
                   Home Portal
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer text-left">
+                  Student Features
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer text-left">
+                  Assam Universities Catalog
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate && onNavigate('faq')} className="hover:text-white transition-colors cursor-pointer text-left">
+                  FAQ & Student Help
                 </button>
               </li>
               <li>
@@ -76,26 +103,30 @@ export const Footer = ({ onNavigate, currentLang = 'en' }) => {
                   Contact University Helpdesk
                 </button>
               </li>
-              <li className="hover:text-white transition-colors cursor-pointer">Syllabus Archive</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Question Paper Vault</li>
             </ul>
           </div>
 
-          {/* Col 5: Security & Verification */}
+          {/* Col 5: Student Verification & Auth */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-[#FF7F50] uppercase tracking-wider">
-              {currentLang === 'as' ? 'বিশ্বস্ততা' : 'Student Trust'}
+              {currentLang === 'as' ? 'ছাত্ৰ প্ৰৱেশ' : 'Student Access'}
             </h4>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Every answer points directly to official university documentation with exact page numbers.
+              Sign in to save courses, bookmark previous year question papers, and download syllabuses.
             </p>
-            <div className="bg-[#118AB2]/20 border border-[#118AB2]/40 rounded-xl p-3.5 text-xs space-y-1.5">
+            <button
+              onClick={() => onOpenAuth && onOpenAuth('login')}
+              className="w-full py-2.5 rounded-xl font-bold text-slate-900 bg-[#FFD166] hover:bg-[#F2C353] transition-all cursor-pointer shadow-sm text-xs text-center"
+            >
+              Sign In to Student Account
+            </button>
+            <div className="bg-[#118AB2]/20 border border-[#118AB2]/40 rounded-xl p-3 text-xs space-y-1">
               <div className="flex items-center space-x-1.5 text-[#06D6A0] font-bold">
                 <ShieldCheckIcon className="w-4 h-4" />
                 <span>Zero Fake Information</span>
               </div>
-              <p className="text-xs text-slate-300">
-                Answers are grounded exclusively in authorized university PDF documents.
+              <p className="text-[11px] text-slate-300">
+                Direct quotes from authorized Assam university documents.
               </p>
             </div>
           </div>

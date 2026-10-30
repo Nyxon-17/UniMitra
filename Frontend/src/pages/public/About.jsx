@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from '../../components/common/Icons';
 
-export const About = ({ onNavigate, currentLang = 'en' }) => {
+export const About = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   const platformFeatures = [
     {
       title: 'Intuitive Student Interface',
@@ -156,10 +156,10 @@ export const About = ({ onNavigate, currentLang = 'en' }) => {
             </p>
           </div>
           <button
-            onClick={() => onNavigate && onNavigate('contact')}
+            onClick={() => onOpenAuth ? onOpenAuth('register') : onNavigate && onNavigate('contact')}
             className="px-7 py-3.5 rounded-xl font-bold text-slate-900 bg-[#FFD166] hover:bg-[#F2C353] transition-all cursor-pointer shadow-md text-sm shrink-0"
           >
-            Get In Touch ➔
+            Create Free Account ➔
           </button>
         </div>
 

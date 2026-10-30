@@ -11,7 +11,7 @@ import {
   LanguageIcon
 } from '../../components/common/Icons';
 
-export const Home = ({ onNavigate, currentLang = 'en' }) => {
+export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDemoTab, setActiveDemoTab] = useState('as');
   const [demoInput, setDemoInput] = useState('গুৱাহাটী বিশ্ববিদ্যালয়ৰ BCA ৩য় ষাণ্মাসিকৰ Database Management Systems ৰ সিলেবাছ দিয়ক।');
@@ -344,10 +344,10 @@ export const Home = ({ onNavigate, currentLang = 'en' }) => {
               </p>
             </div>
             <button 
-              onClick={() => onNavigate && onNavigate('contact')}
+              onClick={() => onNavigate && onNavigate('universities')}
               className="px-5 py-2.5 text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#FFD166] bg-[#E7F3F7] dark:bg-slate-800 rounded-xl border border-[#118AB2]/30 hover:bg-[#118AB2] hover:text-white transition-all cursor-pointer self-start sm:self-auto"
             >
-              + Request Your University
+              View All 26 Universities ➔
             </button>
           </div>
 
@@ -397,16 +397,16 @@ export const Home = ({ onNavigate, currentLang = 'en' }) => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
             <button 
-              onClick={() => onNavigate && onNavigate('contact')}
+              onClick={() => onOpenAuth && onOpenAuth('register')}
               className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-sm"
             >
-              Contact Support & Request Courses
+              Sign In Free as Student
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('about')}
+              onClick={() => onNavigate && onNavigate('universities')}
               className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-white bg-transparent border-2 border-slate-500 hover:border-white transition-all cursor-pointer text-sm"
             >
-              Learn More About UniMitra
+              Explore Universities in Assam
             </button>
           </div>
         </div>
