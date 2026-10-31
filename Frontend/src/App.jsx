@@ -262,10 +262,6 @@ export function App() {
       return;
     }
     if (page === 'admin') {
-      if (!isLoggedIn || studentInfo?.role !== 'Admin') {
-        navigate('/auth?role=admin');
-        return;
-      }
       navigate('/admin');
       return;
     }
@@ -394,25 +390,39 @@ export function App() {
 
         {/* Administrator Knowledge Base & Ingestion Console */}
         <Route
+          path="admin/*"
+          element={
+            <AdminConsole
+              onExit={() => {
+                if (isLoggedIn) {
+                  navigate('/dashboard/overview');
+                } else {
+                  navigate('/');
+                }
+              }}
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route
           path="admin"
           element={
-            !isLoggedIn || studentInfo?.role !== 'Admin' ? (
-              <Navigate to="/auth?role=admin" replace />
-            ) : (
-              <AdminConsole
-                onExit={() => {
-                  if (isLoggedIn) {
-                    navigate('/dashboard/overview');
-                  } else {
-                    navigate('/');
-                  }
-                }}
-                currentLang={lang}
-                onToggleLang={toggleLanguage}
-                isDark={theme === 'dark'}
-                onToggleTheme={toggleTheme}
-              />
-            )
+            <AdminConsole
+              onExit={() => {
+                if (isLoggedIn) {
+                  navigate('/dashboard/overview');
+                } else {
+                  navigate('/');
+                }
+              }}
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+            />
           }
         />
 
@@ -432,6 +442,7 @@ export function App() {
           }
         >
           <Route index element={<Navigate to="/dashboard/overview" replace />} />
+          <Route path="admin" element={<Navigate to="/admin" replace />} />
           <Route
             path="overview"
             element={
@@ -540,6 +551,7 @@ export function App() {
               <DashboardFacultyDocuments
                 onNavigateTab={handleNavigateDashboardTab}
                 currentLang={lang}
+                studentInfo={studentInfo}
               />
             }
           />

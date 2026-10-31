@@ -60,6 +60,7 @@ export const Navbar = ({
     { id: 'faq', label: 'FAQ', asLabel: 'প্ৰশ্নোত্তৰ' },
     { id: 'about', label: 'About Us', asLabel: 'আমাৰ বিষয়ে' },
     { id: 'contact', label: 'Support', asLabel: 'সহায় আৰু যোগাযোগ' },
+    { id: 'admin', label: 'Admin Portal', asLabel: 'প্ৰশাসন কেন্দ্ৰ' },
   ];
 
   return (
@@ -143,15 +144,7 @@ export const Navbar = ({
 
             {/* Admin Console Shortcut */}
             <button
-              onClick={() => {
-                if (isLoggedIn && studentInfo?.role === 'Admin') {
-                  handleNav('admin');
-                } else if (onOpenAuth) {
-                  onOpenAuth('login', 'admin');
-                } else {
-                  navigate('/auth?role=admin');
-                }
-              }}
+              onClick={() => handleNav('admin')}
               className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#C4B5FD] bg-[#DDD6FE]/60 dark:bg-[#1A0F33] hover:bg-[#DDD6FE] dark:hover:bg-[#25124D] border border-[#E0D4FD] dark:border-[#B026FF]/40 transition-all cursor-pointer whitespace-nowrap"
               title="Official Document Ingestion Admin"
             >
@@ -295,13 +288,7 @@ export const Navbar = ({
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                if (isLoggedIn && studentInfo?.role === 'Admin') {
-                  handleNav('admin');
-                } else if (onOpenAuth) {
-                  onOpenAuth('login', 'admin');
-                } else {
-                  navigate('/auth?role=admin');
-                }
+                handleNav('admin');
               }}
               className="w-full py-2.5 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#FFFFFF] bg-[#DDD6FE] dark:bg-[#1A0F33] text-center border border-[#73A5CA]/35 dark:border-[#1C82AD]/40 cursor-pointer"
             >

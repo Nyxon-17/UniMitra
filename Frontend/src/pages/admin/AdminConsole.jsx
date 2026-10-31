@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { 
-  BuildingLibraryIcon, 
-  CircleStackIcon, 
-  CloudArrowUpIcon, 
-  CpuChipIcon, 
-  GlobeAltIcon, 
-  DocumentTextIcon, 
-  CheckCircleIcon, 
-  SearchIcon, 
-  TrashIcon, 
-  ArrowPathIcon, 
-  DocumentPlusIcon, 
-  FunnelIcon, 
-  EyeIcon, 
-  ArrowRightIcon, 
-  SparklesIcon, 
+import { HomeScreenBackground } from '../../components/common/HomeScreenBackground';
+import { documentService } from '../../services/documentService';
+import {
+  BuildingLibraryIcon,
+  CircleStackIcon,
+  CloudArrowUpIcon,
+  CpuChipIcon,
+  GlobeAltIcon,
+  DocumentTextIcon,
+  CheckCircleIcon,
+  SearchIcon,
+  TrashIcon,
+  ArrowPathIcon,
+  DocumentPlusIcon,
+  FunnelIcon,
+  EyeIcon,
+  ArrowRightIcon,
+  SparklesIcon,
   ArrowLeftIcon,
   SunIcon,
   MoonIcon,
@@ -26,14 +28,13 @@ import {
   ClockIcon,
   UserGroupIcon
 } from '../../components/common/Icons';
-import { Footer } from '../../components/layout/Footer';
 
-export const AdminConsole = ({ 
-  onExit, 
-  currentLang = 'en', 
-  onToggleLang, 
-  isDark = false, 
-  onToggleTheme 
+export const AdminConsole = ({
+  onExit,
+  currentLang = 'en',
+  onToggleLang,
+  isDark = false,
+  onToggleTheme
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -56,127 +57,29 @@ export const AdminConsole = ({
     setActiveTab(tabId);
     setSearchParams({ tab: tabId });
   };
-  
+
   const [selectedUnivFilter, setSelectedUnivFilter] = useState('All');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [searchDocQuery, setSearchDocQuery] = useState('');
   const [inspectDocModal, setInspectDocModal] = useState(null);
   const [actionAlert, setActionAlert] = useState('');
 
-  // 1. Centralized Institutional Document Repository (with Archive & Delete)
-  const [documents, setDocuments] = useState([
-    {
-      id: 'DOC-GU-001',
-      title: 'Undergraduate Examination Ordinances & Passing Criteria',
-      university: 'Gauhati University (GU)',
-      category: 'University Regulations & Ordinances',
-      department: 'Examination Branch',
-      academicYear: '2024-2025',
-      publicationDate: '15 July 2024',
-      pages: 48,
-      fileSize: '3.4 MB',
-      chunksCount: 284,
-      status: 'Indexed', // 'Indexed' | 'Archived' | 'Processing' | 'Failed OCR'
-      processingStage: 'Vector Indexed (100%)',
-      ocrApplied: false,
-      sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-      sourceUrl: 'https://gauhati.ac.in/academics/exam-ordinance-2024.pdf'
-    },
-    {
-      id: 'DOC-DU-002',
-      title: 'Statutory Regulations on Class Attendance & Medical Condonation',
-      university: 'Dibrugarh University (DU)',
-      category: 'University Regulations & Ordinances',
-      department: 'Academic Council',
-      academicYear: '2024-2025',
-      publicationDate: '02 August 2024',
-      pages: 36,
-      fileSize: '2.8 MB',
-      chunksCount: 198,
-      status: 'Indexed',
-      processingStage: 'Vector Indexed (100%)',
-      ocrApplied: false,
-      sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
-      sourceUrl: 'https://dibru.ac.in/academic/attendance-ordinance.pdf'
-    },
-    {
-      id: 'DOC-DHE-003',
-      title: 'Assam State Combined Merit Scholarship Scheme Guidelines',
-      university: 'All Assam Universities',
-      category: 'Scholarships & State Grants',
-      department: 'Directorate of Higher Education',
-      academicYear: '2024-2025',
-      publicationDate: '10 September 2024',
-      pages: 18,
-      fileSize: '1.2 MB',
-      chunksCount: 92,
-      status: 'Indexed',
-      processingStage: 'Vector Indexed (100%)',
-      ocrApplied: true,
-      sha256: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
-      sourceUrl: 'https://dhe.assam.gov.in/schemes/scholarship-circular-2024.pdf'
-    },
-    {
-      id: 'DOC-TU-004',
-      title: 'Hostel Allotment & Student Code of Conduct Ordinances',
-      university: 'Tezpur University (TU)',
-      category: 'Campus Facilities & Hostels',
-      department: 'Dean of Students Welfare',
-      academicYear: '2024-2025',
-      publicationDate: '12 August 2024',
-      pages: 26,
-      fileSize: '1.9 MB',
-      chunksCount: 140,
-      status: 'Indexed',
-      processingStage: 'Vector Indexed (100%)',
-      ocrApplied: false,
-      sha256: '7b52009b64fd0a2a49e6d8a939753077792b0554acd5127e0291931855b7022f',
-      sourceUrl: 'https://tezu.ernet.in/admin/hostel-regulations.pdf'
-    },
-    {
-      id: 'DOC-GU-005',
-      title: 'Career Advancement Scheme (CAS) Guidelines for University Teachers',
-      university: 'Gauhati University (GU)',
-      category: 'Faculty Ordinances & Workload',
-      department: 'Academic Council',
-      academicYear: '2024-2025',
-      publicationDate: '14 May 2024',
-      pages: 64,
-      fileSize: '4.2 MB',
-      chunksCount: 310,
-      status: 'Indexed',
-      processingStage: 'Vector Indexed (100%)',
-      ocrApplied: false,
-      sha256: '38a9d1502447b93a26880bd45c61d56e077c59919f2a009477e60058b76e1a90',
-      sourceUrl: 'https://gauhati.ac.in/faculty/cas-guidelines-2024.pdf'
-    }
-  ]);
+  // 1. Centralized Institutional Document Repository with Live Shared Service
+  const [documents, setDocuments] = useState(() => documentService.getDocuments());
+  const [categories, setCategories] = useState(() => documentService.getCategories());
+  const [selectedApprovalFilter, setSelectedApprovalFilter] = useState('All');
 
-  // 2. Upload PDF Documents Form State
-  const [uploadFormData, setUploadFormData] = useState({
-    title: '',
-    university: 'Gauhati University (GU)',
-    category: 'University Regulations & Ordinances',
-    department: 'Examination Branch / Academic Council',
-    academicYear: '2024-2025',
-    sourceUrl: '',
-    enableOcr: true,
-    chunkSize: 512,
-    chunkOverlap: 64
-  });
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStepName, setUploadStepName] = useState('');
+  // Sync with document service updates across components
+  const syncWithService = () => {
+    setDocuments(documentService.getDocuments());
+    setCategories(documentService.getCategories());
+  };
 
-  // 3. Document Categories State
-  const [categories, setCategories] = useState([
-    { id: 'CAT-1', name: 'University Regulations & Ordinances', asName: 'বিশ্ববিদ্যালয়ৰ নিয়মাৱলী', count: 48, code: 'REG' },
-    { id: 'CAT-2', name: 'Examinations & Evaluation', asName: 'পৰীক্ষা আৰু মূল্যায়ন', count: 34, code: 'EXAM' },
-    { id: 'CAT-3', name: 'Scholarships & State Grants', asName: 'ছাত্ৰবৃত্তি আৰু অনুদান', count: 22, code: 'SCHOL' },
-    { id: 'CAT-4', name: 'Admissions & Eligibility', asName: 'ভৰ্তি প্ৰক্ৰিয়া আৰু যোগ্যতা', count: 29, code: 'ADM' },
-    { id: 'CAT-5', name: 'Campus Facilities & Hostels', asName: 'চৌহদৰ সুবিধা আৰু হোষ্টেল', count: 17, code: 'FACIL' },
-    { id: 'CAT-6', name: 'Faculty Ordinances & Workload', asName: 'অধ্যাপক নিয়মাৱলী আৰু কৰ্মভাৰ', count: 19, code: 'FAC_NORM' }
-  ]);
+  useEffect(() => {
+    syncWithService();
+    window.addEventListener('unimitra_documents_changed', syncWithService);
+    return () => window.removeEventListener('unimitra_documents_changed', syncWithService);
+  }, []);
   const [newCatName, setNewCatName] = useState('');
   const [newCatCode, setNewCatCode] = useState('');
 
@@ -353,47 +256,49 @@ export const AdminConsole = ({
     setTimeout(() => setActionAlert(''), 3000);
   };
 
-  // Document Management Actions: Archive, Delete, Restore
+  // Document Management Actions: Approve, Reject, Archive, Delete
+  const handleApproveDoc = (id) => {
+    documentService.approveDocument(id, 'Approved by Administrator. Vectorized into Chatbot Knowledge Base.');
+    triggerToast('Document approved & vector indexed! Available immediately to students in the AI chatbot.');
+  };
+
+  const handleRejectDoc = (id) => {
+    const reason = window.prompt('Enter reason for revision request / rejection:', 'Missing official university seal or departmental resolution date.');
+    if (reason !== null && reason.trim()) {
+      documentService.rejectDocument(id, reason.trim());
+      triggerToast('Document rejected. Feedback notification routed to faculty author.');
+    }
+  };
+
   const handleArchiveDoc = (id) => {
-    setDocuments((prev) =>
-      prev.map((doc) => {
-        if (doc.id === id) {
-          const newStatus = doc.status === 'Archived' ? 'Indexed' : 'Archived';
-          return { ...doc, status: newStatus };
-        }
-        return doc;
-      })
-    );
+    documentService.archiveDocument(id);
     triggerToast('Document archive status toggled successfully.');
   };
 
   const handleDeleteDoc = (id) => {
-    if (window.confirm('Are you sure you want to delete this document from the knowledge base?')) {
-      setDocuments((prev) => prev.filter((d) => d.id !== id));
+    if (window.confirm('Are you sure you want to permanently delete this document from institutional storage?')) {
+      documentService.deleteDocument(id);
       triggerToast('Document deleted from institutional repository.');
     }
   };
 
-  // Category Add
+  // Category Taxonomy Handlers
   const handleAddCategory = (e) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
-    const newCat = {
-      id: `CAT-${categories.length + 1}`,
+    documentService.addCategory({
       name: newCatName.trim(),
       asName: newCatName.trim(),
-      count: 0,
       code: newCatCode.trim().toUpperCase() || 'GEN'
-    };
-    setCategories((prev) => [...prev, newCat]);
+    });
     setNewCatName('');
     setNewCatCode('');
-    triggerToast('New document category registered.');
+    triggerToast('New document category registered in university taxonomy.');
   };
 
   const handleDeleteCategory = (id) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
-    triggerToast('Category removed.');
+    documentService.deleteCategory(id);
+    triggerToast('Category removed from taxonomy.');
   };
 
   // Upload Document Simulation
@@ -411,36 +316,27 @@ export const AdminConsole = ({
 
       setTimeout(() => {
         setUploadProgress(85);
-        setUploadStepName('Storing 1024-d vectors into MongoDB Atlas...');
+        setUploadStepName('Storing 1024-d vectors into ChromaDB / MongoDB...');
 
         setTimeout(() => {
           setUploadProgress(100);
           setUploadStepName('Indexing complete!');
 
-          const newDoc = {
-            id: `DOC-INST-${Math.floor(100 + Math.random() * 900)}`,
+          documentService.uploadAdminDocument({
             title: uploadFormData.title,
             university: uploadFormData.university,
             category: uploadFormData.category,
             department: uploadFormData.department,
             academicYear: uploadFormData.academicYear,
-            publicationDate: 'Today',
-            pages: 24,
-            fileSize: '2.1 MB',
-            chunksCount: 164,
-            status: 'Indexed',
-            processingStage: 'Vector Indexed (100%)',
-            ocrApplied: uploadFormData.enableOcr,
-            sha256: 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0',
-            sourceUrl: uploadFormData.sourceUrl || 'https://university.ac.in/circulars/official.pdf'
-          };
+            sourceUrl: uploadFormData.sourceUrl || '',
+            ocrApplied: uploadFormData.enableOcr
+          });
 
-          setDocuments((prev) => [newDoc, ...prev]);
           setIsUploading(false);
           setUploadProgress(0);
           setUploadFormData({ ...uploadFormData, title: '', sourceUrl: '' });
           handleTabChange('repository');
-          triggerToast('Document successfully chunked, embedded, and indexed!');
+          triggerToast('Master gazette directly ingested, vectorized, and live for AI chatbot!');
         }, 600);
       }, 700);
     }, 600);
@@ -464,24 +360,37 @@ export const AdminConsole = ({
     triggerToast('Feedback resolution status updated.');
   };
 
+  const pendingDocs = documents.filter((d) => d.approvalStatus === 'pending');
+  const approvedDocs = documents.filter((d) => d.approvalStatus === 'approved' && d.status === 'Indexed');
+  const archivedDocs = documents.filter((d) => d.status === 'Archived');
+  const rejectedDocs = documents.filter((d) => d.approvalStatus === 'rejected');
+
   const filteredDocs = documents.filter((doc) => {
     const matchUniv = selectedUnivFilter === 'All' || doc.university.includes(selectedUnivFilter.split(' ')[0]);
     const matchCat = selectedCategoryFilter === 'All' || doc.category === selectedCategoryFilter;
+    const matchApproval =
+      selectedApprovalFilter === 'All' ? true :
+        selectedApprovalFilter === 'Pending' ? doc.approvalStatus === 'pending' :
+          selectedApprovalFilter === 'Approved' ? (doc.approvalStatus === 'approved' && doc.status === 'Indexed') :
+            selectedApprovalFilter === 'Archived' ? doc.status === 'Archived' :
+              selectedApprovalFilter === 'Rejected' ? doc.approvalStatus === 'rejected' : true;
     const matchSearch =
       !searchDocQuery.trim() ||
       doc.title.toLowerCase().includes(searchDocQuery.toLowerCase()) ||
+      (doc.asTitle && doc.asTitle.toLowerCase().includes(searchDocQuery.toLowerCase())) ||
+      (doc.uploaderName && doc.uploaderName.toLowerCase().includes(searchDocQuery.toLowerCase())) ||
       doc.id.toLowerCase().includes(searchDocQuery.toLowerCase());
-    return matchUniv && matchCat && matchSearch;
+    return matchUniv && matchCat && matchApproval && matchSearch;
   });
 
   return (
     <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       <HomeScreenBackground />
-      
+
       {/* Top Admin Header */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="w-full flex items-center justify-between h-20">
-          
+
           <div className="flex items-center space-x-3">
             <button
               onClick={onExit}
@@ -492,7 +401,7 @@ export const AdminConsole = ({
             </button>
 
             <div className="w-10 h-10 rounded-2xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white flex items-center justify-center shadow-xs">
-              <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
+              <BuildingLibraryIcon className="w-6 h-6 text-white dark:text-[#000000]" />
             </div>
 
             <div>
@@ -515,7 +424,7 @@ export const AdminConsole = ({
               onClick={onToggleTheme}
               className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
             >
-              {isDark ? <SunIcon className="w-4 h-4 text-[#FAF8FF]" /> : <MoonIcon className="w-4 h-4 text-[#000000]" />}
+              {isDark ? <SunIcon className="w-4 h-4 text-[#03C988]" /> : <MoonIcon className="w-4 h-4 text-[#FF933E]" />}
             </button>
 
             <button
@@ -527,7 +436,7 @@ export const AdminConsole = ({
 
             <button
               onClick={onExit}
-              className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] dark:hover:bg-[#02B377] cursor-pointer shadow-xs"
             >
               Exit Console
             </button>
@@ -537,12 +446,12 @@ export const AdminConsole = ({
       </header>
 
       {/* Main Admin Content */}
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-10 xl:px-12 py-6 space-y-6">
-        
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-10 xl:px-12 py-6 space-y-6 relative z-10">
+
         {/* Toast Alert */}
         {actionAlert && (
-          <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2">
-            <CheckCircleIcon className="w-4 h-4 text-[#10B981]" />
+          <div className="p-3 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#00337C] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 shadow-xs">
+            <CheckCircleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
             <span>{actionAlert}</span>
           </div>
         )}
@@ -564,11 +473,10 @@ export const AdminConsole = ({
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === tab.id
-                  ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
-              }`}
+              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab === tab.id
+                ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
+                : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
+                }`}
             >
               {tab.label}
             </button>
@@ -580,92 +488,235 @@ export const AdminConsole = ({
         {/* =================================================================== */}
         {activeTab === 'repository' && (
           <div className="space-y-4">
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                <select
-                  value={selectedUnivFilter}
-                  onChange={(e) => setSelectedUnivFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
-                >
-                  <option value="All">All Universities</option>
-                  <option value="Gauhati">Gauhati University (GU)</option>
-                  <option value="Dibrugarh">Dibrugarh University (DU)</option>
-                  <option value="Tezpur">Tezpur University (TU)</option>
-                  <option value="All Assam">All Assam Universities</option>
-                </select>
 
-                <select
-                  value={selectedCategoryFilter}
-                  onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+            {/* Pending Faculty Review Alert Banner */}
+            {pendingDocs.length > 0 && (
+              <div className="p-4 sm:p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-fade-in">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black shrink-0">
+                    <ClockIcon className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
+                      {pendingDocs.length} Academic Submission{pendingDocs.length > 1 ? 's' : ''} Awaiting Administrator Review
+                    </h4>
+                    <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                      Uploaded by university faculty members. Require approval & vector indexing before becoming active for students in the AI chatbot.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedApprovalFilter('Pending')}
+                  className="px-4 py-2 rounded-xl text-xs font-black text-white bg-amber-600 hover:bg-amber-700 transition-all cursor-pointer shadow-xs whitespace-nowrap"
                 >
-                  <option value="All">All Categories</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
-                  ))}
-                </select>
+                  Review Pending Submissions ({pendingDocs.length})
+                </button>
+              </div>
+            )}
+
+            {/* Filter Hub */}
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+
+              {/* Approval Status Filter Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                <span className="text-[11px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/70 mr-1 shrink-0">
+                  Workflow:
+                </span>
+                {[
+                  { id: 'All', label: 'All Records', count: documents.length },
+                  { id: 'Pending', label: 'Faculty Pending Approval', count: pendingDocs.length, alert: pendingDocs.length > 0 },
+                  { id: 'Approved', label: 'Active & Vector Indexed', count: approvedDocs.length },
+                  { id: 'Archived', label: 'Archived', count: archivedDocs.length },
+                  { id: 'Rejected', label: 'Revision Needed', count: rejectedDocs.length }
+                ].map((pill) => (
+                  <button
+                    key={pill.id}
+                    onClick={() => setSelectedApprovalFilter(pill.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center space-x-1.5 ${selectedApprovalFilter === pill.id
+                        ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
+                        : pill.alert
+                          ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700'
+                          : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                      }`}
+                  >
+                    <span>{pill.label}</span>
+                    <span className="px-1.5 py-0.2 rounded-md bg-black/10 dark:bg-white/10 text-[10px]">
+                      {pill.count}
+                    </span>
+                  </button>
+                ))}
               </div>
 
-              <div className="relative w-full sm:w-72">
-                <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Filter repository by title or ID..."
-                  value={searchDocQuery}
-                  onChange={(e) => setSearchDocQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
-                />
+              {/* Dropdowns & Search */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[#73A5CA]/20 dark:border-[#1C82AD]/20">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <select
+                    value={selectedUnivFilter}
+                    onChange={(e) => setSelectedUnivFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  >
+                    <option value="All">All Universities</option>
+                    <option value="Gauhati">Gauhati University (GU)</option>
+                    <option value="Dibrugarh">Dibrugarh University (DU)</option>
+                    <option value="Tezpur">Tezpur University (TU)</option>
+                    <option value="All Assam">All Assam Universities</option>
+                  </select>
+
+                  <select
+                    value={selectedCategoryFilter}
+                    onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  >
+                    <option value="All">All Categories</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative w-full sm:w-72">
+                  <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Search title, ID, or uploader..."
+                    value={searchDocQuery}
+                    onChange={(e) => setSearchDocQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Table */}
+            {/* Document Table */}
             <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                     <tr>
                       <th className="p-4">Document Title & ID</th>
-                      <th className="p-4">University & Category</th>
-                      <th className="p-4">Pages / Chunks</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4 text-right">Actions</th>
+                      <th className="p-4">Origin & Uploader</th>
+                      <th className="p-4">Pages / Vectors</th>
+                      <th className="p-4">Governance Status</th>
+                      <th className="p-4">Chatbot Clearance</th>
+                      <th className="p-4 text-right">Administrative Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#000000] dark:text-[#FFFFFF]">
+                  <tbody className="divide-y divide-[#73A5CA]/20 dark:divide-[#1C82AD]/20 text-[#000000] dark:text-[#FFFFFF]">
                     {filteredDocs.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-[#FFE9A9]/20/60 dark:hover:bg-[#1C82AD]/40/40 transition-colors">
+                      <tr key={doc.id} className="hover:bg-[#FFE9A9]/10 dark:hover:bg-[#13005A]/40 transition-colors">
                         <td className="p-4">
                           <span className="font-mono text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold block">{doc.id}</span>
                           <span className="font-black text-xs sm:text-sm">{doc.title}</span>
-                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80 block">{doc.department}</span>
+                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block">{doc.category}</span>
                         </td>
+
                         <td className="p-4">
                           <span className="font-bold block">{doc.university}</span>
-                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">{doc.category}</span>
+                          <div className="flex items-center space-x-1 mt-0.5">
+                            {doc.uploaderRole === 'Faculty' ? (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                                Faculty: {doc.uploaderName}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#73A5CA]/20 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                                Super Admin Direct
+                              </span>
+                            )}
+                          </div>
                         </td>
+
                         <td className="p-4">
                           <span className="font-bold">{doc.pages} pages</span>
                           <span className="text-[11px] text-[#FF933E] dark:text-[#03C988] block">{doc.chunksCount} chunks (512-t)</span>
                         </td>
+
                         <td className="p-4">
-                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase ${
-                            doc.status === 'Indexed'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
-                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300'
-                          }`}>
-                            {doc.status}
-                          </span>
+                          {doc.approvalStatus === 'pending' ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                              <ClockIcon className="w-3.5 h-3.5 animate-pulse" />
+                              <span>Pending Review</span>
+                            </span>
+                          ) : doc.approvalStatus === 'rejected' ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border border-red-300 dark:border-red-800">
+                              <XMarkIcon className="w-3.5 h-3.5" />
+                              <span>Rejected</span>
+                            </span>
+                          ) : doc.status === 'Archived' ? (
+                            <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#13005A] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                              Archived
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300 border border-green-300 dark:border-green-800">
+                              <CheckCircleIcon className="w-3.5 h-3.5" />
+                              <span>Vector Indexed</span>
+                            </span>
+                          )}
                         </td>
+
+                        <td className="p-4">
+                          {doc.availableToChatbot ? (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#03C988]/20 text-[#03C988] border border-[#03C988]/40">
+                              Live for Students
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/30 dark:bg-[#13005A] text-[#000000]/70 dark:text-[#FFFFFF]/70 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
+                              Locked from Chatbot
+                            </span>
+                          )}
+                        </td>
+
                         <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
+                          {doc.approvalStatus === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleApproveDoc(doc.id)}
+                                className="px-2.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-black text-[11px] cursor-pointer shadow-xs inline-flex items-center space-x-1"
+                                title="Approve & Vector Index into AI Chatbot"
+                              >
+                                <CheckCircleIcon className="w-3.5 h-3.5" />
+                                <span>Approve & Ingest</span>
+                              </button>
+                              <button
+                                onClick={() => handleRejectDoc(doc.id)}
+                                className="px-2.5 py-1.5 rounded-lg border border-red-300 dark:border-red-900 text-red-600 hover:bg-red-50 font-bold text-[11px] cursor-pointer inline-flex items-center space-x-1"
+                                title="Reject / Request Revisions"
+                              >
+                                <XMarkIcon className="w-3.5 h-3.5" />
+                                <span>Reject</span>
+                              </button>
+                            </>
+                          )}
+
+                          {doc.approvalStatus === 'approved' && (
+                            <button
+                              onClick={() => handleArchiveDoc(doc.id)}
+                              className="px-2.5 py-1.5 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 font-bold text-[11px] cursor-pointer"
+                            >
+                              {doc.status === 'Archived' ? 'Restore' : 'Archive'}
+                            </button>
+                          )}
+
+                          {doc.approvalStatus === 'rejected' && (
+                            <button
+                              onClick={() => handleApproveDoc(doc.id)}
+                              className="px-2.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] cursor-pointer"
+                            >
+                              Approve Override
+                            </button>
+                          )}
+
                           <button
-                            onClick={() => handleArchiveDoc(doc.id)}
-                            className="px-2.5 py-1 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 font-bold text-[11px] cursor-pointer"
+                            onClick={() => setInspectDocModal(doc)}
+                            className="px-2.5 py-1.5 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 font-bold text-[11px] cursor-pointer"
                           >
-                            {doc.status === 'Archived' ? 'Restore' : 'Archive'}
+                            Inspect
                           </button>
+
                           <button
                             onClick={() => handleDeleteDoc(doc.id)}
-                            className="px-2.5 py-1 rounded-lg border border-red-300 dark:border-red-900 text-red-600 hover:bg-red-50 font-bold text-[11px] cursor-pointer"
+                            className="px-2.5 py-1.5 rounded-lg border border-red-300 dark:border-red-900 text-red-600 hover:bg-red-50 font-bold text-[11px] cursor-pointer"
                           >
                             Delete
                           </button>
@@ -697,7 +748,7 @@ export const AdminConsole = ({
               <div className="p-8 text-center space-y-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                 <SparklesIcon className="w-10 h-10 text-[#FF933E] dark:text-[#03C988] animate-spin mx-auto" />
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">{uploadStepName}</h3>
-                <div className="w-full bg-[#E0D4FD]/40 rounded-full h-3 max-w-md mx-auto overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 max-w-md mx-auto overflow-hidden">
                   <div className="bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
                 </div>
                 <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{uploadProgress}% Complete</span>
@@ -780,7 +831,7 @@ export const AdminConsole = ({
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
+                  className="w-full py-3.5 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] dark:hover:bg-[#02B377] transition-all cursor-pointer shadow-sm"
                 >
                   Start PDF Extraction & Vector Indexing Pipeline
                 </button>
@@ -816,7 +867,7 @@ export const AdminConsole = ({
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] dark:hover:bg-[#02B377] cursor-pointer"
                 >
                   Create Category
                 </button>
@@ -826,7 +877,7 @@ export const AdminConsole = ({
             {/* Category Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((c) => (
-                <div 
+                <div
                   key={c.id}
                   className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shadow-xs"
                 >
@@ -858,19 +909,18 @@ export const AdminConsole = ({
             </h3>
             <div className="space-y-3">
               {pipelineJobs.map((job) => (
-                <div 
-                  key={job.id} 
+                <div
+                  key={job.id}
                   className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{job.id} • {job.docName}</span>
-                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
-                      job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
                       {job.status}
                     </span>
                   </div>
-                  <div className="w-full bg-[#E0D4FD]/40 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                     <div className="bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] h-full" style={{ width: `${job.progress}%` }}></div>
                   </div>
                   <div className="flex justify-between text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
@@ -947,7 +997,7 @@ export const AdminConsole = ({
 
             <div className="space-y-3">
               {unansweredList.map((item) => (
-                <div 
+                <div
                   key={item.id}
                   className="p-5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
@@ -957,14 +1007,14 @@ export const AdminConsole = ({
                   </div>
                   <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">"{item.query}"</h4>
                   <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">Missing Reason: {item.reason}</p>
-                  
+
                   <div className="pt-2 flex justify-end">
                     <button
                       onClick={() => {
                         setUploadFormData((prev) => ({ ...prev, title: `Circular for ${item.query.slice(0, 40)}`, university: item.university }));
                         handleTabChange('upload');
                       }}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] dark:hover:bg-[#02B377] cursor-pointer"
                     >
                       Upload Circular to Ground This Query ➔
                     </button>
@@ -991,26 +1041,26 @@ export const AdminConsole = ({
 
             <div className="space-y-3">
               {feedbackList.map((f) => (
-                <div 
+                <div
                   key={f.id}
                   className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center space-x-2">
                       <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">{f.user} ({f.role})</span>
-                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#3B2868]">
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#13005A]">
                         {f.type}
                       </span>
                     </div>
                     <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">Rating: {f.rating}/5 ★</span>
                   </div>
                   <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed">{f.comments}</p>
-                  
+
                   <div className="pt-2 flex items-center justify-between border-t border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 text-xs">
                     <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80">Status: <strong>{f.status}</strong></span>
                     <button
                       onClick={() => handleResolveFeedback(f.id)}
-                      className="px-3 py-1 rounded-lg text-xs font-bold border border-[#6D28D9] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer"
+                      className="px-3 py-1 rounded-lg text-xs font-bold border border-[#FF933E] dark:border-[#03C988] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer"
                     >
                       {f.status === 'Reviewed & Resolved' ? 'Mark Pending' : 'Mark Resolved'}
                     </button>
@@ -1047,7 +1097,7 @@ export const AdminConsole = ({
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#000000] dark:text-[#FFFFFF]">
+                <tbody className="divide-y divide-[#73A5CA]/30 dark:divide-[#1C82AD]/30 text-[#000000] dark:text-[#FFFFFF]">
                   {users.map((u) => (
                     <tr key={u.id} className="hover:bg-[#FFE9A9]/20/60 dark:hover:bg-[#1C82AD]/40/40">
                       <td className="p-4">
@@ -1055,7 +1105,7 @@ export const AdminConsole = ({
                         <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{u.email}</span>
                       </td>
                       <td className="p-4">
-                        <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#FFE9A9] dark:bg-[#3B2868]">
+                        <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#FFE9A9] dark:bg-[#13005A]">
                           {u.role}
                         </span>
                       </td>
@@ -1065,9 +1115,8 @@ export const AdminConsole = ({
                         {u.designation && <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">{u.designation}</span>}
                       </td>
                       <td className="p-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                          u.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-black ${u.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
                           {u.status}
                         </span>
                       </td>
@@ -1153,11 +1202,10 @@ export const AdminConsole = ({
                       key={p}
                       type="button"
                       onClick={() => setLlmConfig({ ...llmConfig, provider: p })}
-                      className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${
-                        llmConfig.provider === p
-                          ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white border-[#6D28D9]'
-                          : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-                      }`}
+                      className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${llmConfig.provider === p
+                        ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white border-[#FF933E] dark:border-[#03C988]'
+                        : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                        }`}
                     >
                       {p}
                     </button>
@@ -1177,7 +1225,7 @@ export const AdminConsole = ({
                   step="0.05"
                   value={llmConfig.temperature}
                   onChange={(e) => setLlmConfig({ ...llmConfig, temperature: parseFloat(e.target.value) })}
-                  className="w-full accent-[#6D28D9] cursor-pointer"
+                  className="w-full accent-[#FF933E] dark:accent-[#03C988] cursor-pointer"
                 />
               </div>
 
@@ -1193,7 +1241,7 @@ export const AdminConsole = ({
                   step="1"
                   value={llmConfig.topKChunks}
                   onChange={(e) => setLlmConfig({ ...llmConfig, topKChunks: parseInt(e.target.value) })}
-                  className="w-full accent-[#6D28D9] cursor-pointer"
+                  className="w-full accent-[#FF933E] dark:accent-[#03C988] cursor-pointer"
                 />
               </div>
 
@@ -1209,7 +1257,7 @@ export const AdminConsole = ({
                   step="0.01"
                   value={llmConfig.strictnessThreshold}
                   onChange={(e) => setLlmConfig({ ...llmConfig, strictnessThreshold: parseFloat(e.target.value) })}
-                  className="w-full accent-[#6D28D9] cursor-pointer"
+                  className="w-full accent-[#FF933E] dark:accent-[#03C988] cursor-pointer"
                 />
               </div>
 
@@ -1220,7 +1268,7 @@ export const AdminConsole = ({
               <button
                 type="button"
                 onClick={() => triggerToast('LLM Configuration saved and propagated to FastAPI service!')}
-                className="w-full py-3 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer shadow-sm"
+                className="w-full py-3 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] dark:hover:bg-[#02B377] cursor-pointer shadow-sm"
               >
                 Save LLM & Retrieval Configuration
               </button>
@@ -1228,17 +1276,137 @@ export const AdminConsole = ({
           </div>
         )}
 
+
+        {/* Administrator Inspect Document Modal */}
+        {inspectDocModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
+
+              <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
+                <div className="flex items-center space-x-2">
+                  <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
+                  <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{inspectDocModal.id}</span>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                    {inspectDocModal.category}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setInspectDocModal(null)}
+                  className="p-1 rounded-lg text-[#000000]/70 hover:text-[#000000] dark:text-[#FFFFFF]/80 dark:hover:text-[#FFFFFF] cursor-pointer"
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
+                  {inspectDocModal.title}
+                </h3>
+                {inspectDocModal.asTitle && (
+                  <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70 mt-0.5">
+                    {inspectDocModal.asTitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Status & Governance Banner */}
+              <div className="p-3.5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/70 block">
+                    Governance Status
+                  </span>
+                  <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
+                    {inspectDocModal.approvalStatus === 'approved'
+                      ? 'Approved & Vector Indexed (Live for Students)'
+                      : inspectDocModal.approvalStatus === 'pending'
+                        ? 'Pending Administrator Verification (Locked from Chatbot)'
+                        : 'Revision Requested / Rejected'}
+                  </span>
+                </div>
+
+                {inspectDocModal.approvalStatus === 'pending' && (
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => {
+                        handleApproveDoc(inspectDocModal.id);
+                        setInspectDocModal(null);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-black text-xs cursor-pointer shadow-xs"
+                    >
+                      Approve & Vectorize
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRejectDoc(inspectDocModal.id);
+                        setInspectDocModal(null);
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-red-300 text-red-600 hover:bg-red-50 font-bold text-xs cursor-pointer"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+                {inspectDocModal.summary || 'Official academic document uploaded into institutional repository.'}
+              </p>
+
+              {/* Metadata Breakdown */}
+              <div className="grid grid-cols-2 gap-3 p-4 bg-white dark:bg-[#00337C] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
+                <div>
+                  <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">University & Dept:</span>
+                  <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{inspectDocModal.university} ({inspectDocModal.department || 'General'})</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">File & Format:</span>
+                  <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{inspectDocModal.fileName || inspectDocModal.fileType || 'PDF'} • {inspectDocModal.pages} Pages</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">Vector Ingestion:</span>
+                  <span className="font-black text-[#FF933E] dark:text-[#03C988]">{inspectDocModal.chunksCount} Chunks (BGE-M3 Multilingual)</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">Uploader:</span>
+                  <span className="font-black text-[#000000] dark:text-[#FFFFFF]">
+                    {inspectDocModal.uploaderRole === 'Faculty' ? `Faculty: ${inspectDocModal.uploaderName}` : 'Super Administrator'}
+                  </span>
+                </div>
+              </div>
+
+              {inspectDocModal.citation && (
+                <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                  <strong>Official Citation Source:</strong> {inspectDocModal.citation}
+                </div>
+              )}
+
+              {inspectDocModal.adminFeedback && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-xl text-xs text-red-700 dark:text-red-300">
+                  <strong>Administrator Feedback Note:</strong> {inspectDocModal.adminFeedback}
+                </div>
+              )}
+
+              {inspectDocModal.sha256 && (
+                <div className="text-[10px] font-mono text-[#000000]/60 dark:text-[#FFFFFF]/60 truncate">
+                  SHA-256 Digest: {inspectDocModal.sha256}
+                </div>
+              )}
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => setInspectDocModal(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-[#000000] hover:bg-[#E87A24] cursor-pointer shadow-xs"
+                >
+                  Close Inspector
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
-      <Footer
-        onNavigate={(page) => {
-          if (page === 'home') navigate('/');
-          else if (page === 'admin') navigate('/admin');
-          else if (page === 'dashboard') navigate('/dashboard/overview');
-          else navigate(`/${page}`);
-        }}
-        currentLang={currentLang}
-      />
 
     </div>
   );

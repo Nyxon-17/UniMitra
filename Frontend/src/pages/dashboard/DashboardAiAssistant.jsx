@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { documentService } from '../../services/documentService';
 import { 
   SendIcon, 
   SparklesIcon, 
@@ -194,7 +195,25 @@ export const DashboardAiAssistant = ({
 
       const lower = sentText.toLowerCase();
 
-      if (lower.includes('pass') || lower.includes('mark') || lower.includes('নম্বৰ') || lower.includes('উত্তীৰ্ণ')) {
+      // Check dynamically against approved & verified institutional documents
+      const approvedDocs = documentService.getApprovedDocuments();
+      const matchedApprovedDoc = approvedDocs.find(d => {
+        const titleLower = d.title.toLowerCase();
+        const asTitleLower = (d.asTitle || '').toLowerCase();
+        const catLower = d.category.toLowerCase();
+        const summaryLower = (d.summary || '').toLowerCase();
+        const words = lower.split(' ').filter(w => w.length > 3);
+        return words.some(w => titleLower.includes(w) || asTitleLower.includes(w) || catLower.includes(w) || summaryLower.includes(w));
+      });
+
+      if (matchedApprovedDoc) {
+        aiResponse.text = currentLang === 'as' && matchedApprovedDoc.asTitle
+          ? `প্ৰতিষ্ঠানিক অনুমোদনপ্ৰাপ্ত তথ্যভঁৰাল অনুসৰি (${matchedApprovedDoc.university}): ${matchedApprovedDoc.summary}`
+          : `According to verified institutional documents (${matchedApprovedDoc.university}): ${matchedApprovedDoc.summary}`;
+        aiResponse.source = matchedApprovedDoc.fileName || matchedApprovedDoc.title;
+        aiResponse.page = matchedApprovedDoc.citation || `Approved ${matchedApprovedDoc.category}`;
+        aiResponse.confidence = '99.8% Institutional Match';
+      } else if (lower.includes('pass') || lower.includes('mark') || lower.includes('নম্বৰ') || lower.includes('উত্তীৰ্ণ')) {
         aiResponse.text = currentLang === 'as'
           ? 'গুৱাহাটী আৰু ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ CBCS / NEP নিয়মাৱলী অনুসৰি, প্ৰতিটো বিষয়ত উত্তীৰ্ণ হ’বলৈ ছাত্ৰ-ছাত্ৰীয়ে In-Semester (Internal Sessional) আৰু End-Semester পৰীক্ষাত পৃথকে পৃথকে ন্যূনতম ৪০% নম্বৰ লাভ কৰিব লাগিব।'
           : 'According to official university examination ordinances, candidates must secure a minimum of 40% marks in In-Semester Internal Assessments and End-Semester Examinations separately to pass each paper under CBCS / NEP frameworks.';

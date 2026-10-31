@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardNavbar } from './DashboardNavbar';
 import { HomeScreenBackground } from '../common/HomeScreenBackground';
-import { Footer } from '../layout/Footer';
 
 export const DashboardLayout = ({ 
   children, 
@@ -18,7 +17,6 @@ export const DashboardLayout = ({
   studentInfo
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
 
   return (
     <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
@@ -57,23 +55,6 @@ export const DashboardLayout = ({
             {children || <Outlet />}
           </div>
         </main>
-
-        {/* Institutional Academic Portal Footer */}
-        <Footer
-          onNavigate={(page) => {
-            if (page === 'home') navigate('/');
-            else if (page === 'dashboard') navigate('/dashboard/overview');
-            else if (page === 'admin') navigate('/admin');
-            else if (page === 'auth') navigate('/auth');
-            else if (['overview', 'assistant', 'regulations', 'examinations', 'admissions', 'scholarships', 'facilities', 'history', 'saved-answers', 'feedback', 'profile', 'syllabus', 'compare'].includes(page)) {
-              if (onSelectTab) onSelectTab(page);
-              navigate(`/dashboard/${page}`);
-            } else {
-              navigate(`/${page}`);
-            }
-          }}
-          currentLang={currentLang}
-        />
       </div>
 
     </div>

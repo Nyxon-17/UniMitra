@@ -102,7 +102,7 @@ export const AuthModal = ({
   const [adminLogin, setAdminLogin] = useState({
     superName: 'System Administrator',
     superEmail: 'admin@unimitra.edu.in',
-    superPassword: '',
+    superPassword: 'admin@unimitra',
   });
 
   // Department options for faculty

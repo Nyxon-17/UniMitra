@@ -53,7 +53,12 @@ export const AuthPortal = ({
   // Student: 'form' | 'otp'
   // Faculty: 'form' | 'created_id' | 'login_credentials' | 'login_otp'
   // Admin: 'credentials' | 'otp'
-  const [step, setStep] = useState('form');
+  const [step, setStep] = useState(() => {
+    const role = roleParam && ['student', 'faculty', 'admin'].includes(roleParam) ? roleParam : initialRole;
+    if (role === 'admin') return 'credentials';
+    if (role === 'faculty') return 'login_credentials';
+    return 'form';
+  });
 
   // Generated Unique Member ID for newly registered faculty member
   const [generatedMemberId, setGeneratedMemberId] = useState('');
@@ -120,7 +125,7 @@ export const AuthPortal = ({
   const [adminLogin, setAdminLogin] = useState({
     superName: 'System Administrator',
     superEmail: 'admin@unimitra.edu.in',
-    superPassword: '',
+    superPassword: 'admin@unimitra',
   });
 
   // Department options for faculty

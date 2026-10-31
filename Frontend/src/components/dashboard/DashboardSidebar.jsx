@@ -30,6 +30,7 @@ export const DashboardSidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const isFaculty = studentInfo?.role === 'Faculty Member';
+  const isAdmin = studentInfo?.role === 'Admin';
 
   // Active tab derived from URL or activeTab prop
   const pathSegment = location.pathname.startsWith('/dashboard/')
@@ -61,9 +62,27 @@ export const DashboardSidebar = ({
     { id: 'faculty-saved', label: 'Saved Reference Circulars', asLabel: 'সংৰক্ষিত জাননীসমূহ', icon: DocumentTextIcon },
   ];
 
-  const menuItems = isFaculty ? facultyMenuItems : studentMenuItems;
+  const adminMenuItems = [
+    { id: 'overview', label: 'Administrator Overview', asLabel: 'প্ৰশাসন সাৰাংশ', icon: HomeIcon },
+    { id: 'admin-console', label: 'Document & Approval Console', asLabel: 'নথিপত্ৰ আৰু অনুমোদন কেন্দ্ৰ', icon: BuildingLibraryIcon, isDirectAdmin: true },
+    { id: 'assistant', label: 'Institutional AI Assistant', asLabel: 'দ্বিভাষিক AI সহায়ক', icon: ChatBubbleIcon },
+    { id: 'regulations', label: 'University Regulations', asLabel: 'বিশ্ববিদ্যালয়ৰ নিয়মাৱলী', icon: BuildingLibraryIcon },
+    { id: 'faculty-documents', label: 'Faculty Submissions Review', asLabel: 'অধ্যাপকৰ নথিপত্ৰ নিৰীক্ষণ', icon: DocumentTextIcon },
+    { id: 'feedback', label: 'Review Feedback', asLabel: 'প্ৰতিক্ৰিয়া পৰিদৰ্শন', icon: CheckCircleIcon },
+  ];
+
+  const menuItems = isAdmin ? adminMenuItems : (isFaculty ? facultyMenuItems : [
+    ...studentMenuItems,
+    { id: 'admin-console', label: 'Admin Portal (Ingestion)', asLabel: 'প্ৰশাসন কেন্দ্ৰ', icon: BuildingLibraryIcon, isDirectAdmin: true }
+  ]);
 
   const handleItemClick = (id) => {
+    if (id === 'admin-console' || id === 'admin') {
+      if (onOpenAdmin) onOpenAdmin();
+      else navigate('/admin');
+      if (onCloseMobile) onCloseMobile();
+      return;
+    }
     if (onSelectTab) onSelectTab(id);
     navigate(`/dashboard/${id}`);
     if (onCloseMobile) onCloseMobile();
