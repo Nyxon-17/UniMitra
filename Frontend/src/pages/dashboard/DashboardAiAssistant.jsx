@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { 
   SendIcon, 
   SparklesIcon, 
@@ -8,7 +9,10 @@ import {
   LanguageIcon,
   ClockIcon,
   TrashIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  CheckIcon,
+  XMarkIcon,
+  DocumentDuplicateIcon
 } from '../../components/common/Icons';
 
 export const DashboardAiAssistant = ({ 
@@ -16,6 +20,9 @@ export const DashboardAiAssistant = ({
   prefillQuery = '',
   studentInfo = { name: 'Member', role: 'Student' }
 }) => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -33,6 +40,13 @@ export const DashboardAiAssistant = ({
   const [inputQuery, setInputQuery] = useState(prefillQuery || '');
   const [loading, setLoading] = useState(false);
   const [historySidebarOpen, setHistorySidebarOpen] = useState(false);
+  const [actionAlert, setActionAlert] = useState('');
+
+  // Inline Feedback Modal State
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [activeFeedbackMsg, setActiveFeedbackMsg] = useState(null);
+  const [feedbackRating, setFeedbackRating] = useState('helpful'); // 'helpful' | 'unhelpful'
+  const [feedbackComment, setFeedbackComment] = useState('');
   
   // Stored query history in session
   const [queryHistory, setQueryHistory] = useState([
@@ -44,26 +58,104 @@ export const DashboardAiAssistant = ({
   const chatBottomRef = useRef(null);
 
   useEffect(() => {
-    if (prefillQuery) {
-      setInputQuery(prefillQuery);
+    const fromState = location.state?.prefillQuery;
+    const fromUrl = searchParams.get('q');
+    const target = prefillQuery || fromState || fromUrl;
+    if (target) {
+      setInputQuery(target);
     }
-  }, [prefillQuery]);
+  }, [prefillQuery, location.state, searchParams]);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const promptChips = currentLang === 'as' ? [
-    'গুৱাহাটী বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?',
-    'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
-    'উচ্চ শিক্ষা সঞ্চালকালয়ৰ মেধা ছাত্ৰবৃত্তিৰ বাবে কি নথিপত্ৰ লাগে?',
-    'হোষ্টেল আসন আবণ্টনৰ বাবে মেধা আৰু দূৰত্বৰ নিয়ম কি?'
-  ] : [
-    'What are Gauhati University passing criteria and re-evaluation fees?',
-    'What is Dibrugarh University attendance rule and condonation limit?',
-    'Assam DHE Ishan Uday scholarship eligibility and document checklist',
-    'University hostel allotment criteria and reservation quotas'
-  ];
+  const isFaculty = studentInfo?.role === 'Faculty Member';
+
+  const promptChips = isFaculty ? (
+    currentLang === 'as' ? [
+      'ইউজিচি ২০১৮ ৰ অধিসূচনা অনুসৰি সহযোগী অধ্যাপকৰ CAS পদোন্নতিৰ চৰ্ত কি?',
+      'এগৰাকী অধ্যাপকে সৰ্বাধিক কিমানজন পিএইচ.ডি. গৱেষকক নিৰ্দেশনা দিব পাৰে?',
+      'প্ৰশ্নকাকত মডাৰেচন ব’ৰ্ডৰ (BOM) নিৰ্দেশনা আৰু সৰ্বাধিক সালসলনিৰ পৰিসৰ',
+      'অধ্যাপকৰ ছাবাটিকল আৰু কৰ্তব্য ছুটীৰ চৰকাৰী নিয়মসমূহ কি কি?'
+    ] : [
+      'UGC 2018 CAS criteria from Assistant Professor Stage 3 to Associate Professor',
+      'Maximum permissible PhD scholar supervision quota for Associate Professor',
+      'Confidential question paper setting norms and Board of Moderators (BOM) guidelines',
+      'Official sabbatical leave and study leave statutes for university teachers'
+    ]
+  ) : (
+    currentLang === 'as' ? [
+      'গুৱাহাটী বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?',
+      'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
+      'উচ্চ শিক্ষা সঞ্চালকালয়ৰ মেধা ছাত্ৰবৃত্তিৰ বাবে কি নথিপত্ৰ লাগে?',
+      'হোষ্টেল আসন আবণ্টনৰ বাবে মেধা আৰু দূৰত্বৰ নিয়ম কি?'
+    ] : [
+      'What are Gauhati University passing criteria and re-evaluation fees?',
+      'What is Dibrugarh University attendance rule and condonation limit?',
+      'Assam DHE Ishan Uday scholarship eligibility and document checklist',
+      'University hostel allotment criteria and reservation quotas'
+    ]
+  );
+
+  // Save Useful Answer Handler
+  const handleSaveAnswer = (msg) => {
+    try {
+      const stored = localStorage.getItem('unimitra_saved_answers');
+      let list = stored ? JSON.parse(stored) : [];
+      const newEntry = {
+        id: `SAVED-${Date.now()}`,
+        query: messages.find(m => m.id === msg.id - 1)?.text || 'University Statutory Query',
+        answer: msg.text,
+        source: msg.source || 'University Regulation Gazette',
+        page: msg.page || 'Verified Clause',
+        savedAt: 'Just now',
+        category: isFaculty ? 'Faculty Consultation' : 'Academic Regulation'
+      };
+      list = [newEntry, ...list];
+      localStorage.setItem('unimitra_saved_answers', JSON.stringify(list));
+      setActionAlert('Answer bookmarked to your Saved Answers repository!');
+      setTimeout(() => setActionAlert(''), 3000);
+    } catch {
+      // fallback
+    }
+  };
+
+  // Open Feedback Modal
+  const handleOpenFeedback = (msg) => {
+    setActiveFeedbackMsg(msg);
+    setFeedbackRating('helpful');
+    setFeedbackComment('');
+    setFeedbackModalOpen(true);
+  };
+
+  // Submit Feedback Handler (Feeds directly to Administrator console)
+  const handleSubmitFeedback = (e) => {
+    e.preventDefault();
+    try {
+      const stored = localStorage.getItem('unimitra_feedback_submissions');
+      let list = stored ? JSON.parse(stored) : [];
+      const newFeedback = {
+        id: `FB-${Math.floor(1000 + Math.random() * 9000)}`,
+        user: studentInfo?.name || 'Member',
+        role: studentInfo?.role || 'Student',
+        type: feedbackRating === 'helpful' ? 'Accurate Citation' : 'Reported Inaccuracy',
+        university: 'Assam State Universities',
+        rating: feedbackRating === 'helpful' ? 5 : 2,
+        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Citation was verified and accurate.' : 'Citation needs update.'),
+        submittedAt: 'Just now',
+        status: 'Pending Admin Review',
+        answerSnippet: activeFeedbackMsg?.text?.slice(0, 80) + '...'
+      };
+      list = [newFeedback, ...list];
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
+      setFeedbackModalOpen(false);
+      setActionAlert('Feedback submitted! It is now queued for administrator review.');
+      setTimeout(() => setActionAlert(''), 3500);
+    } catch {
+      // fallback
+    }
+  };
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -211,6 +303,32 @@ export const DashboardAiAssistant = ({
                     </span>
                   </div>
                 )}
+
+                {/* Save & Feedback Action Bar */}
+                {msg.sender === 'ai' && (
+                  <div className="mt-2.5 pt-2 border-t border-[#B8CFB3]/40 dark:border-[#728E6D]/40 flex items-center justify-between text-[11px]">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => handleSaveAnswer(msg)}
+                        className="px-2.5 py-1 rounded-lg bg-[#FEFAF3] dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30 text-[#15370D] dark:text-[#FFF2B4] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                        title="Save answer to your bookmarks"
+                      >
+                        <CheckIcon className="w-3.5 h-3.5 text-[#84A282]" />
+                        <span>Save Answer</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenFeedback(msg)}
+                        className="px-2.5 py-1 rounded-lg bg-[#FEFAF3] dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30 text-[#4F6D4B] dark:text-[#E5CD82] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                        title="Submit feedback or report issue"
+                      >
+                        <span>Feedback 💬</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <span className="text-[10px] text-[#4F6D4B] dark:text-[#E5CD82] mt-1 px-1 font-semibold">
@@ -318,6 +436,95 @@ export const DashboardAiAssistant = ({
           </button>
         </form>
       </div>
+
+      {/* Action Toast Alert */}
+      {actionAlert && (
+        <div className="absolute top-20 right-6 z-50 bg-[#84A282] text-white px-4 py-2.5 rounded-2xl shadow-elevated-sage text-xs font-black flex items-center space-x-2 animate-bounce">
+          <CheckCircleIcon className="w-4 h-4 text-[#FFF2B4]" />
+          <span>{actionAlert}</span>
+        </div>
+      )}
+
+      {/* Interactive Feedback Modal */}
+      {feedbackModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-[#FEFAF3] dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#B8CFB3] dark:border-[#728E6D] pb-3">
+              <h3 className="text-sm font-black text-[#15370D] dark:text-[#FFF2B4]">
+                Submit Response Feedback
+              </h3>
+              <button
+                type="button"
+                onClick={() => setFeedbackModalOpen(false)}
+                className="p-1 rounded-lg text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] cursor-pointer"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitFeedback} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1.5">
+                  Was this grounded answer helpful?
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackRating('helpful')}
+                    className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                      feedbackRating === 'helpful'
+                        ? 'bg-[#84A282] text-white border-[#84A282]'
+                        : 'bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border-[#B8CFB3] dark:border-[#728E6D]'
+                    }`}
+                  >
+                    👍 Accurate & Helpful
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackRating('unhelpful')}
+                    className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                      feedbackRating === 'unhelpful'
+                        ? 'bg-red-600 text-white border-red-600'
+                        : 'bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border-[#B8CFB3] dark:border-[#728E6D]'
+                    }`}
+                  >
+                    👎 Needs Correction
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                  Comments / Discrepancy Note (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  value={feedbackComment}
+                  onChange={(e) => setFeedbackComment(e.target.value)}
+                  placeholder="e.g. Please verify with 2024 academic gazette..."
+                  className="w-full p-3 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-xs text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setFeedbackModalOpen(false)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#4F6D4B] dark:text-[#E5CD82] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#84A282] hover:bg-[#728E6D] cursor-pointer shadow-xs"
+                >
+                  Send to Admin
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

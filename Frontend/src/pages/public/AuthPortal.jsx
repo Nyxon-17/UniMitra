@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   BuildingLibraryIcon, 
   AcademicCapIcon, 
@@ -25,11 +26,28 @@ export const AuthPortal = ({
   onSuccessLogin,
   onCancel
 }) => {
+  const [searchParams] = useSearchParams();
+  const roleParam = searchParams.get('role');
+  const modeParam = searchParams.get('mode');
+
   // Active role tab: 'student' | 'faculty' | 'admin'
-  const [activeRole, setActiveRole] = useState(initialRole);
+  const [activeRole, setActiveRole] = useState(
+    roleParam && ['student', 'faculty', 'admin'].includes(roleParam) ? roleParam : initialRole
+  );
   
   // Active mode per role: 'login' | 'register'
-  const [activeMode, setActiveMode] = useState(initialMode);
+  const [activeMode, setActiveMode] = useState(
+    modeParam && ['login', 'register'].includes(modeParam) ? modeParam : initialMode
+  );
+
+  useEffect(() => {
+    if (roleParam && ['student', 'faculty', 'admin'].includes(roleParam)) {
+      setActiveRole(roleParam);
+    }
+    if (modeParam && ['login', 'register'].includes(modeParam)) {
+      setActiveMode(modeParam);
+    }
+  }, [roleParam, modeParam]);
 
   // Flow steps for multi-step verification:
   // Student: 'form' | 'otp'
