@@ -60,10 +60,10 @@ function PublicLayoutWrapper({
   return (
     <div className={`min-h-screen flex flex-col bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] selection:bg-[#84A282] selection:text-white transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       {/* Top Public Navigation */}
-      <Navbar 
-        onNavigate={onNavigate} 
+      <Navbar
+        onNavigate={onNavigate}
         onOpenAuth={onOpenAuth}
-        currentLang={currentLang} 
+        currentLang={currentLang}
         onToggleLang={onToggleLang}
         isDark={isDark}
         onToggleTheme={onToggleTheme}
@@ -79,10 +79,10 @@ function PublicLayoutWrapper({
 
       {/* Institutional Academic Portal Footer (hidden on dedicated auth page) */}
       {!isAuthPage && (
-        <Footer 
-          onNavigate={onNavigate} 
+        <Footer
+          onNavigate={onNavigate}
           onOpenAuth={onOpenAuth}
-          currentLang={currentLang} 
+          currentLang={currentLang}
         />
       )}
     </div>
@@ -172,7 +172,7 @@ export function App() {
       department: 'Higher Education Studies'
     };
   });
-  
+
   // Theme state: Light theme (84A282, B8CFB3, FEFAF3, F6E2E9) & Dark theme (FFF2B4, E5CD82, 728E6D, 15370D)
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -213,7 +213,7 @@ export function App() {
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
     localStorage.setItem('unimitra_auth_logged_in', 'true');
-    
+
     if (user) {
       const updatedInfo = {
         ...studentInfo,
@@ -311,10 +311,10 @@ export function App() {
           <Route
             index
             element={
-              <Home 
-                onNavigate={handleNavigate} 
-                onOpenAuth={handleOpenAuth} 
-                currentLang={lang} 
+              <Home
+                onNavigate={handleNavigate}
+                onOpenAuth={handleOpenAuth}
+                currentLang={lang}
                 isLoggedIn={isLoggedIn}
               />
             }
@@ -323,10 +323,10 @@ export function App() {
           <Route
             path="features"
             element={
-              <Features 
-                onNavigate={handleNavigate} 
-                onOpenAuth={handleOpenAuth} 
-                currentLang={lang} 
+              <Features
+                onNavigate={handleNavigate}
+                onOpenAuth={handleOpenAuth}
+                currentLang={lang}
                 isLoggedIn={isLoggedIn}
               />
             }
@@ -334,10 +334,10 @@ export function App() {
           <Route
             path="how-it-works"
             element={
-              <HowItWorks 
-                onNavigate={handleNavigate} 
-                onOpenAuth={handleOpenAuth} 
-                currentLang={lang} 
+              <HowItWorks
+                onNavigate={handleNavigate}
+                onOpenAuth={handleOpenAuth}
+                currentLang={lang}
                 isLoggedIn={isLoggedIn}
               />
             }
@@ -345,10 +345,10 @@ export function App() {
           <Route
             path="faq"
             element={
-              <Faq 
-                onNavigate={handleNavigate} 
-                onOpenAuth={handleOpenAuth} 
-                currentLang={lang} 
+              <Faq
+                onNavigate={handleNavigate}
+                onOpenAuth={handleOpenAuth}
+                currentLang={lang}
                 isLoggedIn={isLoggedIn}
               />
             }
@@ -356,10 +356,10 @@ export function App() {
           <Route
             path="about"
             element={
-              <About 
-                onNavigate={handleNavigate} 
-                onOpenAuth={handleOpenAuth} 
-                currentLang={lang} 
+              <About
+                onNavigate={handleNavigate}
+                onOpenAuth={handleOpenAuth}
+                currentLang={lang}
                 isLoggedIn={isLoggedIn}
               />
             }
@@ -367,8 +367,8 @@ export function App() {
           <Route
             path="contact"
             element={
-              <Contact 
-                currentLang={lang} 
+              <Contact
+                currentLang={lang}
               />
             }
           />
