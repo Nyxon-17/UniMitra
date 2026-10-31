@@ -104,7 +104,7 @@ export const DashboardHome = ({
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-xs font-black tracking-wider uppercase text-[#84A282] dark:text-[#FFF2B4]">
-              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় শৈক্ষিক আৰু প্ৰশাসনিক কেন্দ্ৰ' : 'Institutional Assistance Portal • CampusIQ'}
+              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় শৈক্ষিক আৰু প্ৰশাসনিক কেন্দ্ৰ' : 'Institutional Assistance Portal • UniMitra'}
             </span>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#15370D] dark:text-[#FFF2B4] tracking-tight">
               {currentLang === 'as' 

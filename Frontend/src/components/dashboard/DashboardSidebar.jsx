@@ -1,20 +1,20 @@
-import { 
-  BuildingLibraryIcon, 
-  HomeIcon, 
-  ChatBubbleIcon, 
-  ClipboardDocumentCheckIcon, 
-  BanknotesIcon, 
-  BuildingOfficeIcon, 
-  IdentificationIcon, 
-  ClockIcon, 
-  UserIcon, 
-  ArrowRightOnRectangleIcon, 
-  XMarkIcon 
+import {
+  BuildingLibraryIcon,
+  HomeIcon,
+  ChatBubbleIcon,
+  ClipboardDocumentCheckIcon,
+  BanknotesIcon,
+  BuildingOfficeIcon,
+  IdentificationIcon,
+  ClockIcon,
+  UserIcon,
+  ArrowRightOnRectangleIcon,
+  XMarkIcon
 } from '../common/Icons';
 
-export const DashboardSidebar = ({ 
-  activeTab = 'overview', 
-  onSelectTab, 
+export const DashboardSidebar = ({
+  activeTab = 'overview',
+  onSelectTab,
   onOpenAdmin,
   onSignOut,
   isOpen = false,
@@ -37,17 +37,16 @@ export const DashboardSidebar = ({
     <>
       {/* Mobile Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs"
           onClick={onCloseMobile}
         ></div>
       )}
 
       {/* Sidebar Container */}
-      <aside 
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#FEFAF3] dark:bg-[#1C4412] border-r border-[#B8CFB3] dark:border-[#728E6D] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#FEFAF3] dark:bg-[#1C4412] border-r border-[#B8CFB3] dark:border-[#728E6D] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         {/* Upper Sidebar Section */}
         <div className="overflow-y-auto">
@@ -62,13 +61,13 @@ export const DashboardSidebar = ({
                   Uni<span className="text-[#84A282]">Mitra</span>
                 </span>
                 <span className="text-[10px] font-black text-[#84A282] dark:text-[#E5CD82] block -mt-0.5 uppercase tracking-wider">
-                  CampusIQ Portal
+                  University Portal
                 </span>
               </div>
             </div>
 
             {/* Mobile Close Button */}
-            <button 
+            <button
               onClick={onCloseMobile}
               className="lg:hidden p-1.5 rounded-lg text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] cursor-pointer"
             >
@@ -88,11 +87,10 @@ export const DashboardSidebar = ({
                     onSelectTab(item.id);
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
                       ? 'bg-[#84A282] text-white shadow-elevated-sage'
                       : 'text-[#15370D] dark:text-[#E5CD82] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#15370D] hover:text-[#15370D] dark:hover:text-[#FFF2B4]'
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FFF2B4]' : 'text-[#84A282] dark:text-[#E5CD82]'}`} />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>

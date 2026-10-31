@@ -25,6 +25,9 @@ export const DashboardProfile = ({
     email: studentInfo.email || 'member@university.ac.in',
     role: studentInfo.role || 'Student',
     department: studentInfo.department || 'Higher Education Studies',
+    memberId: studentInfo.memberId || '',
+    designation: studentInfo.designation || '',
+    facultyId: studentInfo.facultyId || '',
     phone: '+91 98640 12345',
     preferredLang: currentLang === 'as' ? 'as' : 'en',
     notifyRegulations: true,
@@ -73,6 +76,11 @@ export const DashboardProfile = ({
               <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
                 Role: {formData.role}
               </span>
+              {formData.memberId && (
+                <span className="px-3 py-1 rounded-xl text-xs font-black bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#84A282] font-mono">
+                  Member ID: {formData.memberId}
+                </span>
+              )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
@@ -80,7 +88,7 @@ export const DashboardProfile = ({
             </h1>
 
             <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82]">
-              {formData.department} • <span className="font-bold text-[#84A282] dark:text-[#FFF2B4]">Universal Multi-University Access</span>
+              {formData.designation ? `${formData.designation} • ` : ''}{formData.department} • <span className="font-bold text-[#84A282] dark:text-[#FFF2B4]">Universal Multi-University Access</span>
             </p>
           </div>
         </div>

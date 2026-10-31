@@ -8,6 +8,7 @@ import { Faq } from './pages/public/Faq';
 import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { AuthModal } from './components/auth/AuthModal';
+import { AuthPortal } from './pages/public/AuthPortal';
 
 // Institutional University Assistance Dashboard Components & Pages
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
@@ -22,12 +23,13 @@ import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 import { AdminConsole } from './pages/admin/AdminConsole';
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'how-it-works' | 'faq' | 'about' | 'contact' | 'dashboard' | 'admin'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'how-it-works' | 'faq' | 'about' | 'contact' | 'dashboard' | 'admin' | 'auth'
   const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'regulations' | 'admissions' | 'scholarships' | 'facilities' | 'history' | 'profile'
   const [assistantPrefill, setAssistantPrefill] = useState('');
   
   const [lang, setLang] = useState('en'); // 'en' or 'as'
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalRole, setAuthModalRole] = useState('student'); // 'student' | 'faculty' | 'admin'
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
 
   // Dashboard Access Gating: Dashboard can access ONLY after login
@@ -93,30 +95,39 @@ export function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  const handleOpenAuth = (mode = 'login') => {
+  const handleOpenAuth = (mode = 'login', role = 'student') => {
     setAuthModalMode(mode);
+    setAuthModalRole(role);
     setAuthModalOpen(true);
   };
 
-  // Login Success Handler: Gates access into University Assistance Dashboard
+  // Login Success Handler: Gates access into University Assistance Dashboard or Admin Console
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
     localStorage.setItem('unimitra_auth_logged_in', 'true');
     
-    if (user?.name || user?.email) {
+    if (user) {
       const updatedInfo = {
         ...studentInfo,
         name: user.name || studentInfo.name,
         email: user.email || studentInfo.email,
-        role: user.role || studentInfo.role
+        role: user.role || studentInfo.role,
+        department: user.department || studentInfo.department,
+        designation: user.designation || '',
+        memberId: user.memberId || '',
+        facultyId: user.facultyId || ''
       };
       setStudentInfo(updatedInfo);
       localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
     }
 
-    // Direct into dashboard after login
-    setCurrentPage('dashboard');
-    setDashboardTab('overview');
+    // Role-based routing: Admin directly to Admin Console; Students & Faculty to Assistant Dashboard
+    if (user?.role === 'Admin') {
+      setCurrentPage('admin');
+    } else {
+      setCurrentPage('dashboard');
+      setDashboardTab('overview');
+    }
   };
 
   // Sign Out Handler: Revokes session, clears dashboard lock, and returns to home
@@ -126,10 +137,14 @@ export function App() {
     setCurrentPage('home');
   };
 
-  // Safe Navigation: Protects Dashboard; guests are prompted to log in
+  // Safe Navigation: Protects Dashboard & Admin Console; guests are prompted to log in
   const handleNavigate = (page) => {
     if (page === 'dashboard' && !isLoggedIn) {
-      handleOpenAuth('login');
+      handleOpenAuth('login', 'student');
+      return;
+    }
+    if (page === 'admin' && (!isLoggedIn || studentInfo?.role !== 'Admin')) {
+      handleOpenAuth('login', 'admin');
       return;
     }
     setCurrentPage(page);
@@ -307,19 +322,31 @@ export function App() {
             currentLang={lang} 
           />
         )}
+        {currentPage === 'auth' && (
+          <AuthPortal
+            initialRole={authModalRole}
+            initialMode={authModalMode}
+            currentLang={lang}
+            onSuccessLogin={handleLoginSuccess}
+            onCancel={() => setCurrentPage('home')}
+          />
+        )}
       </main>
 
       {/* Institutional Academic Portal Footer */}
-      <Footer 
-        onNavigate={handleNavigate} 
-        onOpenAuth={handleOpenAuth}
-        currentLang={lang} 
-      />
+      {currentPage !== 'auth' && (
+        <Footer 
+          onNavigate={handleNavigate} 
+          onOpenAuth={handleOpenAuth}
+          currentLang={lang} 
+        />
+      )}
 
-      {/* Floating Login & Registration Modal */}
+      {/* Floating Multi-Portal Login & Registration Modal */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
+        initialRole={authModalRole}
         initialMode={authModalMode}
         currentLang={lang}
         onSuccessLogin={handleLoginSuccess}

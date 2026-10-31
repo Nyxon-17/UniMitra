@@ -260,8 +260,8 @@ export const AdminConsole = ({
     <div className={`min-h-screen bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       
       {/* Top Admin Header */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1C4412]/95 backdrop-blur-xs border-b border-[#B8CFB3] dark:border-[#728E6D] px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-20">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1C4412]/95 backdrop-blur-xs border-b border-[#B8CFB3] dark:border-[#728E6D] px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="w-full flex items-center justify-between h-20">
           
           <div className="flex items-center space-x-3">
             <button
@@ -311,7 +311,7 @@ export const AdminConsole = ({
       </header>
 
       {/* Main Admin Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-10 xl:px-12 py-6 space-y-6">
         
         {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-2 border-b border-[#B8CFB3] dark:border-[#728E6D] pb-3">

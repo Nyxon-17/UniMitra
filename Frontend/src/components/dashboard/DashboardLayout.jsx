@@ -47,7 +47,7 @@ export const DashboardLayout = ({
 
         {/* Dynamic Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full">
             {children}
           </div>
         </main>

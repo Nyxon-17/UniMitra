@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { 
-  EnvelopeIcon, 
-  MapPinIcon, 
-  SendIcon, 
-  CheckCircleIcon, 
+import {
+  EnvelopeIcon,
+  MapPinIcon,
+  SendIcon,
+  CheckCircleIcon,
   BuildingLibraryIcon,
   ChevronDownIcon
 } from '../../components/common/Icons';
@@ -52,7 +52,7 @@ export const Contact = ({ currentLang = 'en' }) => {
 
     try {
       const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
-      
+
       try {
         await axios.post(`${apiBase}/feedback`, formData, { timeout: 2500 });
       } catch {
@@ -84,13 +84,10 @@ export const Contact = ({ currentLang = 'en' }) => {
 
   return (
     <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <div className="inline-block px-3.5 py-1 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] text-xs font-black text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
-            Helpdesk & Support
-          </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
             {currentLang === 'as' ? 'যোগাযোগ আৰু সহায় কেন্দ্ৰ' : 'Contact Support & Helpdesk'}
           </h1>
@@ -102,7 +99,7 @@ export const Contact = ({ currentLang = 'en' }) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
+
           {/* Left Column: Form (Cols 7) */}
           <div className="lg:col-span-7">
             <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-sm">
@@ -232,12 +229,12 @@ export const Contact = ({ currentLang = 'en' }) => {
 
           {/* Right Column: Key Contacts & Quick FAQ (Cols 5) */}
           <div className="lg:col-span-5 space-y-6">
-            
+
             <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
-                CampusIQ Support Desk
+                UniMitra Support Desk
               </h3>
-              
+
               <div className="space-y-3 text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82]">
                 <div className="flex items-center space-x-3">
                   <EnvelopeIcon className="w-5 h-5 text-[#84A282] shrink-0" />
@@ -259,7 +256,7 @@ export const Contact = ({ currentLang = 'en' }) => {
               <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4] mb-2">
                 Frequently Addressed Queries
               </h3>
-              
+
               {faqs.map((f, i) => (
                 <div key={i} className="border-b border-[#B8CFB3]/50 dark:border-[#728E6D] pb-3 last:border-0 last:pb-0">
                   <button

@@ -56,13 +56,10 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
 
   return (
     <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-block px-3.5 py-1 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] text-xs font-black text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
-            About UniMitra (CampusIQ)
-          </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
             {currentLang === 'as' 
               ? 'অসমৰ উচ্চ শিক্ষাৰ বাবে স্মাৰ্ট বিশ্ববিদ্যালয় সহায়ক' 
@@ -72,7 +69,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
           <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
             {currentLang === 'as'
               ? 'UniMitra হৈছে এক বহুমুখী শৈক্ষিক আৰু প্ৰশাসনিক মঞ্চ, যাৰ লক্ষ্য অসমৰ বিশ্ববিদ্যালয়সমূহৰ নিয়ম, পৰীক্ষা, ভৰ্তি আৰু ছাত্ৰবৃত্তিৰ তথ্য ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকসকলৰ বাবে সহজলভ্য কৰি তোলা।'
-              : 'UniMitra (CampusIQ) eliminates confusion surrounding university regulations, exam ordinances, and admissions across Assam by providing grounded, cited answers in both Assamese and English.'}
+              : 'UniMitra eliminates confusion surrounding university regulations, exam ordinances, and admissions across Assam by providing grounded, cited answers in both Assamese and English.'}
           </p>
         </div>
 
@@ -92,7 +89,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
             <div className="flex items-center space-x-2 text-[#84A282] dark:text-[#FFF2B4] mb-3">
               <CheckCircleIcon className="w-6 h-6 text-[#84A282]" />
               <h2 className="text-lg sm:text-xl font-black text-[#15370D] dark:text-[#FFF2B4]">
-                The UniMitra CampusIQ Solution
+                The UniMitra Solution
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">

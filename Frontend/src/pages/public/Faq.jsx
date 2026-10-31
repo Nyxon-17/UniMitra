@@ -9,8 +9,8 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
   const faqData = [
     {
       category: 'Regulations',
-      q: 'What is UniMitra CampusIQ and how does it assist universities in Assam?',
-      asQ: 'UniMitra CampusIQ কি আৰু ই অসমৰ বিশ্ববিদ্যালয়সমূহত কেনেদৰে সহায় কৰে?',
+      q: 'What is UniMitra and how does it assist universities in Assam?',
+      asQ: 'UniMitra কি আৰু ই অসমৰ বিশ্ববিদ্যালয়সমূহত কেনেদৰে সহায় কৰে?',
       a: 'UniMitra is an AI-powered smart university assistance platform designed for students, faculty members, and administrative staff across Assam. It centralizes authorized university regulations, examination ordinances, admission guidelines, and scholarship circulars to deliver grounded answers in Assamese and English with exact page citations.',
       asA: 'UniMitra হৈছে অসমৰ ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু কৰ্মচাৰীসকলৰ বাবে এক AI চালিত বিশ্ববিদ্যালয় সহায়ক মঞ্চ। ই চৰকাৰী আৰু বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ জাননী, ভৰ্তি আৰু ছাত্ৰবৃত্তিৰ তথ্য একত্ৰিত কৰি সঠিক পৃষ্ঠা নম্বৰসহ অসমীয়া আৰু ইংৰাজীত উত্তৰ প্ৰদান কৰে।'
     },
@@ -82,13 +82,10 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
 
   return (
     <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <div className="inline-block px-3.5 py-1 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] text-xs font-black text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
-            Knowledge Base FAQ
-          </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
             {currentLang === 'as' ? 'সঘনাই সোধা প্ৰশ্নসমূহ (FAQ)' : 'Frequently Asked Institutional Questions'}
           </h1>
@@ -117,11 +114,10 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                activeCategory === cat
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${activeCategory === cat
                   ? 'bg-[#84A282] text-white shadow-xs'
                   : 'bg-white dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30'
-              }`}
+                }`}
             >
               {cat}
             </button>

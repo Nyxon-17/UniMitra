@@ -21,8 +21,8 @@ export const DashboardAiAssistant = ({
       id: 1,
       sender: 'ai',
       text: currentLang === 'as'
-        ? 'নমস্কাৰ! মই UniMitra CampusIQ বিশ্ববিদ্যালয় সহায়ক। অসমৰ যিকোনো বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক সুধিব পাৰে।'
-        : 'Hello! I am your UniMitra CampusIQ Institutional Assistant. I am ready to answer queries regarding university regulations, examinations, admissions, scholarships, and campus facilities with verifiable source citations in Assamese and English.',
+        ? 'নমস্কাৰ! মই UniMitra বিশ্ববিদ্যালয় সহায়ক। অসমৰ যিকোনো বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক সুধিব পাৰে।'
+        : 'Hello! I am your UniMitra Institutional Assistant. I am ready to answer queries regarding university regulations, examinations, admissions, scholarships, and campus facilities with verifiable source citations in Assamese and English.',
       source: 'Assam Higher Education Knowledge Repository',
       page: 'Verified Gazette',
       confidence: 'Institutional Match (100%)',
@@ -151,7 +151,7 @@ export const DashboardAiAssistant = ({
           <div>
             <div className="flex items-center space-x-2">
               <h2 className="text-sm sm:text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
-                CampusIQ Bilingual Assistant
+                UniMitra Bilingual Assistant
               </h2>
               <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#B8CFB3]/40 text-[#15370D] dark:bg-[#728E6D] dark:text-[#FFF2B4]">
                 RAG Grounded
@@ -290,7 +290,7 @@ export const DashboardAiAssistant = ({
           <button
             key={idx}
             onClick={() => setInputQuery(chip)}
-            className="px-3 py-1 rounded-full text-[11px] font-bold bg-white dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] text-[#15370D] dark:text-[#FFF2B4] hover:bg-[#84A282] hover:text-white transition-all cursor-pointer shrink-0"
+            className="px-3 py-1 rounded-xl text-[11px] font-bold bg-white dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] text-[#15370D] dark:text-[#FFF2B4] hover:bg-[#84A282] hover:text-white transition-all cursor-pointer shrink-0"
           >
             {chip}
           </button>

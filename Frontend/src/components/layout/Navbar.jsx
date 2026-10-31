@@ -31,13 +31,13 @@ export const Navbar = ({
     { id: 'features', label: 'Services & Scope', asLabel: 'সেৱা আৰু সুবিধাসমূহ' },
     { id: 'how-it-works', label: 'How It Works', asLabel: 'কাৰ্যপ্ৰণালী' },
     { id: 'faq', label: 'FAQ', asLabel: 'প্ৰশ্নোত্তৰ' },
-    { id: 'about', label: 'About CampusIQ', asLabel: 'আমাৰ বিষয়ে' },
+    { id: 'about', label: 'About UniMitra', asLabel: 'আমাৰ বিষয়ে' },
     { id: 'contact', label: 'Helpdesk & Support', asLabel: 'সহায় আৰু যোগাযোগ' },
   ];
 
   return (
     <header className="sticky top-0 z-40 bg-[#FEFAF3] dark:bg-[#15370D] border-b border-[#B8CFB3] dark:border-[#728E6D] transition-colors duration-200 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="flex items-center justify-between h-20">
           
           {/* Logo & Institutional Brand */}
@@ -52,9 +52,6 @@ export const Navbar = ({
               <div className="flex items-center space-x-1.5">
                 <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
                   Uni<span className="text-[#84A282] dark:text-[#E5CD82]">Mitra</span>
-                </span>
-                <span className="text-[10px] uppercase font-black px-1.5 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]">
-                  CampusIQ
                 </span>
               </div>
               <p className="text-[11px] text-[#4F6D4B] dark:text-[#E5CD82] font-semibold tracking-tight">
@@ -119,7 +116,13 @@ export const Navbar = ({
 
             {/* Admin Console Shortcut */}
             <button
-              onClick={() => handleNav('admin')}
+              onClick={() => {
+                if (isLoggedIn && studentInfo?.role === 'Admin') {
+                  handleNav('admin');
+                } else if (onOpenAuth) {
+                  onOpenAuth('login', 'admin');
+                }
+              }}
               className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#728E6D]/40 hover:bg-[#F6E2E9]/80 dark:hover:bg-[#728E6D] border border-[#B8CFB3] dark:border-[#E5CD82]/40 transition-all cursor-pointer"
               title="Official Document Ingestion Admin"
             >
@@ -129,7 +132,7 @@ export const Navbar = ({
             {/* Auth Controls */}
             {!isLoggedIn ? (
               <button 
-                onClick={() => onOpenAuth && onOpenAuth('login')}
+                onClick={() => onOpenAuth && onOpenAuth('login', 'student')}
                 className="px-4 py-2 rounded-xl text-xs sm:text-sm font-black text-[#15370D] dark:text-[#15370D] bg-[#84A282] dark:bg-[#FFF2B4] hover:bg-[#84A282]/80 dark:hover:bg-[#E5CD82] transition-all cursor-pointer shadow-xs border border-[#15370D]/20"
               >
                 {currentLang === 'as' ? 'লগ-ইন / প্ৰৱেশ' : 'Sign In'}
@@ -259,7 +262,14 @@ export const Navbar = ({
             )}
 
             <button
-              onClick={() => handleNav('admin')}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (isLoggedIn && studentInfo?.role === 'Admin') {
+                  handleNav('admin');
+                } else if (onOpenAuth) {
+                  onOpenAuth('login', 'admin');
+                }
+              }}
               className="w-full py-2.5 rounded-xl text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#728E6D]/50 text-center border border-[#B8CFB3] dark:border-[#728E6D] cursor-pointer"
             >
               {currentLang === 'as' ? 'প্ৰশাসন নথিপত্ৰ পৰিচালনা' : 'Admin Console (Document Ingest)'}

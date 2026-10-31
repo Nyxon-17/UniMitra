@@ -72,18 +72,12 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
         {/* Soft Ambient Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-[#84A282]/20 via-[#B8CFB3]/25 to-[#F6E2E9]/40 dark:from-[#728E6D]/20 dark:via-[#1C4412] dark:to-[#E5CD82]/15 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Content (Cols 7) */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Badge Tag */}
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] text-xs font-black text-[#15370D] dark:text-[#FFF2B4]">
-                <span className="w-2 h-2 rounded-full bg-[#84A282] animate-pulse"></span>
-                <span>CampusIQ • Smart University Assistant</span>
-              </div>
-
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-[#15370D] dark:text-[#FFF2B4]">
                 {currentLang === 'as' ? (
@@ -164,7 +158,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
       {/* LIVE INTERACTIVE GROUNDED ASSISTANCE PREVIEW */}
       <section className="py-20 bg-white dark:bg-[#1C4412] border-b border-[#B8CFB3] dark:border-[#728E6D] transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-2xl sm:text-4xl font-black text-[#15370D] dark:text-[#FFF2B4]">
@@ -178,7 +172,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
           </div>
 
           {/* Interactive Demo Card */}
-          <div className="max-w-4xl mx-auto bg-[#FEFAF3] dark:bg-[#15370D] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl shadow-elevated-sage dark:shadow-elevated-gold overflow-hidden">
+          <div className="w-full max-w-5xl mx-auto bg-[#FEFAF3] dark:bg-[#15370D] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl shadow-elevated-sage dark:shadow-elevated-gold overflow-hidden">
             
             {/* Card Header */}
             <div className="bg-[#84A282] dark:bg-[#235417] px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white">
@@ -187,7 +181,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 <div className="w-3.5 h-3.5 rounded-full bg-[#B8CFB3]"></div>
                 <div className="w-3.5 h-3.5 rounded-full bg-[#F6E2E9]"></div>
                 <span className="text-xs sm:text-sm font-black ml-2 text-[#FEFAF3] dark:text-[#FFF2B4]">
-                  UniMitra Live Institutional Assistant (CampusIQ)
+                  UniMitra Live Institutional Assistant
                 </span>
               </div>
               
@@ -280,7 +274,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
       {/* 6 INSTITUTIONAL DOMAINS */}
       <section className="py-20 bg-[#FEFAF3] dark:bg-[#15370D] border-b border-[#B8CFB3] dark:border-[#728E6D] transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-2xl sm:text-4xl font-black text-[#15370D] dark:text-[#FFF2B4]">
@@ -380,7 +374,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
       {/* SUPPORTED UNIVERSITIES DIRECTORY */}
       <section className="py-20 bg-white dark:bg-[#1C4412] border-b border-[#B8CFB3] dark:border-[#728E6D] transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-8 mb-8 border-b border-[#B8CFB3]/60 dark:border-[#728E6D] gap-4">
             <div>
@@ -432,11 +426,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
       {/* FINAL CALL TO ACTION */}
       <section className="py-20 bg-[#15370D] text-[#FEFAF3]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <div className="inline-block px-3 py-1 rounded-full bg-[#1C4412] text-xs font-black text-[#FFF2B4] border border-[#728E6D]">
-            Official Institutional Assistance
-          </div>
-
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 text-center space-y-6">
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#FFF2B4]">
             {currentLang === 'as' 
               ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক আৰু প্ৰশাসনিক তথ্য এতিয়া আঙুলিৰ মূৰত' 

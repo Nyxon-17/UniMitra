@@ -4,7 +4,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   return (
     <footer className="bg-[#15370D] text-[#FEFAF3] border-t-4 border-[#84A282] transition-colors duration-200">
       {/* Upper Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-12">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 pt-14 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           
           {/* Col 1 & 2: Institutional Brand Profile */}
@@ -95,7 +95,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               </li>
               <li>
                 <button onClick={() => onNavigate && onNavigate('about')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
-                  About UniMitra CampusIQ
+                  About UniMitra
                 </button>
               </li>
               <li>
@@ -140,9 +140,9 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
 
       {/* Bottom Bar */}
       <div className="border-t border-[#728E6D]/50 bg-black/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#E5CD82]">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#E5CD82]">
           <p>
-            © {new Date().getFullYear()} UniMitra (CampusIQ). Smart University Assistant for Higher Education in Assam.
+            © {new Date().getFullYear()} UniMitra. Smart University Assistant for Higher Education in Assam.
           </p>
           <p className="text-[11px] text-[#B8CFB3]">
             For Students, Faculty Members & Administrative Staff

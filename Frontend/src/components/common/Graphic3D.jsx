@@ -25,16 +25,16 @@ export const UniversityHero3D = () => {
 
         {/* Central 3D Vector Isometric Core */}
         <div className="relative py-4 sm:py-6 flex flex-col items-center justify-center">
-          {/* Pulsing Back Glow */}
-          <div className="absolute inset-2 bg-gradient-to-tr from-[#84A282]/30 via-[#B8CFB3]/30 to-[#F6E2E9]/40 dark:from-[#728E6D]/30 dark:to-[#E5CD82]/20 rounded-3xl blur-xl animate-pulse"></div>
-          
+          {/* Back Glow */}
+          <div className="absolute inset-2 bg-gradient-to-tr from-[#84A282]/30 via-[#B8CFB3]/30 to-[#F6E2E9]/40 dark:from-[#728E6D]/30 dark:to-[#E5CD82]/20 rounded-3xl blur-xl"></div>
+
           {/* Center Isometric Cube */}
           <div className="relative w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-[#84A282] via-[#728E6D] to-[#15370D] dark:from-[#235417] dark:via-[#1C4412] dark:to-[#15370D] rounded-3xl p-3 sm:p-4 flex flex-col items-center justify-center text-white border-2 border-[#B8CFB3] dark:border-[#E5CD82]/60 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/20 dark:bg-[#FFF2B4]/20 flex items-center justify-center mb-1.5 border border-white/30 dark:border-[#FFF2B4]/40">
               <BuildingLibraryIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#FFF2B4] dark:text-[#FFF2B4]" />
             </div>
             <span className="text-[11px] sm:text-xs font-black tracking-wide text-center text-white dark:text-[#FFF2B4]">
-              CAMPUS IQ
+              UNIMITRA
             </span>
             <span className="text-[9px] sm:text-[10px] text-[#F6E2E9] dark:text-[#E5CD82] font-semibold mt-0.5">
               Assam Universities RAG
