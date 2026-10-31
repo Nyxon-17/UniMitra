@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { UniversityHero3D } from '../../components/common/Graphic3D';
-import { CollegeBoyUniversityBackground } from '../../components/common/CollegeBoyUniversityBackground';
 import { 
   SearchIcon, 
   BuildingLibraryIcon, 
@@ -66,14 +65,10 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
   ];
 
   return (
-    <div className="bg-[#FFE9A9]/20 dark:bg-[#13005A] min-h-screen text-[#000000] dark:text-[#FFFFFF] transition-colors duration-200">
+    <div className="bg-transparent min-h-screen text-[#0F172A] dark:text-[#FAF8FF] transition-colors duration-200">
       
       {/* HERO SECTION */}
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-grid-pattern">
-        {/* Animated College Boy in Background Looking to their University */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none opacity-85 dark:opacity-45 z-0">
-          <CollegeBoyUniversityBackground className="w-full h-full" showOverlay={true} />
-        </div>
         {/* Soft Ambient Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-[#6D28D9]/20 via-[#E0D4FD]/25 to-[#DDD6FE]/40 dark:from-[#3B2868]/20 dark:via-[#150F2C] dark:to-[#C4B5FD]/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -431,9 +426,6 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
       {/* FINAL CALL TO ACTION */}
       <section className="relative overflow-hidden py-20 bg-gradient-to-br from-[#4C1D95] via-[#3B0764] to-[#0A0718] text-[#FAF8FF]">
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <CollegeBoyUniversityBackground className="w-full h-full" showOverlay={false} />
-        </div>
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 text-center space-y-6">
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#FAF8FF]">
             {currentLang === 'as' 
