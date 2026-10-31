@@ -9,25 +9,28 @@ import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { AuthModal } from './components/auth/AuthModal';
 
-// Student Dashboard Components & Sub-pages
+// Institutional University Assistance Dashboard Components & Pages
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { DashboardHome } from './pages/dashboard/DashboardHome';
 import { DashboardAiAssistant } from './pages/dashboard/DashboardAiAssistant';
-import { DashboardSyllabus } from './pages/dashboard/DashboardSyllabus';
-import { DashboardCompare } from './pages/dashboard/DashboardCompare';
+import { DashboardRegulations } from './pages/dashboard/DashboardRegulations';
+import { DashboardAdmissions } from './pages/dashboard/DashboardAdmissions';
+import { DashboardScholarships } from './pages/dashboard/DashboardScholarships';
+import { DashboardFacilities } from './pages/dashboard/DashboardFacilities';
+import { DashboardQueryHistory } from './pages/dashboard/DashboardQueryHistory';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 import { AdminConsole } from './pages/admin/AdminConsole';
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'faq' | 'about' | 'contact' | 'dashboard'
-  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'syllabus' | 'profile'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'how-it-works' | 'faq' | 'about' | 'contact' | 'dashboard' | 'admin'
+  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'regulations' | 'admissions' | 'scholarships' | 'facilities' | 'history' | 'profile'
   const [assistantPrefill, setAssistantPrefill] = useState('');
   
   const [lang, setLang] = useState('en'); // 'en' or 'as'
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
 
-  // Student Authentication State - Optional session (no lock on curriculums or dashboard)
+  // Dashboard Access Gating: Dashboard can access ONLY after login
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('unimitra_auth_logged_in') === 'true';
@@ -35,7 +38,7 @@ export function App() {
     return false;
   });
 
-  // Universal student profile - No single university specified or locked
+  // User Profile: Universal across universities, supporting Students, Faculty & Staff
   const [studentInfo, setStudentInfo] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('unimitra_student_info');
@@ -48,13 +51,14 @@ export function App() {
       }
     }
     return {
-      name: 'Student Scholar',
-      email: 'student@unimitra.edu',
-      course: 'Higher Education Curriculums',
-      semester: 'Semester 3'
+      name: 'Scholar Member',
+      email: 'member@university.ac.in',
+      role: 'Student',
+      department: 'Higher Education Studies'
     };
   });
   
+  // Theme state: Light theme (84A282, B8CFB3, FEFAF3, F6E2E9) & Dark theme (FFF2B4, E5CD82, 728E6D, 15370D)
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('unimitra_theme');
@@ -94,34 +98,40 @@ export function App() {
     setAuthModalOpen(true);
   };
 
-  // Login Success Handler: Activates optional session
+  // Login Success Handler: Gates access into University Assistance Dashboard
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
     localStorage.setItem('unimitra_auth_logged_in', 'true');
     
-    if (user?.name) {
+    if (user?.name || user?.email) {
       const updatedInfo = {
         ...studentInfo,
-        name: user.name,
+        name: user.name || studentInfo.name,
         email: user.email || studentInfo.email,
+        role: user.role || studentInfo.role
       };
       setStudentInfo(updatedInfo);
       localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
     }
 
+    // Direct into dashboard after login
     setCurrentPage('dashboard');
     setDashboardTab('overview');
   };
 
-  // Sign Out Handler: Revokes session and returns to home
+  // Sign Out Handler: Revokes session, clears dashboard lock, and returns to home
   const handleSignOut = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('unimitra_auth_logged_in');
     setCurrentPage('home');
   };
 
-  // Direct Navigation: Open to all pages with zero login gating
+  // Safe Navigation: Protects Dashboard; guests are prompted to log in
   const handleNavigate = (page) => {
+    if (page === 'dashboard' && !isLoggedIn) {
+      handleOpenAuth('login');
+      return;
+    }
     setCurrentPage(page);
   };
 
@@ -138,13 +148,19 @@ export function App() {
     localStorage.setItem('unimitra_student_info', JSON.stringify(newInfo));
   };
 
-  // Student Dashboard / Study Hub View - Accessible by ALL students without requiring login
+  // University Assistance Dashboard View - Accessible ONLY after authentication
   if (currentPage === 'dashboard') {
+    if (!isLoggedIn) {
+      // Safety guard: if session lost, revert to home & open sign-in
+      setCurrentPage('home');
+      handleOpenAuth('login');
+      return null;
+    }
+
     return (
       <DashboardLayout
         activeTab={dashboardTab}
         onSelectTab={setDashboardTab}
-        onExitDashboard={() => setCurrentPage('home')}
         onOpenAdmin={() => setCurrentPage('admin')}
         onSignOut={handleSignOut}
         currentLang={lang}
@@ -167,15 +183,32 @@ export function App() {
             studentInfo={studentInfo}
           />
         )}
-        {dashboardTab === 'syllabus' && (
-          <DashboardSyllabus
+        {dashboardTab === 'regulations' && (
+          <DashboardRegulations
             onNavigateTab={handleNavigateDashboardTab}
             currentLang={lang}
-            studentInfo={studentInfo}
           />
         )}
-        {dashboardTab === 'compare' && (
-          <DashboardCompare
+        {dashboardTab === 'admissions' && (
+          <DashboardAdmissions
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+          />
+        )}
+        {dashboardTab === 'scholarships' && (
+          <DashboardScholarships
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+          />
+        )}
+        {dashboardTab === 'facilities' && (
+          <DashboardFacilities
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+          />
+        )}
+        {dashboardTab === 'history' && (
+          <DashboardQueryHistory
             onNavigateTab={handleNavigateDashboardTab}
             currentLang={lang}
           />
@@ -195,7 +228,13 @@ export function App() {
   if (currentPage === 'admin') {
     return (
       <AdminConsole
-        onExit={() => setCurrentPage('home')}
+        onExit={() => {
+          if (isLoggedIn) {
+            setCurrentPage('dashboard');
+          } else {
+            setCurrentPage('home');
+          }
+        }}
         currentLang={lang}
         onToggleLang={toggleLanguage}
         isDark={theme === 'dark'}
@@ -206,7 +245,7 @@ export function App() {
 
   // Public Layout
   return (
-    <div className={`min-h-screen flex flex-col bg-[#FAFAFC] dark:bg-[#0B1320] text-[#073B4C] dark:text-slate-100 selection:bg-[#FFD166] selection:text-[#073B4C] transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`min-h-screen flex flex-col bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] selection:bg-[#84A282] selection:text-white transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Top Public Navigation */}
       <Navbar 
         activePage={currentPage} 
@@ -224,33 +263,60 @@ export function App() {
       {/* Main Dynamic Viewport */}
       <main className="flex-1">
         {currentPage === 'home' && (
-          <Home onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Home 
+            onNavigate={handleNavigate} 
+            onOpenAuth={handleOpenAuth} 
+            currentLang={lang} 
+            isLoggedIn={isLoggedIn}
+          />
         )}
         {currentPage === 'features' && (
-          <Features onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Features 
+            onNavigate={handleNavigate} 
+            onOpenAuth={handleOpenAuth} 
+            currentLang={lang} 
+            isLoggedIn={isLoggedIn}
+          />
         )}
         {currentPage === 'how-it-works' && (
-          <HowItWorks onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <HowItWorks 
+            onNavigate={handleNavigate} 
+            onOpenAuth={handleOpenAuth} 
+            currentLang={lang} 
+            isLoggedIn={isLoggedIn}
+          />
         )}
         {currentPage === 'faq' && (
-          <Faq onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Faq 
+            onNavigate={handleNavigate} 
+            onOpenAuth={handleOpenAuth} 
+            currentLang={lang} 
+            isLoggedIn={isLoggedIn}
+          />
         )}
         {currentPage === 'about' && (
-          <About onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <About 
+            onNavigate={handleNavigate} 
+            onOpenAuth={handleOpenAuth} 
+            currentLang={lang} 
+            isLoggedIn={isLoggedIn}
+          />
         )}
         {currentPage === 'contact' && (
-          <Contact onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Contact 
+            currentLang={lang} 
+          />
         )}
       </main>
 
-      {/* Academic Portal Footer */}
+      {/* Institutional Academic Portal Footer */}
       <Footer 
         onNavigate={handleNavigate} 
         onOpenAuth={handleOpenAuth}
         currentLang={lang} 
       />
 
-      {/* Optional Floating Login & Registration Modal for Students */}
+      {/* Floating Login & Registration Modal */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

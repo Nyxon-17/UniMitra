@@ -1,199 +1,211 @@
 import { 
-  AcademicCapIcon, 
+  BuildingLibraryIcon, 
   BrainIcon, 
   ShieldCheckIcon, 
   LanguageIcon, 
-  BookOpenIcon, 
-  DocumentTextIcon,
+  DocumentTextIcon, 
+  ClipboardDocumentCheckIcon, 
+  BanknotesIcon, 
+  BuildingOfficeIcon, 
+  IdentificationIcon,
   CheckCircleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  UserGroupIcon,
+  ClockIcon
 } from '../../components/common/Icons';
 
-export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
+export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
   const mainFeatures = [
     {
-      icon: BookOpenIcon,
-      title: 'Instant Syllabus Navigator',
-      asTitle: 'তৎক্ষণাত পাঠ্যক্ৰম অনুসন্ধান',
-      desc: 'Browse department-wise syllabuses, course credits, recommended textbooks, and lab practical lists without digging through broken PDF links.',
-      color: '#118AB2',
-      bgLight: '#E7F3F7',
-    },
-    {
-      icon: ShieldCheckIcon,
-      title: 'Page-Verified Citations',
-      asTitle: 'পোনপটীয়া পৃষ্ঠা প্ৰমাণীকৰণ',
-      desc: 'Every answer references the exact official university document and page number. Zero fabricated or assumed guidelines.',
-      color: '#06D6A0',
-      bgLight: '#E6FBF5',
-    },
-    {
       icon: LanguageIcon,
-      title: 'Bilingual Assamese & English',
-      asTitle: 'অসমীয়া আৰু ইংৰাজী দুয়োটা ভাষাত',
-      desc: 'Type your questions in traditional Assamese script or phonetic Romanized spelling. The assistant reads and responds accurately in both.',
-      color: '#FF7F50',
-      bgLight: '#FFF0EB',
+      title: 'Interactive Bilingual Chatbot',
+      asTitle: 'দ্বিভাষিক ইন্টাৰেক্টিভ AI চেটবট',
+      desc: 'Ask complex institutional and academic questions in Assamese script, Romanized Assamese, or English. Understands regional academic terminology seamlessly.',
+      badge: 'Assamese + English',
     },
     {
-      icon: AcademicCapIcon,
-      title: 'Multi-University Segregation',
-      asTitle: 'পৃথক বিশ্ববিদ্যালয় জ্ঞানভাণ্ডাৰ',
-      desc: 'Gauhati University syllabus is strictly isolated from Dibrugarh University or Tezpur University, guaranteeing university-specific accuracy.',
-      color: '#FFD166',
-      bgLight: '#FFF9E6',
+      icon: BuildingLibraryIcon,
+      title: 'University Regulations & Ordinances',
+      asTitle: 'বিশ্ববিদ্যালয় নিয়মাৱলী আৰু অধিসূচনা',
+      desc: 'Instant clarity on academic council policies, university statutes, codes of conduct, attendance clauses, and official gazettes.',
+      badge: 'Institutional Governance',
+    },
+    {
+      icon: ClipboardDocumentCheckIcon,
+      title: 'Examinations & Evaluation Rules',
+      asTitle: 'পৰীক্ষাৰ নিয়ম আৰু ফলাফল মূল্যায়ন',
+      desc: 'Verified answers on end-semester examinations, in-semester sessionals, passing criteria, grade point calculations, and re-evaluation policies.',
+      badge: 'Academic Verification',
+    },
+    {
+      icon: IdentificationIcon,
+      title: 'Academic Programs & Degrees',
+      asTitle: 'শৈক্ষিক পাঠ্যক্ৰম আৰু ডিগ্ৰী',
+      desc: 'Explore undergraduate, postgraduate, diploma, and doctoral program structures, eligibility criteria, and academic credit weightage.',
+      badge: 'Programs & Eligibility',
+    },
+    {
+      icon: BanknotesIcon,
+      title: 'Scholarships & Financial Grants',
+      asTitle: 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান',
+      desc: 'Centralized information on Assam Directorate of Higher Education scholarships, Ishan Uday, merit awards, eligibility calculators, and deadlines.',
+      badge: 'Student Support',
     },
     {
       icon: DocumentTextIcon,
-      title: 'Official Question Paper Vault',
-      asTitle: 'পূৰ্ববৰ্তী প্ৰশ্নকাকত আৰু নম্বৰ বিভাজন',
-      desc: 'Inspect previous examination papers, module-wise weightage, and evaluation patterns across undergraduate and postgraduate degrees.',
-      color: '#118AB2',
-      bgLight: '#E7F3F7',
+      title: 'Admission Procedures & Cut-Offs',
+      asTitle: 'ভৰ্তি প্ৰক্ৰিয়া আৰু অধিসূচনা',
+      desc: 'Step-by-step guidance on admission forms, entrance exams, reservation quotas, fee breakdowns, and required document checklists.',
+      badge: 'Admission Desk',
     },
     {
-      icon: BrainIcon,
-      title: 'Smart Examination Blueprint',
-      asTitle: 'পৰীক্ষাৰ নিয়ম আৰু ফলাফল মূল্যায়ন',
-      desc: 'Instant clarity on in-semester internal assessments, end-semester passing marks, back paper guidelines, and degree credit structures.',
-      color: '#06D6A0',
-      bgLight: '#E6FBF5',
+      icon: BuildingOfficeIcon,
+      title: 'Campus Facilities & Services',
+      asTitle: 'চৌহদৰ সুবিধা আৰু ছাত্ৰ কল্যাণ',
+      desc: 'Clear guidance on hostel allotment rules, central libraries, health centers, student grievance redressal, and laboratory protocols.',
+      badge: 'Campus Living',
+    },
+    {
+      icon: ShieldCheckIcon,
+      title: 'Grounded Answers with Page Citations',
+      asTitle: 'পোনপটীয়া পৃষ্ঠা প্ৰমাণীকৰণ',
+      desc: 'Every AI-generated response cites the official university circular, document title, and page number with zero guessing or fake citations.',
+      badge: 'Zero Hallucinations',
+    },
+    {
+      icon: UserGroupIcon,
+      title: 'Multi-Role Institutional Access',
+      asTitle: 'সকলো শৈক্ষিক সদস্যৰ বাবে উপযোগী',
+      desc: 'Tailored interfaces and relevant query resolution for students, faculty members, and administrative staff across institutions.',
+      badge: 'Students, Faculty & Staff',
     }
   ];
 
   const workflowSteps = [
     {
       num: '01',
-      title: 'Choose Your University & Degree',
-      asTitle: 'বিশ্ববিদ্যালয় আৰু পাঠ্যক্ৰম বাছক',
-      desc: 'Select your university (GU, DU, TU, Cotton, etc.), department, and current semester.'
+      title: 'Sign In to University Portal',
+      asTitle: 'প’ৰ্টেলত প্ৰৱেশ কৰক',
+      desc: 'Access the centralized university portal with your student, faculty, or staff profile.'
     },
     {
       num: '02',
       title: 'Ask in Assamese or English',
       asTitle: 'আপোনাৰ প্ৰশ্ন সোধক',
-      desc: 'Ask about any module, subject passing marks, prescribed authors, or assignment topics.'
+      desc: 'Query any regulation, exam ordinance, admission criterion, scholarship, or facility in natural language.'
     },
     {
       num: '03',
-      title: 'Receive Page-Cited Answers',
+      title: 'Receive Grounded Institutional Answers',
       asTitle: 'সঠিক পৃষ্ঠা নম্বৰসহ উত্তৰ লাভ কৰক',
-      desc: 'Get an immediate, verified explanation along with the original university PDF page reference.'
+      desc: 'Get immediate, verified explanations cited directly from official university circulars and gazettes.'
     }
   ];
 
+  const handlePortalAccess = () => {
+    if (isLoggedIn) {
+      if (onNavigate) onNavigate('dashboard');
+    } else {
+      if (onOpenAuth) onOpenAuth('login');
+    }
+  };
+
   return (
-    <div className="bg-[#FAFAFC] dark:bg-[#0B1320] min-h-screen text-[#073B4C] dark:text-slate-100 py-16 transition-colors duration-200">
+    <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#073B4C] dark:text-white">
+          <div className="inline-block px-3.5 py-1 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] text-xs font-black text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+            CampusIQ Capabilities
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
             {currentLang === 'as' 
-              ? 'UniMitra-ৰ শৈক্ষিক সুবিধাসমূহ' 
-              : 'Everything You Need for Exam & Study Success'}
+              ? 'UniMitra-ৰ শৈক্ষিক আৰু প্ৰশাসনিক সেৱাসমূহ' 
+              : 'Institutional Assistance Built for University Life'}
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
             {currentLang === 'as'
-              ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ অফিচিয়েল পাঠ্যক্ৰম, নিয়ম আৰু প্ৰশ্নকাকত সহজে বুজি পাবলৈ আধুনিক আৰু বিশ্বস্ত সঁজুলিসমূহ।'
-              : 'Explore the specialized capabilities engineered to help university scholars across Assam learn faster and prepare confidently.'}
+              ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ অফিচিয়েল নিয়মাৱলী, পৰীক্ষাৰ নিয়ম, ভৰ্তি আৰু ছাত্ৰবৃত্তি সহজে বুজি পাবলৈ আধুনিক আৰু বিশ্বস্ত সঁজুলিসমূহ।'
+              : 'Explore the full spectrum of capabilities engineered to help students, faculty members, and administrative staff navigate higher education with complete clarity.'}
           </p>
         </div>
 
-        {/* 6 Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-          {mainFeatures.map((feat, i) => {
+        {/* 9 Feature Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          {mainFeatures.map((feat, index) => {
             const Icon = feat.icon;
             return (
               <div 
-                key={i}
-                className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-7 shadow-sm hover:shadow-elevated-card transition-all card-3d flex flex-col justify-between"
+                key={index}
+                className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm hover:border-[#84A282] transition-all card-3d flex flex-col justify-between"
               >
                 <div>
-                  <div 
-                    className="w-13 h-13 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-slate-200 dark:border-slate-700"
-                    style={{ backgroundColor: feat.bgLight }}
-                  >
-                    <Icon className="w-7 h-7" style={{ color: feat.color }} />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-[#B8CFB3]/30 dark:bg-[#15370D] border border-[#84A282]/40 flex items-center justify-center text-[#84A282] dark:text-[#FFF2B4]">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                      {feat.badge}
+                    </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                  <h3 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4] mb-2">
                     {currentLang === 'as' ? feat.asTitle : feat.title}
                   </h3>
-
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold">
-                  <span className="text-[#06D6A0] flex items-center space-x-1.5">
-                    <CheckCircleIcon className="w-4 h-4" />
-                    <span>Official University Data</span>
-                  </span>
+                <div className="pt-4 mt-4 border-t border-[#B8CFB3]/50 dark:border-[#728E6D] flex items-center justify-between text-xs">
+                  <span className="font-bold text-[#84A282] dark:text-[#FFF2B4]">Verified Grounded Access</span>
+                  <span className="text-[#84A282]">➔</span>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* 3-Step Simple Workflow */}
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-8 sm:p-12 mb-20 shadow-sm">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-2xl sm:text-4xl font-black text-[#073B4C] dark:text-white">
-              {currentLang === 'as' ? 'UniMitra ব্যৱহাৰ কৰাৰ তিনিটা সহজ স্তৰ' : 'Three Simple Steps to Instant Answers'}
+        {/* 3-Step Workflow Section */}
+        <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-8 sm:p-12 mb-20 shadow-elevated-sage dark:shadow-elevated-gold">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+              {currentLang === 'as' ? 'কাৰ্যপ্ৰণালী – তিনিটা সহজ পদক্ষেপ' : 'How Students & Staff Use UniMitra'}
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-              No complicated setups. Search directly as a guest or sign in to save bookmarks.
+            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] mt-2">
+              Fast, transparent, and accurate assistance in seconds.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {workflowSteps.map((step, idx) => (
-              <div 
-                key={idx} 
-                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 relative space-y-3"
-              >
-                <span className="text-3xl font-black text-[#118AB2] dark:text-[#FFD166] block">
-                  {step.num}
+            {workflowSteps.map((s) => (
+              <div key={s.num} className="relative bg-[#FEFAF3] dark:bg-[#15370D] p-6 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] space-y-3">
+                <span className="text-3xl font-black text-[#84A282] dark:text-[#FFF2B4]">
+                  {s.num}
                 </span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {currentLang === 'as' ? step.asTitle : step.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {step.desc}
+                <h4 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
+                  {currentLang === 'as' ? s.asTitle : s.title}
+                </h4>
+                <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                  {s.desc}
                 </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Feature Comparison Banner */}
-        <div className="bg-gradient-to-r from-[#118AB2] to-[#073B4C] rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
-          <div className="space-y-3 text-center md:text-left max-w-xl">
-            <h3 className="text-2xl sm:text-3xl font-black">Ready to explore your university syllabus?</h3>
-            <p className="text-sm text-slate-200 leading-relaxed">
-              Create a free student profile to bookmark courses, save exam questions, and download verified syllabus PDFs.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <button
-              onClick={onOpenAuth}
-              className="px-7 py-3.5 rounded-xl font-bold text-slate-900 bg-[#FFD166] hover:bg-[#F2C353] transition-all cursor-pointer shadow-md text-sm text-center"
-            >
-              Sign In Free ➔
-            </button>
-            <button
-              onClick={() => onNavigate && onNavigate('dashboard')}
-              className="px-7 py-3.5 rounded-xl font-bold text-white bg-transparent border-2 border-white/50 hover:border-white transition-all cursor-pointer text-sm text-center"
-            >
-              Open Curriculums Hub
-            </button>
-          </div>
+        {/* Action Callout */}
+        <div className="text-center">
+          <button
+            onClick={handlePortalAccess}
+            className="px-8 py-3.5 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-sm"
+          >
+            Enter University Assistance Portal ➔
+          </button>
         </div>
 
       </div>
     </div>
   );
 };
-

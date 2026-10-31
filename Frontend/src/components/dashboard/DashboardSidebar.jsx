@@ -1,9 +1,12 @@
 import { 
-  AcademicCapIcon, 
+  BuildingLibraryIcon, 
   HomeIcon, 
   ChatBubbleIcon, 
-  BookOpenIcon, 
-  ScaleIcon,
+  ClipboardDocumentCheckIcon, 
+  BanknotesIcon, 
+  BuildingOfficeIcon, 
+  IdentificationIcon, 
+  ClockIcon, 
   UserIcon, 
   ArrowRightOnRectangleIcon, 
   XMarkIcon 
@@ -12,19 +15,22 @@ import {
 export const DashboardSidebar = ({ 
   activeTab = 'overview', 
   onSelectTab, 
-  onExitDashboard, 
   onOpenAdmin,
   onSignOut,
   isOpen = false,
   onCloseMobile,
-  currentLang = 'en'
+  currentLang = 'en',
+  studentInfo = { role: 'Student' }
 }) => {
   const menuItems = [
-    { id: 'overview', label: 'Study Overview', asLabel: 'অধ্যয়ন সাৰাংশ', icon: HomeIcon },
-    { id: 'assistant', label: 'Ask UniMitra AI', asLabel: 'সহায়কৰ লগত বাৰ্তালাপ', icon: ChatBubbleIcon },
-    { id: 'syllabus', label: 'Syllabus Explorer', asLabel: 'পাঠ্যক্ৰম অন্বেষণ', icon: BookOpenIcon },
-    { id: 'compare', label: 'Curriculum Compare', asLabel: 'পাঠ্যক্ৰম তুলনা', icon: ScaleIcon },
-    { id: 'profile', label: 'Student Profile', asLabel: 'ছাত্ৰ প্ৰফাইল', icon: UserIcon },
+    { id: 'overview', label: 'Institutional Overview', asLabel: 'প’ৰ্টেল সাৰাংশ', icon: HomeIcon },
+    { id: 'assistant', label: 'Ask UniMitra AI', asLabel: 'দ্বিভাষিক AI সহায়ক', icon: ChatBubbleIcon },
+    { id: 'regulations', label: 'Regulations & Ordinances', asLabel: 'নিয়মাৱলী আৰু অধিসূচনা', icon: BuildingLibraryIcon },
+    { id: 'admissions', label: 'Programs & Admissions', asLabel: 'পাঠ্যক্ৰম আৰু ভৰ্তি', icon: IdentificationIcon },
+    { id: 'scholarships', label: 'Scholarships & Grants', asLabel: 'ছাত্ৰবৃত্তি আৰু অনুদান', icon: BanknotesIcon },
+    { id: 'facilities', label: 'Campus Facilities & Hostels', asLabel: 'চৌহদৰ সুবিধা আৰু হোষ্টেল', icon: BuildingOfficeIcon },
+    { id: 'history', label: 'My Query History', asLabel: 'প্ৰশ্নোত্তৰ ইতিহাস', icon: ClockIcon },
+    { id: 'profile', label: 'Institutional Profile', asLabel: 'সদস্য প্ৰফাইল', icon: UserIcon },
   ];
 
   return (
@@ -39,24 +45,24 @@ export const DashboardSidebar = ({
 
       {/* Sidebar Container */}
       <aside 
-        className={`fixed top-0 bottom-0 left-0 z-50 w-68 bg-white dark:bg-[#111C2E] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#FEFAF3] dark:bg-[#1C4412] border-r border-[#B8CFB3] dark:border-[#728E6D] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Upper Sidebar Section */}
-        <div>
+        <div className="overflow-y-auto">
           {/* Logo Bar */}
-          <div className="flex items-center justify-between h-20 px-6 border-b border-slate-100 dark:border-slate-800/80">
-            <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => onSelectTab('overview')}>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#118AB2] to-[#06D6A0] flex items-center justify-center text-white shadow-md border border-[#118AB2]/30">
-                <AcademicCapIcon className="w-5 h-5 text-[#FFD166]" />
+          <div className="flex items-center justify-between h-20 px-6 border-b border-[#B8CFB3] dark:border-[#728E6D]">
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onSelectTab('overview')}>
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#84A282] to-[#B8CFB3] flex items-center justify-center text-white shadow-md border-2 border-[#84A282]/40">
+                <BuildingLibraryIcon className="w-6 h-6 text-[#FEFAF3]" />
               </div>
               <div>
-                <span className="text-xl font-black text-[#073B4C] dark:text-white">
-                  Uni<span className="text-[#FF7F50]">Mitra</span>
+                <span className="text-xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+                  Uni<span className="text-[#84A282]">Mitra</span>
                 </span>
-                <span className="text-[10px] font-bold text-[#06D6A0] block -mt-0.5 uppercase tracking-wider">
-                  Student Portal
+                <span className="text-[10px] font-black text-[#84A282] dark:text-[#E5CD82] block -mt-0.5 uppercase tracking-wider">
+                  CampusIQ Portal
                 </span>
               </div>
             </div>
@@ -64,7 +70,7 @@ export const DashboardSidebar = ({
             {/* Mobile Close Button */}
             <button 
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] cursor-pointer"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -82,13 +88,13 @@ export const DashboardSidebar = ({
                     onSelectTab(item.id);
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#118AB2] text-white shadow-elevated-cerulean'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-[#84A282] text-white shadow-elevated-sage'
+                      : 'text-[#15370D] dark:text-[#E5CD82] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#15370D] hover:text-[#15370D] dark:hover:text-[#FFF2B4]'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FFD166]' : 'text-slate-400 dark:text-slate-400'}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FFF2B4]' : 'text-[#84A282] dark:text-[#E5CD82]'}`} />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>
                 </button>
               );
@@ -97,43 +103,30 @@ export const DashboardSidebar = ({
         </div>
 
         {/* Lower Sidebar Actions */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+        <div className="p-4 border-t border-[#B8CFB3] dark:border-[#728E6D] space-y-2">
           {/* Admin Ingestion Console Access */}
           <button
             onClick={() => {
               if (onOpenAdmin) onOpenAdmin();
               if (onCloseMobile) onCloseMobile();
             }}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#FF7F50] bg-[#FF7F50]/10 hover:bg-[#FF7F50] hover:text-white transition-all cursor-pointer border border-[#FF7F50]/30"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#15370D] hover:bg-[#F6E2E9]/80 dark:hover:bg-[#235417] transition-all cursor-pointer border border-[#B8CFB3] dark:border-[#728E6D]"
           >
             <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono font-black">RAG Ingest ⚙️</span>
+            <span className="text-[10px] uppercase font-mono font-black text-[#84A282] dark:text-[#FFF2B4]">Ingest ⚙️</span>
           </button>
 
-          {/* Back to Public Site */}
-          <button
-            onClick={onExitDashboard}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            <span>{currentLang === 'as' ? 'মূল ৱেবছাইটলৈ যাওক' : 'Exit to Public Site'}</span>
-            <span className="text-xs text-[#118AB2] dark:text-[#FFD166]">➔</span>
-          </button>
-
-          {/* Sign Out Action */}
+          {/* Secure Sign Out Action */}
           <button
             onClick={() => {
-              if (window.confirm("Are you sure you want to sign out?")) {
-                if (onSignOut) {
-                  onSignOut();
-                } else {
-                  onExitDashboard();
-                }
+              if (window.confirm("Are you sure you want to sign out from the university assistant?")) {
+                if (onSignOut) onSignOut();
               }
             }}
-            className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+            className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-black text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/40 transition-colors cursor-pointer border border-red-200 dark:border-red-900/50"
           >
             <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0" />
-            <span>{currentLang === 'as' ? 'লগ-আউট' : 'Sign Out'}</span>
+            <span>{currentLang === 'as' ? 'প’ৰ্টেলৰ পৰা লগ-আউট' : 'Sign Out of Portal'}</span>
           </button>
         </div>
       </aside>

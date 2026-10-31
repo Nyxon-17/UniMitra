@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   XMarkIcon, 
-  AcademicCapIcon, 
+  BuildingLibraryIcon, 
   CheckCircleIcon, 
   ArrowLeftIcon,
   EnvelopeIcon,
-  LockClosedIcon 
+  LockClosedIcon,
+  UserGroupIcon
 } from '../common/Icons';
 
 export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang = 'en', onSuccessLogin }) => {
@@ -18,7 +19,10 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
   // Forgot password steps: 'email' | 'otp'
   const [forgotStep, setForgotStep] = useState('email');
 
-  // Form states - Strictly Email (no Roll No)
+  // Selected institutional role
+  const [userRole, setUserRole] = useState('Student');
+
+  // Form states
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
@@ -132,15 +136,19 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
       setAuthStatus({
         loading: false,
         success: true,
-        message: 'Login successful! Welcome to UniMitra.',
+        message: 'Authentication successful! Loading University Assistance Portal...',
         error: null,
       });
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({ email: loginData.email, name: loginData.email.split('@')[0] });
+          onSuccessLogin({ 
+            email: loginData.email, 
+            name: loginData.email.split('@')[0],
+            role: userRole 
+          });
         }
-      }, 1100);
+      }, 900);
     }, 600);
   };
 
@@ -167,12 +175,12 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
     }, 500);
   };
 
-  // 3. Registration Step 2 Submit (Verifies Email OTP)
+  // 3. Registration Step 2 (Verify OTP)
   const handleVerifyRegisterOtp = (e) => {
     e.preventDefault();
     const fullCode = otp.join('');
     if (fullCode.length < 6) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits of the code.' });
+      setAuthStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits.' });
       return;
     }
 
@@ -182,15 +190,19 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
       setAuthStatus({
         loading: false,
         success: true,
-        message: 'Email verified! Account created successfully.',
+        message: 'Account verified! Signing you into the University Portal...',
         error: null,
       });
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({ email: registerData.email, name: registerData.fullName || registerData.email.split('@')[0] });
+          onSuccessLogin({ 
+            name: registerData.fullName, 
+            email: registerData.email,
+            role: userRole
+          });
         }
-      }, 1200);
+      }, 1000);
     }, 700);
   };
 
@@ -243,7 +255,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
         setMode('login');
         setForgotStep('email');
         setAuthStatus({ loading: false, success: false, message: '', error: null });
-      }, 1300);
+      }, 1200);
     }, 700);
   };
 
@@ -255,48 +267,48 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
         onClick={onClose}
       ></div>
 
-      {/* Compact, Responsive Modal Centered Vertically and Horizontally with Margin */}
-      <div className="relative w-full max-w-[420px] bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
+      {/* Modal Container */}
+      <div className="relative w-full max-w-[440px] bg-[#FEFAF3] dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
         
         {/* Compact Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50 dark:bg-[#0E1726] border-b border-slate-200 dark:border-slate-800 shrink-0">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#118AB2] to-[#06D6A0] flex items-center justify-center text-white shadow-xs">
-              <AcademicCapIcon className="w-5 h-5 text-[#FFD166]" />
+        <div className="flex items-center justify-between px-6 py-4 bg-[#B8CFB3]/25 dark:bg-[#15370D] border-b border-[#B8CFB3] dark:border-[#728E6D] shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#84A282] to-[#B8CFB3] flex items-center justify-center text-white shadow-xs">
+              <BuildingLibraryIcon className="w-5 h-5 text-[#FEFAF3]" />
             </div>
             <div>
-              <span className="text-lg font-black text-[#073B4C] dark:text-white leading-tight">
-                Uni<span className="text-[#FF7F50]">Mitra</span>
+              <span className="text-lg font-black text-[#15370D] dark:text-[#FFF2B4] leading-tight">
+                Uni<span className="text-[#84A282]">Mitra</span>
               </span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-semibold leading-none">
-                {mode === 'login' ? 'Student Sign In' : mode === 'register' ? 'New Account' : 'Password Recovery'}
+              <span className="text-[11px] text-[#4F6D4B] dark:text-[#E5CD82] block font-semibold leading-none">
+                {mode === 'login' ? 'University Portal Sign In' : mode === 'register' ? 'New Institutional Account' : 'Password Recovery'}
               </span>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#15370D] transition-colors cursor-pointer"
             aria-label="Close modal"
           >
-            <XMarkIcon className="w-4 h-4" />
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher: Only displayed in Login / Register modes */}
         {mode !== 'forgot' && (
-          <div className="px-5 pt-3.5 shrink-0">
-            <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs">
+          <div className="px-6 pt-4 shrink-0 space-y-3">
+            <div className="flex bg-[#B8CFB3]/30 dark:bg-[#15370D] p-1 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] text-xs">
               <button
                 onClick={() => {
                   setMode('login');
                   setRegStep('form');
                   setAuthStatus({ loading: false, success: false, message: '', error: null });
                 }}
-                className={`flex-1 py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
+                className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer ${
                   mode === 'login'
-                    ? 'bg-white dark:bg-[#162235] text-[#118AB2] dark:text-[#FFD166] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-[#84A282] text-white shadow-xs'
+                    : 'text-[#15370D] dark:text-[#E5CD82] hover:text-[#15370D] dark:hover:text-[#FFF2B4]'
                 }`}
               >
                 {currentLang === 'as' ? 'লগ-ইন (Sign In)' : 'Sign In'}
@@ -308,88 +320,82 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                   setRegStep('form');
                   setAuthStatus({ loading: false, success: false, message: '', error: null });
                 }}
-                className={`flex-1 py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
+                className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer ${
                   mode === 'register'
-                    ? 'bg-white dark:bg-[#162235] text-[#118AB2] dark:text-[#FFD166] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-[#84A282] text-white shadow-xs'
+                    : 'text-[#15370D] dark:text-[#E5CD82] hover:text-[#15370D] dark:hover:text-[#FFF2B4]'
                 }`}
               >
                 {currentLang === 'as' ? 'পঞ্জীয়ন (Register)' : 'Register'}
               </button>
             </div>
+
+            {/* Institutional Role Selector */}
+            <div className="flex items-center justify-between text-[11px] font-bold text-[#4F6D4B] dark:text-[#E5CD82]">
+              <span className="flex items-center space-x-1">
+                <UserGroupIcon className="w-3.5 h-3.5 text-[#84A282]" />
+                <span>Institutional Role:</span>
+              </span>
+              <div className="flex items-center space-x-1">
+                {['Student', 'Faculty Member', 'Staff'].map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => setUserRole(role)}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-black cursor-pointer transition-all ${
+                      userRole === role
+                        ? 'bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#E5CD82]/40'
+                        : 'text-[#4F6D4B] dark:text-[#E5CD82] hover:bg-[#B8CFB3]/20'
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Scrollable Form Body with Clean Compact Spacing */}
-        <div className="p-5 overflow-y-auto space-y-4">
+        {/* Scrollable Form Body */}
+        <div className="p-6 overflow-y-auto space-y-4">
           
           {/* Success Banner */}
           {authStatus.success && (
-            <div className="p-3 rounded-xl bg-[#E6FBF5] dark:bg-slate-800 border border-[#06D6A0]/40 text-center space-y-0.5">
-              <div className="flex items-center justify-center space-x-1.5 text-[#06D6A0] font-bold text-xs sm:text-sm">
-                <CheckCircleIcon className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-2xl bg-[#B8CFB3]/40 dark:bg-[#15370D] border-2 border-[#84A282] text-center space-y-0.5">
+              <div className="flex items-center justify-center space-x-1.5 text-[#15370D] dark:text-[#FFF2B4] font-black text-xs sm:text-sm">
+                <CheckCircleIcon className="w-4 h-4 text-[#84A282] shrink-0" />
                 <span>{authStatus.message}</span>
               </div>
             </div>
           )}
 
-          {/* Info Banner */}
-          {authStatus.message && !authStatus.success && (
-            <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-700 dark:text-blue-300">
-              {authStatus.message}
-            </div>
-          )}
-
           {/* Error Banner */}
           {authStatus.error && (
-            <div className="p-2.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-xs text-red-600 dark:text-red-400 font-medium">
+            <div className="p-2.5 rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-300 dark:border-red-900 text-xs text-red-700 dark:text-red-300 font-bold">
               {authStatus.error}
             </div>
           )}
 
           {/* ========================================================= */}
-          {/* 1. STUDENT LOGIN VIEW (Compact, Email & Password only)   */}
+          {/* 1. LOGIN VIEW                                             */}
           {/* ========================================================= */}
           {mode === 'login' && (
             <div className="space-y-3.5">
-              
-              {/* Google Sign In Quick Button */}
-              <button
-                type="button"
-                onClick={() => alert("Google OAuth 2.0 login will connect via backend.")}
-                className="w-full flex items-center justify-center space-x-2.5 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-                <span>Continue with Google</span>
-              </button>
-
-              <div className="relative flex items-center justify-center">
-                <div className="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                <span className="bg-white dark:bg-[#111C2E] px-3 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                  or email
-                </span>
-              </div>
-
               <form onSubmit={handleLoginSubmit} className="space-y-3">
                 {/* Email Input */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Email Address <span className="text-[#FF7F50]">*</span>
+                  <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                    Institutional / Personal Email <span className="text-[#84A282]">*</span>
                   </label>
                   <div className="relative flex items-center">
-                    <EnvelopeIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                    <EnvelopeIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                     <input
                       type="email"
                       required
-                      placeholder="student@example.com"
+                      placeholder="user@university.ac.in"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282] transition-all"
                     />
                   </div>
                 </div>
@@ -397,8 +403,8 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                 {/* Password Input */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Password <span className="text-[#FF7F50]">*</span>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4]">
+                      Password <span className="text-[#84A282]">*</span>
                     </label>
                     <button
                       type="button"
@@ -407,35 +413,35 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                         setForgotStep('email');
                         setAuthStatus({ loading: false, success: false, message: '', error: null });
                       }}
-                      className="text-[11px] text-[#118AB2] dark:text-[#FFD166] font-bold hover:underline cursor-pointer"
+                      className="text-[11px] text-[#84A282] dark:text-[#E5CD82] font-black hover:underline cursor-pointer"
                     >
                       Forgot?
                     </button>
                   </div>
                   <div className="relative flex items-center">
-                    <LockClosedIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                    <LockClosedIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                     <input
                       type="password"
                       required
                       placeholder="••••••••"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282] transition-all"
                     />
                   </div>
                 </div>
 
-                {/* Remember Me */}
+                {/* Remember Session */}
                 <div className="flex items-center pt-0.5">
                   <input
-                    id="compact-remember"
+                    id="remember-session"
                     type="checkbox"
                     checked={loginData.rememberMe}
                     onChange={(e) => setLoginData({ ...loginData, rememberMe: e.target.checked })}
-                    className="w-3.5 h-3.5 text-[#118AB2] rounded border-slate-300 focus:ring-0 cursor-pointer"
+                    className="w-4 h-4 text-[#84A282] rounded border-[#B8CFB3] cursor-pointer"
                   />
-                  <label htmlFor="compact-remember" className="ml-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
-                    Remember session
+                  <label htmlFor="remember-session" className="ml-2 text-xs text-[#4F6D4B] dark:text-[#E5CD82] cursor-pointer font-semibold">
+                    Remember active university session
                   </label>
                 </div>
 
@@ -443,20 +449,20 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                 <button
                   type="submit"
                   disabled={authStatus.loading}
-                  className="w-full py-2.5 rounded-xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm disabled:opacity-50 mt-1"
+                  className="w-full py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm disabled:opacity-50 mt-1"
                 >
-                  {authStatus.loading ? 'Signing in...' : 'Sign In as Student'}
+                  {authStatus.loading ? 'Signing in...' : `Enter Portal as ${userRole}`}
                 </button>
 
-                <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-1">
-                  Don’t have an account?{' '}
+                <div className="text-center text-xs text-[#4F6D4B] dark:text-[#E5CD82] pt-1">
+                  Need a new account?{' '}
                   <button
                     type="button"
                     onClick={() => {
                       setMode('register');
                       setRegStep('form');
                     }}
-                    className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
+                    className="font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer"
                   >
                     Register Free
                   </button>
@@ -466,149 +472,118 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
           )}
 
           {/* ========================================================= */}
-          {/* 2. REGISTRATION FLOW (Compact, Email OTP Verification)    */}
+          {/* 2. REGISTRATION VIEW                                      */}
           {/* ========================================================= */}
           {mode === 'register' && (
             <div>
               {regStep === 'form' ? (
-                <div className="space-y-3.5">
-                  {/* Google Quick Sign Up */}
-                  <button
-                    type="button"
-                    onClick={() => alert("Google OAuth registration will be initialized.")}
-                    className="w-full flex items-center justify-center space-x-2.5 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs"
-                  >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                    </svg>
-                    <span>Sign Up with Google</span>
-                  </button>
-
-                  <div className="relative flex items-center justify-center">
-                    <div className="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                    <span className="bg-white dark:bg-[#111C2E] px-3 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                      or student email
-                    </span>
+                <form onSubmit={handleRegisterFormSubmit} className="space-y-3">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Full Name <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Abhilash Sharma"
+                      value={registerData.fullName}
+                      onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
                   </div>
 
-                  <form onSubmit={handleRegisterFormSubmit} className="space-y-3">
-                    {/* Full Name */}
+                  {/* Email */}
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Email Address (6-digit code sent here) <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@university.ac.in"
+                      value={registerData.email}
+                      onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
+                  </div>
+
+                  {/* Password & Confirm */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Full Name <span className="text-[#FF7F50]">*</span>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Password <span className="text-[#84A282]">*</span>
                       </label>
                       <input
-                        type="text"
+                        type="password"
                         required
-                        placeholder="e.g. Priyanku Sarma"
-                        value={registerData.fullName}
-                        onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                        placeholder="Min 6 chars"
+                        value={registerData.password}
+                        onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                        className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
-
-                    {/* Email */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Email Address (OTP sent here) <span className="text-[#FF7F50]">*</span>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Confirm <span className="text-[#84A282]">*</span>
                       </label>
                       <input
-                        type="email"
+                        type="password"
                         required
-                        placeholder="e.g. priyanku@gmail.com"
-                        value={registerData.email}
-                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                        placeholder="Repeat"
+                        value={registerData.confirmPassword}
+                        onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
+                        className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
+                  </div>
 
-                    {/* Password & Confirm */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          Password <span className="text-[#FF7F50]">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          required
-                          placeholder="Min 6 chars"
-                          value={registerData.password}
-                          onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                          className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          Confirm Password <span className="text-[#FF7F50]">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          required
-                          placeholder="Repeat"
-                          value={registerData.confirmPassword}
-                          onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                          className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                        />
-                      </div>
-                    </div>
+                  {/* Terms */}
+                  <div className="flex items-start pt-1">
+                    <input
+                      id="accept-terms"
+                      type="checkbox"
+                      required
+                      checked={registerData.agreeTerms}
+                      onChange={(e) => setRegisterData({ ...registerData, agreeTerms: e.target.checked })}
+                      className="w-4 h-4 text-[#84A282] rounded border-[#B8CFB3] mt-0.5 cursor-pointer"
+                    />
+                    <label htmlFor="accept-terms" className="ml-2 text-[11px] text-[#4F6D4B] dark:text-[#E5CD82]">
+                      I agree to UniMitra institutional guidelines.
+                    </label>
+                  </div>
 
-                    {/* Terms */}
-                    <div className="flex items-start pt-0.5">
-                      <input
-                        id="compact-terms"
-                        type="checkbox"
-                        required
-                        checked={registerData.agreeTerms}
-                        onChange={(e) => setRegisterData({ ...registerData, agreeTerms: e.target.checked })}
-                        className="w-3.5 h-3.5 text-[#118AB2] rounded border-slate-300 focus:ring-0 mt-0.5 cursor-pointer"
-                      />
-                      <label htmlFor="compact-terms" className="ml-2 text-[11px] text-slate-600 dark:text-slate-400">
-                        I agree to UniMitra academic terms.
-                      </label>
-                    </div>
+                  {/* Submit -> Go to OTP */}
+                  <button
+                    type="submit"
+                    disabled={authStatus.loading}
+                    className="w-full py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm disabled:opacity-50 mt-1"
+                  >
+                    {authStatus.loading ? 'Sending Code...' : 'Send Verification OTP ➔'}
+                  </button>
 
-                    {/* Submit -> Go to OTP */}
+                  <div className="text-center text-xs text-[#4F6D4B] dark:text-[#E5CD82] pt-1">
+                    Already registered?{' '}
                     <button
-                      type="submit"
-                      disabled={authStatus.loading}
-                      className="w-full py-2.5 rounded-xl font-bold text-white bg-[#06D6A0] hover:bg-[#05B889] transition-all cursor-pointer shadow-elevated-mint text-xs sm:text-sm disabled:opacity-50 mt-1"
+                      type="button"
+                      onClick={() => setMode('login')}
+                      className="font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer"
                     >
-                      {authStatus.loading ? 'Sending Code...' : 'Send Verification OTP ➔'}
+                      Sign In
                     </button>
-
-                    <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-1">
-                      Already registered?{' '}
-                      <button
-                        type="button"
-                        onClick={() => setMode('login')}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                      >
-                        Sign In
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                  </div>
+                </form>
               ) : (
                 /* Step 2: 6-Digit Email OTP */
                 <form onSubmit={handleVerifyRegisterOtp} className="space-y-4">
                   <div className="text-center space-y-1">
-                    <div className="w-10 h-10 rounded-xl bg-[#E7F3F7] dark:bg-slate-800 text-[#118AB2] dark:text-[#FFD166] flex items-center justify-center mx-auto">
+                    <div className="w-11 h-11 rounded-2xl bg-[#B8CFB3]/40 dark:bg-[#15370D] text-[#84A282] dark:text-[#FFF2B4] flex items-center justify-center mx-auto border border-[#B8CFB3]">
                       <EnvelopeIcon className="w-5 h-5" />
                     </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Verify Email Address</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Code sent to <strong className="text-[#118AB2] dark:text-[#FFD166]">{registerData.email}</strong>
+                    <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">Verify Email Address</h3>
+                    <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      Verification code sent to <strong>{registerData.email}</strong>
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setRegStep('form')}
-                      className="text-[11px] text-slate-400 hover:text-slate-700 dark:hover:text-white underline cursor-pointer"
-                    >
-                      Edit details
-                    </button>
                   </div>
 
                   {/* 6 Digit OTP Inputs */}
@@ -623,42 +598,42 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-9 h-11 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-black rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#06D6A0] outline-none transition-all shadow-xs"
+                        className="w-10 h-12 sm:w-12 sm:h-13 text-center text-lg sm:text-xl font-black rounded-2xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] focus:border-[#84A282] outline-none shadow-xs"
                       />
                     ))}
                   </div>
 
                   {/* Resend */}
-                  <div className="text-center text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-center text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
                     {canResend ? (
                       <button
                         type="button"
                         onClick={handleResendOtp}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
+                        className="font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer"
                       >
                         Resend Code
                       </button>
                     ) : (
-                      <span>Resend code in <strong className="font-mono text-slate-700 dark:text-slate-300">{timer}s</strong></span>
+                      <span>Resend code in <strong>{timer}s</strong></span>
                     )}
                   </div>
 
                   <button
                     type="submit"
                     disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#06D6A0] hover:bg-[#05B889] transition-all cursor-pointer shadow-elevated-mint text-xs sm:text-sm disabled:opacity-50"
+                    className="w-full py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm disabled:opacity-50"
                   >
-                    {authStatus.loading ? 'Verifying...' : 'Verify & Complete'}
+                    {authStatus.loading ? 'Verifying...' : 'Verify & Enter Portal'}
                   </button>
 
                   <div className="text-center">
                     <button
                       type="button"
                       onClick={() => setRegStep('form')}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
+                      className="text-xs font-bold text-[#4F6D4B] dark:text-[#E5CD82] hover:underline flex items-center justify-center space-x-1 mx-auto cursor-pointer"
                     >
                       <ArrowLeftIcon className="w-3.5 h-3.5" />
-                      <span>Back to Form</span>
+                      <span>Back to Registration</span>
                     </button>
                   </div>
                 </form>
@@ -667,35 +642,35 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
           )}
 
           {/* ========================================================= */}
-          {/* 3. FORGOT PASSWORD FLOW (Compact + OTP)                   */}
+          {/* 3. FORGOT PASSWORD VIEW                                   */}
           {/* ========================================================= */}
           {mode === 'forgot' && (
             <div className="space-y-4">
               {forgotStep === 'email' ? (
                 <form onSubmit={handleForgotEmailSubmit} className="space-y-3.5">
                   <div className="text-center space-y-1">
-                    <div className="w-10 h-10 rounded-xl bg-[#FFF0EB] dark:bg-slate-800 text-[#FF7F50] flex items-center justify-center mx-auto">
+                    <div className="w-11 h-11 rounded-2xl bg-[#F6E2E9] dark:bg-[#15370D] text-[#84A282] flex items-center justify-center mx-auto border border-[#B8CFB3]">
                       <LockClosedIcon className="w-5 h-5" />
                     </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Recover Password</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Enter your email to receive a 6-digit reset code.
+                    <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">Recover Password</h3>
+                    <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      Enter your email to receive a 6-digit recovery code.
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Student Email Address <span className="text-[#FF7F50]">*</span>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Email Address <span className="text-[#84A282]">*</span>
                     </label>
                     <div className="relative flex items-center">
-                      <EnvelopeIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                      <EnvelopeIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                       <input
                         type="email"
                         required
-                        placeholder="student@example.com"
+                        placeholder="user@university.ac.in"
                         value={forgotData.email}
                         onChange={(e) => setForgotData({ ...forgotData, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
                   </div>
@@ -703,16 +678,16 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                   <button
                     type="submit"
                     disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7497] transition-all cursor-pointer shadow-elevated-cerulean text-xs sm:text-sm disabled:opacity-50"
+                    className="w-full py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm disabled:opacity-50"
                   >
-                    {authStatus.loading ? 'Sending Code...' : 'Send Reset Code ➔'}
+                    {authStatus.loading ? 'Sending Code...' : 'Send Recovery Code ➔'}
                   </button>
 
                   <div className="text-center">
                     <button
                       type="button"
                       onClick={() => setMode('login')}
-                      className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
+                      className="text-xs font-black text-[#4F6D4B] dark:text-[#E5CD82] hover:underline flex items-center justify-center space-x-1 mx-auto cursor-pointer"
                     >
                       <ArrowLeftIcon className="w-3.5 h-3.5" />
                       <span>Back to Sign In</span>
@@ -722,9 +697,9 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
               ) : (
                 <form onSubmit={handleForgotResetSubmit} className="space-y-3.5">
                   <div className="text-center space-y-1">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Reset Password with OTP</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Code sent to <strong className="text-[#118AB2] dark:text-[#FFD166]">{forgotData.email}</strong>
+                    <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">Reset Password with OTP</h3>
+                    <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      Code sent to <strong>{forgotData.email}</strong>
                     </p>
                   </div>
 
@@ -740,31 +715,16 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-9 h-11 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-black rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] outline-none transition-all shadow-xs"
+                        className="w-10 h-12 sm:w-12 sm:h-13 text-center text-lg sm:text-xl font-black rounded-2xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] focus:border-[#84A282] outline-none shadow-xs"
                       />
                     ))}
                   </div>
 
-                  {/* Resend */}
-                  <div className="text-center text-xs text-slate-500 dark:text-slate-400">
-                    {canResend ? (
-                      <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                      >
-                        Resend Code
-                      </button>
-                    ) : (
-                      <span>Resend code in <strong className="font-mono text-slate-700 dark:text-slate-300">{timer}s</strong></span>
-                    )}
-                  </div>
-
-                  {/* Passwords */}
+                  {/* New Passwords */}
                   <div className="space-y-2.5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        New Password <span className="text-[#FF7F50]">*</span>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        New Password <span className="text-[#84A282]">*</span>
                       </label>
                       <input
                         type="password"
@@ -772,12 +732,12 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                         placeholder="Min 6 characters"
                         value={forgotData.newPassword}
                         onChange={(e) => setForgotData({ ...forgotData, newPassword: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2]"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Confirm New Password <span className="text-[#FF7F50]">*</span>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Confirm New Password <span className="text-[#84A282]">*</span>
                       </label>
                       <input
                         type="password"
@@ -785,7 +745,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                         placeholder="Repeat new password"
                         value={forgotData.confirmPassword}
                         onChange={(e) => setForgotData({ ...forgotData, confirmPassword: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2]"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
                   </div>
@@ -793,7 +753,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                   <button
                     type="submit"
                     disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm disabled:opacity-50"
+                    className="w-full py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm disabled:opacity-50"
                   >
                     {authStatus.loading ? 'Updating...' : 'Set New Password'}
                   </button>
@@ -802,7 +762,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
                     <button
                       type="button"
                       onClick={() => setForgotStep('email')}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
+                      className="text-xs font-bold text-[#4F6D4B] dark:text-[#E5CD82] hover:underline flex items-center justify-center space-x-1 mx-auto cursor-pointer"
                     >
                       <ArrowLeftIcon className="w-3.5 h-3.5" />
                       <span>Back to Email Step</span>

@@ -1,165 +1,159 @@
-import { CheckCircleIcon } from '../../components/common/Icons';
+import { CheckCircleIcon, BuildingLibraryIcon, ShieldCheckIcon, LanguageIcon, UserGroupIcon } from '../../components/common/Icons';
 
-export const About = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
+export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
   const platformFeatures = [
     {
-      title: 'Intuitive Student Interface',
-      capability: 'Fast, clean mobile & desktop design',
-      desc: 'Built so every student in Assam can navigate university syllabuses and academic rules effortlessly on any device.',
-      badge: 'Student First'
+      title: 'Institutional Natural Language Interface',
+      capability: 'Fast, responsive bilingual interaction',
+      desc: 'Engineered so students, faculty, and administrative staff across Assam can query complex institutional rules effortlessly on mobile or desktop.',
+      badge: 'User First'
     },
     {
-      title: 'Reliable University Database',
-      capability: 'Separate storage for each university',
-      desc: 'Maintains independent course catalogs, semesters, and guidelines so university information never gets mixed up.',
-      badge: 'Accurate Data'
+      title: 'Centralized Knowledge Base',
+      capability: 'Multi-university document metadata',
+      desc: 'Maintains verified regulations, circulars, and notices from all Assam universities in one unified repository with zero forced university selection.',
+      badge: 'Unified Access'
     },
     {
-      title: 'Official Document Processing',
-      capability: 'Direct PDF verification',
-      desc: 'Reads authorized university curriculum documents to extract exact page references, subjects, and examination criteria.',
+      title: 'Official Gazette & Circular Verification',
+      capability: 'Direct PDF grounding & citations',
+      desc: 'Extracts exact sections, clause numbers, and page references from authorized university publications to eliminate misinformation.',
       badge: 'Zero Guesswork'
     },
     {
-      title: 'Bilingual Language Answering',
-      capability: 'Assamese & English understanding',
-      desc: 'Answers questions naturally whether you ask in Assamese script, Romanized Assamese, or English.',
-      badge: 'Bilingual'
+      title: 'Native Assamese & English Understanding',
+      capability: 'Multilingual semantic retrieval',
+      desc: 'Seamlessly understands Assamese script, Romanized Assamese phonetic queries, and standard English academic phrasing.',
+      badge: 'Bilingual AI'
     }
   ];
 
-  const teamRoles = [
+  const targetAudiences = [
     {
-      role: 'Developer 1',
-      title: 'Data & Academic Intelligence',
-      focus: 'Responsible for document processing, university database design, and verified question answering logic.',
-      color: '#118AB2'
+      role: 'Students & Scholars',
+      focus: 'Instant answers to examination passing marks, re-evaluation dates, scholarship eligibility, admission requirements, and hostel facilities.',
+      tag: 'Academic Clarity'
     },
     {
-      role: 'Developer 2',
-      title: 'User Interface & Student Access',
-      focus: 'Responsible for clean website layout, responsive navigation, dark/light design system, and user sign-in.',
-      color: '#FF7F50'
+      role: 'Faculty Members',
+      focus: 'Quick reference to academic council ordinances, evaluation rubrics, course credit guidelines, and departmental committee notifications.',
+      tag: 'Teaching & Research'
     },
     {
-      role: 'Developer 3',
-      title: 'Student Dashboard & Study Tools',
-      focus: 'Responsible for interactive course browser, syllabus viewer, chat experience, and document management.',
-      color: '#06D6A0'
+      role: 'Administrative Staff',
+      focus: 'Effortless lookup of state government circulars, statutory regulations, fee structures, and document verification protocols.',
+      tag: 'Governance Support'
     }
   ];
+
+  const handlePortalAccess = () => {
+    if (isLoggedIn) {
+      if (onNavigate) onNavigate('dashboard');
+    } else {
+      if (onOpenAuth) onOpenAuth('login');
+    }
+  };
 
   return (
-    <div className="bg-[#FAFAFC] dark:bg-[#0B1320] min-h-screen text-[#073B4C] dark:text-slate-100 py-16 transition-colors duration-200">
+    <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#073B4C] dark:text-white">
+          <div className="inline-block px-3.5 py-1 rounded-full bg-[#F6E2E9] dark:bg-[#1C4412] text-xs font-black text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+            About UniMitra (CampusIQ)
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
             {currentLang === 'as' 
-              ? 'অসমৰ শৈক্ষিক ক্ষেত্ৰত বিশ্বস্ত ডিজিটেল সহায়ক' 
-              : 'Empowering Assam Higher Education with UniMitra'}
+              ? 'অসমৰ উচ্চ শিক্ষাৰ বাবে স্মাৰ্ট বিশ্ববিদ্যালয় সহায়ক' 
+              : 'Smart Institutional Assistance for Higher Education in Assam'}
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
             {currentLang === 'as'
-              ? 'UniMitra হৈছে এক বহুমুখী শৈক্ষিক মঞ্চ, যাৰ লক্ষ্য অসমৰ বিশ্ববিদ্যালয়সমূহৰ পাঠ্যক্ৰম, শৈক্ষিক নিয়ম আৰু নথিপত্ৰসমূহ ছাত্ৰ-ছাত্ৰীৰ বাবে সহজলভ্য কৰি তোলা।'
-              : 'UniMitra was created to eliminate confusion around university syllabuses and academic rules across Assam, providing verified answers in both Assamese and English.'}
+              ? 'UniMitra হৈছে এক বহুমুখী শৈক্ষিক আৰু প্ৰশাসনিক মঞ্চ, যাৰ লক্ষ্য অসমৰ বিশ্ববিদ্যালয়সমূহৰ নিয়ম, পৰীক্ষা, ভৰ্তি আৰু ছাত্ৰবৃত্তিৰ তথ্য ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকসকলৰ বাবে সহজলভ্য কৰি তোলা।'
+              : 'UniMitra (CampusIQ) eliminates confusion surrounding university regulations, exam ordinances, and admissions across Assam by providing grounded, cited answers in both Assamese and English.'}
           </p>
         </div>
 
-        {/* The Problem & The Solution */}
+        {/* The Institutional Challenge & Solution */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           
-          <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-8 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">The Academic Challenge in Assam</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              University students across Gauhati University, Dibrugarh University, Tezpur University, and regional colleges often struggle to locate updated syllabuses, exam regulations, and course requirements. Standard search engines frequently deliver outdated or inaccurate information that misleads students before exams.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-[#111C2E] border-2 border-[#06D6A0]/40 dark:border-[#06D6A0]/30 rounded-2xl p-8 shadow-elevated-mint">
-            <div className="flex items-center space-x-2 text-[#06D6A0] mb-3">
-              <CheckCircleIcon className="w-6 h-6" />
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">The UniMitra Solution</h2>
-            </div>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              UniMitra strictly verifies information against official university PDFs. When you ask a question in Assamese or English, it pinpoints the exact document and page reference, ensuring students get only authentic academic guidance.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Platform Core Capabilities */}
-        <div className="mb-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl font-black text-[#073B4C] dark:text-white">
-              Built for Speed, Accuracy, and Ease
+          <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-8 shadow-sm">
+            <h2 className="text-lg sm:text-xl font-black text-[#15370D] dark:text-[#FFF2B4] mb-3">
+              The Institutional Information Challenge
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-              Four key pillars that keep student learning efficient and reliable.
+            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+              University students, teachers, and staff across Gauhati University, Dibrugarh University, Tezpur University, and regional colleges often struggle to locate updated examination ordinances, re-evaluation timelines, hostel allotment guidelines, and scholarship circulars. Generic search engines regularly serve outdated notices or fabricate answers.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {platformFeatures.map((feat, idx) => (
-              <div 
-                key={idx}
-                className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-elevated-card transition-all flex flex-col justify-between card-3d"
-              >
-                <div>
-                  <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] block mb-2">
-                    {feat.badge}
-                  </span>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{feat.title}</h3>
-                  <div className="text-xs font-semibold text-[#FF7F50] mb-3">{feat.capability}</div>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{feat.desc}</p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-[#06D6A0]">
-                  Verified for Students
-                </div>
-              </div>
-            ))}
+          <div className="bg-white dark:bg-[#1C4412] border-2 border-[#84A282] rounded-3xl p-8 shadow-elevated-sage dark:shadow-elevated-gold">
+            <div className="flex items-center space-x-2 text-[#84A282] dark:text-[#FFF2B4] mb-3">
+              <CheckCircleIcon className="w-6 h-6 text-[#84A282]" />
+              <h2 className="text-lg sm:text-xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+                The UniMitra CampusIQ Solution
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+              UniMitra applies Retrieval-Augmented Generation (RAG) strictly grounded in official university documents. When you ask in Assamese or English, it references the exact gazette, section, and page number — ensuring authentic, trustworthy institutional guidance.
+            </p>
           </div>
+
         </div>
 
-        {/* Three Developer Team Division */}
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-8 mb-20 shadow-sm">
-          <div className="max-w-2xl mb-8">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#073B4C] dark:text-white">Team Collaboration</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-              Developed by a team of three contributors focused on student accessibility across Assam.
+        {/* Audiences Supported */}
+        <div className="mb-20">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+              Serving the Entire Academic Community
+            </h2>
+            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] mt-2">
+              Tailored assistance across all university stakeholders.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {teamRoles.map((dev, i) => (
-              <div 
-                key={i} 
-                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-3"
-              >
-                <span className="text-xs font-extrabold text-[#118AB2] dark:text-[#FFD166]">{dev.role}</span>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">{dev.title}</h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{dev.focus}</p>
+            {targetAudiences.map((aud, i) => (
+              <div key={i} className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm hover:border-[#84A282] transition-all card-3d">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                  {aud.tag}
+                </span>
+                <h3 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4] mt-3 mb-2">
+                  {aud.role}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                  {aud.focus}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Bottom Contact CTA */}
-        <div className="bg-gradient-to-r from-[#118AB2] to-[#073B4C] rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
-          <div className="space-y-2 text-center md:text-left">
-            <h3 className="text-2xl sm:text-3xl font-black">Want to connect with the team?</h3>
-            <p className="text-sm text-slate-200 max-w-xl">
-              We welcome suggestions from college principals, department heads, and students across Assam.
-            </p>
-          </div>
+        {/* Core Pillars */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {platformFeatures.map((f, idx) => (
+            <div key={idx} className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm card-3d">
+              <span className="text-[10px] font-black text-[#84A282] dark:text-[#FFF2B4] uppercase tracking-wider">
+                {f.badge}
+              </span>
+              <h4 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4] mt-2 mb-1">
+                {f.title}
+              </h4>
+              <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                {f.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Portal Entry */}
+        <div className="text-center">
           <button
-            onClick={() => onOpenAuth ? onOpenAuth('register') : onNavigate && onNavigate('contact')}
-            className="px-7 py-3.5 rounded-xl font-bold text-slate-900 bg-[#FFD166] hover:bg-[#F2C353] transition-all cursor-pointer shadow-md text-sm shrink-0"
+            onClick={handlePortalAccess}
+            className="px-8 py-3.5 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-sm"
           >
-            Create Free Account ➔
+            Access University Portal ➔
           </button>
         </div>
 

@@ -3,40 +3,52 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-coral: #FF7F50;
-  --color-coral-hover: #E86B3D;
-  --color-coral-light: #FFF0EB;
-  
-  --color-amber: #FFD166;
-  --color-amber-hover: #F2C353;
-  --color-amber-light: #FFF9E6;
-  
-  --color-mint: #06D6A0;
-  --color-mint-hover: #05B889;
-  --color-mint-light: #E6FBF5;
-  
-  --color-cerulean: #118AB2;
-  --color-cerulean-hover: #0E7497;
-  --color-cerulean-light: #E7F3F7;
-  --color-cerulean-dark: #073B4C;
+  /* Requested Color Palette for Light Theme: 84A282, B8CFB3, FEFAF3, F6E2E9 */
+  --color-sage: #84A282;
+  --color-sage-hover: #6F8E6D;
+  --color-sage-light: #B8CFB3;
+  --color-sage-pale: #EDF4EC;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Bengali', sans-serif;
+  --color-ivory: #FEFAF3;
+  --color-ivory-surface: #FFFFFF;
+
+  --color-blush: #F6E2E9;
+  --color-blush-hover: #E8C9D4;
+  --color-blush-dark: #8E3A59;
+
+  /* Requested Color Palette for Dark Theme: FFF2B4, E5CD82, 728E6D, 15370D */
+  --color-forest: #15370D;
+  --color-forest-surface: #1C4412;
+  --color-forest-card: #235417;
+
+  --color-moss: #728E6D;
+  --color-moss-light: #8BA886;
+
+  --color-gold-warm: #E5CD82;
+  --color-gold-bright: #FFF2B4;
+  --color-gold-muted: #CDB366;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Assamese', 'Noto Sans Bengali', sans-serif;
 }
 
 :root {
-  --bg-primary: #FAFAFC;
+  --bg-primary: #FEFAF3;
   --bg-surface: #FFFFFF;
-  --text-main: #073B4C;
-  --text-muted: #5A6A7E;
-  --border-subtle: #E2E8F0;
+  --text-main: #15370D;
+  --text-muted: #4F6D4B;
+  --border-subtle: #B8CFB3;
+  --primary-brand: #84A282;
+  --highlight-soft: #F6E2E9;
 }
 
 .dark {
-  --bg-primary: #0B1320;
-  --bg-surface: #111C2E;
-  --text-main: #F1F5F9;
-  --text-muted: #94A3B8;
-  --border-subtle: #1E293B;
+  --bg-primary: #15370D;
+  --bg-surface: #1C4412;
+  --text-main: #FFF2B4;
+  --text-muted: #E5CD82;
+  --border-subtle: #728E6D;
+  --primary-brand: #728E6D;
+  --highlight-soft: #E5CD82;
   color-scheme: dark;
 }
 
@@ -48,51 +60,51 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* 3D Dribbble Geometric Canvas & Perspective styles */
+/* 3D Perspective & Elevation Classes */
 .perspective-container {
   perspective: 1200px;
 }
 
 .card-3d {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
   transform-style: preserve-3d;
 }
 
 .card-3d:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
-/* Crisp 3D Elevation Shadows (No tacky blurred glass) */
-.shadow-elevated-cerulean {
-  box-shadow: 0 12px 28px -10px rgba(17, 138, 178, 0.2), 0 3px 8px -2px rgba(7, 59, 76, 0.08);
+/* Elevation Shadows matching specific palettes */
+.shadow-elevated-sage {
+  box-shadow: 0 12px 28px -10px rgba(132, 162, 130, 0.35), 0 3px 8px -2px rgba(21, 55, 13, 0.08);
 }
 
-.shadow-elevated-coral {
-  box-shadow: 0 12px 28px -10px rgba(255, 127, 80, 0.28), 0 3px 8px -2px rgba(7, 59, 76, 0.08);
+.shadow-elevated-blush {
+  box-shadow: 0 12px 28px -10px rgba(246, 226, 233, 0.7), 0 3px 8px -2px rgba(21, 55, 13, 0.08);
 }
 
-.shadow-elevated-mint {
-  box-shadow: 0 12px 28px -10px rgba(6, 214, 160, 0.24), 0 3px 8px -2px rgba(7, 59, 76, 0.08);
+.shadow-elevated-gold {
+  box-shadow: 0 12px 28px -10px rgba(229, 205, 130, 0.35), 0 3px 8px -2px rgba(0, 0, 0, 0.4);
 }
 
 .shadow-elevated-card {
-  box-shadow: 0 8px 24px -6px rgba(7, 59, 76, 0.08), 0 1px 3px rgba(7, 59, 76, 0.04);
+  box-shadow: 0 8px 24px -6px rgba(21, 55, 13, 0.08), 0 1px 3px rgba(21, 55, 13, 0.04);
 }
 
 .dark .shadow-elevated-card {
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* 3D Keyframe Animations */
+/* Keyframe Float Animations */
 @keyframes floatGentle {
   0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }
 
@@ -101,7 +113,7 @@ body {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
 }
 
@@ -113,18 +125,18 @@ body {
   animation: floatReverse 6s ease-in-out infinite 1s;
 }
 
-/* Grid Patterns */
+/* Institutional Grid Pattern */
 .bg-grid-pattern {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(17, 138, 178, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(17, 138, 178, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(132, 162, 130, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(132, 162, 130, 0.12) 1px, transparent 1px);
 }
 
 .dark .bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(229, 205, 130, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 205, 130, 0.06) 1px, transparent 1px);
 }
 
 /* Custom Scrollbar */
@@ -132,18 +144,21 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #FEFAF3;
 }
 .dark ::-webkit-scrollbar-track {
-  background: #0B1320;
+  background: #15370D;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #B8CFB3;
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #728E6D;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #118AB2;
+  background: #84A282;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #E5CD82;
 }
