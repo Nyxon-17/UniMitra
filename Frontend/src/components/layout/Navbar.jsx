@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { universityService } from '../../services/universityService';
 import { BuildingLibraryIcon, MenuIcon, XMarkIcon, SunIcon, MoonIcon, LanguageIcon, ArrowRightOnRectangleIcon, UserIcon } from '../common/Icons';
 
 export const Navbar = ({ 
@@ -17,6 +18,16 @@ export const Navbar = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+
+  useEffect(() => {
+    const handleSync = () => {
+      setUnivProfile(universityService.getProfile());
+    };
+    window.addEventListener('unimitra_university_changed', handleSync);
+    return () => window.removeEventListener('unimitra_university_changed', handleSync);
+  }, []);
 
   // Derive active link ID from current URL pathname
   const getActiveId = () => {
@@ -97,7 +108,7 @@ export const Navbar = ({
                 className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                   currentActive === link.id
                     ? 'bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988] shadow-xs'
-                    : 'text-[#000000] dark:text-[#FFFFFF]/80 hover:text-[#6D28D9] dark:hover:text-[#03C988] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1A0F33]'
+                    : 'text-[#000000] dark:text-[#FFFFFF]/80 hover:text-[#FF933E] dark:hover:text-[#03C988] hover:bg-[#FFE9A9]/40 dark:hover:bg-[#13005A]'
                 }`}
               >
                 {currentLang === 'as' ? link.asLabel : link.label}
@@ -145,7 +156,7 @@ export const Navbar = ({
             {/* Admin Console Shortcut */}
             <button
               onClick={() => handleNav('admin')}
-              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#C4B5FD] bg-[#DDD6FE]/60 dark:bg-[#1A0F33] hover:bg-[#DDD6FE] dark:hover:bg-[#25124D] border border-[#E0D4FD] dark:border-[#B026FF]/40 transition-all cursor-pointer whitespace-nowrap"
+              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#03C988] bg-[#FFE9A9]/40 dark:bg-[#13005A] hover:bg-[#FFE9A9] dark:hover:bg-[#00337C] border border-[#FFCB56] dark:border-[#03C988]/40 transition-all cursor-pointer whitespace-nowrap"
               title="Official Document Ingestion Admin"
             >
               {currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}
@@ -207,19 +218,19 @@ export const Navbar = ({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-[#13005A] border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40 px-4 pt-3 pb-6 space-y-4 shadow-xl">
+        <div className="lg:hidden bg-white dark:bg-[#00337C] border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40 px-4 pt-3 pb-6 space-y-4 shadow-xl">
           
           {/* Mobile Language Switcher */}
-          <div className="flex items-center justify-between p-2.5 bg-[#E0D4FD]/30 dark:bg-[#120B24] rounded-2xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
+          <div className="flex items-center justify-between p-2.5 bg-[#FFE9A9]/30 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
             <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1.5">
-              <LanguageIcon className="w-4 h-4 text-[#6D28D9] dark:text-[#C4B5FD]" />
+              <LanguageIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
               <span>ভাষা / Language:</span>
             </span>
             <div className="flex items-center space-x-1.5">
               <button
                 onClick={() => currentLang !== 'as' && onToggleLang()}
                 className={`px-3 py-1.5 rounded-lg text-xs font-black ${
-                  currentLang === 'as' ? 'bg-[#4C1D95] text-white' : 'text-[#000000] dark:text-[#C4B5FD]'
+                  currentLang === 'as' ? 'bg-[#FF933E] text-white' : 'text-[#000000] dark:text-[#FFFFFF]'
                 }`}
               >
                 অসমীয়া
@@ -227,7 +238,7 @@ export const Navbar = ({
               <button
                 onClick={() => currentLang !== 'en' && onToggleLang()}
                 className={`px-3 py-1.5 rounded-lg text-xs font-black ${
-                  currentLang === 'en' ? 'bg-[#4C1D95] text-white' : 'text-[#000000] dark:text-[#C4B5FD]'
+                  currentLang === 'en' ? 'bg-[#FF933E] text-white' : 'text-[#000000] dark:text-[#FFFFFF]'
                 }`}
               >
                 English
@@ -243,8 +254,8 @@ export const Navbar = ({
                 onClick={() => handleNav(link.id)}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold ${
                   currentActive === link.id
-                    ? 'bg-[#6D28D9]/20 dark:bg-[#3B2868]/40 text-[#6D28D9] dark:text-[#FFFFFF] border border-[#6D28D9]/50'
-                    : 'text-[#000000] dark:text-[#FFFFFF] hover:bg-[#E0D4FD]/30 dark:hover:bg-[#1A0F33]'
+                    ? 'bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988] border border-[#FFCB56] dark:border-[#03C988]'
+                    : 'text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/30 dark:hover:bg-[#13005A]'
                 }`}
               >
                 {currentLang === 'as' ? link.asLabel : link.label}

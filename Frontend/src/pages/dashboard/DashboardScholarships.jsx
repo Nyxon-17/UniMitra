@@ -1,80 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { universityService } from '../../services/universityService';
 import { 
   BanknotesIcon, 
   SearchIcon, 
   SparklesIcon, 
   CheckCircleIcon, 
   DocumentTextIcon, 
-  ShieldCheckIcon 
+  ShieldCheckIcon,
+  ArrowRightIcon 
 } from '../../components/common/Icons';
 
 export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => {
+  const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+  const [scholarshipsList, setScholarshipsList] = useState(() => universityService.getScholarships());
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', 'State Government (DHE)', 'Central UGC / NER', 'Reserved Category', 'Gender & Merit'];
+  useEffect(() => {
+    const handleSync = () => {
+      setUnivProfile(universityService.getProfile());
+      setScholarshipsList(universityService.getScholarships());
+    };
+    window.addEventListener('unimitra_university_changed', handleSync);
+    return () => window.removeEventListener('unimitra_university_changed', handleSync);
+  }, []);
 
-  const scholarships = [
-    {
-      id: 'SCH-DHE-01',
-      title: 'Combined Merit Scholarship (Degree & PG Levels)',
-      asTitle: 'উচ্চ শিক্ষা সঞ্চালকালয়ৰ সংযুক্ত মেধা ছাত্ৰবৃত্তি',
-      authority: 'Directorate of Higher Education (DHE), Assam',
-      category: 'State Government (DHE)',
-      amount: 'INR 1,000 / month (Degree) | INR 1,200 / month (PG)',
-      deadline: '30 November 2024',
-      incomeCeiling: 'No ceiling for merit quota; minimum 60% in qualifying exam',
-      eligibility: 'Must be a permanent resident of Assam studying regular full-time courses in recognized universities or affiliated colleges in Assam. Minimum 60% in 10+2 / B.A/B.Sc/B.Com.',
-      documents: [
-        'Permanent Resident Certificate (PRC) of Assam',
-        'Mark sheet of qualifying examination',
-        'Head of Institution Certificate & Admission Receipt',
-        'Aadhaar seeded bank account passbook copy'
-      ],
-      citation: 'Assam_DHE_Scholarship_Notice_2024.pdf (Pages 2-5)'
-    },
-    {
-      id: 'SCH-UGC-02',
-      title: 'Ishan Uday Special Scholarship Scheme for NER',
-      asTitle: 'উত্তৰ-পূৰ্বাঞ্চলৰ ছাত্ৰ-ছাত্ৰীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি',
-      authority: 'University Grants Commission (UGC) / Ministry of Education',
-      category: 'Central UGC / NER',
-      amount: 'INR 5,400 / month (General) | INR 7,800 / month (Technical)',
-      deadline: '31 December 2024',
-      incomeCeiling: 'Family income must not exceed INR 4.50 Lakhs per annum',
-      eligibility: 'Open to permanent residents of North Eastern States admitted to 1st year of general degree, technical, or professional degree courses. 10,000 fresh slots awarded annually.',
-      documents: [
-        'Domicile / PRC certificate issued by competent authority',
-        'Annual family income certificate issued by Circle Officer / DC',
-        '10+2 mark sheet and course admission proof',
-        'National Scholarship Portal (NSP) biometric verification'
-      ],
-      citation: 'UGC_Ishan_Uday_Guidelines_Gazette.pdf (Pages 4-12)'
-    },
-    {
-      id: 'SCH-GOV-03',
-      title: 'Post-Matric Scholarship for SC / ST / OBC / MOBC Scholars',
-      asTitle: 'অনুসূচীত জাতি/জনজাতি আৰু অন্যান্য অনগ্ৰসৰ শ্ৰেণীৰ প’ষ্ট-মেট্ৰিক ছাত্ৰবৃত্তি',
-      authority: 'Department of Social Justice & Empowerment, Govt of Assam',
-      category: 'Reserved Category',
-      amount: 'Full Course Tuition Reimbursement + Monthly Maintenance Allowance',
-      deadline: '15 November 2024',
-      incomeCeiling: 'INR 2.50 Lakhs per annum (SC/ST) | INR 1.50 Lakhs (OBC/MOBC)',
-      eligibility: 'Enrolled in post-matriculation or post-secondary degree programs. Valid caste certificate issued by Assam competent authority required.',
-      documents: [
-        'Caste Certificate verified through Mission Basundhara',
-        'Income certificate and self-declaration',
-        'Tuition fee receipts and hostel fee proof',
-        'Institution verification on OASIS / NSP portal'
-      ],
-      citation: 'Assam_PostMatric_Scholarship_Gazette_2024.pdf (Pages 8-16)'
-    }
-  ];
+  const categories = ['All', 'Central Merit Scholarship', 'State Merit Scholarship', 'Welfare Scholarship'];
 
-  const filtered = scholarships.filter((s) => {
-    const matchCat = selectedCategory === 'All' || s.category === selectedCategory;
-    const matchSearch = !searchQuery.trim() ||
-      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filtered = scholarshipsList.filter((s) => {
+    const matchCat = selectedCategory === 'All' || s.type === selectedCategory;
+    const matchSearch =
+      !searchQuery.trim() ||
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (s.asName && s.asName.includes(searchQuery)) ||
       s.eligibility.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
@@ -83,45 +41,45 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
+      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs card-3d">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
+            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
               <BanknotesIcon className="w-4 h-4" />
-              <span>Institutional & State Financial Aid Desk</span>
+              <span>{univProfile.name} • Financial Aid & Grants</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF]">
-              {currentLang === 'as' ? 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান' : 'Scholarships & Financial Grants'}
+              {currentLang === 'as' ? `${univProfile.asName}ৰ ছাত্ৰবৃত্তি আৰু অনুদান` : `${univProfile.name} Scholarships & Financial Aid`}
             </h1>
             <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 max-w-2xl leading-relaxed">
               {currentLang === 'as'
-                ? 'অসম চৰকাৰৰ উচ্চ শিক্ষা সঞ্চালকালয়, UGC ঈশান উদয় আৰু সংৰক্ষিত শ্ৰেণীৰ ছাত্ৰবৃত্তিৰ চৰ্ত, বাৰ্ষিক আয় আৰু আবেদনৰ নিয়ম চাওক।'
-                : 'Access verified state and central scholarship circulars, family income ceilings, document checklists, and application guidelines.'}
+                ? `উত্তৰ-পূৰ্বাঞ্চলৰ ঈশান উদয়, অসম চৰকাৰৰ DHE সংযুক্ত মেধা ছাত্ৰবৃত্তি আৰু সংৰক্ষিত শ্ৰেণীৰ আৰ্থিক সাহাৰ্যৰ তথ্য।`
+                : `Verified norms for UGC Ishan Uday, Assam Directorate of Higher Education (DHE) Combined Merit, and reserved category stipends.`}
             </p>
           </div>
 
           <button
-            onClick={() => onNavigateTab('assistant', { prefillQuery: 'What are the required documents and income limits for Ishan Uday and DHE combined merit scholarships?' })}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-xs hover:shadow-md text-xs sm:text-sm shrink-0"
+            onClick={() => onNavigateTab('assistant', { prefillQuery: `What are the eligibility criteria, family income ceiling, and documents required for Ishan Uday and Assam DHE scholarships?` })}
+            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-xs text-xs sm:text-sm shrink-0"
           >
-            <SparklesIcon className="w-4 h-4 text-[#FAF8FF]" />
-            <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Check Eligibility with AI'}</span>
+            <SparklesIcon className="w-4 h-4" />
+            <span>{currentLang === 'as' ? 'ছাত্ৰবৃত্তিৰ বিষয়ে সোধক' : 'Ask AI About Grants'}</span>
           </button>
         </div>
       </div>
 
-      {/* Filter and Search */}
+      {/* Filter and Search Bar */}
       <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all ${
                   selectedCategory === cat
-                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
-                    : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
+                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
+                    : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
                 }`}
               >
                 {cat}
@@ -129,11 +87,11 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
             ))}
           </div>
 
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-72">
             <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search scheme name..."
+              placeholder="Search Ishan Uday, DHE, income..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
@@ -142,76 +100,63 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
         </div>
       </div>
 
-      {/* Scholarship Cards */}
-      <div className="space-y-4">
-        {filtered.map((sch) => (
+      {/* Scholarships Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filtered.map((s) => (
           <div
-            key={sch.id}
-            className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4"
+            key={s.id}
+            className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40 pb-3">
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white">
-                    {sch.category}
-                  </span>
-                  <span className="text-xs font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
-                    Deadline: {sch.deadline}
-                  </span>
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] pt-1">
-                  {currentLang === 'as' ? sch.asTitle : sch.title}
-                </h3>
-                <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                  Issuing Authority: {sch.authority}
-                </p>
-              </div>
-
-              <div className="bg-[#FFE9A9] dark:bg-[#13005A] px-3.5 py-2 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-center self-start sm:self-auto shrink-0">
-                <span className="text-[10px] font-black uppercase block text-[#000000]/70 dark:text-[#FFFFFF]/80">Benefit Value</span>
-                <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">{sch.amount}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1.5">
-                <strong className="text-[#000000] dark:text-[#FFFFFF] block uppercase tracking-wider text-[10px]">
-                  Eligibility & Income Ceiling
-                </strong>
-                <p className="text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
-                  {sch.eligibility}
-                </p>
-                <div className="text-[11px] font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] pt-1">
-                  Income Limit: {sch.incomeCeiling}
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1.5">
-                <strong className="text-[#000000] dark:text-[#FFFFFF] block uppercase tracking-wider text-[10px]">
-                  Mandatory Document Checklist
-                </strong>
-                <ul className="space-y-1 text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                  {sch.documents.map((doc, d) => (
-                    <li key={d} className="flex items-center space-x-1.5">
-                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988] shrink-0" />
-                      <span>{doc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-              <div className="flex items-center space-x-2">
-                <DocumentTextIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
-                <span className="font-bold">Official Circular: {sch.citation}</span>
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                {s.type}
+              </span>
               <button
-                onClick={() => onNavigateTab('assistant', { prefillQuery: `Guide me on the step-by-step application procedure for ${sch.title}.` })}
-                className="text-xs font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] hover:underline cursor-pointer"
+                onClick={() => onNavigateTab('assistant', { prefillQuery: currentLang === 'as' ? s.asName || s.name : s.name })}
+                className="text-xs font-black text-[#FF933E] dark:text-[#03C988] hover:underline flex items-center space-x-1"
               >
-                Ask Assistant Application Steps ➔
+                <span>Ask AI</span>
+                <ArrowRightIcon className="w-3 h-3" />
               </button>
+            </div>
+
+            <div>
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+                {s.name}
+              </h3>
+              {s.asName && (
+                <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988] mt-0.5">
+                  {s.asName}
+                </p>
+              )}
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 block font-bold">Award Amount:</span>
+                <span className="font-black text-[#FF933E] dark:text-[#03C988]">{s.amount}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 block font-bold">Annual Deadline:</span>
+                <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{s.deadline}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1 text-xs">
+              <span className="font-bold text-[#000000] dark:text-[#FFFFFF] block">Eligibility Criteria:</span>
+              <p className="text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+                {currentLang === 'as' && s.asEligibility ? s.asEligibility : s.eligibility}
+              </p>
+            </div>
+
+            <div className="pt-3 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between text-xs">
+              <span className="font-mono text-[11px] text-[#000000]/60 dark:text-[#FFFFFF]/60">
+                Provider: {s.provider}
+              </span>
+              <span className="text-[10px] text-[#03C988] font-bold flex items-center space-x-1">
+                <ShieldCheckIcon className="w-3.5 h-3.5" />
+                <span>Verified Scheme</span>
+              </span>
             </div>
           </div>
         ))}
@@ -220,4 +165,3 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
     </div>
   );
 };
-
