@@ -42,7 +42,7 @@ export const DashboardLayout = ({
           onToggleLang={onToggleLang}
           isDark={isDark}
           onToggleTheme={onToggleTheme}
-          onNavigateAi={() => onSelectTab('assistant')}
+          onNavigateAi={() => onSelectTab && onSelectTab('assistant')}
           studentInfo={studentInfo}
         />
 

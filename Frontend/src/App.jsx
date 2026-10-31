@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
+
+// Public Layout Components
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
+
+// Public Pages
 import { Home } from './pages/public/Home';
 import { Features } from './pages/public/Features';
 import { HowItWorks } from './pages/public/HowItWorks';
@@ -21,19 +25,127 @@ import { DashboardScholarships } from './pages/dashboard/DashboardScholarships';
 import { DashboardFacilities } from './pages/dashboard/DashboardFacilities';
 import { DashboardQueryHistory } from './pages/dashboard/DashboardQueryHistory';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
+import { DashboardExaminations } from './pages/dashboard/DashboardExaminations';
+import { DashboardSavedAnswers } from './pages/dashboard/DashboardSavedAnswers';
+import { DashboardFeedback } from './pages/dashboard/DashboardFeedback';
+import { DashboardFacultyExams } from './pages/faculty/DashboardFacultyExams';
+import { DashboardFacultyDocuments } from './pages/faculty/DashboardFacultyDocuments';
+import { DashboardFacultySaved } from './pages/faculty/DashboardFacultySaved';
 import { AdminConsole } from './pages/admin/AdminConsole';
+
+// Smooth Scroll to Top on Route Change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+  return null;
+}
+
+// Public Layout with Persistent Header and Footer
+function PublicLayoutWrapper({
+  currentLang,
+  onToggleLang,
+  isDark,
+  onToggleTheme,
+  isLoggedIn,
+  studentInfo,
+  onSignOut,
+  onOpenAuth,
+  onNavigate
+}) {
+  const location = useLocation();
+  const isAuthPage = location.pathname.startsWith('/auth');
+
+  return (
+    <div className={`min-h-screen flex flex-col bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] selection:bg-[#84A282] selection:text-white transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+      {/* Top Public Navigation */}
+      <Navbar 
+        onNavigate={onNavigate} 
+        onOpenAuth={onOpenAuth}
+        currentLang={currentLang} 
+        onToggleLang={onToggleLang}
+        isDark={isDark}
+        onToggleTheme={onToggleTheme}
+        isLoggedIn={isLoggedIn}
+        studentInfo={studentInfo}
+        onSignOut={onSignOut}
+      />
+
+      {/* Main Dynamic Viewport */}
+      <main className="flex-1">
+        <Outlet />
+      </main>
+
+      {/* Institutional Academic Portal Footer (hidden on dedicated auth page) */}
+      {!isAuthPage && (
+        <Footer 
+          onNavigate={onNavigate} 
+          onOpenAuth={onOpenAuth}
+          currentLang={currentLang} 
+        />
+      )}
+    </div>
+  );
+}
+
+// Protected Dashboard Layout Wrapper
+function DashboardLayoutWrapper({
+  isLoggedIn,
+  onSignOut,
+  currentLang,
+  onToggleLang,
+  isDark,
+  onToggleTheme,
+  studentInfo
+}) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // If user is not logged in, gate access and redirect to /auth
+  if (!isLoggedIn) {
+    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+  }
+
+  // Derive active tab from URL path (e.g. /dashboard/regulations -> 'regulations')
+  const pathSegment = location.pathname.replace('/dashboard', '').replace(/^\//, '').split('/')[0] || 'overview';
+
+  const handleSelectTab = (tabId) => {
+    navigate(`/dashboard/${tabId}`);
+  };
+
+  const handleOpenAdmin = () => {
+    navigate('/admin');
+  };
+
+  return (
+    <DashboardLayout
+      activeTab={pathSegment}
+      onSelectTab={handleSelectTab}
+      onOpenAdmin={handleOpenAdmin}
+      onSignOut={onSignOut}
+      currentLang={currentLang}
+      onToggleLang={onToggleLang}
+      isDark={isDark}
+      onToggleTheme={onToggleTheme}
+      studentInfo={studentInfo}
+    >
+      <Outlet />
+    </DashboardLayout>
+  );
+}
 
 export function App() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const [assistantPrefill, setAssistantPrefill] = useState('');
   const [lang, setLang] = useState('en'); // 'en' or 'as'
+  const [assistantPrefill, setAssistantPrefill] = useState('');
+
+  // Floating Auth Modal State
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalRole, setAuthModalRole] = useState('student'); // 'student' | 'faculty' | 'admin'
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
 
-  // Dashboard Access Gating: Dashboard can access ONLY after login
+  // Dashboard Access Gating: Gated after authentication
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('unimitra_auth_logged_in') === 'true';
@@ -83,11 +195,6 @@ export function App() {
     }
   }, [theme]);
 
-  // Scroll to top on route change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location.pathname]);
-
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'as' : 'en'));
   };
@@ -122,11 +229,13 @@ export function App() {
       localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
     }
 
+    setAuthModalOpen(false);
+
     // Role-based routing: Admin directly to Admin Console; Students & Faculty to Assistant Dashboard
     if (user?.role === 'Admin') {
       navigate('/admin');
     } else {
-      navigate('/dashboard');
+      navigate('/dashboard/overview');
     }
   };
 
@@ -137,40 +246,40 @@ export function App() {
     navigate('/');
   };
 
-  // Safe Navigation: Protects Dashboard & Admin Console; guests are prompted to log in
+  // Safe Navigation Handler across public and protected portals
   const handleNavigate = (page) => {
-    if (!page || page === 'home' || page === '/') {
-      navigate('/');
-    } else if (page === 'dashboard') {
+    if (page === 'dashboard') {
       if (!isLoggedIn) {
         handleOpenAuth('login', 'student');
         return;
       }
-      navigate('/dashboard');
-    } else if (page === 'admin') {
+      navigate('/dashboard/overview');
+      return;
+    }
+    if (page === 'admin') {
       if (!isLoggedIn || studentInfo?.role !== 'Admin') {
-        handleOpenAuth('login', 'admin');
+        navigate('/auth?role=admin');
         return;
       }
       navigate('/admin');
-    } else {
-      navigate(`/${page.replace(/^\//, '')}`);
+      return;
     }
+    if (page === 'home') {
+      navigate('/');
+      return;
+    }
+    if (page === 'auth') {
+      navigate('/auth');
+      return;
+    }
+    navigate(`/${page}`);
   };
 
-  const handleSelectDashboardTab = (tabId) => {
-    if (tabId === 'overview') {
-      navigate('/dashboard');
-    } else {
-      navigate(`/dashboard/${tabId}`);
-    }
-  };
-
-  const handleNavigateDashboardTab = (tabId, payload) => {
+  const handleNavigateDashboardTab = (tab, payload) => {
     if (payload?.prefillQuery) {
       setAssistantPrefill(payload.prefillQuery);
     }
-    handleSelectDashboardTab(tabId);
+    navigate(`/dashboard/${tab}`, { state: payload });
   };
 
   const handleUpdateStudentInfo = (updated) => {
@@ -179,143 +288,93 @@ export function App() {
     localStorage.setItem('unimitra_student_info', JSON.stringify(newInfo));
   };
 
-  // Derive active navbar page from current pathname
-  const getActivePage = () => {
-    const p = location.pathname;
-    if (p === '/' || p === '') return 'home';
-    if (p.startsWith('/features')) return 'features';
-    if (p.startsWith('/how-it-works')) return 'how-it-works';
-    if (p.startsWith('/faq')) return 'faq';
-    if (p.startsWith('/about')) return 'about';
-    if (p.startsWith('/contact')) return 'contact';
-    if (p.startsWith('/auth')) return 'auth';
-    if (p.startsWith('/admin')) return 'admin';
-    if (p.startsWith('/dashboard')) return 'dashboard';
-    return 'home';
-  };
-
-  // Derive active dashboard tab from current pathname
-  const getActiveDashboardTab = () => {
-    const p = location.pathname;
-    if (p.includes('/dashboard/assistant')) return 'assistant';
-    if (p.includes('/dashboard/regulations')) return 'regulations';
-    if (p.includes('/dashboard/admissions')) return 'admissions';
-    if (p.includes('/dashboard/scholarships')) return 'scholarships';
-    if (p.includes('/dashboard/facilities')) return 'facilities';
-    if (p.includes('/dashboard/history')) return 'history';
-    if (p.includes('/dashboard/profile')) return 'profile';
-    return 'overview';
-  };
-
-  // Public Layout Wrapper with Shared Navbar and Institutional Footer
-  const PublicLayout = ({ children, hideFooter = false }) => (
-    <div className={`min-h-screen flex flex-col bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] selection:bg-[#84A282] selection:text-white transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
-      <Navbar 
-        activePage={getActivePage()} 
-        onNavigate={handleNavigate} 
-        onOpenAuth={handleOpenAuth}
-        currentLang={lang} 
-        onToggleLang={toggleLanguage}
-        isDark={theme === 'dark'}
-        onToggleTheme={toggleTheme}
-        isLoggedIn={isLoggedIn}
-        studentInfo={studentInfo}
-        onSignOut={handleSignOut}
-      />
-      <main className="flex-1">
-        {children}
-      </main>
-      {!hideFooter && (
-        <Footer 
-          onNavigate={handleNavigate} 
-          onOpenAuth={handleOpenAuth}
-          currentLang={lang} 
-        />
-      )}
-    </div>
-  );
-
   return (
     <>
+      <ScrollToTop />
       <Routes>
-        {/* Public Institutional Portal Routes */}
+        {/* Public Routes Wrapped in PublicLayoutWrapper */}
         <Route
-          path="/"
           element={
-            <PublicLayout>
+            <PublicLayoutWrapper
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+              isLoggedIn={isLoggedIn}
+              studentInfo={studentInfo}
+              onSignOut={handleSignOut}
+              onOpenAuth={handleOpenAuth}
+              onNavigate={handleNavigate}
+            />
+          }
+        >
+          <Route
+            index
+            element={
               <Home 
                 onNavigate={handleNavigate} 
                 onOpenAuth={handleOpenAuth} 
                 currentLang={lang} 
                 isLoggedIn={isLoggedIn}
               />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/features"
-          element={
-            <PublicLayout>
+            }
+          />
+          <Route path="home" element={<Navigate to="/" replace />} />
+          <Route
+            path="features"
+            element={
               <Features 
                 onNavigate={handleNavigate} 
                 onOpenAuth={handleOpenAuth} 
                 currentLang={lang} 
                 isLoggedIn={isLoggedIn}
               />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/how-it-works"
-          element={
-            <PublicLayout>
+            }
+          />
+          <Route
+            path="how-it-works"
+            element={
               <HowItWorks 
                 onNavigate={handleNavigate} 
                 onOpenAuth={handleOpenAuth} 
                 currentLang={lang} 
                 isLoggedIn={isLoggedIn}
               />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/faq"
-          element={
-            <PublicLayout>
+            }
+          />
+          <Route
+            path="faq"
+            element={
               <Faq 
                 onNavigate={handleNavigate} 
                 onOpenAuth={handleOpenAuth} 
                 currentLang={lang} 
                 isLoggedIn={isLoggedIn}
               />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <PublicLayout>
+            }
+          />
+          <Route
+            path="about"
+            element={
               <About 
                 onNavigate={handleNavigate} 
                 onOpenAuth={handleOpenAuth} 
                 currentLang={lang} 
                 isLoggedIn={isLoggedIn}
               />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <PublicLayout>
-              <Contact currentLang={lang} />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/auth"
-          element={
-            <PublicLayout hideFooter>
+            }
+          />
+          <Route
+            path="contact"
+            element={
+              <Contact 
+                currentLang={lang} 
+              />
+            }
+          />
+          <Route
+            path="auth"
+            element={
               <AuthPortal
                 initialRole={authModalRole}
                 initialMode={authModalMode}
@@ -323,64 +382,185 @@ export function App() {
                 onSuccessLogin={handleLoginSuccess}
                 onCancel={() => navigate('/')}
               />
-            </PublicLayout>
-          }
-        />
+            }
+          />
+          <Route path="login" element={<Navigate to="/auth" replace />} />
+        </Route>
 
-        {/* Admin Knowledge Base & Document Ingestion Console */}
+        {/* Administrator Knowledge Base & Ingestion Console */}
         <Route
-          path="/admin"
+          path="admin"
           element={
-            <AdminConsole
-              onExit={() => {
-                if (isLoggedIn) {
-                  navigate('/dashboard');
-                } else {
-                  navigate('/');
-                }
-              }}
-              currentLang={lang}
-              onToggleLang={toggleLanguage}
-              isDark={theme === 'dark'}
-              onToggleTheme={toggleTheme}
-            />
-          }
-        />
-
-        {/* Protected University Assistance Dashboard (Direct Nested Routing) */}
-        <Route
-          path="/dashboard"
-          element={
-            isLoggedIn ? (
-              <DashboardLayout
-                activeTab={getActiveDashboardTab()}
-                onSelectTab={handleSelectDashboardTab}
-                onOpenAdmin={() => navigate('/admin')}
-                onSignOut={handleSignOut}
+            !isLoggedIn || studentInfo?.role !== 'Admin' ? (
+              <Navigate to="/auth?role=admin" replace />
+            ) : (
+              <AdminConsole
+                onExit={() => {
+                  if (isLoggedIn) {
+                    navigate('/dashboard/overview');
+                  } else {
+                    navigate('/');
+                  }
+                }}
                 currentLang={lang}
                 onToggleLang={toggleLanguage}
                 isDark={theme === 'dark'}
                 onToggleTheme={toggleTheme}
-                studentInfo={studentInfo}
               />
-            ) : (
-              <Navigate to="/auth" state={{ from: location.pathname }} replace />
             )
           }
+        />
+
+        {/* University Assistance Dashboard (Protected Portal) */}
+        <Route
+          path="dashboard"
+          element={
+            <DashboardLayoutWrapper
+              isLoggedIn={isLoggedIn}
+              onSignOut={handleSignOut}
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+              studentInfo={studentInfo}
+            />
+          }
         >
-          <Route index element={<DashboardHome onNavigateTab={handleNavigateDashboardTab} currentLang={lang} studentInfo={studentInfo} />} />
-          <Route path="overview" element={<DashboardHome onNavigateTab={handleNavigateDashboardTab} currentLang={lang} studentInfo={studentInfo} />} />
-          <Route path="assistant" element={<DashboardAiAssistant currentLang={lang} prefillQuery={assistantPrefill} studentInfo={studentInfo} />} />
-          <Route path="regulations" element={<DashboardRegulations onNavigateTab={handleNavigateDashboardTab} currentLang={lang} />} />
-          <Route path="admissions" element={<DashboardAdmissions onNavigateTab={handleNavigateDashboardTab} currentLang={lang} />} />
-          <Route path="scholarships" element={<DashboardScholarships onNavigateTab={handleNavigateDashboardTab} currentLang={lang} />} />
-          <Route path="facilities" element={<DashboardFacilities onNavigateTab={handleNavigateDashboardTab} currentLang={lang} />} />
-          <Route path="history" element={<DashboardQueryHistory onNavigateTab={handleNavigateDashboardTab} currentLang={lang} />} />
-          <Route path="profile" element={<DashboardProfile currentLang={lang} studentInfo={studentInfo} onUpdateStudentInfo={handleUpdateStudentInfo} />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/dashboard/overview" replace />} />
+          <Route
+            path="overview"
+            element={
+              <DashboardHome
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+                studentInfo={studentInfo}
+              />
+            }
+          />
+          <Route
+            path="assistant"
+            element={
+              <DashboardAiAssistant
+                currentLang={lang}
+                prefillQuery={assistantPrefill}
+                studentInfo={studentInfo}
+              />
+            }
+          />
+          <Route
+            path="regulations"
+            element={
+              <DashboardRegulations
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="examinations"
+            element={
+              <DashboardExaminations
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="admissions"
+            element={
+              <DashboardAdmissions
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="scholarships"
+            element={
+              <DashboardScholarships
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="facilities"
+            element={
+              <DashboardFacilities
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="history"
+            element={
+              <DashboardQueryHistory
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="saved-answers"
+            element={
+              <DashboardSavedAnswers
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="feedback"
+            element={
+              <DashboardFeedback
+                currentLang={lang}
+                studentInfo={studentInfo}
+              />
+            }
+          />
+          <Route
+            path="faculty-exams"
+            element={
+              <DashboardFacultyExams
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+                studentInfo={studentInfo}
+              />
+            }
+          />
+          <Route
+            path="faculty-documents"
+            element={
+              <DashboardFacultyDocuments
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="faculty-saved"
+            element={
+              <DashboardFacultySaved
+                onNavigateTab={handleNavigateDashboardTab}
+                currentLang={lang}
+              />
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <DashboardProfile
+                currentLang={lang}
+                studentInfo={studentInfo}
+                onUpdateStudentInfo={handleUpdateStudentInfo}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/dashboard/overview" replace />} />
         </Route>
 
-        {/* Catch-all Wildcard Route */}
+        {/* Catch-All Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
