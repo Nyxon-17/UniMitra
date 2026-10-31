@@ -49,9 +49,9 @@ export const DashboardLayout = ({
           studentInfo={studentInfo}
         />
 
-        {/* Dynamic Viewport */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="w-full">
+        {/* Dynamic Viewport (Zero wasted margins on AI chat for maximum breathing room) */}
+        <main className={`flex-1 ${activeTab === 'assistant' ? 'p-2 sm:p-3' : 'p-4 sm:p-6 lg:p-8'}`}>
+          <div className="w-full h-full">
             {children || <Outlet />}
           </div>
         </main>

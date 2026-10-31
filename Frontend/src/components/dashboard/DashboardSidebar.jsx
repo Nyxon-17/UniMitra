@@ -71,10 +71,7 @@ export const DashboardSidebar = ({
     { id: 'feedback', label: 'Review Feedback', asLabel: 'প্ৰতিক্ৰিয়া পৰিদৰ্শন', icon: CheckCircleIcon },
   ];
 
-  const menuItems = isAdmin ? adminMenuItems : (isFaculty ? facultyMenuItems : [
-    ...studentMenuItems,
-    { id: 'admin-console', label: 'Admin Portal (Ingestion)', asLabel: 'প্ৰশাসন কেন্দ্ৰ', icon: BuildingLibraryIcon, isDirectAdmin: true }
-  ]);
+  const menuItems = isAdmin ? adminMenuItems : (isFaculty ? facultyMenuItems : studentMenuItems);
 
   const handleItemClick = (id) => {
     if (id === 'admin-console' || id === 'admin') {

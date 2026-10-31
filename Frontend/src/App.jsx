@@ -35,6 +35,7 @@ import { DashboardFacultyExams } from './pages/faculty/DashboardFacultyExams';
 import { DashboardFacultyDocuments } from './pages/faculty/DashboardFacultyDocuments';
 import { DashboardFacultySaved } from './pages/faculty/DashboardFacultySaved';
 import { AdminConsole } from './pages/admin/AdminConsole';
+import { GlobalAiChatWidget } from './components/common/GlobalAiChatWidget';
 
 // Smooth Scroll to Top on Route Change
 function ScrollToTop() {
@@ -262,6 +263,10 @@ export function App() {
       return;
     }
     if (page === 'admin') {
+      if (!isLoggedIn || (studentInfo?.role !== 'Admin' && studentInfo?.role !== 'Super Admin')) {
+        navigate('/auth?role=admin');
+        return;
+      }
       navigate('/admin');
       return;
     }
@@ -388,41 +393,51 @@ export function App() {
           <Route path="login" element={<Navigate to="/auth" replace />} />
         </Route>
 
-        {/* Administrator Knowledge Base & Ingestion Console */}
+        {/* Administrator Knowledge Base & Ingestion Console - Accessible via Login Only */}
         <Route
           path="admin/*"
           element={
-            <AdminConsole
-              onExit={() => {
-                if (isLoggedIn) {
-                  navigate('/dashboard/overview');
-                } else {
-                  navigate('/');
-                }
-              }}
-              currentLang={lang}
-              onToggleLang={toggleLanguage}
-              isDark={theme === 'dark'}
-              onToggleTheme={toggleTheme}
-            />
+            isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin') ? (
+              <AdminConsole
+                onExit={() => {
+                  if (isLoggedIn) {
+                    navigate('/dashboard/overview');
+                  } else {
+                    navigate('/');
+                  }
+                }}
+                currentLang={lang}
+                onToggleLang={toggleLanguage}
+                isDark={theme === 'dark'}
+                onToggleTheme={toggleTheme}
+                studentInfo={studentInfo}
+              />
+            ) : (
+              <Navigate to="/auth?role=admin" replace />
+            )
           }
         />
         <Route
           path="admin"
           element={
-            <AdminConsole
-              onExit={() => {
-                if (isLoggedIn) {
-                  navigate('/dashboard/overview');
-                } else {
-                  navigate('/');
-                }
-              }}
-              currentLang={lang}
-              onToggleLang={toggleLanguage}
-              isDark={theme === 'dark'}
-              onToggleTheme={toggleTheme}
-            />
+            isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin') ? (
+              <AdminConsole
+                onExit={() => {
+                  if (isLoggedIn) {
+                    navigate('/dashboard/overview');
+                  } else {
+                    navigate('/');
+                  }
+                }}
+                currentLang={lang}
+                onToggleLang={toggleLanguage}
+                isDark={theme === 'dark'}
+                onToggleTheme={toggleTheme}
+                studentInfo={studentInfo}
+              />
+            ) : (
+              <Navigate to="/auth?role=admin" replace />
+            )
           }
         />
 
@@ -589,6 +604,13 @@ export function App() {
         initialMode={authModalMode}
         currentLang={lang}
         onSuccessLogin={handleLoginSuccess}
+      />
+
+      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals */}
+      <GlobalAiChatWidget
+        currentLang={lang}
+        onToggleLang={toggleLanguage}
+        studentInfo={studentInfo}
       />
     </>
   );

@@ -98,22 +98,22 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                   : 'Empowering students, faculty members, and administrative staff to access verified university regulations, examinations, academic programs, scholarships, admission procedures, and campus facilities in Assamese and English.'}
               </p>
 
-              {/* Quick Institutional Inquiry Box */}
-              <div className="bg-white dark:bg-[#00337C] p-3 rounded-3xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 shadow-elevated-sage dark:shadow-elevated-gold max-w-xl mx-auto lg:mx-0">
+              {/* Neomorphic Spatial Institutional Inquiry Capsule */}
+              <div className="neo-surface p-3.5 sm:p-4 rounded-[2.2rem] shadow-[0_20px_50px_rgba(115,165,202,0.22)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.65)] max-w-xl mx-auto lg:mx-0 border border-white/80 dark:border-[#1C82AD]/40">
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="flex-1 flex items-center px-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                  <div className="flex-1 flex items-center px-4 neo-inset rounded-full">
                     <SearchIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mr-2 shrink-0" />
                     <input 
                       type="text" 
                       placeholder={currentLang === 'as' ? 'নিয়ম, পৰীক্ষা, ভৰ্তি বা ছাত্ৰবৃত্তিৰ প্ৰশ্ন লিখক...' : 'Ask regulations, exams, admissions, scholarships...'}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none font-semibold"
+                      className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/60 focus:outline-none font-semibold"
                     />
                   </div>
                   <button 
                     onClick={handlePortalAccess}
-                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-2xl bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] text-white text-xs sm:text-sm font-black transition-all cursor-pointer shadow-md shrink-0"
+                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF933E] to-[#FFCB56] hover:from-[#E87A24] hover:to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] text-xs sm:text-sm font-black transition-all cursor-pointer shadow-md hover:scale-105 shrink-0"
                   >
                     <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Ask Assistant'}</span>
                     <ArrowRightIcon className="w-4 h-4" />
@@ -121,11 +121,11 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 </div>
                 
                 {/* Popular Institutional Query Topics */}
-                <div className="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                <div className="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-[#73A5CA]/25 dark:border-[#1C82AD]/30 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                   <span className="font-bold">Topics:</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#13005A] px-2.5 py-1 rounded-xl text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer transition-all">GU Exam Re-evaluation</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#13005A] px-2.5 py-1 rounded-xl text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer transition-all">DU PG Scholarship Norms</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#13005A] px-2.5 py-1 rounded-xl text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer transition-all">Hostel Admission Rules</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Exam Passing (৪০% নম্বৰ)</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Ishan Uday (ঈশান উদয়)</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Attendance (উপস্থিতি ৰেহাই)</span>
                 </div>
               </div>
 
@@ -171,34 +171,34 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
             </p>
           </div>
 
-          {/* Interactive Demo Card */}
-          <div className="w-full max-w-5xl mx-auto bg-[#FFE9A9]/20 dark:bg-[#13005A] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-elevated-sage dark:shadow-elevated-gold overflow-hidden">
+          {/* Interactive Neomorphic Demo Card */}
+          <div className="w-full max-w-5xl mx-auto neo-surface rounded-[2.5rem] shadow-[0_24px_70px_rgba(115,165,202,0.22)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.65)] overflow-hidden border border-white/80 dark:border-[#1C82AD]/40">
             
             {/* Card Header */}
-            <div className="bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] dark:bg-[#00337C] px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white">
+            <div className="bg-gradient-to-r from-[#FF933E] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white dark:text-black">
               <div className="flex items-center space-x-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#FFE9A9]/20"></div>
-                <div className="w-3.5 h-3.5 rounded-full bg-[#E0D4FD]"></div>
-                <div className="w-3.5 h-3.5 rounded-full bg-[#FFE9A9]"></div>
-                <span className="text-xs sm:text-sm font-black ml-2 text-[#FAF8FF] dark:text-[#FFFFFF]">
-                  UniMitra Live Institutional Assistant
+                <div className="w-3 h-3 rounded-full bg-white/40"></div>
+                <div className="w-3 h-3 rounded-full bg-white/60"></div>
+                <div className="w-3 h-3 rounded-full bg-white"></div>
+                <span className="text-xs sm:text-sm font-black ml-2 text-white dark:text-black">
+                  UniMitra Live Grounded Assistant
                 </span>
               </div>
               
               {/* Language Switch Pills */}
-              <div className="flex items-center space-x-1 bg-black/20 p-1 rounded-xl">
+              <div className="flex items-center space-x-1 bg-black/20 p-1 rounded-full">
                 <button
                   onClick={() => handleDemoSwitch('as')}
-                  className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all ${
-                    activeDemoTab === 'as' ? 'bg-[#FFE9A9]/20 text-[#000000] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
+                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${
+                    activeDemoTab === 'as' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
                   }`}
                 >
                   অসমীয়া
                 </button>
                 <button
                   onClick={() => handleDemoSwitch('en')}
-                  className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all ${
-                    activeDemoTab === 'en' ? 'bg-[#FFE9A9]/20 text-[#000000] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
+                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${
+                    activeDemoTab === 'en' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
                   }`}
                 >
                   English
@@ -207,37 +207,37 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
             </div>
 
             {/* Content Area */}
-            <div className="p-6 sm:p-8 space-y-6">
+            <div className="p-6 sm:p-8 space-y-5">
               
               {/* Institutional Query Box */}
-              <div className="bg-white dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-2xl p-5 shadow-xs">
-                <div className="flex items-center justify-between text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 mb-2">
-                  <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] font-black flex items-center space-x-1.5">
+              <div className="neo-inset p-4 rounded-2xl">
+                <div className="flex items-center justify-between text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 mb-1.5">
+                  <span className="text-[#FF933E] dark:text-[#03C988] font-black flex items-center space-x-1.5">
                     <span>Inquiry Query (প্ৰশ্ন)</span>
                   </span>
-                  <span className="text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#3B2868] px-2 py-0.5 rounded text-[10px] font-black">
+                  <span className="text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#13005A] px-2.5 py-0.5 rounded-full text-[10px] font-black">
                     Institutional Regulation Check
                   </span>
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9]/20 dark:bg-[#13005A] p-3.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <div className="text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
                   {demoInput}
                 </div>
               </div>
 
               {/* RAG Workflow Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-[#E0D4FD]/20 dark:bg-[#00337C] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs font-bold text-[#000000] dark:text-[#FFFFFF]/80">
-                <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">1. Natural Language Parse</span>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#FFE9A9]/30 dark:bg-[#00337C] rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/35 text-xs font-bold text-[#000000] dark:text-[#FFFFFF]/80">
+                <span className="text-[#FF933E] dark:text-[#03C988]">1. Natural Language Parse</span>
                 <span className="text-[#FF933E] dark:text-[#03C988]">➔</span>
-                <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">2. Multilingual E5 Vector Retrieval</span>
+                <span className="text-[#FF933E] dark:text-[#03C988]">2. Multilingual Dense Vector Search</span>
                 <span className="text-[#FF933E] dark:text-[#03C988]">➔</span>
-                <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">3. Grounded Citation Extraction</span>
+                <span className="text-[#FF933E] dark:text-[#03C988]">3. Grounded Citation Extraction</span>
               </div>
 
               {/* Grounded Institutional Answer */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#6D28D9] dark:border-[#C4B5FD]/70 rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40">
-                  <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] font-black text-sm">
-                    <CheckCircleIcon className="w-5 h-5 text-[#10B981] dark:text-[#FFFFFF]" />
+              <div className="neo-surface rounded-2xl p-6 shadow-sm border border-white/90 dark:border-[#1C82AD]/40">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#73A5CA]/25 dark:border-[#1C82AD]/30">
+                  <div className="flex items-center space-x-2 text-[#03C988] font-black text-sm">
+                    <CheckCircleIcon className="w-5 h-5 text-[#03C988]" />
                     <span>Verified Institutional Answer</span>
                   </div>
                   <span className="text-xs bg-[#FFE9A9]/40 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] px-3 py-1 rounded-xl font-bold border border-[#6D28D9]/30">

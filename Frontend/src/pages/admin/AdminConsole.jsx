@@ -332,7 +332,7 @@ export const AdminConsole = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStepName, setUploadStepName] = useState('');
-  
+
   const [uploadFormData, setUploadFormData] = useState({
     title: '',
     asTitle: '',
@@ -677,10 +677,10 @@ export const AdminConsole = ({
     const matchCat = selectedCategoryFilter === 'All' || doc.category === selectedCategoryFilter;
     const matchApproval =
       selectedApprovalFilter === 'All' ? true :
-      selectedApprovalFilter === 'Pending' ? doc.approvalStatus === 'pending' :
-      selectedApprovalFilter === 'Approved' ? (doc.approvalStatus === 'approved' && doc.status === 'Indexed') :
-      selectedApprovalFilter === 'Archived' ? doc.status === 'Archived' :
-      selectedApprovalFilter === 'Rejected' ? doc.approvalStatus === 'rejected' : true;
+        selectedApprovalFilter === 'Pending' ? doc.approvalStatus === 'pending' :
+          selectedApprovalFilter === 'Approved' ? (doc.approvalStatus === 'approved' && doc.status === 'Indexed') :
+            selectedApprovalFilter === 'Archived' ? doc.status === 'Archived' :
+              selectedApprovalFilter === 'Rejected' ? doc.approvalStatus === 'rejected' : true;
     const matchSearch =
       !searchDocQuery.trim() ||
       doc.title.toLowerCase().includes(searchDocQuery.toLowerCase()) ||
@@ -757,12 +757,11 @@ export const AdminConsole = ({
       {/* ADMINISTRATOR NAVIGATION SIDEBAR                                    */}
       {/* =================================================================== */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-r border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-r border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div className="flex flex-col h-full overflow-hidden">
-          
+
           {/* Sidebar Brand Header */}
           <div className="p-5 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-3">
@@ -825,11 +824,10 @@ export const AdminConsole = ({
                 <button
                   key={item.id}
                   onClick={() => handleTabChange(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
                       ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
                       : 'text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40 dark:hover:bg-[#13005A]/60 hover:text-[#FF933E] dark:hover:text-[#03C988]'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-3 truncate">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white dark:text-[#000000]' : 'text-[#73A5CA] dark:text-[#03C988]'}`} />
@@ -837,9 +835,8 @@ export const AdminConsole = ({
                   </div>
 
                   {item.badge !== undefined && item.badge > 0 ? (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
-                      isActive ? 'bg-white text-black' : 'bg-amber-500 text-white animate-pulse'
-                    }`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${isActive ? 'bg-white text-black' : 'bg-amber-500 text-white animate-pulse'
+                      }`}>
                       {item.badge}
                     </span>
                   ) : item.count !== undefined ? (
@@ -854,7 +851,7 @@ export const AdminConsole = ({
 
           {/* Lower Sidebar Controls */}
           <div className="p-4 border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shrink-0 bg-white/50 dark:bg-[#00337C]/50">
-            
+
             {/* System Status Pill */}
             <div className="p-2.5 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#13005A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between text-[11px]">
               <span className="text-[#000000]/70 dark:text-[#FFFFFF]/70 font-bold">Vector Ingestion:</span>
@@ -898,7 +895,7 @@ export const AdminConsole = ({
       {/* MAIN VIEWPORT & TAB CONTENTS                                        */}
       {/* =================================================================== */}
       <div className="flex-1 min-w-0 flex flex-col min-h-screen relative z-10">
-        
+
         {/* Top Header Bar for Desktop */}
         <header className="hidden lg:flex sticky top-0 z-30 bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-6 lg:px-8 py-4 items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -1000,17 +997,15 @@ export const AdminConsole = ({
                   <button
                     key={subTab.id}
                     onClick={() => setUnivSection(subTab.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all flex items-center space-x-1.5 ${
-                      univSection === subTab.id
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all flex items-center space-x-1.5 ${univSection === subTab.id
                         ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
                         : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
-                    }`}
+                      }`}
                   >
                     <span>{currentLang === 'as' ? subTab.asLabel : subTab.label}</span>
                     {subTab.count !== undefined && (
-                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                        univSection === subTab.id ? 'bg-black/20 text-white dark:text-black' : 'bg-[#FFE9A9] dark:bg-[#13005A]'
-                      }`}>
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${univSection === subTab.id ? 'bg-black/20 text-white dark:text-black' : 'bg-[#FFE9A9] dark:bg-[#13005A]'
+                        }`}>
                         {subTab.count}
                       </span>
                     )}
@@ -1763,7 +1758,7 @@ export const AdminConsole = ({
           {/* =================================================================== */}
           {activeTab === 'repository' && (
             <div className="space-y-5">
-              
+
               {/* Pending Faculty Review Alert Banner */}
               {pendingDocs.length > 0 && (
                 <div className="p-4 sm:p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-fade-in">
@@ -1793,7 +1788,7 @@ export const AdminConsole = ({
 
               {/* Filter Hub */}
               <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
-                
+
                 {/* Workflow Status Filter Pills */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
                   <span className="text-[11px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/70 mr-1 shrink-0">
@@ -1809,13 +1804,12 @@ export const AdminConsole = ({
                     <button
                       key={pill.id}
                       onClick={() => setSelectedApprovalFilter(pill.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center space-x-1.5 ${
-                        selectedApprovalFilter === pill.id
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center space-x-1.5 ${selectedApprovalFilter === pill.id
                           ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
                           : pill.alert
                             ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700'
                             : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-                      }`}
+                        }`}
                     >
                       <span>{pill.label}</span>
                       <span className="px-1.5 py-0.2 rounded-md bg-black/10 dark:bg-white/10 text-[10px]">
@@ -2011,7 +2005,7 @@ export const AdminConsole = ({
           {/* =================================================================== */}
           {activeTab === 'upload' && (
             <div className="space-y-6 max-w-5xl mx-auto">
-              
+
               {/* Header Banner */}
               <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -2060,11 +2054,11 @@ export const AdminConsole = ({
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
+
                   {/* Left Column: Interactive Form */}
                   <div className="lg:col-span-2 bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs">
                     <form onSubmit={handleUploadSubmit} className="space-y-5">
-                      
+
                       {/* Drag & Drop File Zone */}
                       <div>
                         <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
@@ -2075,13 +2069,12 @@ export const AdminConsole = ({
                           onDragLeave={handleDragLeave}
                           onDrop={handleDrop}
                           onClick={() => fileInputRef.current?.click()}
-                          className={`p-6 sm:p-8 border-2 border-dashed rounded-3xl text-center cursor-pointer transition-all ${
-                            isDragging
+                          className={`p-6 sm:p-8 border-2 border-dashed rounded-3xl text-center cursor-pointer transition-all ${isDragging
                               ? 'border-[#FF933E] bg-[#FFE9A9]/40 scale-[1.01]'
                               : selectedPdfFile
                                 ? 'border-[#03C988] bg-[#03C988]/10'
                                 : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#13005A] hover:border-[#FF933E]'
-                          }`}
+                            }`}
                         >
                           <input
                             ref={fileInputRef}
@@ -2689,11 +2682,10 @@ export const AdminConsole = ({
                         key={p}
                         type="button"
                         onClick={() => setLlmConfig({ ...llmConfig, provider: p })}
-                        className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${
-                          llmConfig.provider === p
+                        className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${llmConfig.provider === p
                             ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] border-[#FF933E] dark:border-[#03C988]'
                             : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-                        }`}
+                          }`}
                       >
                         {p}
                       </button>
@@ -3017,7 +3009,7 @@ export const AdminConsole = ({
       {inspectDocModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
-            
+
             <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
               <div className="flex items-center space-x-2">
                 <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
@@ -3052,8 +3044,8 @@ export const AdminConsole = ({
                   Governance Status
                 </span>
                 <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                  {inspectDocModal.approvalStatus === 'approved' 
-                    ? 'Approved & Vector Indexed (Live for Students)' 
+                  {inspectDocModal.approvalStatus === 'approved'
+                    ? 'Approved & Vector Indexed (Live for Students)'
                     : inspectDocModal.approvalStatus === 'pending'
                       ? 'Pending Administrator Verification (Locked from Chatbot)'
                       : 'Revision Requested / Rejected'}
