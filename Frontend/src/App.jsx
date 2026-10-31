@@ -14,6 +14,7 @@ import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { DashboardHome } from './pages/dashboard/DashboardHome';
 import { DashboardAiAssistant } from './pages/dashboard/DashboardAiAssistant';
 import { DashboardSyllabus } from './pages/dashboard/DashboardSyllabus';
+import { DashboardCompare } from './pages/dashboard/DashboardCompare';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 
 export function App() {
@@ -169,6 +170,12 @@ export function App() {
             onNavigateTab={handleNavigateDashboardTab}
             currentLang={lang}
             studentInfo={studentInfo}
+          />
+        )}
+        {dashboardTab === 'compare' && (
+          <DashboardCompare
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
           />
         )}
         {dashboardTab === 'profile' && (

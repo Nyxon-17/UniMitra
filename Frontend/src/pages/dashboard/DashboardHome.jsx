@@ -5,7 +5,8 @@ import {
   DocumentTextIcon, 
   CheckCircleIcon, 
   ArrowRightIcon, 
-  SearchIcon 
+  SearchIcon,
+  ScaleIcon 
 } from '../../components/common/Icons';
 
 export const DashboardHome = ({ 
@@ -72,7 +73,7 @@ export const DashboardHome = ({
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => onNavigateTab('assistant')}
               className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm"
@@ -85,6 +86,13 @@ export const DashboardHome = ({
               className="px-5 py-3 rounded-2xl font-bold text-[#118AB2] dark:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer text-xs sm:text-sm border border-slate-200 dark:border-slate-700"
             >
               {currentLang === 'as' ? 'পাঠ্যক্ৰম চাওক' : 'Browse Syllabus'}
+            </button>
+            <button
+              onClick={() => onNavigateTab('compare')}
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-[#06D6A0] hover:text-white bg-[#06D6A0]/10 hover:bg-[#06D6A0] transition-all cursor-pointer text-xs sm:text-sm border border-[#06D6A0]/30 shadow-sm"
+            >
+              <ScaleIcon className="w-4 h-4" />
+              <span>{currentLang === 'as' ? 'পাঠ্যক্ৰম তুলনা' : 'Compare Curriculums'}</span>
             </button>
           </div>
         </div>
@@ -193,6 +201,33 @@ export const DashboardHome = ({
             অসমীয়া প্ৰশ্ন আৰ্হি
           </button>
         </div>
+      </div>
+
+      {/* 3D Multi-University Comparison Action Card */}
+      <div className="relative bg-gradient-to-r from-[#118AB2]/10 via-[#06D6A0]/10 to-[#FFD166]/10 border-2 border-[#118AB2]/30 rounded-3xl p-6 sm:p-7 shadow-sm card-3d flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#118AB2] to-[#06D6A0] text-white flex items-center justify-center shadow-md shrink-0">
+            <ScaleIcon className="w-6 h-6 text-[#FFD166]" />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় পাঠ্যক্ৰম তুলনা কেন্দ্ৰ' : 'Multi-University Curriculum Comparison Engine'}
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              {currentLang === 'as' 
+                ? 'GU, DU, TU আৰু অন্যান্য বিশ্ববিদ্যালয়ৰ সিলেবাছ, ক্ৰেডিট আৰু নম্বৰ পদ্ধতি তুলনা কৰক।'
+                : 'Compare syllabus coverage, credits, and examination schemes across GU, DU, TU & more side-by-side.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onNavigateTab('compare')}
+          className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-all cursor-pointer shadow-elevated-cerulean text-xs sm:text-sm shrink-0"
+        >
+          <span>{currentLang === 'as' ? 'তুলনা কৰক' : 'Open Compare Studio'}</span>
+          <ArrowRightIcon className="w-4 h-4" />
+        </button>
       </div>
 
       {/* 2-Column Section: Available Subjects & Recent Questions */}

@@ -3,6 +3,7 @@ import {
   HomeIcon, 
   ChatBubbleIcon, 
   BookOpenIcon, 
+  ScaleIcon,
   UserIcon, 
   ArrowRightOnRectangleIcon, 
   XMarkIcon 
@@ -21,6 +22,7 @@ export const DashboardSidebar = ({
     { id: 'overview', label: 'Study Overview', asLabel: 'অধ্যয়ন সাৰাংশ', icon: HomeIcon },
     { id: 'assistant', label: 'Ask UniMitra AI', asLabel: 'সহায়কৰ লগত বাৰ্তালাপ', icon: ChatBubbleIcon },
     { id: 'syllabus', label: 'Syllabus Explorer', asLabel: 'পাঠ্যক্ৰম অন্বেষণ', icon: BookOpenIcon },
+    { id: 'compare', label: 'Curriculum Compare', asLabel: 'পাঠ্যক্ৰম তুলনা', icon: ScaleIcon },
     { id: 'profile', label: 'Student Profile', asLabel: 'ছাত্ৰ প্ৰফাইল', icon: UserIcon },
   ];
 
