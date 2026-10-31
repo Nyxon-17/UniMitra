@@ -1,68 +1,153 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   XMarkIcon, 
-  AcademicCapIcon, 
+  BuildingLibraryIcon, 
+  AcademicCapIcon,
+  IdentificationIcon,
+  ShieldCheckIcon,
   CheckCircleIcon, 
-  ArrowLeftIcon,
+  CheckIcon,
+  DocumentDuplicateIcon,
+  ArrowRightIcon,
   EnvelopeIcon,
-  LockClosedIcon 
+  LockClosedIcon,
+  KeyIcon,
+  ClockIcon,
+  EyeIcon,
+  EyeSlashIcon
 } from '../common/Icons';
 
-export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang = 'en', onSuccessLogin }) => {
-  // Modes: 'login' | 'register' | 'forgot'
+export const AuthModal = ({ 
+  isOpen, 
+  onClose, 
+  initialRole = 'student', 
+  initialMode = 'login', 
+  currentLang = 'en', 
+  onSuccessLogin 
+}) => {
+  // Roles: 'student' | 'faculty' | 'admin'
+  const [role, setRole] = useState(initialRole);
+  
+  // Modes: 'login' | 'register'
   const [mode, setMode] = useState(initialMode);
-  
-  // Registration steps: 'form' | 'otp'
-  const [regStep, setRegStep] = useState('form');
-  
-  // Forgot password steps: 'email' | 'otp'
-  const [forgotStep, setForgotStep] = useState('email');
 
-  // Form states - Strictly Email (no Roll No)
-  const [loginData, setLoginData] = useState({
+  // Steps:
+  // Student: 'form' | 'otp'
+  // Faculty: 'form' | 'created_id' | 'login_credentials' | 'login_otp'
+  // Admin: 'credentials' | 'otp'
+  const [step, setStep] = useState('form');
+
+  // Generated Unique Member ID for Faculty
+  const [generatedMemberId, setGeneratedMemberId] = useState('');
+  const [copiedId, setCopiedId] = useState(false);
+
+  // 6-digit OTP state
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpRefs = useRef([]);
+
+  // Countdown timer for OTP resend
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
+  // Status message state
+  const [status, setStatus] = useState({ loading: false, success: false, message: '', error: null });
+
+  // Password visibility state with eye buttons
+  const [showPasswords, setShowPasswords] = useState({
+    studentLogin: false,
+    studentReg: false,
+    studentRegConfirm: false,
+    facultyLogin: false,
+    facultyReg: false,
+    facultyRegConfirm: false,
+    adminLogin: false,
+  });
+
+  const toggleShowPassword = (field) => {
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  // 1. Student Form State
+  const [studentReg, setStudentReg] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const [studentLogin, setStudentLogin] = useState({
     email: '',
     password: '',
     rememberMe: true,
   });
 
-  const [registerData, setRegisterData] = useState({
+  // 2. Faculty Member Form State
+  const [facultyReg, setFacultyReg] = useState({
     fullName: '',
-    email: '',
+    officialEmail: '',
+    memberEmail: '',
+    facultyId: '',
+    department: 'Computer Science & Engineering',
+    designation: 'Assistant Professor',
     password: '',
     confirmPassword: '',
-    agreeTerms: true,
   });
 
-  const [forgotData, setForgotData] = useState({
-    email: '',
-    newPassword: '',
-    confirmPassword: '',
+  const [facultyLogin, setFacultyLogin] = useState({
+    memberId: '',
+    password: '',
   });
 
-  // OTP State (6 digits)
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const otpRefs = useRef([]);
+  // 3. Super Admin Form State
+  const [adminLogin, setAdminLogin] = useState({
+    superName: 'System Administrator',
+    superEmail: 'admin@unimitra.edu.in',
+    superPassword: '',
+  });
 
-  // Resend Countdown Timer
-  const [timer, setTimer] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  // Department options for faculty
+  const departmentOptions = [
+    'Computer Science & Engineering',
+    'Information Technology',
+    'Mathematics & Statistics',
+    'Physics',
+    'Chemistry',
+    'Life Sciences & Biotechnology',
+    'Assamese & Regional Studies',
+    'English & Foreign Languages',
+    'Commerce & Management Studies',
+    'Law & Legal Studies',
+    'Economics & Public Policy'
+  ];
 
-  // Status
-  const [authStatus, setAuthStatus] = useState({ loading: false, success: false, message: '', error: null });
+  // Designation options for faculty
+  const designationOptions = [
+    'Professor',
+    'Associate Professor',
+    'Assistant Professor',
+    'Head of Department (HOD)',
+    'Dean of Academic Affairs',
+    'Visiting Faculty / Fellow'
+  ];
 
-  // Reset when modal opens/changes
+  // Reset when modal opens or initial props change
   useEffect(() => {
+    setRole(initialRole);
     setMode(initialMode);
-    setRegStep('form');
-    setForgotStep('email');
+    setStep(
+      initialMode === 'register' 
+        ? 'form' 
+        : (initialRole === 'admin' ? 'credentials' : (initialRole === 'faculty' ? 'login_credentials' : 'form'))
+    );
     setOtp(['', '', '', '', '', '']);
-    setAuthStatus({ loading: false, success: false, message: '', error: null });
-  }, [initialMode, isOpen]);
+    setStatus({ loading: false, success: false, message: '', error: null });
+  }, [initialRole, initialMode, isOpen]);
 
   // Handle countdown timer for OTP
   useEffect(() => {
     let interval = null;
-    if ((regStep === 'otp' || forgotStep === 'otp') && timer > 0) {
+    const isOtpStep = step === 'otp' || step === 'login_otp';
+    if (isOtpStep && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
@@ -70,9 +155,9 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
       setCanResend(true);
     }
     return () => clearInterval(interval);
-  }, [regStep, forgotStep, timer]);
+  }, [step, timer]);
 
-  // Handle Escape key
+  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -85,7 +170,7 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
 
   if (!isOpen) return null;
 
-  // OTP Input Handlers
+  // OTP handlers
   const handleOtpChange = (index, value) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
@@ -117,700 +202,985 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
     otpRefs.current[nextIndex]?.focus();
   };
 
-  const handleResendOtp = () => {
+  const resetOtp = () => {
+    setOtp(['', '', '', '', '', '']);
     setTimer(60);
     setCanResend(false);
-    setAuthStatus({ loading: false, success: false, message: 'A new 6-digit verification code was sent to your email.', error: null });
   };
 
-  // 1. Login Submit
-  const handleLoginSubmit = (e) => {
+  const handleCopyMemberId = () => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(generatedMemberId);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
+
+  // Switch role tab helper
+  const handleSelectRole = (newRole) => {
+    setRole(newRole);
+    setStatus({ loading: false, success: false, message: '', error: null });
+    
+    if (newRole === 'admin') {
+      setMode('login');
+      setStep('credentials');
+    } else if (newRole === 'faculty') {
+      setMode('login');
+      setStep('login_credentials');
+    } else {
+      setMode('login');
+      setStep('form');
+    }
+  };
+
+  // 1. Student Handlers
+  const handleStudentLogin = (e) => {
     e.preventDefault();
-    setAuthStatus({ loading: true, success: false, message: '', error: null });
+    setStatus({ loading: true, success: false, message: '', error: null });
 
     setTimeout(() => {
-      setAuthStatus({
+      setStatus({
         loading: false,
         success: true,
-        message: 'Login successful! Welcome to UniMitra.',
+        message: currentLang === 'as' ? 'ছাত্ৰ প্ৰৱেশ সফল হৈছে!' : 'Student signed in successfully!',
         error: null,
       });
+
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({ email: loginData.email, name: loginData.email.split('@')[0] });
+          onSuccessLogin({
+            name: studentLogin.email.split('@')[0],
+            email: studentLogin.email,
+            role: 'Student',
+            department: 'Higher Education'
+          });
         }
-      }, 1100);
+      }, 700);
     }, 600);
   };
 
-  // 2. Registration Step 1 Submit (Requests OTP)
-  const handleRegisterFormSubmit = (e) => {
+  const handleStudentRegSubmit = (e) => {
     e.preventDefault();
-    if (registerData.password !== registerData.confirmPassword) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
+    if (studentReg.password !== studentReg.confirmPassword) {
+      setStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
       return;
     }
-    if (registerData.password.length < 6) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Password must be at least 6 characters.' });
+    if (studentReg.password.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Password must be at least 6 characters.' });
       return;
     }
 
-    setAuthStatus({ loading: true, success: false, message: '', error: null });
-
+    setStatus({ loading: true, success: false, message: '', error: null });
     setTimeout(() => {
-      setAuthStatus({ loading: false, success: false, message: '', error: null });
-      setRegStep('otp');
-      setTimer(60);
-      setCanResend(false);
-      setOtp(['', '', '', '', '', '']);
+      setStatus({ loading: false, success: false, message: '', error: null });
+      setStep('otp');
+      resetOtp();
     }, 500);
   };
 
-  // 3. Registration Step 2 Submit (Verifies Email OTP)
-  const handleVerifyRegisterOtp = (e) => {
+  const handleVerifyStudentOtp = (e) => {
     e.preventDefault();
-    const fullCode = otp.join('');
-    if (fullCode.length < 6) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits of the code.' });
+    const code = otp.join('');
+    if (code.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits.' });
       return;
     }
 
-    setAuthStatus({ loading: true, success: false, message: '', error: null });
-
+    setStatus({ loading: true, success: false, message: '', error: null });
     setTimeout(() => {
-      setAuthStatus({
+      setStatus({
         loading: false,
         success: true,
-        message: 'Email verified! Account created successfully.',
+        message: 'Account verified! Accessing UniMitra Portal...',
         error: null,
       });
+
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({ email: registerData.email, name: registerData.fullName || registerData.email.split('@')[0] });
+          onSuccessLogin({
+            name: studentReg.fullName,
+            email: studentReg.email,
+            role: 'Student',
+            department: 'Undergraduate / Postgraduate Studies'
+          });
         }
-      }, 1200);
-    }, 700);
+      }, 700);
+    }, 600);
   };
 
-  // 4. Forgot Password Step 1
-  const handleForgotEmailSubmit = (e) => {
+  // 2. Faculty Handlers
+  const handleFacultyRegSubmit = (e) => {
     e.preventDefault();
-    if (!forgotData.email) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Please enter your registered email address.' });
+    if (facultyReg.password !== facultyReg.confirmPassword) {
+      setStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
+      return;
+    }
+    if (facultyReg.password.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Password must be at least 6 characters.' });
       return;
     }
 
-    setAuthStatus({ loading: true, success: false, message: '', error: null });
-
+    setStatus({ loading: true, success: false, message: '', error: null });
     setTimeout(() => {
-      setAuthStatus({ loading: false, success: false, message: '', error: null });
-      setForgotStep('otp');
-      setTimer(60);
-      setCanResend(false);
-      setOtp(['', '', '', '', '', '']);
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      const newMemberId = `UM-FAC-${randomCode}`;
+      setGeneratedMemberId(newMemberId);
+      setFacultyLogin((prev) => ({ ...prev, memberId: newMemberId }));
+      setStatus({ loading: false, success: true, message: '', error: null });
+      setStep('created_id');
+    }, 600);
+  };
+
+  const handleFacultyLoginCredentials = (e) => {
+    e.preventDefault();
+    if (!facultyLogin.memberId || !facultyLogin.password) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter Member ID and Password.' });
+      return;
+    }
+
+    setStatus({ loading: true, success: false, message: '', error: null });
+    setTimeout(() => {
+      setStatus({ loading: false, success: false, message: '', error: null });
+      setStep('login_otp');
+      resetOtp();
     }, 500);
   };
 
-  // 5. Forgot Password Step 2
-  const handleForgotResetSubmit = (e) => {
+  const handleVerifyFacultyOtp = (e) => {
     e.preventDefault();
-    const fullCode = otp.join('');
-    if (fullCode.length < 6) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits.' });
-      return;
-    }
-    if (forgotData.newPassword !== forgotData.confirmPassword) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
-      return;
-    }
-    if (forgotData.newPassword.length < 6) {
-      setAuthStatus({ loading: false, success: false, message: '', error: 'Password must be at least 6 characters.' });
+    const code = otp.join('');
+    if (code.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits.' });
       return;
     }
 
-    setAuthStatus({ loading: true, success: false, message: '', error: null });
-
+    setStatus({ loading: true, success: false, message: '', error: null });
     setTimeout(() => {
-      setAuthStatus({
+      setStatus({
         loading: false,
         success: true,
-        message: 'Password updated! Please sign in with your new password.',
+        message: 'Faculty credentials verified! Opening workspace...',
         error: null,
       });
+
       setTimeout(() => {
-        setMode('login');
-        setForgotStep('email');
-        setAuthStatus({ loading: false, success: false, message: '', error: null });
-      }, 1300);
-    }, 700);
+        onClose();
+        if (onSuccessLogin) {
+          onSuccessLogin({
+            name: facultyReg.fullName || 'Prof. Faculty Member',
+            email: facultyReg.officialEmail || `${facultyLogin.memberId.toLowerCase()}@unimitra.edu.in`,
+            role: 'Faculty Member',
+            department: facultyReg.department || 'Academic Department',
+            designation: facultyReg.designation || 'Faculty Member',
+            memberId: facultyLogin.memberId,
+            facultyId: facultyReg.facultyId || 'FAC-INST'
+          });
+        }
+      }, 700);
+    }, 600);
+  };
+
+  // 3. Admin Handlers
+  const handleAdminCredentials = (e) => {
+    e.preventDefault();
+    if (!adminLogin.superEmail || !adminLogin.superPassword) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter Super Email and Password.' });
+      return;
+    }
+
+    setStatus({ loading: true, success: false, message: '', error: null });
+    setTimeout(() => {
+      setStatus({ loading: false, success: false, message: '', error: null });
+      setStep('otp');
+      resetOtp();
+    }, 500);
+  };
+
+  const handleVerifyAdminOtp = (e) => {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits.' });
+      return;
+    }
+
+    setStatus({ loading: true, success: false, message: '', error: null });
+    setTimeout(() => {
+      setStatus({
+        loading: false,
+        success: true,
+        message: 'Super Administrator verified! Launching Admin Console...',
+        error: null,
+      });
+
+      setTimeout(() => {
+        onClose();
+        if (onSuccessLogin) {
+          onSuccessLogin({
+            name: adminLogin.superName || 'Super Administrator',
+            email: adminLogin.superEmail,
+            role: 'Admin',
+            department: 'Institutional Governance'
+          });
+        }
+      }, 700);
+    }, 600);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      {/* Dimmed Floating Backdrop */}
+      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/65 backdrop-blur-xs transition-opacity duration-200" 
         onClick={onClose}
-      ></div>
+      />
 
-      {/* Compact, Responsive Modal Centered Vertically and Horizontally with Margin */}
-      <div className="relative w-full max-w-[420px] bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
+      {/* Modal Card */}
+      <div className="relative w-full max-w-lg bg-[#FEFAF3] dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
         
-        {/* Compact Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50 dark:bg-[#0E1726] border-b border-slate-200 dark:border-slate-800 shrink-0">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#118AB2] to-[#06D6A0] flex items-center justify-center text-white shadow-xs">
-              <AcademicCapIcon className="w-5 h-5 text-[#FFD166]" />
+        {/* Header with Brand & Close Button */}
+        <div className="flex items-center justify-between px-6 py-4 bg-[#B8CFB3]/25 dark:bg-[#15370D] border-b border-[#B8CFB3] dark:border-[#728E6D] shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#84A282] to-[#B8CFB3] flex items-center justify-center text-white shadow-xs">
+              <BuildingLibraryIcon className="w-5 h-5 text-[#FEFAF3]" />
             </div>
             <div>
-              <span className="text-lg font-black text-[#073B4C] dark:text-white leading-tight">
-                Uni<span className="text-[#FF7F50]">Mitra</span>
+              <span className="text-lg font-black text-[#15370D] dark:text-[#FFF2B4] leading-tight">
+                Uni<span className="text-[#84A282]">Mitra</span>
               </span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-semibold leading-none">
-                {mode === 'login' ? 'Student Sign In' : mode === 'register' ? 'New Account' : 'Password Recovery'}
+              <span className="text-[11px] text-[#4F6D4B] dark:text-[#E5CD82] block font-semibold leading-none">
+                {role === 'student' ? 'Student Portal' : (role === 'faculty' ? 'Faculty Member Portal' : 'Admin Console')}
               </span>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#15370D] transition-colors cursor-pointer"
             aria-label="Close modal"
           >
-            <XMarkIcon className="w-4 h-4" />
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab Switcher: Only displayed in Login / Register modes */}
-        {mode !== 'forgot' && (
-          <div className="px-5 pt-3.5 shrink-0">
-            <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs">
-              <button
-                onClick={() => {
-                  setMode('login');
-                  setRegStep('form');
-                  setAuthStatus({ loading: false, success: false, message: '', error: null });
-                }}
-                className={`flex-1 py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
-                  mode === 'login'
-                    ? 'bg-white dark:bg-[#162235] text-[#118AB2] dark:text-[#FFD166] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {currentLang === 'as' ? 'লগ-ইন (Sign In)' : 'Sign In'}
-              </button>
+        {/* 3 Role Switcher Tabs */}
+        <div className="px-6 pt-4 shrink-0 space-y-3">
+          <div className="flex bg-[#B8CFB3]/30 dark:bg-[#15370D] p-1 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] text-xs">
+            <button
+              type="button"
+              onClick={() => handleSelectRole('student')}
+              className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
+                role === 'student'
+                  ? 'bg-[#84A282] text-white shadow-xs'
+                  : 'text-[#15370D] dark:text-[#E5CD82]'
+              }`}
+            >
+              <AcademicCapIcon className="w-3.5 h-3.5" />
+              <span>Student</span>
+            </button>
 
-              <button
-                onClick={() => {
-                  setMode('register');
-                  setRegStep('form');
-                  setAuthStatus({ loading: false, success: false, message: '', error: null });
-                }}
-                className={`flex-1 py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
-                  mode === 'register'
-                    ? 'bg-white dark:bg-[#162235] text-[#118AB2] dark:text-[#FFD166] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {currentLang === 'as' ? 'পঞ্জীয়ন (Register)' : 'Register'}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleSelectRole('faculty')}
+              className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
+                role === 'faculty'
+                  ? 'bg-[#84A282] text-white shadow-xs'
+                  : 'text-[#15370D] dark:text-[#E5CD82]'
+              }`}
+            >
+              <IdentificationIcon className="w-3.5 h-3.5" />
+              <span>Faculty</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectRole('admin')}
+              className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
+                role === 'admin'
+                  ? 'bg-[#84A282] text-white shadow-xs'
+                  : 'text-[#15370D] dark:text-[#E5CD82]'
+              }`}
+            >
+              <ShieldCheckIcon className="w-3.5 h-3.5" />
+              <span>Admin</span>
+            </button>
           </div>
-        )}
 
-        {/* Scrollable Form Body with Clean Compact Spacing */}
-        <div className="p-5 overflow-y-auto space-y-4">
-          
-          {/* Success Banner */}
-          {authStatus.success && (
-            <div className="p-3 rounded-xl bg-[#E6FBF5] dark:bg-slate-800 border border-[#06D6A0]/40 text-center space-y-0.5">
-              <div className="flex items-center justify-center space-x-1.5 text-[#06D6A0] font-bold text-xs sm:text-sm">
-                <CheckCircleIcon className="w-4 h-4 shrink-0" />
-                <span>{authStatus.message}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Info Banner */}
-          {authStatus.message && !authStatus.success && (
-            <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-700 dark:text-blue-300">
-              {authStatus.message}
-            </div>
-          )}
-
-          {/* Error Banner */}
-          {authStatus.error && (
-            <div className="p-2.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-xs text-red-600 dark:text-red-400 font-medium">
-              {authStatus.error}
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* 1. STUDENT LOGIN VIEW (Compact, Email & Password only)   */}
-          {/* ========================================================= */}
-          {mode === 'login' && (
-            <div className="space-y-3.5">
-              
-              {/* Google Sign In Quick Button */}
+          {/* Mode Switcher: Sign In vs Register (for Student & Faculty) */}
+          {role !== 'admin' && step !== 'created_id' && step !== 'otp' && step !== 'login_otp' && (
+            <div className="flex bg-white dark:bg-[#1C4412] p-1 rounded-xl border border-[#B8CFB3]/70 dark:border-[#728E6D]/70 text-[11px]">
               <button
                 type="button"
-                onClick={() => alert("Google OAuth 2.0 login will connect via backend.")}
-                className="w-full flex items-center justify-center space-x-2.5 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs"
+                onClick={() => {
+                  setMode('login');
+                  setStep(role === 'faculty' ? 'login_credentials' : 'form');
+                  setStatus({ loading: false, success: false, message: '', error: null });
+                }}
+                className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
+                  mode === 'login'
+                    ? 'bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]'
+                    : 'text-[#4F6D4B] dark:text-[#E5CD82]'
+                }`}
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-                <span>Continue with Google</span>
+                Sign In
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('register');
+                  setStep('form');
+                  setStatus({ loading: false, success: false, message: '', error: null });
+                }}
+                className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
+                  mode === 'register'
+                    ? 'bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]'
+                    : 'text-[#4F6D4B] dark:text-[#E5CD82]'
+                }`}
+              >
+                Register
+              </button>
+            </div>
+          )}
+        </div>
 
-              <div className="relative flex items-center justify-center">
-                <div className="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                <span className="bg-white dark:bg-[#111C2E] px-3 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                  or email
-                </span>
+        {/* Scrollable Form Body */}
+        <div className="p-6 overflow-y-auto space-y-4">
+          
+          {/* Status Banner */}
+          {status.success && status.message && (
+            <div className="p-3 rounded-2xl bg-[#B8CFB3]/40 dark:bg-[#15370D] border-2 border-[#84A282] text-center space-y-0.5">
+              <div className="flex items-center justify-center space-x-1.5 text-[#15370D] dark:text-[#FFF2B4] font-black text-xs sm:text-sm">
+                <CheckCircleIcon className="w-4 h-4 text-[#84A282] shrink-0" />
+                <span>{status.message}</span>
               </div>
+            </div>
+          )}
 
-              <form onSubmit={handleLoginSubmit} className="space-y-3">
-                {/* Email Input */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Email Address <span className="text-[#FF7F50]">*</span>
-                  </label>
-                  <div className="relative flex items-center">
-                    <EnvelopeIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="student@example.com"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Password Input */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Password <span className="text-[#FF7F50]">*</span>
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMode('forgot');
-                        setForgotStep('email');
-                        setAuthStatus({ loading: false, success: false, message: '', error: null });
-                      }}
-                      className="text-[11px] text-[#118AB2] dark:text-[#FFD166] font-bold hover:underline cursor-pointer"
-                    >
-                      Forgot?
-                    </button>
-                  </div>
-                  <div className="relative flex items-center">
-                    <LockClosedIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Remember Me */}
-                <div className="flex items-center pt-0.5">
-                  <input
-                    id="compact-remember"
-                    type="checkbox"
-                    checked={loginData.rememberMe}
-                    onChange={(e) => setLoginData({ ...loginData, rememberMe: e.target.checked })}
-                    className="w-3.5 h-3.5 text-[#118AB2] rounded border-slate-300 focus:ring-0 cursor-pointer"
-                  />
-                  <label htmlFor="compact-remember" className="ml-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
-                    Remember session
-                  </label>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={authStatus.loading}
-                  className="w-full py-2.5 rounded-xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm disabled:opacity-50 mt-1"
-                >
-                  {authStatus.loading ? 'Signing in...' : 'Sign In as Student'}
-                </button>
-
-                <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-1">
-                  Don’t have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('register');
-                      setRegStep('form');
-                    }}
-                    className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                  >
-                    Register Free
-                  </button>
-                </div>
-              </form>
+          {status.error && (
+            <div className="p-2.5 rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-300 dark:border-red-900 text-xs text-red-700 dark:text-red-300 font-bold">
+              {status.error}
             </div>
           )}
 
           {/* ========================================================= */}
-          {/* 2. REGISTRATION FLOW (Compact, Email OTP Verification)    */}
+          {/* 1. STUDENT FLOW                                           */}
           {/* ========================================================= */}
-          {mode === 'register' && (
-            <div>
-              {regStep === 'form' ? (
-                <div className="space-y-3.5">
-                  {/* Google Quick Sign Up */}
-                  <button
-                    type="button"
-                    onClick={() => alert("Google OAuth registration will be initialized.")}
-                    className="w-full flex items-center justify-center space-x-2.5 py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs"
-                  >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                    </svg>
-                    <span>Sign Up with Google</span>
-                  </button>
-
-                  <div className="relative flex items-center justify-center">
-                    <div className="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                    <span className="bg-white dark:bg-[#111C2E] px-3 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                      or student email
-                    </span>
-                  </div>
-
-                  <form onSubmit={handleRegisterFormSubmit} className="space-y-3">
-                    {/* Full Name */}
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Full Name <span className="text-[#FF7F50]">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Priyanku Sarma"
-                        value={registerData.fullName}
-                        onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                      />
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Email Address (OTP sent here) <span className="text-[#FF7F50]">*</span>
-                      </label>
+          {role === 'student' && (
+            <>
+              {mode === 'login' && (
+                <form onSubmit={handleStudentLogin} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Student Email <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <EnvelopeIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                       <input
                         type="email"
                         required
-                        placeholder="e.g. priyanku@gmail.com"
-                        value={registerData.email}
-                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                        placeholder="student@university.ac.in"
+                        value={studentLogin.email}
+                        onChange={(e) => setStudentLogin({ ...studentLogin, email: e.target.value })}
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
-
-                    {/* Password & Confirm */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          Password <span className="text-[#FF7F50]">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          required
-                          placeholder="Min 6 chars"
-                          value={registerData.password}
-                          onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                          className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          Confirm Password <span className="text-[#FF7F50]">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          required
-                          placeholder="Repeat"
-                          value={registerData.confirmPassword}
-                          onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                          className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Terms */}
-                    <div className="flex items-start pt-0.5">
-                      <input
-                        id="compact-terms"
-                        type="checkbox"
-                        required
-                        checked={registerData.agreeTerms}
-                        onChange={(e) => setRegisterData({ ...registerData, agreeTerms: e.target.checked })}
-                        className="w-3.5 h-3.5 text-[#118AB2] rounded border-slate-300 focus:ring-0 mt-0.5 cursor-pointer"
-                      />
-                      <label htmlFor="compact-terms" className="ml-2 text-[11px] text-slate-600 dark:text-slate-400">
-                        I agree to UniMitra academic terms.
-                      </label>
-                    </div>
-
-                    {/* Submit -> Go to OTP */}
-                    <button
-                      type="submit"
-                      disabled={authStatus.loading}
-                      className="w-full py-2.5 rounded-xl font-bold text-white bg-[#06D6A0] hover:bg-[#05B889] transition-all cursor-pointer shadow-elevated-mint text-xs sm:text-sm disabled:opacity-50 mt-1"
-                    >
-                      {authStatus.loading ? 'Sending Code...' : 'Send Verification OTP ➔'}
-                    </button>
-
-                    <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-1">
-                      Already registered?{' '}
-                      <button
-                        type="button"
-                        onClick={() => setMode('login')}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                      >
-                        Sign In
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                /* Step 2: 6-Digit Email OTP */
-                <form onSubmit={handleVerifyRegisterOtp} className="space-y-4">
-                  <div className="text-center space-y-1">
-                    <div className="w-10 h-10 rounded-xl bg-[#E7F3F7] dark:bg-slate-800 text-[#118AB2] dark:text-[#FFD166] flex items-center justify-center mx-auto">
-                      <EnvelopeIcon className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Verify Email Address</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Code sent to <strong className="text-[#118AB2] dark:text-[#FFD166]">{registerData.email}</strong>
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setRegStep('form')}
-                      className="text-[11px] text-slate-400 hover:text-slate-700 dark:hover:text-white underline cursor-pointer"
-                    >
-                      Edit details
-                    </button>
-                  </div>
-
-                  {/* 6 Digit OTP Inputs */}
-                  <div className="flex justify-center gap-1.5 sm:gap-2 py-1" onPaste={handleOtpPaste}>
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        ref={(el) => (otpRefs.current[index] = el)}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(index, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-9 h-11 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-black rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#06D6A0] outline-none transition-all shadow-xs"
-                      />
-                    ))}
-                  </div>
-
-                  {/* Resend */}
-                  <div className="text-center text-xs text-slate-500 dark:text-slate-400">
-                    {canResend ? (
-                      <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                      >
-                        Resend Code
-                      </button>
-                    ) : (
-                      <span>Resend code in <strong className="font-mono text-slate-700 dark:text-slate-300">{timer}s</strong></span>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#06D6A0] hover:bg-[#05B889] transition-all cursor-pointer shadow-elevated-mint text-xs sm:text-sm disabled:opacity-50"
-                  >
-                    {authStatus.loading ? 'Verifying...' : 'Verify & Complete'}
-                  </button>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setRegStep('form')}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
-                    >
-                      <ArrowLeftIcon className="w-3.5 h-3.5" />
-                      <span>Back to Form</span>
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* 3. FORGOT PASSWORD FLOW (Compact + OTP)                   */}
-          {/* ========================================================= */}
-          {mode === 'forgot' && (
-            <div className="space-y-4">
-              {forgotStep === 'email' ? (
-                <form onSubmit={handleForgotEmailSubmit} className="space-y-3.5">
-                  <div className="text-center space-y-1">
-                    <div className="w-10 h-10 rounded-xl bg-[#FFF0EB] dark:bg-slate-800 text-[#FF7F50] flex items-center justify-center mx-auto">
-                      <LockClosedIcon className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Recover Password</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Enter your email to receive a 6-digit reset code.
-                    </p>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Student Email Address <span className="text-[#FF7F50]">*</span>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Password <span className="text-[#84A282]">*</span>
                     </label>
                     <div className="relative flex items-center">
-                      <EnvelopeIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                      <LockClosedIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
+                      <input
+                        type={showPasswords.studentLogin ? "text" : "password"}
+                        required
+                        placeholder="••••••••"
+                        value={studentLogin.password}
+                        onChange={(e) => setStudentLogin({ ...studentLogin, password: e.target.value })}
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleShowPassword('studentLogin')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                        title={showPasswords.studentLogin ? "Hide password" : "Show password"}
+                        aria-label={showPasswords.studentLogin ? "Hide password" : "Show password"}
+                      >
+                        {showPasswords.studentLogin ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={status.loading}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    {status.loading ? 'Signing In...' : 'Sign In as Student'}
+                  </button>
+                </form>
+              )}
+
+              {mode === 'register' && step === 'form' && (
+                <form onSubmit={handleStudentRegSubmit} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Full Name <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Partha Pratim Nath"
+                      value={studentReg.fullName}
+                      onChange={(e) => setStudentReg({ ...studentReg, fullName: e.target.value })}
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Email Address <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <EnvelopeIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                       <input
                         type="email"
                         required
-                        placeholder="student@example.com"
-                        value={forgotData.email}
-                        onChange={(e) => setForgotData({ ...forgotData, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+                        placeholder="student@gmail.com"
+                        value={studentReg.email}
+                        onChange={(e) => setStudentReg({ ...studentReg, email: e.target.value })}
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Password <span className="text-[#84A282]">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showPasswords.studentReg ? "text" : "password"}
+                          required
+                          placeholder="Min 6 chars"
+                          value={studentReg.password}
+                          onChange={(e) => setStudentReg({ ...studentReg, password: e.target.value })}
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => toggleShowPassword('studentReg')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                          title={showPasswords.studentReg ? "Hide password" : "Show password"}
+                          aria-label={showPasswords.studentReg ? "Hide password" : "Show password"}
+                        >
+                          {showPasswords.studentReg ? <EyeSlashIcon className="w-3.5 h-3.5" /> : <EyeIcon className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Confirm <span className="text-[#84A282]">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showPasswords.studentRegConfirm ? "text" : "password"}
+                          required
+                          placeholder="Re-enter"
+                          value={studentReg.confirmPassword}
+                          onChange={(e) => setStudentReg({ ...studentReg, confirmPassword: e.target.value })}
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => toggleShowPassword('studentRegConfirm')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                          title={showPasswords.studentRegConfirm ? "Hide password" : "Show password"}
+                          aria-label={showPasswords.studentRegConfirm ? "Hide password" : "Show password"}
+                        >
+                          {showPasswords.studentRegConfirm ? <EyeSlashIcon className="w-3.5 h-3.5" /> : <EyeIcon className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7497] transition-all cursor-pointer shadow-elevated-cerulean text-xs sm:text-sm disabled:opacity-50"
+                    disabled={status.loading}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                   >
-                    {authStatus.loading ? 'Sending Code...' : 'Send Reset Code ➔'}
+                    Send 6-Digit OTP & Continue
                   </button>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setMode('login')}
-                      className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
-                    >
-                      <ArrowLeftIcon className="w-3.5 h-3.5" />
-                      <span>Back to Sign In</span>
-                    </button>
-                  </div>
                 </form>
-              ) : (
-                <form onSubmit={handleForgotResetSubmit} className="space-y-3.5">
-                  <div className="text-center space-y-1">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Reset Password with OTP</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Code sent to <strong className="text-[#118AB2] dark:text-[#FFD166]">{forgotData.email}</strong>
+              )}
+
+              {mode === 'register' && step === 'otp' && (
+                <div className="text-center space-y-4">
+                  <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                    Enter 6-digit code sent to <strong className="text-[#15370D] dark:text-[#FFF2B4]">{studentReg.email}</strong>
+                  </p>
+
+                  <form onSubmit={handleVerifyStudentOtp} className="space-y-4">
+                    <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
+                      {otp.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => (otpRefs.current[idx] = el)}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      <button
+                        type="button"
+                        onClick={() => setStep('form')}
+                        className="text-[#84A282] font-black hover:underline cursor-pointer"
+                      >
+                        Edit Details
+                      </button>
+                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={status.loading}
+                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      {status.loading ? 'Verifying...' : 'Verify OTP & Complete Registration'}
+                    </button>
+                  </form>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ========================================================= */}
+          {/* 2. FACULTY MEMBER FLOW                                    */}
+          {/* ========================================================= */}
+          {role === 'faculty' && (
+            <>
+              {mode === 'login' && step === 'login_credentials' && (
+                <form onSubmit={handleFacultyLoginCredentials} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Unique Faculty Member ID <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <IdentificationIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. UM-FAC-7821"
+                        value={facultyLogin.memberId}
+                        onChange={(e) => setFacultyLogin({ ...facultyLogin, memberId: e.target.value.toUpperCase() })}
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold tracking-wider rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Password <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <LockClosedIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
+                      <input
+                        type={showPasswords.facultyLogin ? "text" : "password"}
+                        required
+                        placeholder="••••••••"
+                        value={facultyLogin.password}
+                        onChange={(e) => setFacultyLogin({ ...facultyLogin, password: e.target.value })}
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleShowPassword('facultyLogin')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                        title={showPasswords.facultyLogin ? "Hide password" : "Show password"}
+                        aria-label={showPasswords.facultyLogin ? "Hide password" : "Show password"}
+                      >
+                        {showPasswords.facultyLogin ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={status.loading}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-[#728E6D] hover:bg-[#5b7357] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    Send OTP to Registered Email
+                  </button>
+                </form>
+              )}
+
+              {mode === 'login' && step === 'login_otp' && (
+                <div className="text-center space-y-4">
+                  <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                    Enter 6-digit OTP sent to email associated with Member ID <strong className="text-[#15370D] dark:text-[#FFF2B4]">{facultyLogin.memberId}</strong>
+                  </p>
+
+                  <form onSubmit={handleVerifyFacultyOtp} className="space-y-4">
+                    <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
+                      {otp.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => (otpRefs.current[idx] = el)}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#728E6D]"
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      <button
+                        type="button"
+                        onClick={() => setStep('login_credentials')}
+                        className="text-[#84A282] font-black hover:underline cursor-pointer"
+                      >
+                        Change ID
+                      </button>
+                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={status.loading}
+                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#15370D] bg-[#E5CD82] dark:bg-[#FFF2B4] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      Verify OTP & Access Portal
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {mode === 'register' && step === 'form' && (
+                <form onSubmit={handleFacultyRegSubmit} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Full Name <span className="text-[#84A282]">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Dr. Full Name"
+                        value={facultyReg.fullName}
+                        onChange={(e) => setFacultyReg({ ...facultyReg, fullName: e.target.value })}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Faculty ID <span className="text-[#84A282]">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="GU-FAC-2024"
+                        value={facultyReg.facultyId}
+                        onChange={(e) => setFacultyReg({ ...facultyReg, facultyId: e.target.value })}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Official University Email <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="faculty@gauhati.ac.in"
+                      value={facultyReg.officialEmail}
+                      onChange={(e) => setFacultyReg({ ...facultyReg, officialEmail: e.target.value })}
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Member / Personal Email <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="personal.email@gmail.com"
+                      value={facultyReg.memberEmail}
+                      onChange={(e) => setFacultyReg({ ...facultyReg, memberEmail: e.target.value })}
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Department <span className="text-[#84A282]">*</span>
+                      </label>
+                      <select
+                        value={facultyReg.department}
+                        onChange={(e) => setFacultyReg({ ...facultyReg, department: e.target.value })}
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      >
+                        {departmentOptions.map((dept) => (
+                          <option key={dept} value={dept}>{dept}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Designation <span className="text-[#84A282]">*</span>
+                      </label>
+                      <select
+                        value={facultyReg.designation}
+                        onChange={(e) => setFacultyReg({ ...facultyReg, designation: e.target.value })}
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                      >
+                        {designationOptions.map((desig) => (
+                          <option key={desig} value={desig}>{desig}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Password <span className="text-[#84A282]">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showPasswords.facultyReg ? "text" : "password"}
+                          required
+                          placeholder="••••••••"
+                          value={facultyReg.password}
+                          onChange={(e) => setFacultyReg({ ...facultyReg, password: e.target.value })}
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => toggleShowPassword('facultyReg')}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                          title={showPasswords.facultyReg ? "Hide password" : "Show password"}
+                          aria-label={showPasswords.facultyReg ? "Hide password" : "Show password"}
+                        >
+                          {showPasswords.facultyReg ? <EyeSlashIcon className="w-3.5 h-3.5" /> : <EyeIcon className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                        Confirm <span className="text-[#84A282]">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showPasswords.facultyRegConfirm ? "text" : "password"}
+                          required
+                          placeholder="••••••••"
+                          value={facultyReg.confirmPassword}
+                          onChange={(e) => setFacultyReg({ ...facultyReg, confirmPassword: e.target.value })}
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => toggleShowPassword('facultyRegConfirm')}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                          title={showPasswords.facultyRegConfirm ? "Hide password" : "Show password"}
+                          aria-label={showPasswords.facultyRegConfirm ? "Hide password" : "Show password"}
+                        >
+                          {showPasswords.facultyRegConfirm ? <EyeSlashIcon className="w-3.5 h-3.5" /> : <EyeIcon className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={status.loading}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#15370D] bg-[#E5CD82] dark:bg-[#FFF2B4] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    Register & Generate Unique Member ID
+                  </button>
+                </form>
+              )}
+
+              {mode === 'register' && step === 'created_id' && (
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#728E6D] text-[#FFF2B4] mx-auto flex items-center justify-center font-black">
+                    <CheckCircleIcon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
+                      Faculty Member ID Created!
+                    </h3>
+                    <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] mt-0.5">
+                      Please copy your Member ID to sign in.
                     </p>
                   </div>
 
-                  {/* 6 Digit OTP */}
-                  <div className="flex justify-center gap-1.5 sm:gap-2 py-1" onPaste={handleOtpPaste}>
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        ref={(el) => (otpRefs.current[index] = el)}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(index, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-9 h-11 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-black rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] outline-none transition-all shadow-xs"
-                      />
-                    ))}
+                  <div className="p-4 rounded-2xl bg-[#FEFAF3] dark:bg-[#15370D] border-2 border-dashed border-[#84A282] dark:border-[#FFF2B4] flex items-center justify-between">
+                    <span className="font-mono text-xl font-black tracking-widest text-[#15370D] dark:text-[#FFF2B4]">
+                      {generatedMemberId}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyMemberId}
+                      className="p-1.5 rounded-lg bg-white dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] cursor-pointer"
+                    >
+                      {copiedId ? <CheckIcon className="w-4 h-4 text-green-600" /> : <DocumentDuplicateIcon className="w-4 h-4 text-[#84A282]" />}
+                    </button>
                   </div>
 
-                  {/* Resend */}
-                  <div className="text-center text-xs text-slate-500 dark:text-slate-400">
-                    {canResend ? (
-                      <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        className="font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-                      >
-                        Resend Code
-                      </button>
-                    ) : (
-                      <span>Resend code in <strong className="font-mono text-slate-700 dark:text-slate-300">{timer}s</strong></span>
-                    )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('login');
+                      setStep('login_credentials');
+                      setStatus({ loading: false, success: false, message: '', error: null });
+                    }}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-xs"
+                  >
+                    Sign In with Member ID & OTP
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ========================================================= */}
+          {/* 3. ADMIN FLOW (SUPER USER)                                */}
+          {/* ========================================================= */}
+          {role === 'admin' && (
+            <>
+              {step === 'credentials' && (
+                <form onSubmit={handleAdminCredentials} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Super User Name <span className="text-[#84A282]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="System Administrator"
+                      value={adminLogin.superName}
+                      onChange={(e) => setAdminLogin({ ...adminLogin, superName: e.target.value })}
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                    />
                   </div>
 
-                  {/* Passwords */}
-                  <div className="space-y-2.5">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        New Password <span className="text-[#FF7F50]">*</span>
-                      </label>
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Super Email <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <EnvelopeIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                       <input
-                        type="password"
+                        type="email"
                         required
-                        placeholder="Min 6 characters"
-                        value={forgotData.newPassword}
-                        onChange={(e) => setForgotData({ ...forgotData, newPassword: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2]"
+                        placeholder="admin@unimitra.edu.in"
+                        value={adminLogin.superEmail}
+                        onChange={(e) => setAdminLogin({ ...adminLogin, superEmail: e.target.value })}
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Confirm New Password <span className="text-[#FF7F50]">*</span>
-                      </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                      Super Password <span className="text-[#84A282]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <LockClosedIcon className="w-4 h-4 text-[#4F6D4B] absolute left-3 pointer-events-none" />
                       <input
-                        type="password"
+                        type={showPasswords.adminLogin ? "text" : "password"}
                         required
-                        placeholder="Repeat new password"
-                        value={forgotData.confirmPassword}
-                        onChange={(e) => setForgotData({ ...forgotData, confirmPassword: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2]"
+                        placeholder="••••••••"
+                        value={adminLogin.superPassword}
+                        onChange={(e) => setAdminLogin({ ...adminLogin, superPassword: e.target.value })}
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
                       />
+                      <button
+                        type="button"
+                        onClick={() => toggleShowPassword('adminLogin')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] transition-colors cursor-pointer"
+                        title={showPasswords.adminLogin ? "Hide password" : "Show password"}
+                        aria-label={showPasswords.adminLogin ? "Hide password" : "Show password"}
+                      >
+                        {showPasswords.adminLogin ? <EyeSlashIcon className="w-4 h-4 text-[#FFF2B4]" /> : <EyeIcon className="w-4 h-4 text-[#FFF2B4]" />}
+                      </button>
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    disabled={authStatus.loading}
-                    className="w-full py-2.5 rounded-xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm disabled:opacity-50"
+                    disabled={status.loading}
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#FFF2B4] bg-[#15370D] hover:bg-[#1C4412] border border-[#728E6D] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                   >
-                    {authStatus.loading ? 'Updating...' : 'Set New Password'}
+                    Send Super Admin OTP
                   </button>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setForgotStep('email')}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center space-x-1 mx-auto cursor-pointer"
-                    >
-                      <ArrowLeftIcon className="w-3.5 h-3.5" />
-                      <span>Back to Email Step</span>
-                    </button>
-                  </div>
                 </form>
               )}
-            </div>
+
+              {step === 'otp' && (
+                <div className="text-center space-y-4">
+                  <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                    Enter 6-digit OTP sent to super email <strong className="text-[#15370D] dark:text-[#FFF2B4]">{adminLogin.superEmail}</strong>
+                  </p>
+
+                  <form onSubmit={handleVerifyAdminOtp} className="space-y-4">
+                    <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
+                      {otp.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => (otpRefs.current[idx] = el)}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#728E6D]"
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                      <button
+                        type="button"
+                        onClick={() => setStep('credentials')}
+                        className="text-[#84A282] font-black hover:underline cursor-pointer"
+                      >
+                        Change Super Email
+                      </button>
+                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={status.loading}
+                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#15370D] bg-[#FFF2B4] hover:bg-[#E5CD82] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      Verify OTP & Open Admin Console
+                    </button>
+                  </form>
+                </div>
+              )}
+            </>
           )}
 
         </div>

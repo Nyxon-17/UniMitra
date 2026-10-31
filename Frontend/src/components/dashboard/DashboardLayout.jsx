@@ -6,25 +6,23 @@ export const DashboardLayout = ({
   children, 
   activeTab = 'overview', 
   onSelectTab, 
-  onExitDashboard, 
   onOpenAdmin,
   onSignOut,
   currentLang = 'en', 
   onToggleLang, 
   isDark = false, 
-  onToggleTheme,
+  onToggleTheme, 
   studentInfo
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FAFAFC] dark:bg-[#0B1320] text-[#073B4C] dark:text-slate-100 flex flex-col transition-colors duration-200">
+    <div className="min-h-screen bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] flex flex-col transition-colors duration-200">
       
       {/* Fixed Sidebar */}
       <DashboardSidebar
         activeTab={activeTab}
         onSelectTab={onSelectTab}
-        onExitDashboard={onExitDashboard}
         onOpenAdmin={onOpenAdmin}
         onSignOut={onSignOut}
         isOpen={sidebarOpen}
@@ -34,7 +32,7 @@ export const DashboardLayout = ({
       />
 
       {/* Main Content Area (offset by sidebar on desktop) */}
-      <div className="lg:pl-68 flex-1 flex flex-col min-w-0">
+      <div className="lg:pl-72 flex-1 flex flex-col min-w-0">
         
         {/* Top Dashboard Navbar */}
         <DashboardNavbar
@@ -49,7 +47,7 @@ export const DashboardLayout = ({
 
         {/* Dynamic Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full">
             {children}
           </div>
         </main>
@@ -58,4 +56,3 @@ export const DashboardLayout = ({
     </div>
   );
 };
-

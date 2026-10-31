@@ -1,78 +1,71 @@
 import { useState } from 'react';
-import { ChevronDownIcon, SearchIcon, EnvelopeIcon } from '../../components/common/Icons';
+import { ChevronDownIcon, SearchIcon, EnvelopeIcon, BuildingLibraryIcon } from '../../components/common/Icons';
 
-export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
+export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [openIndex, setOpenIndex] = useState(0);
 
   const faqData = [
     {
-      category: 'General',
-      q: 'What is UniMitra and how does it help students in Assam?',
-      asQ: 'UniMitra কি আৰু ই অসমৰ ছাত্ৰ-ছাত্ৰীক কেনেদৰে সহায় কৰে?',
-      a: 'UniMitra is an academic assistant designed for higher education students across Assam. It indexes authorized university syllabuses, departmental course structures, and examination regulations, allowing you to get instant, accurate answers in Assamese or English with exact page numbers.',
-      asA: 'UniMitra হৈছে অসমৰ বিশ্ববিদ্যালয়সমূহৰ শৈক্ষিক সহায়ক মঞ্চ। ই বিশ্ববিদ্যালয়ৰ অফিচিয়েল পাঠ্যক্ৰম, নিয়ম আৰু প্ৰশ্নকাকতসমূহ সংগ্ৰহ কৰি ৰাখে, যাৰ দ্বাৰা আপুনি নিজৰ অসমীয়া বা ইংৰাজী ভাষাত সঠিক পৃষ্ঠা নম্বৰসহ তৎক্ষণাত উত্তৰ পাব পাৰে।'
+      category: 'Regulations',
+      q: 'What is UniMitra and how does it assist universities in Assam?',
+      asQ: 'UniMitra কি আৰু ই অসমৰ বিশ্ববিদ্যালয়সমূহত কেনেদৰে সহায় কৰে?',
+      a: 'UniMitra is an AI-powered smart university assistance platform designed for students, faculty members, and administrative staff across Assam. It centralizes authorized university regulations, examination ordinances, admission guidelines, and scholarship circulars to deliver grounded answers in Assamese and English with exact page citations.',
+      asA: 'UniMitra হৈছে অসমৰ ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু কৰ্মচাৰীসকলৰ বাবে এক AI চালিত বিশ্ববিদ্যালয় সহায়ক মঞ্চ। ই চৰকাৰী আৰু বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ জাননী, ভৰ্তি আৰু ছাত্ৰবৃত্তিৰ তথ্য একত্ৰিত কৰি সঠিক পৃষ্ঠা নম্বৰসহ অসমীয়া আৰু ইংৰাজীত উত্তৰ প্ৰদান কৰে।'
     },
     {
-      category: 'General',
-      q: 'Is UniMitra free to use for college and university students?',
-      asQ: 'UniMitra ব্যৱহাৰ কৰাটো কলেজ আৰু বিশ্ববিদ্যালয়ৰ ছাত্ৰ-ছাত্ৰীৰ বাবে বিনামূলীয়ানে?',
-      a: 'Yes, UniMitra is 100% free for all students, scholars, and teachers across all recognized universities and affiliated colleges in Assam.',
-      asA: 'হয়, অসমৰ সকলো স্বীকৃত বিশ্ববিদ্যালয় আৰু মহাবিদ্যালয়ৰ ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকসকলৰ বাবে UniMitra সম্পূৰ্ণৰূপে বিনামূলীয়া।'
+      category: 'Regulations',
+      q: 'What are the general attendance rules and condonation limits across universities?',
+      asQ: 'বিশ্ববিদ্যালয়সমূহত উপস্থিতিৰ সাধাৰণ নিয়ম আৰু বিশেষ ৰেহাইৰ পৰিসৰ কিমান?',
+      a: 'Most state universities in Assam (e.g. Gauhati University and Dibrugarh University) mandate a minimum of 75% attendance in theory and practical sessions. Special condonation up to 10% (permitting students with 65%-74% attendance) is granted strictly on medical grounds upon recommendation of the Departmental Head.',
+      asA: 'অসমৰ বেছিভাগ বিশ্ববিদ্যালয়ত (যেনে গুৱাহাটী আৰু ডিব্ৰুগড় বিশ্ববিদ্যালয়) পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% উপস্থিতি বাধ্যতামূলক। শাৰীৰিক অসুস্থতাৰ বাবে বিভাগীয় প্ৰধানৰ অনুমোদন সাপেক্ষে ৬৫% লৈকে উপস্থিতি ৰেহাই (Condonation) দিয়াৰ ব্যৱস্থা আছে।'
     },
     {
-      category: 'Language',
-      q: 'Can I ask questions in Assamese script or Romanized Assamese?',
-      asQ: 'মই অসমীয়া লিপি বা ৰোমানাইজড (ইংৰাজী আখৰত) অসমীয়াত প্ৰশ্ন সুধিব পাৰোনে?',
-      a: 'Yes! UniMitra seamlessly understands original Assamese script (e.g., "গুৱাহাটী বিশ্ববিদ্যালয়ৰ ৩য় ষাণ্মাসিকৰ সিলেবাছ দিয়ক") as well as phonetic Romanized typing (e.g., "3rd semester r syllabus ase ne?"). Answers can be generated in Assamese or English based on your preference.',
-      asA: 'হয়! UniMitra-ই মূল অসমীয়া লিপি আৰু সাধাৰণ ইংৰাজী আখৰেৰে টাইপ কৰা অসমীয়া ভাষা দুয়োটাই স্পষ্টকৈ বুজি পায়। আপোনাৰ সুবিধা অনুসৰি উত্তৰসমূহ অসমীয়া বা ইংৰাজীত প্ৰকাশ কৰা হয়।'
+      category: 'Examinations',
+      q: 'How does the examination re-evaluation and script scrutiny process work?',
+      asQ: 'পৰীক্ষাৰ পুনৰমূল্যায়ন (Re-evaluation) আৰু উত্তৰবহী পৰিদৰ্শনৰ প্ৰক্ৰিয়া কি?',
+      a: 'Students unsatisfied with their end-semester marks can apply for re-evaluation within 15–20 days from the date of online mark sheet declaration. An application fee per paper is required through the university examination portal. Script scrutiny or photocopy request can also be filed according to institutional ordinances.',
+      asA: 'অনলাইন ফলাফল ঘোষণাৰ ১৫–২০ দিনৰ ভিতৰত ছাত্ৰ-ছাত্ৰীয়ে নিৰ্ধাৰিত মাচুল জমা দি পৰীক্ষা প’ৰ্টেলৰ জৰিয়তে পুনৰমূল্যায়নৰ আবেদন কৰিব পাৰে। উত্তৰবহীৰ প্ৰতিলিপি বিচাৰি স্ক্ৰুটিনিৰ বাবেও আবেদন কৰিব পাৰি।'
     },
     {
-      category: 'Language',
-      q: 'Will the assistant translate English university regulations into Assamese?',
-      asQ: 'সহায়কে ইংৰাজী বিশ্ববিদ্যালয়ৰ নিয়মসমূহ অসমীয়ালৈ অনুবাদ কৰি বুজাই দিবনে?',
-      a: 'Yes. Most official university notifications are published in English. UniMitra translates and breaks down complex examination clauses, credit calculations, and attendance rules into clear, simple Assamese.',
-      asA: 'হয়। বিশ্ববিদ্যালয়ৰ বেছিভাগ অধিসূচনা ইংৰাজীত থাকে। UniMitra-ই সেই জটিল নিয়ম, পৰীক্ষাৰ নম্বৰ আৰু উপস্থিতিৰ চৰ্তসমূহ সহজ অসমীয়া ভাষাত বুজাই দিয়ে।'
+      category: 'Examinations',
+      q: 'What are the passing criteria and back-paper clearance rules under CBCS / NEP?',
+      asQ: 'CBCS / NEP নিয়মৰ অধীনত পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?',
+      a: 'Under standard CBCS and FYUGP NEP frameworks, a candidate must obtain at least 40% marks in In-Semester (Sessional) and End-Semester examinations separately to be declared passed in each paper. Back papers must be cleared within the maximum allowable degree duration (ordinarily N+2 years).',
+      asA: 'CBCS আৰু NEP নিয়ম অনুসৰি ছাত্ৰ-ছাত্ৰীয়ে ছেচনেল আৰু অন্তিম ষাণ্মাসিক পৰীক্ষাত পৃথকে পৃথকে ন্যূনতম ৪০% নম্বৰ লাভ কৰিলেহে উত্তীৰ্ণ ঘোষণা কৰা হয়। ডিগ্ৰীৰ নিৰ্ধাৰিত সৰ্বোচ্চ সময়সীমাৰ (N+2 বছৰ) ভিতৰত বেক পেপাৰ ক্লিয়াৰ কৰিব লাগিব।'
     },
     {
-      category: 'Accuracy',
-      q: 'How does UniMitra guarantee that answers are not fake or made up?',
-      asQ: 'UniMitra-ই দিয়া উত্তৰবোৰ ভুল বা মনগঢ়া নহয় বুলি কেনেকৈ নিশ্চিত কৰা হয়?',
-      a: 'UniMitra strictly quotes from authorized syllabus PDF documents uploaded for each respective university. If an answer cannot be verified in the official document, the system explicitly informs you rather than guessing or fabricating details.',
-      asA: 'UniMitra-ই কেৱল বিশ্ববিদ্যালয়সমূহে প্ৰকাশ কৰা প্ৰকৃত নথিপত্ৰৰ পৰাহে তথ্য উদ্ধৃত কৰে। যদি কোনো তথ্য নথিত পোৱা নাযায়, সহায়কে মনৰ পৰা উত্তৰ নিদি স্পষ্টকৈ জনায় যে তথ্য উপলব্ধ নহয়।'
+      category: 'Scholarships',
+      q: 'Which state and central scholarships are accessible through this platform?',
+      asQ: 'এই মঞ্চৰ জৰিয়তে কোনবোৰ ৰাজ্যিক আৰু কেন্দ্ৰীয় ছাত্ৰবৃত্তিৰ তথ্য পোৱা যায়?',
+      a: 'UniMitra indexes official circulars for the Assam Post-Matric Scholarship, Ishan Uday Special Scholarship for NER, Combined Merit Scholarship (DHE Assam), PG Indira Gandhi Scholarship for Single Girl Child, and institutional fee-waiver policies.',
+      asA: 'UniMitra-ত অসম চৰকাৰৰ উচ্চ শিক্ষা সঞ্চালকালয়ৰ কম্বাইনড মেধা বৃত্তি, ঈশান উদয় স্কলাৰশ্বিপ, প’ষ্ট-মেট্ৰিক ছাত্ৰবৃত্তি আৰু বিশ্ববিদ্যালয়ৰ মাচুল ৰেহাইৰ অধিসূচনাসমূহৰ তথ্য সংলগ্ন আছে।'
     },
     {
-      category: 'Accuracy',
-      q: 'Can I view and download the original official university PDF?',
-      asQ: 'মই মূল অফিচিয়েল বিশ্ববিদ্যালয়ৰ PDF চাব আৰু ডাউনলোড কৰিব পাৰোনে?',
-      a: 'Yes! Every response includes the title of the official syllabus document and the exact page number. You can click to open or download the document directly in the portal.',
-      asA: 'হয়! প্ৰতিটো উত্তৰৰ তলতে নথিপত্ৰৰ নাম আৰু সঠিক পৃষ্ঠা নম্বৰ সংলগ্ন থাকে, য’ত ক্লিক কৰি আপুনি সম্পূৰ্ণ PDF চাব আৰু সংৰক্ষণ কৰিব পাৰে।'
+      category: 'Admissions',
+      q: 'How can candidates find admission dates, cut-offs, and reservation norms?',
+      asQ: 'ভৰ্তিৰ অন্তিম তাৰিখ, কাট-অফ আৰু সংৰক্ষণৰ নিয়ম কেনেকৈ জানিব পাৰি?',
+      a: 'Admission notifications for UG, PG, and Ph.D. programs—including entrance exam criteria, Samarth portal integration details, OBC/MOBC/ST/SC/EWS quotas, and seat allocation rules—are fully queryable in UniMitra with direct gazette citations.',
+      asA: 'UG, PG আৰু গৱেষণা পাঠ্যক্ৰমত নামভৰ্তিৰ নিয়ম, সমৰ্থ প’ৰ্টেলৰ আবেদন, সংৰক্ষণৰ অনুপাত আৰু প্ৰৱেশ পৰীক্ষাৰ বিৱৰণ UniMitra-ত পোনপটীয়াকৈ সুধিব পাৰি।'
     },
     {
-      category: 'Curriculums',
-      q: 'Which universities and curriculums in Assam are currently supported?',
-      asQ: 'বৰ্তমান অসমৰ কোনবোৰ বিশ্ববিদ্যালয় আৰু পাঠ্যক্ৰম অন্তৰ্ভুক্ত কৰা হৈছে?',
-      a: 'UniMitra covers major university curriculums including Gauhati University (GU), Dibrugarh University (DU), Tezpur Central University (TU), Assam University (Silchar), Cotton University (CU), Bodoland University (BU), ASTU, and AAU, with catalogs continuously expanding.',
-      asA: 'UniMitra-ত গুৱাহাটী বিশ্ববিদ্যালয়, ডিব্ৰুগড় বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, অসম বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, বড়োলেণ্ড বিশ্ববিদ্যালয়কে ধৰি অসমৰ সকলো অগ্ৰণী বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম অন্তৰ্ভুক্ত কৰা হৈছে।'
+      category: 'Facilities',
+      q: 'What are the norms for university hostel allotment and campus amenities?',
+      asQ: 'বিশ্ববিদ্যালয়ৰ হোষ্টেল আবণ্টন আৰু চৌহদৰ সুবিধাসমূহৰ চৰ্ত কি?',
+      a: 'Hostel allotment is regulated strictly by merit score in the qualifying examination and the permanent home distance from the campus. Students can also query central library digital access hours, campus medical center facilities, and anti-ragging helpline contacts.',
+      asA: 'মেধা তালিকা আৰু ঘৰৰ পৰা বিশ্ববিদ্যালয়ৰ দূৰত্বৰ ভিত্তিত হোষ্টেলৰ আসন আবণ্টন দিয়া হয়। ইয়াৰ উপৰিও কেন্দ্ৰীয় গ্ৰন্থাগাৰ, স্বাস্থ্য কেন্দ্ৰ আৰু এণ্টি-ৰেগিং হেল্পলাইনৰ নিয়মসমূহো উপলব্ধ।'
     },
     {
-      category: 'Curriculums',
-      q: 'What if my college or specific department syllabus is missing?',
-      asQ: 'যদি মোৰ মহাবিদ্যালয় বা নিৰ্দিষ্ট বিভাগৰ পাঠ্যক্ৰম উপলব্ধ নহয়, মই কি কৰিব পাৰো?',
-      a: 'You can submit a syllabus request through our Contact page or upload the PDF if you are a departmental administrator. Our academic desk typically reviews and indexes new course materials within 24–48 hours.',
-      asA: 'আপুনি আমাৰ Contact পৃষ্ঠাৰ জৰিয়তে পাঠ্যক্ৰম সংযোগৰ অনুৰোধ জনাব পাৰে। আমাৰ শৈক্ষিক দলে ২৪ ৰ পৰা ৪৮ ঘণ্টাৰ ভিতৰত সেই নথিসমূহ পৰীক্ষা কৰি অন্তৰ্ভুক্ত কৰে।'
-    },
-    {
-      category: 'Account',
-      q: 'Do I need an account to search for syllabuses?',
-      asQ: 'পাঠ্যক্ৰম বিচাৰিবলৈ একাউণ্টৰ প্ৰয়োজন আছেনে?',
-      a: 'No. Basic search and syllabus inquiries can be made as a guest. However, creating a free student account lets you bookmark courses, save exam questions, and receive semester notification alerts.',
-      asA: 'নাই। সাধাৰণ সন্ধানৰ বাবে একাউণ্টৰ প্ৰয়োজন নাই। কিন্তু ছাত্ৰ একাউণ্ট খুলিলে আপুনি বিষয় সংৰক্ষণ (Bookmark) কৰিব পাৰিব আৰু প্ৰয়োজনীয় প্ৰশ্ন সংগ্ৰহ কৰি ৰাখিব পাৰিব।'
+      category: 'Bilingual',
+      q: 'Can queries be entered in everyday Romanized Assamese typing?',
+      asQ: 'সাধাৰণ ইংৰাজী আখৰত লিখা অসমীয়া ভাষাত (ৰোমানাইজড) প্ৰশ্ন সুধিব পাৰিনে?',
+      a: 'Yes! UniMitra is trained on both traditional Assamese script (অসমীয়া লিপি) and colloquial Romanized Assamese phonetic queries (e.g. "exam fee aru re-eval form submit korar date ki?"). The AI responds accurately in your preferred language.',
+      asA: 'হয়! UniMitra-ই মূল অসমীয়া লিপি আৰু সাধাৰণ ইংৰাজী কিব’ৰ্ডেৰে লিখা অসমীয়া বাক্য দুয়োটাই বুজি পায় আৰু সঠিক উত্তৰ প্ৰদান কৰে।'
     }
   ];
 
-  const categories = ['All', 'General', 'Language', 'Accuracy', 'Curriculums', 'Account'];
+  const categories = ['All', 'Regulations', 'Examinations', 'Admissions', 'Scholarships', 'Facilities', 'Bilingual'];
 
   const filteredFaqs = faqData.filter((item) => {
     const matchesCat = activeCategory === 'All' || item.category === activeCategory;
@@ -88,56 +81,45 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   });
 
   return (
-    <div className="bg-[#FAFAFC] dark:bg-[#0B1320] min-h-screen text-[#073B4C] dark:text-slate-100 py-16 transition-colors duration-200">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#073B4C] dark:text-white">
-            {currentLang === 'as' ? 'সঘনাই সোধা প্ৰশ্নসমূহ (FAQ)' : 'Frequently Asked Questions'}
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
+            {currentLang === 'as' ? 'সঘনাই সোধা প্ৰশ্নসমূহ (FAQ)' : 'Frequently Asked Institutional Questions'}
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
             {currentLang === 'as'
-              ? 'UniMitra ব্যৱহাৰ, পাঠ্যক্ৰম অনুসন্ধান আৰু ভাষা সমৰ্থন সম্পৰ্কে ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকৰ সাধাৰণ প্ৰশ্নোত্তৰ।'
-              : 'Clear answers on how UniMitra works, language options, syllabus reliability, and university coverage in Assam.'}
+              ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম, পৰীক্ষা, ভৰ্তি, ছাত্ৰবৃত্তি আৰু মঞ্চ ব্যৱহাৰৰ বিষয়ে প্ৰয়োজনীয় উত্তৰসমূহ।'
+              : 'Find quick, verified answers regarding university statutes, examination evaluation, admissions, scholarships, and bilingual AI assistance.'}
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="mb-10">
-          <div className="bg-white dark:bg-[#111C2E] p-2.5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 shadow-sm flex items-center px-4">
-            <SearchIcon className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
-            <input
-              type="text"
-              placeholder={currentLang === 'as' ? 'প্ৰশ্ন বা শব্দ বিচাৰক (e.g. syllabus, assamese, account)...' : 'Search question or topic (e.g. syllabus, assamese, accuracy)...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 bg-transparent text-sm text-slate-800 dark:text-white placeholder-slate-400 outline-none"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white ml-2 cursor-pointer"
-              >
-                Clear
-              </button>
-            )}
-          </div>
+        <div className="relative max-w-2xl mx-auto mb-10">
+          <SearchIcon className="w-5 h-5 text-[#84A282] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            placeholder={currentLang === 'as' ? 'প্ৰশ্ন বা শব্দ বিচাৰক...' : 'Search questions, regulations, exams, admissions...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] placeholder-[#4F6D4B]/70 dark:placeholder-[#E5CD82]/60 focus:outline-none focus:border-[#84A282] text-xs sm:text-sm font-semibold shadow-xs"
+          />
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+        {/* Category Pills */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeCategory === cat
-                  ? 'bg-[#118AB2] text-white shadow-sm'
-                  : 'bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${activeCategory === cat
+                  ? 'bg-[#84A282] text-white shadow-xs'
+                  : 'bg-white dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30'
+                }`}
             >
-              {cat === 'All' ? (currentLang === 'as' ? 'সকলো প্ৰশ্ন (All)' : 'All Topics') : cat}
+              {cat}
             </button>
           ))}
         </div>
@@ -145,9 +127,8 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
         {/* FAQ Accordion List */}
         <div className="space-y-4 mb-16">
           {filteredFaqs.length === 0 ? (
-            <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-10 text-center space-y-2">
-              <p className="text-base font-bold text-slate-800 dark:text-white">No questions found matching your search.</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Try different search terms or select "All Topics".</p>
+            <div className="text-center py-12 bg-white dark:bg-[#1C4412] rounded-3xl border border-[#B8CFB3] dark:border-[#728E6D] text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82]">
+              No queries match your search keyword. Try searching for "attendance", "scholarship", or "exam".
             </div>
           ) : (
             filteredFaqs.map((faq, index) => {
@@ -155,24 +136,28 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               return (
                 <div
                   key={index}
-                  className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-xs transition-all"
+                  className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl overflow-hidden shadow-xs transition-all"
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
-                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between cursor-pointer hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors"
+                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#B8CFB3]/10"
                   >
-                    <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pr-4">
-                      {currentLang === 'as' ? faq.asQ : faq.q}
-                    </span>
-                    <ChevronDownIcon
-                      className={`w-5 h-5 text-slate-400 shrink-0 transform transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-[#118AB2] dark:text-[#FFD166]' : ''
-                      }`}
-                    />
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4]">
+                        {faq.category}
+                      </span>
+                      <h3 className="text-sm sm:text-base font-black text-[#15370D] dark:text-[#FFF2B4] pt-1">
+                        {currentLang === 'as' ? faq.asQ : faq.q}
+                      </h3>
+                    </div>
+                    <div className={`w-8 h-8 rounded-xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] flex items-center justify-center shrink-0 text-[#84A282] dark:text-[#FFF2B4] transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                      <ChevronDownIcon className="w-4 h-4" />
+                    </div>
                   </button>
+
                   {isOpen && (
-                    <div className="px-5 sm:px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800">
-                      {currentLang === 'as' ? faq.asA : faq.a}
+                    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#B8CFB3]/40 dark:border-[#728E6D] text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed font-semibold">
+                      <p>{currentLang === 'as' ? faq.asA : faq.a}</p>
                     </div>
                   )}
                 </div>
@@ -181,21 +166,20 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
           )}
         </div>
 
-        {/* Bottom Help Desk Card */}
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-8 sm:p-10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center sm:text-left">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Still have questions?</h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              Can't find the answer you’re looking for? Reach out to our student helpdesk anytime.
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
+        {/* Need Help Box */}
+        <div className="bg-[#B8CFB3]/30 dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-8 text-center space-y-3">
+          <h3 className="text-lg font-black text-[#15370D] dark:text-[#FFF2B4]">
+            Have an unlisted university circular or ordinance query?
+          </h3>
+          <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-xl mx-auto">
+            Our academic ingestion desk reviews newly issued university notices and circulars every 24 hours.
+          </p>
+          <div className="pt-2">
             <button
               onClick={() => onNavigate && onNavigate('contact')}
-              className="flex items-center space-x-2 px-6 py-3 rounded-xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7497] transition-all cursor-pointer shadow-md text-xs sm:text-sm"
+              className="px-6 py-2.5 rounded-xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] text-xs transition-all cursor-pointer shadow-xs"
             >
-              <EnvelopeIcon className="w-4 h-4" />
-              <span>Contact Academic Helpdesk</span>
+              Contact University Desk ➔
             </button>
           </div>
         </div>
@@ -204,4 +188,3 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
     </div>
   );
 };
-

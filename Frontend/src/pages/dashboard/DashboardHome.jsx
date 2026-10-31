@@ -1,43 +1,88 @@
 import { useState } from 'react';
 import { 
   SparklesIcon, 
-  BookOpenIcon, 
-  DocumentTextIcon, 
+  BuildingLibraryIcon, 
+  ClipboardDocumentCheckIcon, 
+  BanknotesIcon, 
+  BuildingOfficeIcon, 
+  IdentificationIcon, 
   CheckCircleIcon, 
   ArrowRightIcon, 
   SearchIcon,
-  ScaleIcon 
+  DocumentTextIcon,
+  ShieldCheckIcon
 } from '../../components/common/Icons';
 
 export const DashboardHome = ({ 
   onNavigateTab, 
   currentLang = 'en',
-  studentInfo = { name: 'Scholar', course: 'All Curriculums' }
+  studentInfo = { name: 'Scholar', role: 'Student' }
 }) => {
   const [quickQuestion, setQuickQuestion] = useState('');
 
-  const currentSubjects = [
-    { code: 'BCA-HC-3016', name: 'Database Management Systems', credits: '6 Credits', units: '5 Units', progress: '100% Ingested' },
-    { code: 'BCA-HC-3026', name: 'Operating Systems & Linux Concepts', credits: '6 Credits', units: '4 Units', progress: '100% Ingested' },
-    { code: 'BCA-HC-3036', name: 'Computer Networks & Protocols', credits: '6 Credits', units: '5 Units', progress: '100% Ingested' },
-    { code: 'BCA-SE-3014', name: 'Web Technology & Scripting', credits: '4 Credits', units: '4 Units', progress: '100% Ingested' },
+  const institutionalDomains = [
+    {
+      id: 'regulations',
+      title: 'University Regulations & Ordinances',
+      asTitle: 'বিশ্ববিদ্যালয় নিয়মাৱলী আৰু অধিসূচনা',
+      count: '64 Verified Statutes',
+      desc: 'Attendance rules, academic council notifications, conduct codes, and grading ordinances.',
+      icon: BuildingLibraryIcon,
+      accent: 'bg-[#B8CFB3]/40'
+    },
+    {
+      id: 'regulations',
+      title: 'Examinations & Evaluation Guidelines',
+      asTitle: 'পৰীক্ষাৰ মূল্যায়ন আৰু নিয়ম',
+      count: '118 Active Guidelines',
+      desc: 'In-semester sessionals, end-sem passing criteria (40%), re-evaluation fees, and back papers.',
+      icon: ClipboardDocumentCheckIcon,
+      accent: 'bg-[#F6E2E9]'
+    },
+    {
+      id: 'admissions',
+      title: 'Academic Programs & Admissions',
+      asTitle: 'পাঠ্যক্ৰম আৰু নামভৰ্তি',
+      count: '420+ Degree Programs',
+      desc: 'UG, PG, and Ph.D. degree eligibility, entrance test dates, reservation quotas, and merit lists.',
+      icon: IdentificationIcon,
+      accent: 'bg-[#B8CFB3]/40'
+    },
+    {
+      id: 'scholarships',
+      title: 'Scholarships & State Grants',
+      asTitle: 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান',
+      count: '24 Grant Schemes',
+      desc: 'Assam DHE combined merit scholarship, Ishan Uday, post-matric funds, and deadlines.',
+      icon: BanknotesIcon,
+      accent: 'bg-[#F6E2E9]'
+    },
+    {
+      id: 'facilities',
+      title: 'Campus Facilities & Hostels',
+      asTitle: 'চৌহদৰ সুবিধা আৰু হোষ্টেল',
+      count: '82 Campus Centers',
+      desc: 'Hostel seat allotment, central library hours, health centers, and student welfare cells.',
+      icon: BuildingOfficeIcon,
+      accent: 'bg-[#B8CFB3]/40'
+    }
   ];
 
   const recentAnswers = [
     {
-      q: 'What is BCNF and how does it differ from 3NF in DBMS?',
-      asQ: 'DBMS ত BCNF কি আৰু ই ৩NF তকৈ কিদৰে পৃথক?',
-      subject: 'Database Management Systems',
-      source: 'GU_BCA_CBCS_Syllabus.pdf',
-      page: 'Page 42, Module 3',
+      q: 'What is the attendance condonation criteria for Gauhati University exams?',
+      asQ: 'গুৱাহাটী বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
+      domain: 'Regulations & Ordinances',
+      source: 'GU_Examination_Ordinance_UG.pdf',
+      page: 'Page 14, Clause 8.2',
       date: 'Today, 10:30 AM'
     },
     {
-      q: 'Explain Round Robin Scheduling with Time Quantum calculation',
-      asQ: 'টাইম কোৱাণ্টামৰ সৈতে ৰাউণ্ড ৰবিন শ্বিডিউলিং বুজাই দিয়ক',
-      subject: 'Operating Systems',
-      source: 'GU_BCA_OS_Unit2.pdf',
-      page: 'Page 19, Unit 2',
+      q: 'What are the application deadlines and eligibility for DHE Combined Merit Scholarship?',
+      asQ: 'উচ্চ শিক্ষা সঞ্চালকালয়ৰ মেধা বৃত্তিৰ যোগ্যতা আৰু অন্তিম তাৰিখ কি?',
+      domain: 'Scholarships & Grants',
+      source: 'Assam_DHE_Scholarship_Notice_2024.pdf',
+      page: 'Page 3, Section 2',
       date: 'Yesterday'
     }
   ];
@@ -51,276 +96,168 @@ export const DashboardHome = ({
   return (
     <div className="space-y-8">
       
-      {/* 3D Welcome Student Banner Card */}
-      <div className="relative bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-elevated-cerulean card-3d overflow-hidden">
-        {/* Subtle background gradient glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-[#118AB2]/10 via-[#06D6A0]/10 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+      {/* 3D Welcome Institutional Banner Card */}
+      <div className="relative bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-elevated-sage dark:shadow-elevated-gold card-3d overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-[#84A282]/20 via-[#B8CFB3]/25 to-transparent rounded-full blur-2xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
-            <span className="text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
-              {currentLang === 'as' ? 'উন্মুক্ত শৈক্ষিক হাব • সকলো পাঠ্যক্ৰম উপলব্ধ' : 'Universal Study Hub • All University Curriculums'}
+            <span className="text-xs font-black tracking-wider uppercase text-[#84A282] dark:text-[#FFF2B4]">
+              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় শৈক্ষিক আৰু প্ৰশাসনিক কেন্দ্ৰ' : 'Institutional Assistance Portal • UniMitra'}
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#073B4C] dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#15370D] dark:text-[#FFF2B4] tracking-tight">
               {currentLang === 'as' 
-                ? 'নমস্কাৰ শিক্ষাৰ্থী! আপোনাৰ পাঠ্যক্ৰম অন্বেষণ কৰক' 
-                : 'Welcome! Explore Any Course Curriculum'}
+                ? `নমস্কাৰ ${studentInfo.name}! বিশ্ববিদ্যালয়ৰ তথ্য অন্বেষণ কৰক` 
+                : `Welcome, ${studentInfo.name}! Ask Any Institutional Query`}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-xl leading-relaxed">
               {currentLang === 'as'
-                ? 'সকলো বিশ্ববিদ্যালয়ৰ অফিচিয়েল পাঠ্যক্ৰম আৰু নিয়ম সংলগ্ন কৰা হৈছে। যিকোনো বিষয়ৰ প্ৰশ্ন সুধক বা সিলেবাছ পৰীক্ষা কৰক।'
-                : 'All official course materials and exam blueprints across Assam universities are verified. Ask any syllabus question or view official documents.'}
+                ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ অফিচিয়েল নিয়মাৱলী, পৰীক্ষাৰ জাননী, ভৰ্তি প্ৰক্ৰিয়া আৰু ছাত্ৰবৃত্তিৰ তথ্য সঠিক পৃষ্ঠা নম্বৰসহ উপলব্ধ।'
+                : 'Access verified institutional regulations, examination guidelines, degree admissions, scholarships, and campus services with grounded citations in Assamese and English.'}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => onNavigateTab('assistant')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm"
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm"
             >
-              <SparklesIcon className="w-4 h-4 text-[#FFD166]" />
-              <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Ask Assistant'}</span>
+              <SparklesIcon className="w-4 h-4 text-[#FFF2B4]" />
+              <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Ask AI Assistant'}</span>
             </button>
             <button
-              onClick={() => onNavigateTab('syllabus')}
-              className="px-5 py-3 rounded-2xl font-bold text-[#118AB2] dark:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer text-xs sm:text-sm border border-slate-200 dark:border-slate-700"
+              onClick={() => onNavigateTab('regulations')}
+              className="px-5 py-3 rounded-2xl font-black text-[#15370D] dark:text-[#FFF2B4] bg-[#FEFAF3] dark:bg-[#15370D] hover:bg-[#B8CFB3]/40 transition-all cursor-pointer text-xs sm:text-sm border border-[#B8CFB3] dark:border-[#728E6D]"
             >
-              {currentLang === 'as' ? 'পাঠ্যক্ৰম চাওক' : 'Browse Syllabus'}
+              {currentLang === 'as' ? 'নিয়মাৱলী চাওক' : 'View Regulations'}
             </button>
             <button
-              onClick={() => onNavigateTab('compare')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-[#06D6A0] hover:text-white bg-[#06D6A0]/10 hover:bg-[#06D6A0] transition-all cursor-pointer text-xs sm:text-sm border border-[#06D6A0]/30 shadow-sm"
+              onClick={() => onNavigateTab('scholarships')}
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#728E6D]/50 hover:bg-[#F6E2E9]/80 transition-all cursor-pointer text-xs sm:text-sm border border-[#B8CFB3] dark:border-[#728E6D]"
             >
-              <ScaleIcon className="w-4 h-4" />
-              <span>{currentLang === 'as' ? 'পাঠ্যক্ৰম তুলনা' : 'Compare Curriculums'}</span>
+              <BanknotesIcon className="w-4 h-4 text-[#84A282] dark:text-[#FFF2B4]" />
+              <span>{currentLang === 'as' ? 'ছাত্ৰবৃত্তি' : 'Scholarships'}</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 4 3D Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Semester Courses</span>
-            <div className="w-8 h-8 rounded-xl bg-[#E7F3F7] dark:bg-slate-800 text-[#118AB2] flex items-center justify-center">
-              <BookOpenIcon className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">4 Subjects</div>
-          <span className="text-[11px] font-semibold text-[#06D6A0]">22 Total Credits</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Verified PDFs</span>
-            <div className="w-8 h-8 rounded-xl bg-[#E6FBF5] dark:bg-slate-800 text-[#06D6A0] flex items-center justify-center">
-              <DocumentTextIcon className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">100% Ingested</div>
-          <span className="text-[11px] font-semibold text-[#118AB2] dark:text-[#FFD166]">Official Gauhati Univ</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Curriculum Units</span>
-            <div className="w-8 h-8 rounded-xl bg-[#FFF0EB] dark:bg-slate-800 text-[#FF7F50] flex items-center justify-center">
-              <BookOpenIcon className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">18 Modules</div>
-          <span className="text-[11px] font-semibold text-[#FF7F50]">Full Syllabuses</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Language Mode</span>
-            <div className="w-8 h-8 rounded-xl bg-[#FFF9E6] dark:bg-slate-800 text-[#D9A300] flex items-center justify-center">
-              <CheckCircleIcon className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">অসমীয়া + EN</div>
-          <span className="text-[11px] font-semibold text-[#06D6A0]">Bilingual Search</span>
-        </div>
-
-      </div>
-
-      {/* Quick In-Dashboard Ask Assistant Card */}
-      <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-          {currentLang === 'as' ? 'তৎক্ষণাত পাঠ্যক্ৰমৰ প্ৰশ্ন সোধক' : 'Ask Any Question to UniMitra'}
-        </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-          Type in Assamese or English to get exact syllabus modules, passing marks, or textbook recommendations.
-        </p>
-
+      {/* Quick Natural Language Assistant Prompt Bar */}
+      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-4 sm:p-5 shadow-xs">
         <form onSubmit={handleQuickAsk} className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative flex items-center">
-            <SearchIcon className="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none" />
+          <div className="flex-1 flex items-center px-4 bg-[#FEFAF3] dark:bg-[#15370D] rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D]">
+            <SearchIcon className="w-5 h-5 text-[#84A282] mr-3 shrink-0" />
             <input
               type="text"
-              placeholder={currentLang === 'as' ? 'যিকোনো শৈক্ষিক প্ৰশ্ন লিখক (e.g. DBMS syllabus, passing criteria)...' : 'Ask about your syllabus (e.g. DBMS unit 3 topics, OS pass mark)...'}
+              placeholder={currentLang === 'as' ? 'অসমৰ যিকোনো বিশ্ববিদ্যালয়ৰ নিয়মাৱলী বা পৰীক্ষাৰ প্ৰশ্ন সোধক...' : 'Ask any university regulation, examination rule, admission, or hostel query...'}
               value={quickQuestion}
               onChange={(e) => setQuickQuestion(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+              className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#15370D] dark:text-[#FFF2B4] placeholder-[#4F6D4B]/70 dark:placeholder-[#E5CD82]/60 focus:outline-none font-semibold"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3 rounded-2xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7497] transition-all cursor-pointer shadow-md text-xs sm:text-sm flex items-center justify-center space-x-2 shrink-0"
+            className="flex items-center justify-center space-x-2 px-6 py-3 rounded-2xl bg-[#84A282] hover:bg-[#6F8E6D] text-white text-xs sm:text-sm font-black transition-all cursor-pointer shadow-xs shrink-0"
           >
-            <span>Ask Now</span>
+            <span>{currentLang === 'as' ? 'তৎক্ষণাত সোধক' : 'Ask AI'}</span>
             <ArrowRightIcon className="w-4 h-4" />
           </button>
         </form>
-
-        {/* Suggestion Chips */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-bold">Suggestions:</span>
-          <button 
-            type="button"
-            onClick={() => onNavigateTab('assistant', { prefillQuery: 'What are the prescribed reference books for Database Management Systems?' })}
-            className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg hover:text-[#118AB2] cursor-pointer"
-          >
-            Prescribed DBMS Books
-          </button>
-          <button 
-            type="button"
-            onClick={() => onNavigateTab('assistant', { prefillQuery: 'What is the internal assessment mark distribution in GU BCA 3rd Sem?' })}
-            className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg hover:text-[#118AB2] cursor-pointer"
-          >
-            Internal Assessment Rules
-          </button>
-          <button 
-            type="button"
-            onClick={() => onNavigateTab('assistant', { prefillQuery: 'গুৱাহাটী বিশ্ববিদ্যালয়ৰ ৩য় ষাণ্মাসিকৰ প্ৰশ্নকাকতৰ গাঁথনি কি?' })}
-            className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg hover:text-[#118AB2] cursor-pointer"
-          >
-            অসমীয়া প্ৰশ্ন আৰ্হি
-          </button>
-        </div>
       </div>
 
-      {/* 3D Multi-University Comparison Action Card */}
-      <div className="relative bg-gradient-to-r from-[#118AB2]/10 via-[#06D6A0]/10 to-[#FFD166]/10 border-2 border-[#118AB2]/30 rounded-3xl p-6 sm:p-7 shadow-sm card-3d flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#118AB2] to-[#06D6A0] text-white flex items-center justify-center shadow-md shrink-0">
-            <ScaleIcon className="w-6 h-6 text-[#FFD166]" />
-          </div>
-          <div>
-            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় পাঠ্যক্ৰম তুলনা কেন্দ্ৰ' : 'Multi-University Curriculum Comparison Engine'}
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
-              {currentLang === 'as' 
-                ? 'GU, DU, TU আৰু অন্যান্য বিশ্ববিদ্যালয়ৰ সিলেবাছ, ক্ৰেডিট আৰু নম্বৰ পদ্ধতি তুলনা কৰক।'
-                : 'Compare syllabus coverage, credits, and examination schemes across GU, DU, TU & more side-by-side.'}
-            </p>
-          </div>
+      {/* Institutional Information Domains */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-black text-[#15370D] dark:text-[#FFF2B4] flex items-center space-x-2">
+            <BuildingLibraryIcon className="w-5 h-5 text-[#84A282]" />
+            <span>{currentLang === 'as' ? 'প্ৰধান শৈক্ষিক আৰু প্ৰশাসনিক শিতানসমূহ' : 'Institutional Information Domains'}</span>
+          </h2>
+          <span className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] font-bold">
+            All Assam Universities
+          </span>
         </div>
 
-        <button
-          onClick={() => onNavigateTab('compare')}
-          className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-all cursor-pointer shadow-elevated-cerulean text-xs sm:text-sm shrink-0"
-        >
-          <span>{currentLang === 'as' ? 'তুলনা কৰক' : 'Open Compare Studio'}</span>
-          <ArrowRightIcon className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* 2-Column Section: Available Subjects & Recent Questions */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Semester Subjects (Cols 7) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Featured Semester Curriculums</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Syllabuses available for instant AI retrieval</p>
-            </div>
-            <button
-              onClick={() => onNavigateTab('syllabus')}
-              className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-            >
-              View Full Syllabus ➔
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {currentSubjects.map((sub) => (
-              <div 
-                key={sub.code}
-                className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-[#118AB2] transition-colors flex items-center justify-between gap-4"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {institutionalDomains.map((domain, index) => {
+            const Icon = domain.icon;
+            return (
+              <div
+                key={index}
+                onClick={() => onNavigateTab(domain.id)}
+                className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-5 hover:border-[#84A282] transition-all cursor-pointer card-3d flex flex-col justify-between"
               >
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-[11px] font-mono font-bold bg-[#E7F3F7] dark:bg-slate-700 text-[#118AB2] dark:text-[#FFD166] px-2 py-0.5 rounded">
-                      {sub.code}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-10 h-10 rounded-2xl ${domain.accent} border border-[#84A282]/30 flex items-center justify-center text-[#84A282] dark:text-[#FFF2B4]`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                      {domain.count}
                     </span>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{sub.credits}</span>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">{sub.name}</h4>
+                  <h3 className="text-sm sm:text-base font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+                    {currentLang === 'as' ? domain.asTitle : domain.title}
+                  </h3>
+                  <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                    {domain.desc}
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => onNavigateTab('syllabus', { subjectCode: sub.code })}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#118AB2] dark:text-[#06D6A0] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-[#E7F3F7] dark:hover:bg-slate-700 transition-all shrink-0 cursor-pointer"
-                >
-                  Explore
-                </button>
+                <div className="pt-3 mt-3 border-t border-[#B8CFB3]/40 dark:border-[#728E6D] flex items-center justify-between text-xs font-black text-[#84A282] dark:text-[#FFF2B4]">
+                  <span>Explore Verified Gazettes</span>
+                  <span>➔</span>
+                </div>
               </div>
-            ))}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Recent Grounded Resolutions */}
+      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-[#B8CFB3]/60 dark:border-[#728E6D] pb-3">
+          <div className="flex items-center space-x-2 text-[#15370D] dark:text-[#FFF2B4] font-black text-sm sm:text-base">
+            <ShieldCheckIcon className="w-5 h-5 text-[#84A282]" />
+            <span>Recent Grounded Inquiries with Page Citations</span>
           </div>
+          <button
+            onClick={() => onNavigateTab('history')}
+            className="text-xs font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer"
+          >
+            View All History ➔
+          </button>
         </div>
 
-        {/* Recent Verified Answers with Citations (Cols 5) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Inquiries</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Answers with exact page numbers</p>
-            </div>
-            <button
-              onClick={() => onNavigateTab('assistant')}
-              className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
-            >
-              Ask AI ➔
-            </button>
-          </div>
-
-          <div className="space-y-3.5">
-            {recentAnswers.map((item, idx) => (
-              <div 
-                key={idx}
-                className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 space-y-2"
-              >
-                <div className="flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="font-bold text-[#118AB2] dark:text-[#FFD166]">{item.subject}</span>
-                  <span>{item.date}</span>
-                </div>
-
-                <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">
+        <div className="space-y-3">
+          {recentAnswers.map((item, idx) => (
+            <div key={idx} className="bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                  {item.domain}
+                </span>
+                <h4 className="text-xs sm:text-sm font-black text-[#15370D] dark:text-[#FFF2B4]">
                   {currentLang === 'as' ? item.asQ : item.q}
-                </p>
-
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
-                  <span className="text-[#06D6A0] font-bold flex items-center space-x-1">
-                    <CheckCircleIcon className="w-3.5 h-3.5" />
-                    <span>{item.page}</span>
-                  </span>
-                  <span className="text-slate-500 font-mono text-[10px]">{item.source}</span>
+                </h4>
+                <div className="flex items-center space-x-2 text-[11px] text-[#4F6D4B] dark:text-[#E5CD82]">
+                  <DocumentTextIcon className="w-3.5 h-3.5 text-[#84A282]" />
+                  <span>{item.source}</span>
+                  <span>•</span>
+                  <strong className="text-[#84A282] dark:text-[#FFF2B4]">{item.page}</strong>
                 </div>
               </div>
-            ))}
-          </div>
 
+              <button
+                onClick={() => onNavigateTab('assistant', { prefillQuery: item.q })}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer self-start sm:self-auto shrink-0"
+              >
+                Re-Query
+              </button>
+            </div>
+          ))}
         </div>
-
       </div>
 
     </div>
   );
 };
-
