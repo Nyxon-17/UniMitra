@@ -83,12 +83,12 @@ export const Contact = ({ currentLang = 'en' }) => {
   };
 
   return (
-    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#1E1035] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
 
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
             {currentLang === 'as' ? 'যোগাযোগ আৰু সহায় কেন্দ্ৰ' : 'Contact Support & Helpdesk'}
           </h1>
           <p className="text-sm sm:text-base text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -103,13 +103,13 @@ export const Contact = ({ currentLang = 'en' }) => {
           {/* Left Column: Form (Cols 7) */}
           <div className="lg:col-span-7">
             <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
-              <h2 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-[#FAF8FF] mb-6 flex items-center space-x-2">
+              <h2 className="text-lg sm:text-xl font-black text-[#1E1035] dark:text-[#FAF8FF] mb-6 flex items-center space-x-2">
                 <BuildingLibraryIcon className="w-5 h-5 text-[#6D28D9]" />
                 <span>Submit Institutional Query</span>
               </h2>
 
               {status.submitted && (
-                <div className="mb-6 p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#0F172A] dark:text-[#FAF8FF] font-black text-xs sm:text-sm flex items-center space-x-2">
+                <div className="mb-6 p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#1E1035] dark:text-[#FAF8FF] font-black text-xs sm:text-sm flex items-center space-x-2">
                   <CheckCircleIcon className="w-5 h-5 text-[#10B981]" />
                   <span>Your query has been submitted. The academic desk will review your inquiry shortly.</span>
                 </div>
@@ -118,7 +118,7 @@ export const Contact = ({ currentLang = 'en' }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Full Name *
                     </label>
                     <input
@@ -127,12 +127,12 @@ export const Contact = ({ currentLang = 'en' }) => {
                       placeholder="e.g. Dr. B. Barua / Student"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Email Address *
                     </label>
                     <input
@@ -141,20 +141,20 @@ export const Contact = ({ currentLang = 'en' }) => {
                       placeholder="user@university.ac.in"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       University *
                     </label>
                     <select
                       value={formData.university}
                       onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                     >
                       <option>Gauhati University (GU)</option>
                       <option>Dibrugarh University (DU)</option>
@@ -167,13 +167,13 @@ export const Contact = ({ currentLang = 'en' }) => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Role *
                     </label>
                     <select
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                     >
                       <option>Student / Research Scholar</option>
                       <option>Faculty Member</option>
@@ -184,13 +184,13 @@ export const Contact = ({ currentLang = 'en' }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                     Inquiry Classification *
                   </label>
                   <select
                     value={formData.inquiryType}
                     onChange={(e) => setFormData({ ...formData, inquiryType: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                   >
                     <option>Regulation Clarification</option>
                     <option>Examination Ordinance & Re-evaluation</option>
@@ -202,7 +202,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                     Your Message / Question Details *
                   </label>
                   <textarea
@@ -211,7 +211,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                     placeholder="Provide details about your query or the specific circular reference..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
                   />
                 </div>
 
@@ -231,7 +231,7 @@ export const Contact = ({ currentLang = 'en' }) => {
           <div className="lg:col-span-5 space-y-6">
 
             <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-sm space-y-4">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 UniMitra Support Desk
               </h3>
 
@@ -253,7 +253,7 @@ export const Contact = ({ currentLang = 'en' }) => {
 
             {/* Quick Expandable FAQs */}
             <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-sm space-y-3">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Frequently Addressed Queries
               </h3>
 
@@ -261,7 +261,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                 <div key={i} className="border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3 last:border-0 last:pb-0">
                   <button
                     onClick={() => setActiveFaq(activeFaq === i ? -1 : i)}
-                    className="w-full text-left font-black text-xs text-[#0F172A] dark:text-[#FAF8FF] flex items-center justify-between py-1 cursor-pointer"
+                    className="w-full text-left font-black text-xs text-[#1E1035] dark:text-[#FAF8FF] flex items-center justify-between py-1 cursor-pointer"
                   >
                     <span>{f.q}</span>
                     <ChevronDownIcon className={`w-4 h-4 transform transition-transform ${activeFaq === i ? 'rotate-180 text-[#6D28D9]' : ''}`} />

@@ -5,7 +5,7 @@ import React from 'react';
  * Features:
  * - Highly detailed vector collage student with varsity jacket, backpack, and campus folder
  * - Neoclassical grand university architecture with rotunda dome, clock tower, pillars, and illuminated windows
- * - Dark theme with vibrant neon violet (#B026FF), neon cyan (#00F5D4), and emerald green accents
+ * - Dark theme with vibrant neon violet (#B026FF), neon cyan (#F59E0B), and emerald green accents
  * - Floating graduation cap, open academic book, gliding paper plane, twinkling constellation stars
  */
 export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = true }) => {
@@ -48,7 +48,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           </linearGradient>
 
           <linearGradient id="beaconGlow" x1="720" y1="0" x2="720" y2="220" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#00F5D4" stopOpacity="0.6" />
+            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.6" />
             <stop offset="30%" stopColor="#B026FF" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#6D28D9" stopOpacity="0" />
           </linearGradient>
@@ -57,7 +57,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           <linearGradient id="varsityBody" x1="440" y1="390" x2="520" y2="520" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#4C1D95" />
             <stop offset="50%" stopColor="#3B0764" />
-            <stop offset="100%" stopColor="#1E1B4B" />
+            <stop offset="100%" stopColor="#1A0A30" />
           </linearGradient>
 
           <linearGradient id="varsitySleeves" x1="430" y1="400" x2="530" y2="510" gradientUnits="userSpaceOnUse">
@@ -115,7 +115,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             }
             @keyframes neonWindowPulse {
               0%, 100% { opacity: 0.85; }
-              50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(0, 245, 212, 0.7)); }
+              50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
             }
             @keyframes beaconPulseAnim {
               0%, 100% { opacity: 0.35; }
@@ -147,21 +147,21 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
         {/* 2. STARS & CONSTELLATIONS WITH NEON HIGHLIGHTS */}
         <g id="sky-constellations">
           {/* Left Constellation */}
-          <circle cx="210" cy="70" r="2.5" fill="#8F00FF" className="anim-star-a dark:fill-[#00F5D4]" />
+          <circle cx="210" cy="70" r="2.5" fill="#8F00FF" className="anim-star-a dark:fill-[#F59E0B]" />
           <circle cx="270" cy="45" r="3" fill="#6D28D9" className="anim-star-b dark:fill-[#B026FF]" />
           <circle cx="340" cy="85" r="2.5" fill="#10B981" className="anim-star-c dark:fill-[#10E7A0]" />
           <line x1="210" y1="70" x2="270" y2="45" stroke="#C4B5FD" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
           <line x1="270" y1="45" x2="340" y2="85" stroke="#C4B5FD" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
 
           {/* Right Constellation */}
-          <circle cx="1130" cy="65" r="3" fill="#8F00FF" className="anim-star-b dark:fill-[#00F5D4]" />
+          <circle cx="1130" cy="65" r="3" fill="#8F00FF" className="anim-star-b dark:fill-[#F59E0B]" />
           <circle cx="1200" cy="35" r="3.5" fill="#6D28D9" className="anim-star-a dark:fill-[#B026FF]" />
-          <circle cx="1260" cy="75" r="2" fill="#10B981" className="anim-star-c dark:fill-[#00F5D4]" />
+          <circle cx="1260" cy="75" r="2" fill="#10B981" className="anim-star-c dark:fill-[#F59E0B]" />
           <line x1="1130" y1="65" x2="1200" y2="35" stroke="#C4B5FD" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
           <line x1="1200" y1="35" x2="1260" y2="75" stroke="#C4B5FD" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
 
           {/* Zenith Stars */}
-          <circle cx="680" cy="40" r="2.5" fill="#00F5D4" className="anim-star-a" opacity="0.8" />
+          <circle cx="680" cy="40" r="2.5" fill="#F59E0B" className="anim-star-a" opacity="0.8" />
           <circle cx="760" cy="55" r="3" fill="#B026FF" className="anim-star-b" opacity="0.8" />
         </g>
 
@@ -199,12 +199,12 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
 
           {/* Dome Lantern Cupola & Spire */}
           <rect x="712" y="85" width="16" height="36" rx="3" fill="#8F00FF" className="dark:fill-[#B026FF]" />
-          <polygon points="720,55 714,85 726,85" fill="#10B981" className="dark:fill-[#00F5D4]" />
-          <circle cx="720" cy="50" r="4.5" fill="#FAF8FF" className="dark:fill-[#00F5D4]" />
+          <polygon points="720,55 714,85 726,85" fill="#10B981" className="dark:fill-[#F59E0B]" />
+          <circle cx="720" cy="50" r="4.5" fill="#FAF8FF" className="dark:fill-[#F59E0B]" />
 
           {/* Dome Eye Arched Window */}
-          <circle cx="720" cy="180" r="22" fill="#1E1B4B" stroke="#E0D4FD" strokeWidth="2" className="dark:stroke-[#B026FF]" />
-          <circle cx="720" cy="180" r="16" fill="#DDD6FE" opacity="0.85" className="anim-neon-window dark:fill-[#00F5D4] dark:opacity-90" />
+          <circle cx="720" cy="180" r="22" fill="#1A0A30" stroke="#E0D4FD" strokeWidth="2" className="dark:stroke-[#B026FF]" />
+          <circle cx="720" cy="180" r="16" fill="#DDD6FE" opacity="0.85" className="anim-neon-window dark:fill-[#F59E0B] dark:opacity-90" />
 
           {/* Neoclassical Colonnade / Drum */}
           <rect x="630" y="218" width="180" height="74" fill="#3B0764" rx="4" stroke="#E0D4FD" strokeWidth="2" className="dark:fill-[#150F2C] dark:stroke-[#B026FF]" />
@@ -227,8 +227,8 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             className="dark:fill-[#2A0F55] dark:stroke-[#B026FF]"
           />
           {/* Pediment University Seal */}
-          <circle cx="720" cy="202" r="11" fill="#8F00FF" stroke="#FAF8FF" strokeWidth="1.5" className="dark:fill-[#B026FF] dark:stroke-[#00F5D4]" />
-          <polygon points="720,196 724,204 716,204" fill="#10B981" className="dark:fill-[#00F5D4]" />
+          <circle cx="720" cy="202" r="11" fill="#8F00FF" stroke="#FAF8FF" strokeWidth="1.5" className="dark:fill-[#B026FF] dark:stroke-[#F59E0B]" />
+          <polygon points="720,196 724,204 716,204" fill="#10B981" className="dark:fill-[#F59E0B]" />
 
           {/* Left Wing - Library & Research Complex */}
           <rect x="410" y="250" width="230" height="120" fill="#2E1065" rx="5" stroke="#E0D4FD" strokeWidth="1.8" className="dark:fill-[#120B26] dark:stroke-[#3B2868]" />
@@ -247,7 +247,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
                   rx="4"
                   fill={(col + row) % 2 === 0 ? "#10B981" : "#FAF8FF"}
                   opacity="0.9"
-                  className="anim-neon-window dark:fill-[#00F5D4]"
+                  className="anim-neon-window dark:fill-[#F59E0B]"
                 />
               ))}
             </g>
@@ -256,13 +256,13 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           {/* Left Clock Tower */}
           <rect x="355" y="150" width="60" height="220" fill="#250B48" rx="4" stroke="#E0D4FD" strokeWidth="2" className="dark:fill-[#150F2C] dark:stroke-[#B026FF]" />
           <polygon points="350,150 385,95 420,150" fill="#8F00FF" stroke="#E0D4FD" strokeWidth="2" className="dark:fill-[#B026FF]" />
-          <line x1="385" y1="95" x2="385" y2="70" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#00F5D4]" />
-          <circle cx="385" cy="68" r="3.5" fill="#FAF8FF" className="dark:fill-[#00F5D4]" />
+          <line x1="385" y1="95" x2="385" y2="70" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#F59E0B]" />
+          <circle cx="385" cy="68" r="3.5" fill="#FAF8FF" className="dark:fill-[#F59E0B]" />
           {/* Clock Face */}
-          <circle cx="385" cy="180" r="16" fill="#FAF8FF" stroke="#4C1D95" strokeWidth="3" className="dark:fill-[#0A0718] dark:stroke-[#00F5D4]" />
-          <line x1="385" y1="180" x2="385" y2="170" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" className="dark:stroke-[#00F5D4]" />
-          <line x1="385" y1="180" x2="393" y2="180" stroke="#0F172A" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
-          <circle cx="385" cy="180" r="2.5" fill="#8F00FF" className="dark:fill-[#00F5D4]" />
+          <circle cx="385" cy="180" r="16" fill="#FAF8FF" stroke="#4C1D95" strokeWidth="3" className="dark:fill-[#0A0718] dark:stroke-[#F59E0B]" />
+          <line x1="385" y1="180" x2="385" y2="170" stroke="#1E1035" strokeWidth="2" strokeLinecap="round" className="dark:stroke-[#F59E0B]" />
+          <line x1="385" y1="180" x2="393" y2="180" stroke="#1E1035" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
+          <circle cx="385" cy="180" r="2.5" fill="#8F00FF" className="dark:fill-[#F59E0B]" />
 
           {/* Right Wing - Academic Departments */}
           <rect x="800" y="250" width="230" height="120" fill="#2E1065" rx="5" stroke="#E0D4FD" strokeWidth="1.8" className="dark:fill-[#120B26] dark:stroke-[#3B2868]" />
@@ -281,7 +281,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
                   rx="4"
                   fill={(col + row) % 3 === 0 ? "#10B981" : "#FAF8FF"}
                   opacity="0.9"
-                  className="anim-neon-window dark:fill-[#00F5D4]"
+                  className="anim-neon-window dark:fill-[#F59E0B]"
                 />
               ))}
             </g>
@@ -290,12 +290,12 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           {/* Right Observatory Dome Tower */}
           <rect x="1025" y="180" width="65" height="190" fill="#250B48" rx="4" stroke="#E0D4FD" strokeWidth="2" className="dark:fill-[#150F2C] dark:stroke-[#B026FF]" />
           <path d="M 1025 180 Q 1057 130 1090 180 Z" fill="#8F00FF" stroke="#E0D4FD" strokeWidth="2" className="dark:fill-[#B026FF]" />
-          <line x1="1057" y1="130" x2="1057" y2="105" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#00F5D4]" />
-          <circle cx="1057" cy="103" r="3.5" fill="#FAF8FF" className="dark:fill-[#00F5D4]" />
+          <line x1="1057" y1="130" x2="1057" y2="105" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#F59E0B]" />
+          <circle cx="1057" cy="103" r="3.5" fill="#FAF8FF" className="dark:fill-[#F59E0B]" />
 
           {/* Grand University Steps */}
-          <rect x="640" y="292" width="160" height="42" fill="#1E1B4B" rx="3" className="dark:fill-[#0A0718]" />
-          <path d="M680 334 Q 720 298 760 334 Z" fill="#FAF8FF" opacity="0.9" className="anim-neon-window dark:fill-[#00F5D4]" />
+          <rect x="640" y="292" width="160" height="42" fill="#1A0A30" rx="3" className="dark:fill-[#0A0718]" />
+          <path d="M680 334 Q 720 298 760 334 Z" fill="#FAF8FF" opacity="0.9" className="anim-neon-window dark:fill-[#F59E0B]" />
           <line x1="630" y1="334" x2="810" y2="334" stroke="#E0D4FD" strokeWidth="3" className="dark:stroke-[#B026FF]" />
           <line x1="620" y1="340" x2="820" y2="340" stroke="#E0D4FD" strokeWidth="3" className="dark:stroke-[#B026FF]" />
           <line x1="610" y1="346" x2="830" y2="346" stroke="#E0D4FD" strokeWidth="3" className="dark:stroke-[#B026FF]" />
@@ -307,7 +307,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           fill="url(#promenadeGrad)"
           className="dark:fill-[#1C1438] dark:fill-opacity-80"
         />
-        <line x1="720" y1="395" x2="720" y2="680" stroke="#FAF8FF" strokeWidth="2.5" strokeDasharray="10 8" opacity="0.75" className="dark:stroke-[#00F5D4] dark:opacity-60" />
+        <line x1="720" y1="395" x2="720" y2="680" stroke="#FAF8FF" strokeWidth="2.5" strokeDasharray="10 8" opacity="0.75" className="dark:stroke-[#F59E0B] dark:opacity-60" />
 
         {/* Campus Street Lamps with Glow Halos */}
         {[
@@ -317,8 +317,8 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
           { x: 920, y: 530 }
         ].map((lamp, i) => (
           <g key={i}>
-            <circle cx={lamp.x} cy={lamp.y} r="18" fill="#00F5D4" opacity="0.25" filter="url(#neonBlur)" className="hidden dark:block" />
-            <circle cx={lamp.x} cy={lamp.y} r="8" fill="#FAF8FF" className="dark:fill-[#00F5D4]" />
+            <circle cx={lamp.x} cy={lamp.y} r="18" fill="#F59E0B" opacity="0.25" filter="url(#neonBlur)" className="hidden dark:block" />
+            <circle cx={lamp.x} cy={lamp.y} r="8" fill="#FAF8FF" className="dark:fill-[#F59E0B]" />
             <line x1={lamp.x} y1={lamp.y + 8} x2={lamp.x} y2={lamp.y + 60} stroke="#3B0764" strokeWidth="4" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
           </g>
         ))}
@@ -330,12 +330,12 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             fill="#3B0764"
             stroke="#8F00FF"
             strokeWidth="2.5"
-            className="dark:fill-[#1E1B4B] dark:stroke-[#B026FF]"
+            className="dark:fill-[#1A0A30] dark:stroke-[#B026FF]"
           />
-          <path d="M 35 42 Q 55 58 75 42 Z" fill="#1E1B4B" />
-          <circle cx="55" cy="34" r="3.5" fill="#10B981" className="dark:fill-[#00F5D4]" />
-          <path d="M 55 34 Q 72 44 80 60" stroke="#10B981" strokeWidth="2.5" fill="none" className="dark:stroke-[#00F5D4]" />
-          <rect x="78" y="60" width="5" height="12" rx="1.5" fill="#10B981" className="dark:fill-[#00F5D4]" />
+          <path d="M 35 42 Q 55 58 75 42 Z" fill="#1A0A30" />
+          <circle cx="55" cy="34" r="3.5" fill="#10B981" className="dark:fill-[#F59E0B]" />
+          <path d="M 55 34 Q 72 44 80 60" stroke="#10B981" strokeWidth="2.5" fill="none" className="dark:stroke-[#F59E0B]" />
+          <rect x="78" y="60" width="5" height="12" rx="1.5" fill="#10B981" className="dark:fill-[#F59E0B]" />
         </g>
 
         {/* 8. FLOATING OPEN ACADEMIC BOOK */}
@@ -354,10 +354,10 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             strokeWidth="2"
             className="dark:fill-[#150F2C] dark:stroke-[#B026FF]"
           />
-          <line x1="12" y1="46" x2="42" y2="46" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#00F5D4]" />
+          <line x1="12" y1="46" x2="42" y2="46" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#F59E0B]" />
           <line x1="12" y1="53" x2="38" y2="53" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
-          <line x1="12" y1="60" x2="40" y2="60" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#00F5D4]" />
-          <line x1="58" y1="46" x2="88" y2="46" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#00F5D4]" />
+          <line x1="12" y1="60" x2="40" y2="60" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#F59E0B]" />
+          <line x1="58" y1="46" x2="88" y2="46" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#F59E0B]" />
           <line x1="58" y1="53" x2="84" y2="53" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
           <line x1="58" y1="60" x2="78" y2="60" stroke="#8F00FF" strokeWidth="1.8" strokeLinecap="round" className="dark:stroke-[#B026FF]" />
           <line x1="50" y1="40" x2="50" y2="72" stroke="#3B0764" strokeWidth="3" className="dark:stroke-[#B026FF]" />
@@ -370,10 +370,10 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             fill="#FAF8FF"
             stroke="#8F00FF"
             strokeWidth="2"
-            className="dark:fill-[#1E1B4B] dark:stroke-[#00F5D4]"
+            className="dark:fill-[#1A0A30] dark:stroke-[#F59E0B]"
           />
           <polygon points="44,0 22,30 16,18" fill="#DDD6FE" className="dark:fill-[#B026FF]" />
-          <polygon points="44,0 16,18 0,12" fill="#FAF8FF" className="dark:fill-[#00F5D4]" />
+          <polygon points="44,0 16,18 0,12" fill="#FAF8FF" className="dark:fill-[#F59E0B]" />
           <path
             d="M -5 14 C -30 20, -50 10, -80 22"
             stroke="#C4B5FD"
@@ -381,32 +381,32 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             strokeDasharray="4 4"
             fill="none"
             opacity="0.85"
-            className="dark:stroke-[#00F5D4]"
+            className="dark:stroke-[#F59E0B]"
           />
         </g>
 
         {/* 10. REALISTIC DETAILED COLLEGE BOY (Standing in Foreground Gazing Forward) */}
         <g id="realistic-college-boy" className="anim-boy-realistic">
           {/* Natural Contact Shadow */}
-          <ellipse cx="485" cy="655" rx="55" ry="12" fill="#0F172A" opacity="0.35" filter="url(#neonBlur)" className="dark:fill-[#B026FF] dark:opacity-40" />
+          <ellipse cx="485" cy="655" rx="55" ry="12" fill="#1E1035" opacity="0.35" filter="url(#neonBlur)" className="dark:fill-[#B026FF] dark:opacity-40" />
 
           {/* Shoes / Modern Collegiate Sneakers */}
           <g id="sneakers">
             {/* Left Shoe */}
             <path d="M 452 642 C 452 632, 470 632, 472 642 L 475 652 L 448 652 Z" fill="#FAF8FF" stroke="#3B0764" strokeWidth="2" className="dark:fill-[#150F2C] dark:stroke-[#B026FF]" />
-            <path d="M 448 649 L 475 649" stroke="#8F00FF" strokeWidth="2.5" className="dark:stroke-[#00F5D4]" />
+            <path d="M 448 649 L 475 649" stroke="#8F00FF" strokeWidth="2.5" className="dark:stroke-[#F59E0B]" />
             
             {/* Right Shoe */}
             <path d="M 498 642 C 498 632, 516 632, 518 642 L 521 652 L 494 652 Z" fill="#FAF8FF" stroke="#3B0764" strokeWidth="2" className="dark:fill-[#150F2C] dark:stroke-[#B026FF]" />
-            <path d="M 494 649 L 521 649" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#00F5D4]" />
+            <path d="M 494 649 L 521 649" stroke="#10B981" strokeWidth="2.5" className="dark:stroke-[#F59E0B]" />
           </g>
 
           {/* Jeans / Tailored College Trousers */}
           <g id="jeans-realistic">
             {/* Left Leg */}
-            <path d="M 458 525 L 452 640 L 472 640 L 482 525 Z" fill="#1E1B4B" className="dark:fill-[#0F0A20]" />
+            <path d="M 458 525 L 452 640 L 472 640 L 482 525 Z" fill="#1A0A30" className="dark:fill-[#0F0A20]" />
             {/* Right Leg */}
-            <path d="M 488 525 L 498 640 L 518 640 L 510 525 Z" fill="#1E1B4B" className="dark:fill-[#0F0A20]" />
+            <path d="M 488 525 L 498 640 L 518 640 L 510 525 Z" fill="#1A0A30" className="dark:fill-[#0F0A20]" />
             {/* Denim Seams and Creases */}
             <line x1="465" y1="535" x2="460" y2="635" stroke="#4C1D95" strokeWidth="1.5" className="dark:stroke-[#3B2868]" />
             <line x1="505" y1="535" x2="510" y2="635" stroke="#4C1D95" strokeWidth="1.5" className="dark:stroke-[#3B2868]" />
@@ -425,15 +425,15 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             />
             {/* Striped Ribbed Waistband */}
             <rect x="446" y="522" width="78" height="10" rx="3" fill="#FAF8FF" stroke="#3B0764" strokeWidth="1.5" className="dark:fill-[#1E1438] dark:stroke-[#B026FF]" />
-            <line x1="450" y1="527" x2="520" y2="527" stroke="#8F00FF" strokeWidth="2" className="dark:stroke-[#00F5D4]" />
+            <line x1="450" y1="527" x2="520" y2="527" stroke="#8F00FF" strokeWidth="2" className="dark:stroke-[#F59E0B]" />
 
             {/* Left Arm & Sleeve with Ribbed Cuff */}
             <path d="M 444 428 C 424 450, 426 490, 434 516 L 448 512 C 442 485, 440 450, 452 428 Z" fill="url(#varsitySleeves)" />
-            <rect x="430" y="512" width="18" height="6" rx="2" fill="#FAF8FF" stroke="#8F00FF" strokeWidth="1.5" className="dark:stroke-[#00F5D4]" />
+            <rect x="430" y="512" width="18" height="6" rx="2" fill="#FAF8FF" stroke="#8F00FF" strokeWidth="1.5" className="dark:stroke-[#F59E0B]" />
 
             {/* Right Arm - Holding Campus Binder Folder */}
             <path d="M 526 428 C 546 450, 544 485, 536 512 L 522 508 C 528 485, 530 450, 518 428 Z" fill="url(#varsitySleeves)" />
-            <rect x="522" y="508" width="18" height="6" rx="2" fill="#FAF8FF" stroke="#10B981" strokeWidth="1.5" className="dark:stroke-[#00F5D4]" />
+            <rect x="522" y="508" width="18" height="6" rx="2" fill="#FAF8FF" stroke="#10B981" strokeWidth="1.5" className="dark:stroke-[#F59E0B]" />
             
             {/* Campus Binder / Folder Under Right Arm */}
             <rect
@@ -446,10 +446,10 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
               stroke="#10B981"
               strokeWidth="2.5"
               transform="rotate(9 532 485)"
-              className="dark:fill-[#150F2C] dark:stroke-[#00F5D4]"
+              className="dark:fill-[#150F2C] dark:stroke-[#F59E0B]"
             />
             <line x1="538" y1="495" x2="554" y2="498" stroke="#8F00FF" strokeWidth="2" className="dark:stroke-[#B026FF]" />
-            <line x1="539" y1="504" x2="553" y2="506" stroke="#6D28D9" strokeWidth="2" className="dark:stroke-[#00F5D4]" />
+            <line x1="539" y1="504" x2="553" y2="506" stroke="#6D28D9" strokeWidth="2" className="dark:stroke-[#F59E0B]" />
           </g>
 
           {/* Detailed Collegiate Backpack with Straps & Zipper */}
@@ -475,19 +475,19 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
               fill="#2E1065"
               stroke="#8F00FF"
               strokeWidth="1.8"
-              className="dark:stroke-[#00F5D4]"
+              className="dark:stroke-[#F59E0B]"
             />
             {/* Metal Zipper Track */}
-            <line x1="468" y1="470" x2="502" y2="470" stroke="#FAF8FF" strokeWidth="2.5" strokeDasharray="4 2" className="dark:stroke-[#00F5D4]" />
+            <line x1="468" y1="470" x2="502" y2="470" stroke="#FAF8FF" strokeWidth="2.5" strokeDasharray="4 2" className="dark:stroke-[#F59E0B]" />
             
             {/* UniMitra Crest Badge */}
-            <circle cx="485" cy="480" r="6" fill="#10B981" stroke="#FAF8FF" strokeWidth="1.5" className="dark:fill-[#00F5D4]" />
+            <circle cx="485" cy="480" r="6" fill="#10B981" stroke="#FAF8FF" strokeWidth="1.5" className="dark:fill-[#F59E0B]" />
 
             {/* Padded Shoulder Straps */}
             <path d="M 462 432 C 454 416, 450 426, 458 448" stroke="#DDD6FE" strokeWidth="5" strokeLinecap="round" fill="none" className="dark:stroke-[#B026FF]" />
             <path d="M 508 432 C 516 416, 520 426, 512 448" stroke="#DDD6FE" strokeWidth="5" strokeLinecap="round" fill="none" className="dark:stroke-[#B026FF]" />
             {/* Top Grab Handle */}
-            <path d="M 477 432 C 477 420, 493 420, 493 432" stroke="#FAF8FF" strokeWidth="3" fill="none" className="dark:stroke-[#00F5D4]" />
+            <path d="M 477 432 C 477 420, 493 420, 493 432" stroke="#FAF8FF" strokeWidth="3" fill="none" className="dark:stroke-[#F59E0B]" />
           </g>
 
           {/* Neck, Collar, and Head with Wind-Breeze Hair */}
@@ -502,20 +502,20 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
             <g className="anim-hair">
               <path
                 d="M 466 394 C 462 374, 472 362, 485 362 C 499 362, 507 374, 504 394 C 499 388, 494 391, 485 387 C 478 391, 471 388, 466 394 Z"
-                fill="#0F172A"
+                fill="#1E1035"
                 className="dark:fill-[#0A0718]"
               />
               {/* Hair Texture & Highlight Strands */}
               <path d="M 475 366 C 482 363, 490 363, 495 367" stroke="#8F00FF" strokeWidth="2" strokeLinecap="round" fill="none" className="dark:stroke-[#B026FF]" />
-              <path d="M 470 376 C 478 372, 488 372, 496 377" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" fill="none" className="dark:stroke-[#00F5D4]" />
+              <path d="M 470 376 C 478 372, 488 372, 496 377" stroke="#6D28D9" strokeWidth="1.8" strokeLinecap="round" fill="none" className="dark:stroke-[#F59E0B]" />
             </g>
           </g>
 
           {/* Aspiration Sparks & Knowledge Constellation Threads */}
           <g id="aspiration-threads">
-            <circle cx="462" cy="355" r="2.5" fill="#10B981" className="anim-star-a dark:fill-[#00F5D4]" />
+            <circle cx="462" cy="355" r="2.5" fill="#10B981" className="anim-star-a dark:fill-[#F59E0B]" />
             <circle cx="508" cy="350" r="3" fill="#8F00FF" className="anim-star-b dark:fill-[#B026FF]" />
-            <circle cx="485" cy="338" r="3.5" fill="#00F5D4" className="anim-star-c" />
+            <circle cx="485" cy="338" r="3.5" fill="#F59E0B" className="anim-star-c" />
             <path
               d="M 485 332 C 530 290, 640 230, 720 180"
               stroke="#8F00FF"
@@ -523,7 +523,7 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
               strokeDasharray="5 7"
               opacity="0.6"
               fill="none"
-              className="dark:stroke-[#00F5D4] dark:opacity-80"
+              className="dark:stroke-[#F59E0B] dark:opacity-80"
             />
           </g>
         </g>

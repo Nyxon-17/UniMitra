@@ -99,7 +99,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
             <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'অধ্যাপকৰ সংৰক্ষিত বাৰ্তালাপ' : 'Faculty Research & Administrative Records'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] tracking-tight">
               {currentLang === 'as' ? 'সংৰক্ষিত শৈক্ষিক পৰামৰ্শসমূহ' : 'Saved Academic Consultations & Ordinances'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-1">
@@ -108,7 +108,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
+            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]">
               {consultations.length} Consultations
             </span>
           </div>
@@ -124,7 +124,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
             placeholder="Search saved faculty consultations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
           />
         </div>
 
@@ -136,7 +136,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all shrink-0 ${
                 selectedTag === tag
                   ? 'bg-[#4C1D95] text-white shadow-xs'
-                  : 'bg-[#FAF8FF] dark:bg-[#0F172A] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]'
+                  : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]'
               }`}
             >
               {tag}
@@ -166,7 +166,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handleCopy(item.id, `${item.title}\n\nQ: ${item.query}\n\nA: ${item.response}\n\nSource: ${item.source}`)}
-                  className="p-1.5 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/20 text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer"
+                  className="p-1.5 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/20 text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
                   title="Copy consultation"
                 >
                   {copiedId === item.id ? <CheckIcon className="w-4 h-4 text-green-600" /> : <DocumentDuplicateIcon className="w-4 h-4 text-[#6D28D9]" />}
@@ -181,15 +181,15 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               </div>
             </div>
 
-            <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {item.title}
             </h2>
 
-            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#0F172A] rounded-xl text-xs text-[#0F172A] dark:text-[#FAF8FF] font-bold">
+            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#0A0718] rounded-xl text-xs text-[#1E1035] dark:text-[#FAF8FF] font-bold">
               Q: {item.query}
             </div>
 
-            <div className="p-4 bg-[#FAF8FF] dark:bg-[#0F172A] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs sm:text-sm text-[#0F172A] dark:text-[#FAF8FF] leading-relaxed">
+            <div className="p-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs sm:text-sm text-[#1E1035] dark:text-[#FAF8FF] leading-relaxed">
               {item.response}
             </div>
 

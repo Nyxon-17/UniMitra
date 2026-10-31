@@ -18,14 +18,14 @@ export const DashboardNavbar = ({
   studentInfo = { name: 'Scholar', role: 'Student' }
 }) => {
   return (
-    <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-[#150F2C]/95 backdrop-blur-xs border-b border-[#E0D4FD] dark:border-[#3B2868] transition-colors duration-200 px-4 sm:px-6 lg:px-8 shadow-xs">
+    <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-[#120B24]/95 backdrop-blur-xs border-b border-[#E0D4FD] dark:border-[#3B2868] transition-colors duration-200 px-4 sm:px-6 lg:px-8 shadow-xs">
       <div className="flex items-center justify-between h-full">
         
         {/* Left: Mobile Sidebar Button + Search Input */}
         <div className="flex items-center space-x-3 sm:space-x-4 flex-1 max-w-lg">
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-xl text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1F163D] cursor-pointer"
+            className="lg:hidden p-2 rounded-xl text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             <MenuIcon className="w-6 h-6" />
@@ -33,11 +33,11 @@ export const DashboardNavbar = ({
 
           {/* Institutional Search Bar */}
           <div className="relative w-full hidden sm:block">
-            <SearchIcon className="w-4 h-4 text-[#8F00FF] dark:text-[#00F5D4] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <SearchIcon className="w-4 h-4 text-[#8F00FF] dark:text-[#FBBF24] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder={currentLang === 'as' ? 'নিয়ম, পৰীক্ষা, ভৰ্তি বা ছাত্ৰবৃত্তি বিচাৰক...' : 'Search regulations, exams, admissions, scholarships...'}
-              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#8F00FF] dark:focus:border-[#00F5D4] transition-all font-semibold"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#8F00FF] dark:focus:border-[#FBBF24] transition-all font-semibold"
             />
           </div>
         </div>
@@ -45,12 +45,12 @@ export const DashboardNavbar = ({
         {/* Right: Actions */}
         <div className="flex items-center space-x-2 sm:space-x-3">
           
-          {/* Quick Ask AI Assistant - Deep Violet button with Electric Violet Hover */}
+          {/* Quick Ask AI Assistant - Deep Violet button with Amber Accent */}
           <button
             onClick={onNavigateAi}
             className="hidden md:flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-xs dark:shadow-[0_0_12px_rgba(176,38,255,0.35)] shrink-0"
           >
-            <SparklesIcon className="w-3.5 h-3.5 text-[#DDD6FE] dark:text-[#00F5D4]" />
+            <SparklesIcon className="w-3.5 h-3.5 text-[#DDD6FE] dark:text-[#FBBF24]" />
             <span>{currentLang === 'as' ? 'AI সহায়কক সোধক' : 'Ask AI Assistant'}</span>
           </button>
 
@@ -61,7 +61,7 @@ export const DashboardNavbar = ({
               className={`px-2 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
                 currentLang === 'as'
                   ? 'bg-[#4C1D95] text-white shadow-xs'
-                  : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  : 'text-[#1E1035] dark:text-[#C4B5FD]'
               }`}
             >
               অসমীয়া
@@ -71,7 +71,7 @@ export const DashboardNavbar = ({
               className={`px-2 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
                 currentLang === 'en'
                   ? 'bg-[#4C1D95] text-white shadow-xs'
-                  : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  : 'text-[#1E1035] dark:text-[#C4B5FD]'
               }`}
             >
               EN
@@ -82,19 +82,19 @@ export const DashboardNavbar = ({
           <button
             onClick={onToggleTheme}
             aria-label="Toggle theme"
-            className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#00F5D4] hover:bg-[#E0D4FD]/40 cursor-pointer dark:hover:shadow-[0_0_10px_rgba(0,245,212,0.3)]"
+            className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FBBF24] hover:bg-[#E0D4FD]/40 cursor-pointer dark:hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]"
           >
-            {isDark ? <SunIcon className="w-4 h-4 text-[#00F5D4]" /> : <MoonIcon className="w-4 h-4 text-[#4C1D95]" />}
+            {isDark ? <SunIcon className="w-4 h-4 text-[#FBBF24]" /> : <MoonIcon className="w-4 h-4 text-[#4C1D95]" />}
           </button>
 
           {/* Notifications Indicator */}
           <button
             onClick={() => alert("No pending institutional notices or circular alerts.")}
-            className="relative p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/40 cursor-pointer"
+            className="relative p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/40 cursor-pointer"
             aria-label="View notifications"
           >
             <BellIcon className="w-4 h-4" />
-            <span className="w-2 h-2 rounded-full bg-[#10B981] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#150F2C]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#10B981] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#120B24]"></span>
           </button>
 
           {/* User Profile Badge */}
@@ -103,7 +103,7 @@ export const DashboardNavbar = ({
               {studentInfo?.name?.charAt(0) || 'U'}
             </div>
             <div className="hidden xl:block text-left leading-tight">
-              <span className="text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] block truncate max-w-[120px]">
+              <span className="text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] block truncate max-w-[120px]">
                 {studentInfo?.name || 'Member'}
               </span>
               <span className="text-[10px] text-[#555375] dark:text-[#C4B5FD] font-semibold">

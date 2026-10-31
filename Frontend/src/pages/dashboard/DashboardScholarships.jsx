@@ -90,7 +90,7 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
               <BanknotesIcon className="w-4 h-4" />
               <span>Institutional & State Financial Aid Desk</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান' : 'Scholarships & Financial Grants'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
@@ -121,7 +121,7 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
                 className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all ${
                   selectedCategory === cat
                     ? 'bg-[#4C1D95] text-white shadow-xs'
-                    : 'bg-[#FAF8FF] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
+                    : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
                 }`}
               >
                 {cat}
@@ -136,7 +136,7 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
               placeholder="Search scheme name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
             />
           </div>
         </div>
@@ -159,7 +159,7 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
                     Deadline: {sch.deadline}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
+                <h3 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] pt-1">
                   {currentLang === 'as' ? sch.asTitle : sch.title}
                 </h3>
                 <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -167,15 +167,15 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
                 </p>
               </div>
 
-              <div className="bg-[#DDD6FE] dark:bg-[#0F172A] px-3.5 py-2 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] text-center self-start sm:self-auto shrink-0">
+              <div className="bg-[#DDD6FE] dark:bg-[#0A0718] px-3.5 py-2 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] text-center self-start sm:self-auto shrink-0">
                 <span className="text-[10px] font-black uppercase block text-[#555375] dark:text-[#C4B5FD]">Benefit Value</span>
-                <span className="text-xs font-black text-[#0F172A] dark:text-[#FAF8FF]">{sch.amount}</span>
+                <span className="text-xs font-black text-[#1E1035] dark:text-[#FAF8FF]">{sch.amount}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
-                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
+                <strong className="text-[#1E1035] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Eligibility & Income Ceiling
                 </strong>
                 <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -186,8 +186,8 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
-                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
+                <strong className="text-[#1E1035] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Mandatory Document Checklist
                 </strong>
                 <ul className="space-y-1 text-[#555375] dark:text-[#C4B5FD]">

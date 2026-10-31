@@ -106,7 +106,7 @@ export const DashboardHome = ({
             <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয় শৈক্ষিক আৰু প্ৰশাসনিক কেন্দ্ৰ' : 'Institutional Assistance Portal • UniMitra'}
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0F172A] dark:text-[#FAF8FF] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1E1035] dark:text-[#FAF8FF] tracking-tight">
               {currentLang === 'as' 
                 ? `নমস্কাৰ ${studentInfo.name}! বিশ্ববিদ্যালয়ৰ তথ্য অন্বেষণ কৰক` 
                 : `Welcome, ${studentInfo.name}! Ask Any Institutional Query`}
@@ -128,13 +128,13 @@ export const DashboardHome = ({
             </button>
             <button
               onClick={() => onNavigateTab('regulations')}
-              className="px-5 py-3 rounded-2xl font-black text-[#0F172A] dark:text-[#FAF8FF] bg-[#FAF8FF] dark:bg-[#0F172A] hover:bg-[#E0D4FD]/40 transition-all cursor-pointer text-xs sm:text-sm border border-[#E0D4FD] dark:border-[#3B2868]"
+              className="px-5 py-3 rounded-2xl font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#FAF8FF] dark:bg-[#0A0718] hover:bg-[#E0D4FD]/40 transition-all cursor-pointer text-xs sm:text-sm border border-[#E0D4FD] dark:border-[#3B2868]"
             >
               {currentLang === 'as' ? 'নিয়মাৱলী চাওক' : 'View Regulations'}
             </button>
             <button
               onClick={() => onNavigateTab('scholarships')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-[#0F172A] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868]/50 hover:bg-[#DDD6FE]/80 transition-all cursor-pointer text-xs sm:text-sm border border-[#E0D4FD] dark:border-[#3B2868]"
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868]/50 hover:bg-[#DDD6FE]/80 transition-all cursor-pointer text-xs sm:text-sm border border-[#E0D4FD] dark:border-[#3B2868]"
             >
               <BanknotesIcon className="w-4 h-4 text-[#6D28D9] dark:text-[#FAF8FF]" />
               <span>{currentLang === 'as' ? 'ছাত্ৰবৃত্তি' : 'Scholarships'}</span>
@@ -146,14 +146,14 @@ export const DashboardHome = ({
       {/* Quick Natural Language Assistant Prompt Bar */}
       <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-5 shadow-xs">
         <form onSubmit={handleQuickAsk} className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center px-4 bg-[#FAF8FF] dark:bg-[#0F172A] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
+          <div className="flex-1 flex items-center px-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
             <SearchIcon className="w-5 h-5 text-[#6D28D9] mr-3 shrink-0" />
             <input
               type="text"
               placeholder={currentLang === 'as' ? 'অসমৰ যিকোনো বিশ্ববিদ্যালয়ৰ নিয়মাৱলী বা পৰীক্ষাৰ প্ৰশ্ন সোধক...' : 'Ask any university regulation, examination rule, admission, or hostel query...'}
               value={quickQuestion}
               onChange={(e) => setQuickQuestion(e.target.value)}
-              className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#0F172A] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none font-semibold"
+              className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#1E1035] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none font-semibold"
             />
           </div>
           <button
@@ -169,7 +169,7 @@ export const DashboardHome = ({
       {/* Institutional Information Domains */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-[#FAF8FF] flex items-center space-x-2">
+          <h2 className="text-lg sm:text-xl font-black text-[#1E1035] dark:text-[#FAF8FF] flex items-center space-x-2">
             <BuildingLibraryIcon className="w-5 h-5 text-[#6D28D9]" />
             <span>{currentLang === 'as' ? 'প্ৰধান শৈক্ষিক আৰু প্ৰশাসনিক শিতানসমূহ' : 'Institutional Information Domains'}</span>
           </h2>
@@ -192,11 +192,11 @@ export const DashboardHome = ({
                     <div className={`w-10 h-10 rounded-2xl ${domain.accent} border border-[#6D28D9]/30 flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF]`}>
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-[#FAF8FF] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                       {domain.count}
                     </span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                  <h3 className="text-sm sm:text-base font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                     {currentLang === 'as' ? domain.asTitle : domain.title}
                   </h3>
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -217,7 +217,7 @@ export const DashboardHome = ({
       {/* Recent Grounded Resolutions */}
       <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-[#E0D4FD]/60 dark:border-[#3B2868] pb-3">
-          <div className="flex items-center space-x-2 text-[#0F172A] dark:text-[#FAF8FF] font-black text-sm sm:text-base">
+          <div className="flex items-center space-x-2 text-[#1E1035] dark:text-[#FAF8FF] font-black text-sm sm:text-base">
             <ShieldCheckIcon className="w-5 h-5 text-[#6D28D9]" />
             <span>Recent Grounded Inquiries with Page Citations</span>
           </div>
@@ -231,12 +231,12 @@ export const DashboardHome = ({
 
         <div className="space-y-3">
           {recentAnswers.map((item, idx) => (
-            <div key={idx} className="bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div key={idx} className="bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                   {item.domain}
                 </span>
-                <h4 className="text-xs sm:text-sm font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                <h4 className="text-xs sm:text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">
                   {currentLang === 'as' ? item.asQ : item.q}
                 </h4>
                 <div className="flex items-center space-x-2 text-[11px] text-[#555375] dark:text-[#C4B5FD]">

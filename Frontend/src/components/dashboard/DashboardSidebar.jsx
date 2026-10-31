@@ -92,7 +92,7 @@ export const DashboardSidebar = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#150F2C]/95 backdrop-blur-xs border-r border-[#E0D4FD] dark:border-[#3B2868] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#120B24]/95 backdrop-blur-xs border-r border-[#E0D4FD] dark:border-[#3B2868] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Upper Sidebar Section */}
@@ -104,8 +104,8 @@ export const DashboardSidebar = ({
                 <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
               </div>
               <div>
-                <span className="text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
-                  Uni<span className="text-[#8F00FF] dark:text-[#00F5D4]">Mitra</span>
+                <span className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
+                  Uni<span className="text-[#8F00FF] dark:text-[#FBBF24]">Mitra</span>
                 </span>
                 <span className="text-[10px] font-black text-[#6D28D9] dark:text-[#C4B5FD] block -mt-0.5 uppercase tracking-wider">
                   University Portal
@@ -116,7 +116,7 @@ export const DashboardSidebar = ({
             {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -133,10 +133,10 @@ export const DashboardSidebar = ({
                   onClick={() => handleItemClick(item.id)}
                   className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
                       ? 'bg-[#4C1D95] dark:bg-[#6D28D9] text-white shadow-xs dark:shadow-[0_0_12px_rgba(176,38,255,0.35)]'
-                      : 'text-[#0F172A] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1F163D] hover:text-[#6D28D9] dark:hover:text-[#FAF8FF]'
+                      : 'text-[#1E1035] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1A0F33] hover:text-[#6D28D9] dark:hover:text-[#FAF8FF]'
                     }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#6D28D9] dark:text-[#00F5D4]'}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#6D28D9] dark:text-[#FBBF24]'}`} />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>
                 </button>
               );
@@ -149,10 +149,10 @@ export const DashboardSidebar = ({
           {/* Admin Ingestion Console Access */}
           <button
             onClick={handleAdminClick}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] bg-[#DDD6FE]/40 dark:bg-[#1F163D] hover:bg-[#DDD6FE]/70 dark:hover:bg-[#281C50] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868]"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#DDD6FE]/40 dark:bg-[#1A0F33] hover:bg-[#DDD6FE]/70 dark:hover:bg-[#251545] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868]"
           >
             <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono font-black text-[#6D28D9] dark:text-[#00F5D4]">Ingest ⚙️</span>
+            <span className="text-[10px] uppercase font-mono font-black text-[#6D28D9] dark:text-[#FBBF24]">Ingest ⚙️</span>
           </button>
 
           {/* Secure Sign Out Action */}

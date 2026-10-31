@@ -111,12 +111,12 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
   };
 
   return (
-    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#1E1035] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
             {currentLang === 'as' 
               ? 'UniMitra-ৰ শৈক্ষিক আৰু প্ৰশাসনিক সেৱাসমূহ' 
               : 'Institutional Assistance Built for University Life'}
@@ -142,12 +142,12 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
                     <div className="w-12 h-12 rounded-2xl bg-[#E0D4FD]/30 dark:bg-[#0A0718] border border-[#6D28D9]/40 flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF]">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                    <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                       {feat.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+                  <h3 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                     {currentLang === 'as' ? feat.asTitle : feat.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -167,7 +167,7 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
         {/* 3-Step Workflow Section */}
         <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-8 sm:p-12 mb-20 shadow-elevated-sage dark:shadow-elevated-gold">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'কাৰ্যপ্ৰণালী – তিনিটা সহজ পদক্ষেপ' : 'How Students & Staff Use UniMitra'}
             </h2>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-2">
@@ -181,7 +181,7 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
                 <span className="text-3xl font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                   {s.num}
                 </span>
-                <h4 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                <h4 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                   {currentLang === 'as' ? s.asTitle : s.title}
                 </h4>
                 <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">

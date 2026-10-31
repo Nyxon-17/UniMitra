@@ -16,7 +16,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   };
 
   return (
-    <footer className="bg-[#0F172A] text-[#FAF8FF] border-t-4 border-[#6D28D9] transition-colors duration-200">
+    <footer className="relative z-20 w-full bg-[#0A0718] text-[#FAF8FF] border-t-4 border-[#6D28D9] transition-colors duration-200">
       {/* Upper Footer */}
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 pt-14 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -42,13 +42,13 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </p>
 
             <div className="pt-2 flex flex-wrap gap-2 text-xs font-black">
-              <span className="bg-[#150F2C] text-[#FAF8FF] px-3 py-1.5 rounded-xl border border-[#3B2868]">
+              <span className="bg-[#120B24] text-[#FAF8FF] px-3 py-1.5 rounded-xl border border-[#3B2868]">
                 Institutional Regulations
               </span>
-              <span className="bg-[#150F2C] text-[#E0D4FD] px-3 py-1.5 rounded-xl border border-[#3B2868]">
+              <span className="bg-[#120B24] text-[#E0D4FD] px-3 py-1.5 rounded-xl border border-[#3B2868]">
                 অসমীয়া + English
               </span>
-              <span className="bg-[#150F2C] text-[#DDD6FE] px-3 py-1.5 rounded-xl border border-[#3B2868]">
+              <span className="bg-[#120B24] text-[#DDD6FE] px-3 py-1.5 rounded-xl border border-[#3B2868]">
                 Verified Page Citations
               </span>
             </div>
@@ -131,7 +131,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               {currentLang === 'as' ? 'তথ্যৰ বিশ্বাসযোগ্যতা' : 'Integrity & Verification'}
             </h4>
             
-            <div className="p-4 bg-[#150F2C] border border-[#3B2868] rounded-2xl space-y-2">
+            <div className="p-4 bg-[#120B24] border border-[#3B2868] rounded-2xl space-y-2">
               <div className="flex items-center space-x-2 text-[#FAF8FF]">
                 <ShieldCheckIcon className="w-4 h-4 text-[#6D28D9]" />
                 <span className="text-xs font-black">Zero Hallucination Policy</span>
@@ -151,7 +151,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#3B2868]/50 bg-[#0F172A] py-5">
+      <div className="border-t border-[#3B2868]/50 bg-[#070412] py-5">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#C4B5FD]">
           <p>
             © {new Date().getFullYear()} <span className="font-bold text-[#FAF8FF]">UniMitra</span>. Higher Education Institutional Assistant Platform.

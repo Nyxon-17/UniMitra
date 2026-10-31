@@ -60,7 +60,7 @@ export const DashboardProfile = ({
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {/* 3D Avatar */}
           <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] p-1 shadow-lg shrink-0">
-            <div className="w-full h-full bg-[#FAF8FF] dark:bg-[#0F172A] rounded-[22px] flex items-center justify-center">
+            <div className="w-full h-full bg-[#FAF8FF] dark:bg-[#0A0718] rounded-[22px] flex items-center justify-center">
               <span className="text-3xl font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                 {formData.name.charAt(0)}
               </span>
@@ -69,21 +69,21 @@ export const DashboardProfile = ({
 
           <div className="flex-1 text-center sm:text-left space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#E0D4FD]/40 text-[#0F172A] dark:bg-[#0F172A] dark:text-[#FAF8FF] border border-[#6D28D9]/40 flex items-center space-x-1">
+              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#E0D4FD]/40 text-[#1E1035] dark:bg-[#0A0718] dark:text-[#FAF8FF] border border-[#6D28D9]/40 flex items-center space-x-1">
                 <CheckCircleIcon className="w-3.5 h-3.5 text-[#6D28D9]" />
                 <span>Verified Institutional User</span>
               </span>
-              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                 Role: {formData.role}
               </span>
               {formData.memberId && (
-                <span className="px-3 py-1 rounded-xl text-xs font-black bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#6D28D9] font-mono">
+                <span className="px-3 py-1 rounded-xl text-xs font-black bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#6D28D9] font-mono">
                   Member ID: {formData.memberId}
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {formData.name}
             </h1>
 
@@ -96,7 +96,7 @@ export const DashboardProfile = ({
 
       {/* Success Notification Alert */}
       {savedSuccess && (
-        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#0F172A] dark:text-[#FAF8FF] text-xs sm:text-sm font-black flex items-center space-x-2">
+        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#1E1035] dark:text-[#FAF8FF] text-xs sm:text-sm font-black flex items-center space-x-2">
           <CheckCircleIcon className="w-5 h-5 text-[#6D28D9]" />
           <span>{currentLang === 'as' ? 'প্ৰফাইল তথ্য সফলতাৰে সংৰক্ষণ কৰা হ’ল!' : 'Institutional profile details successfully updated!'}</span>
         </div>
@@ -107,14 +107,14 @@ export const DashboardProfile = ({
         
         {/* Personal & Institutional Details Section */}
         <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-          <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3 flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3 flex items-center space-x-2">
             <UserGroupIcon className="w-5 h-5 text-[#6D28D9]" />
             <span>Institutional Identity</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+              <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                 Full Name
               </label>
               <input
@@ -122,12 +122,12 @@ export const DashboardProfile = ({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+              <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                 Institutional Email Address
               </label>
               <input
@@ -135,18 +135,18 @@ export const DashboardProfile = ({
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+              <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                 Institutional Role
               </label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               >
                 <option>Student</option>
                 <option>Research Scholar</option>
@@ -156,14 +156,14 @@ export const DashboardProfile = ({
             </div>
 
             <div>
-              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+              <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                 Department / Discipline Focus
               </label>
               <input
                 type="text"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               />
             </div>
           </div>
@@ -171,7 +171,7 @@ export const DashboardProfile = ({
 
         {/* Notifications & Language Preferences */}
         <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-          <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3 flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3 flex items-center space-x-2">
             <BellIcon className="w-5 h-5 text-[#6D28D9]" />
             <span>Institutional Circular Alerts</span>
           </h2>
@@ -184,7 +184,7 @@ export const DashboardProfile = ({
                 onChange={(e) => setFormData({ ...formData, notifyRegulations: e.target.checked })}
                 className="w-4 h-4 text-[#6D28D9] rounded border-[#E0D4FD]"
               />
-              <span className="text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]">
+              <span className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]">
                 Notify me when new university regulations or academic council ordinances are gazetted
               </span>
             </label>
@@ -196,7 +196,7 @@ export const DashboardProfile = ({
                 onChange={(e) => setFormData({ ...formData, notifyExams: e.target.checked })}
                 className="w-4 h-4 text-[#6D28D9] rounded border-[#E0D4FD]"
               />
-              <span className="text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]">
+              <span className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]">
                 Alert me for examination evaluation deadlines and re-evaluation circulars
               </span>
             </label>
@@ -208,7 +208,7 @@ export const DashboardProfile = ({
                 onChange={(e) => setFormData({ ...formData, notifyScholarships: e.target.checked })}
                 className="w-4 h-4 text-[#6D28D9] rounded border-[#E0D4FD]"
               />
-              <span className="text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]">
+              <span className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]">
                 Alert me for state and central scholarship scheme application deadlines
               </span>
             </label>

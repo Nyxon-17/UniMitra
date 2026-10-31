@@ -86,7 +86,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
               <ClockIcon className="w-4 h-4" />
               <span>Query Interaction History</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'মোৰ প্ৰশ্নোত্তৰ ইতিহাস' : 'Institutional Query History'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
@@ -125,7 +125,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
             placeholder="Search within your query history..."
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
           />
         </div>
       </div>
@@ -153,7 +153,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#E0D4FD]/30 text-[#0F172A] dark:bg-[#0F172A] dark:text-[#FAF8FF] border border-[#6D28D9]/30 flex items-center space-x-1">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#E0D4FD]/30 text-[#1E1035] dark:bg-[#0A0718] dark:text-[#FAF8FF] border border-[#6D28D9]/30 flex items-center space-x-1">
                     <CheckCircleIcon className="w-3 h-3 text-[#6D28D9]" />
                     <span>{item.status}</span>
                   </span>
@@ -168,7 +168,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
               </div>
 
               <div>
-                <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                <h3 className="text-sm sm:text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                   {currentLang === 'as' ? item.asQuery : item.query}
                 </h3>
                 <p className="text-xs text-[#555375] dark:text-[#C4B5FD] mt-1.5 leading-relaxed font-semibold">

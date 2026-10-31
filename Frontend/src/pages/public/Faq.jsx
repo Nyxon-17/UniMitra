@@ -81,12 +81,12 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
   });
 
   return (
-    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#1E1035] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
 
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
             {currentLang === 'as' ? 'সঘনাই সোধা প্ৰশ্নসমূহ (FAQ)' : 'Frequently Asked Institutional Questions'}
           </h1>
           <p className="text-sm sm:text-base text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -104,7 +104,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
             placeholder={currentLang === 'as' ? 'প্ৰশ্ন বা শব্দ বিচাৰক...' : 'Search questions, regulations, exams, admissions...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none focus:border-[#6D28D9] text-xs sm:text-sm font-semibold shadow-xs"
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none focus:border-[#6D28D9] text-xs sm:text-sm font-semibold shadow-xs"
           />
         </div>
 
@@ -116,7 +116,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${activeCategory === cat
                   ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
+                  : 'bg-white dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
                 }`}
             >
               {cat}
@@ -143,10 +143,10 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
                     className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#E0D4FD]/10"
                   >
                     <div className="space-y-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF]">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF]">
                         {faq.category}
                       </span>
-                      <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
+                      <h3 className="text-sm sm:text-base font-black text-[#1E1035] dark:text-[#FAF8FF] pt-1">
                         {currentLang === 'as' ? faq.asQ : faq.q}
                       </h3>
                     </div>
@@ -168,7 +168,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
 
         {/* Need Help Box */}
         <div className="bg-[#E0D4FD]/30 dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-8 text-center space-y-3">
-          <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
+          <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
             Have an unlisted university circular or ordinance query?
           </h3>
           <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-xl mx-auto">

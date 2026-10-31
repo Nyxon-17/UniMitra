@@ -128,7 +128,7 @@ export const DashboardRegulations = ({
               <BuildingLibraryIcon className="w-4 h-4" />
               <span>Official University Gazettes & Ordinances</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয় নিয়মাৱলী আৰু অধিসূচনা' : 'University Regulations & Ordinances'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
@@ -153,13 +153,13 @@ export const DashboardRegulations = ({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* University Selector */}
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Select University
             </label>
             <select
               value={selectedUniversity}
               onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
             >
               {universities.map((u) => (
                 <option key={u}>{u}</option>
@@ -169,13 +169,13 @@ export const DashboardRegulations = ({
 
           {/* Category Selector */}
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Regulation Domain
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
             >
               {categories.map((c) => (
                 <option key={c}>{c}</option>
@@ -185,7 +185,7 @@ export const DashboardRegulations = ({
 
           {/* Keyword Search */}
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Search Clauses
             </label>
             <div className="relative">
@@ -195,7 +195,7 @@ export const DashboardRegulations = ({
                 placeholder="Attendance, re-evaluation, passing..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
               />
             </div>
           </div>
@@ -220,14 +220,14 @@ export const DashboardRegulations = ({
                     <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#4C1D95] text-white">
                       {reg.university}
                     </span>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                       {reg.category}
                     </span>
                     <span className="text-[10px] text-[#555375] dark:text-[#C4B5FD] font-semibold">
                       Updated: {reg.lastUpdated}
                     </span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
+                  <h3 className="text-sm sm:text-base font-black text-[#1E1035] dark:text-[#FAF8FF] pt-1">
                     {currentLang === 'as' ? reg.asTitle : reg.title}
                   </h3>
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -239,18 +239,18 @@ export const DashboardRegulations = ({
                   <span className="text-xs font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                     {isExpanded ? 'Hide Clauses' : 'View Clauses'}
                   </span>
-                  <div className={`w-8 h-8 rounded-xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF] transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+                  <div className={`w-8 h-8 rounded-xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF] transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
                     <ChevronDownIcon className="w-4 h-4" />
                   </div>
                 </div>
               </div>
 
               {isExpanded && (
-                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E0D4FD]/40 dark:border-[#3B2868] space-y-4 bg-[#FAF8FF]/50 dark:bg-[#0F172A]/40">
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E0D4FD]/40 dark:border-[#3B2868] space-y-4 bg-[#FAF8FF]/50 dark:bg-[#0A0718]/40">
                   <div className="space-y-3 pt-2">
                     {reg.sections.map((sec, sidx) => (
                       <div key={sidx} className="p-4 rounded-2xl bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                        <h4 className="text-xs sm:text-sm font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                        <h4 className="text-xs sm:text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">
                           {sec.heading}
                         </h4>
                         <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">

@@ -55,12 +55,12 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
   };
 
   return (
-    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#1E1035] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
             {currentLang === 'as' 
               ? 'অসমৰ উচ্চ শিক্ষাৰ বাবে স্মাৰ্ট বিশ্ববিদ্যালয় সহায়ক' 
               : 'Smart Institutional Assistance for Higher Education in Assam'}
@@ -77,7 +77,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-8 shadow-sm">
-            <h2 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-[#FAF8FF] mb-3">
+            <h2 className="text-lg sm:text-xl font-black text-[#1E1035] dark:text-[#FAF8FF] mb-3">
               The Institutional Information Challenge
             </h2>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -88,7 +88,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#6D28D9] rounded-3xl p-8 shadow-elevated-sage dark:shadow-elevated-gold">
             <div className="flex items-center space-x-2 text-[#6D28D9] dark:text-[#FAF8FF] mb-3">
               <CheckCircleIcon className="w-6 h-6 text-[#10B981]" />
-              <h2 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h2 className="text-lg sm:text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 The UniMitra Solution
               </h2>
             </div>
@@ -102,7 +102,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
         {/* Audiences Supported */}
         <div className="mb-20">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               Serving the Entire Academic Community
             </h2>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-2">
@@ -113,10 +113,10 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {targetAudiences.map((aud, i) => (
               <div key={i} className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                   {aud.tag}
                 </span>
-                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mt-3 mb-2">
+                <h3 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mt-3 mb-2">
                   {aud.role}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -134,7 +134,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
               <span className="text-[10px] font-black text-[#6D28D9] dark:text-[#FAF8FF] uppercase tracking-wider">
                 {f.badge}
               </span>
-              <h4 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF] mt-2 mb-1">
+              <h4 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF] mt-2 mb-1">
                 {f.title}
               </h4>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">

@@ -85,7 +85,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
               <IdentificationIcon className="w-4 h-4" />
               <span>Academic Programs & Admission Portal</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'শৈক্ষিক পাঠ্যক্ৰম আৰু নামভৰ্তি' : 'Academic Programs & Admission Procedures'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
@@ -109,13 +109,13 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
       <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Select University
             </label>
             <select
               value={selectedUniv}
               onChange={(e) => setSelectedUniv(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
             >
               {universities.map((u) => (
                 <option key={u}>{u}</option>
@@ -124,13 +124,13 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Degree Level
             </label>
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
             >
               {levels.map((l) => (
                 <option key={l}>{l}</option>
@@ -139,7 +139,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+            <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
               Search Programs
             </label>
             <div className="relative">
@@ -149,7 +149,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
                 placeholder="Computer Science, MBA, Ph.D..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
               />
             </div>
           </div>
@@ -169,14 +169,14 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
                   <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#4C1D95] text-white">
                     {prog.university}
                   </span>
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                     {prog.level}
                   </span>
                   <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD]">
                     {prog.duration} • {prog.intake}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
+                <h3 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] pt-1">
                   {prog.program}
                 </h3>
               </div>
@@ -191,8 +191,8 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
+                <strong className="text-[#1E1035] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Academic Eligibility Criteria
                 </strong>
                 <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -200,8 +200,8 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
+                <strong className="text-[#1E1035] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Selection & Application Protocol
                 </strong>
                 <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">

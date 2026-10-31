@@ -63,7 +63,7 @@ export const Navbar = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8FF] dark:bg-[#0A0718] border-b border-[#E0D4FD] dark:border-[#3B2868] transition-colors duration-200 shadow-xs">
+    <header className="sticky top-0 z-40 bg-[#FAF8FF]/95 dark:bg-[#0A0718]/95 backdrop-blur-xs border-b border-[#E0D4FD] dark:border-[#3B2868] transition-colors duration-200 shadow-xs">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
           
@@ -77,8 +77,8 @@ export const Navbar = ({
             </div>
             <div>
               <div className="flex items-center space-x-1.5">
-                <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
-                  Uni<span className="text-[#8F00FF] dark:text-[#00F5D4]">Mitra</span>
+                <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
+                  Uni<span className="text-[#8F00FF] dark:text-[#FBBF24]">Mitra</span>
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-[#555375] dark:text-[#C4B5FD] font-semibold tracking-tight hidden xs:block">
@@ -87,7 +87,7 @@ export const Navbar = ({
             </div>
           </div>
 
-          {/* Center Navigation Links - Well-proportioned size & length */}
+          {/* Center Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-1 xl:space-x-1.5">
             {navLinks.map((link) => (
               <button
@@ -95,8 +95,8 @@ export const Navbar = ({
                 onClick={() => handleNav(link.id)}
                 className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                   currentActive === link.id
-                    ? 'bg-[#6D28D9]/15 dark:bg-[#B026FF]/20 text-[#6D28D9] dark:text-[#00F5D4] border border-[#6D28D9]/50 dark:border-[#00F5D4]/40 dark:shadow-[0_0_12px_rgba(0,245,212,0.2)]'
-                    : 'text-[#0F172A] dark:text-[#FAF8FF]/80 hover:text-[#6D28D9] dark:hover:text-[#00F5D4] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#150F2C]'
+                    ? 'bg-[#6D28D9]/15 dark:bg-[#B026FF]/20 text-[#6D28D9] dark:text-[#FAF8FF] border border-[#6D28D9]/50 dark:border-[#B026FF]/40 dark:shadow-[0_0_12px_rgba(176,38,255,0.25)]'
+                    : 'text-[#1E1035] dark:text-[#FAF8FF]/80 hover:text-[#6D28D9] dark:hover:text-[#FBBF24] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1A0F33]'
                 }`}
               >
                 {currentLang === 'as' ? link.asLabel : link.label}
@@ -108,13 +108,13 @@ export const Navbar = ({
           <div className="hidden md:flex items-center space-x-2 shrink-0">
             
             {/* Direct Language Switcher */}
-            <div className="flex items-center p-1 bg-[#E0D4FD]/30 dark:bg-[#150F2C] rounded-xl border border-[#E0D4FD] dark:border-[#3B2868]">
+            <div className="flex items-center p-1 bg-[#E0D4FD]/30 dark:bg-[#120B24] rounded-xl border border-[#E0D4FD] dark:border-[#3B2868]">
               <button
                 onClick={() => currentLang !== 'as' && onToggleLang()}
                 className={`px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
                   currentLang === 'as'
                     ? 'bg-[#4C1D95] text-white shadow-xs'
-                    : 'text-[#0F172A] dark:text-[#C4B5FD] hover:text-[#0F172A] dark:hover:text-[#FAF8FF]'
+                    : 'text-[#1E1035] dark:text-[#C4B5FD] hover:text-[#1E1035] dark:hover:text-[#FAF8FF]'
                 }`}
               >
                 অসমীয়া
@@ -124,21 +124,21 @@ export const Navbar = ({
                 className={`px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
                   currentLang === 'en'
                     ? 'bg-[#4C1D95] text-white shadow-xs'
-                    : 'text-[#0F172A] dark:text-[#C4B5FD] hover:text-[#0F172A] dark:hover:text-[#FAF8FF]'
+                    : 'text-[#1E1035] dark:text-[#C4B5FD] hover:text-[#1E1035] dark:hover:text-[#FAF8FF]'
                 }`}
               >
                 English
               </button>
             </div>
 
-            {/* Dark / Light Theme Toggle Button with Neon border in Dark Mode */}
+            {/* Dark / Light Theme Toggle Button with Amber/Violet border */}
             <button
               onClick={onToggleTheme}
               aria-label="Toggle Dark and Light Mode"
-              className="p-2 sm:p-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#150F2C] text-[#0F172A] dark:text-[#00F5D4] hover:bg-[#E0D4FD]/40 dark:hover:border-[#00F5D4]/60 transition-colors cursor-pointer dark:hover:shadow-[0_0_10px_rgba(0,245,212,0.3)]"
+              className="p-2 sm:p-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#120B24] text-[#1E1035] dark:text-[#FBBF24] hover:bg-[#E0D4FD]/40 dark:hover:border-[#FBBF24]/60 transition-colors cursor-pointer dark:hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {isDark ? <SunIcon className="w-5 h-5 text-[#00F5D4]" /> : <MoonIcon className="w-5 h-5 text-[#4C1D95]" />}
+              {isDark ? <SunIcon className="w-5 h-5 text-[#FBBF24]" /> : <MoonIcon className="w-5 h-5 text-[#4C1D95]" />}
             </button>
 
             {/* Admin Console Shortcut */}
@@ -152,13 +152,13 @@ export const Navbar = ({
                   navigate('/auth?role=admin');
                 }
               }}
-              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold text-[#4C1D95] dark:text-[#C4B5FD] bg-[#DDD6FE]/60 dark:bg-[#1C1438] hover:bg-[#DDD6FE] dark:hover:bg-[#25124D] border border-[#E0D4FD] dark:border-[#B026FF]/40 transition-all cursor-pointer whitespace-nowrap"
+              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold text-[#4C1D95] dark:text-[#C4B5FD] bg-[#DDD6FE]/60 dark:bg-[#1A0F33] hover:bg-[#DDD6FE] dark:hover:bg-[#25124D] border border-[#E0D4FD] dark:border-[#B026FF]/40 transition-all cursor-pointer whitespace-nowrap"
               title="Official Document Ingestion Admin"
             >
               {currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}
             </button>
 
-            {/* Auth Controls: Deep Violet Button with Electric Violet & Neon Glow */}
+            {/* Auth Controls */}
             {!isLoggedIn ? (
               <button 
                 onClick={() => onOpenAuth ? onOpenAuth('login', 'student') : navigate('/auth')}
@@ -195,14 +195,14 @@ export const Navbar = ({
           <div className="lg:hidden flex items-center space-x-2">
             <button
               onClick={onToggleTheme}
-              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#150F2C] text-[#0F172A] dark:text-[#00F5D4] cursor-pointer"
+              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#120B24] text-[#1E1035] dark:text-[#FBBF24] cursor-pointer"
             >
-              {isDark ? <SunIcon className="w-5 h-5 text-[#00F5D4]" /> : <MoonIcon className="w-5 h-5" />}
+              {isDark ? <SunIcon className="w-5 h-5 text-[#FBBF24]" /> : <MoonIcon className="w-5 h-5 text-[#4C1D95]" />}
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer"
+              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#120B24] text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
               aria-label="Toggle Mobile Navigation Menu"
             >
               {mobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
@@ -217,8 +217,8 @@ export const Navbar = ({
         <div className="lg:hidden bg-[#FAF8FF] dark:bg-[#0A0718] border-b border-[#E0D4FD] dark:border-[#3B2868] px-4 pt-3 pb-6 space-y-4 shadow-xl">
           
           {/* Mobile Language Switcher */}
-          <div className="flex items-center justify-between p-2.5 bg-[#E0D4FD]/30 dark:bg-[#150F2C] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
-            <span className="text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] flex items-center space-x-1.5">
+          <div className="flex items-center justify-between p-2.5 bg-[#E0D4FD]/30 dark:bg-[#120B24] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
+            <span className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] flex items-center space-x-1.5">
               <LanguageIcon className="w-4 h-4 text-[#6D28D9] dark:text-[#C4B5FD]" />
               <span>ভাষা / Language:</span>
             </span>
@@ -226,7 +226,7 @@ export const Navbar = ({
               <button
                 onClick={() => currentLang !== 'as' && onToggleLang()}
                 className={`px-3 py-1.5 rounded-lg text-xs font-black ${
-                  currentLang === 'as' ? 'bg-[#4C1D95] text-white' : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  currentLang === 'as' ? 'bg-[#4C1D95] text-white' : 'text-[#1E1035] dark:text-[#C4B5FD]'
                 }`}
               >
                 অসমীয়া
@@ -234,7 +234,7 @@ export const Navbar = ({
               <button
                 onClick={() => currentLang !== 'en' && onToggleLang()}
                 className={`px-3 py-1.5 rounded-lg text-xs font-black ${
-                  currentLang === 'en' ? 'bg-[#4C1D95] text-white' : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  currentLang === 'en' ? 'bg-[#4C1D95] text-white' : 'text-[#1E1035] dark:text-[#C4B5FD]'
                 }`}
               >
                 English
@@ -250,8 +250,8 @@ export const Navbar = ({
                 onClick={() => handleNav(link.id)}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold ${
                   currentActive === link.id
-                    ? 'bg-[#6D28D9]/20 dark:bg-[#3B2868]/40 text-[#6D28D9] dark:text-[#00F5D4] border border-[#6D28D9]/50'
-                    : 'text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 dark:hover:bg-[#150F2C]'
+                    ? 'bg-[#6D28D9]/20 dark:bg-[#3B2868]/40 text-[#6D28D9] dark:text-[#FAF8FF] border border-[#6D28D9]/50'
+                    : 'text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 dark:hover:bg-[#1A0F33]'
                 }`}
               >
                 {currentLang === 'as' ? link.asLabel : link.label}
@@ -303,7 +303,7 @@ export const Navbar = ({
                   navigate('/auth?role=admin');
                 }
               }}
-              className="w-full py-2.5 rounded-xl text-xs font-bold text-[#4C1D95] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#1C1438] text-center border border-[#E0D4FD] dark:border-[#3B2868] cursor-pointer"
+              className="w-full py-2.5 rounded-xl text-xs font-bold text-[#4C1D95] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#1A0F33] text-center border border-[#E0D4FD] dark:border-[#3B2868] cursor-pointer"
             >
               {currentLang === 'as' ? 'প্ৰশাসন নথিপত্ৰ পৰিচালনা' : 'Admin Console (Document Ingest)'}
             </button>

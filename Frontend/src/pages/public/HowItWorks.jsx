@@ -16,7 +16,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '01',
       title: 'Institutional Document Ingestion & OCR',
       asTitle: 'অফিচিয়েল নথিপত্ৰ সংগ্ৰহ আৰু প্ৰস্তুতি',
-      tagColor: 'bg-[#E0D4FD]/40 text-[#0F172A] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
+      tagColor: 'bg-[#E0D4FD]/40 text-[#1E1035] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
       icon: DocumentTextIcon,
       desc: 'Authorized university regulations, examination ordinances, admission brochures, circulars, and scholarship gazettes are parsed using high-accuracy PDF extractors and specialized OCR for scanned Assamese & English documents.',
       asDesc: 'গুৱাহাটী, ডিব্ৰুগড়, তেজপুৰকে ধৰি অসমৰ সকলো বিশ্ববিদ্যালয়ৰ অফিচিয়েল নিয়মাৱলী, পৰীক্ষাৰ জাননী আৰু অধিসূচনা সংগ্ৰহ কৰি উন্নত OCR প্ৰযুক্তিয়ে নিৰীক্ষণ কৰে।',
@@ -35,7 +35,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '02',
       title: 'Bilingual Semantic Indexing (Multilingual E5)',
       asTitle: 'দ্বিভাষিক অৰ্থপূৰ্ণ ইনডেক্সিং',
-      tagColor: 'bg-[#DDD6FE] text-[#0F172A] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
+      tagColor: 'bg-[#DDD6FE] text-[#1E1035] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
       icon: BrainIcon,
       desc: 'Document text chunks are converted into dense multilingual semantic vectors using Multilingual E5 embedding models trained to capture Assamese academic vocabulary, regional idioms, and English ordinances.',
       asDesc: 'অসমীয়া আৰু ইংৰাজী দুয়োটা ভাষাৰ শৈক্ষিক আৰু আইনী শব্দাৱলী স্পষ্টকৈ বুজিব পৰাকৈ আধুনিক দ্বিভাষিক ভেক্টৰ মডেলৰ জৰিয়তে তথ্যসমূহ ইনডেক্স কৰা হয়।',
@@ -54,7 +54,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '03',
       title: 'Natural Language Query Processing',
       asTitle: 'প্ৰাকৃতিক ভাষাৰ প্ৰশ্ন বিশ্লেষণ',
-      tagColor: 'bg-[#E0D4FD]/40 text-[#0F172A] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
+      tagColor: 'bg-[#E0D4FD]/40 text-[#1E1035] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
       icon: LanguageIcon,
       desc: 'Students, faculty members, and staff can submit natural queries in Assamese or English. The query understanding module detects user intent across regulations, exams, admissions, or scholarships.',
       asDesc: 'ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকসকলে মূল অসমীয়া লিপি বা ইংৰাজীত প্ৰশ্ন সুধিব পাৰে। সহায়কে উদ্দেশ্য নিৰূপণ কৰি নিৰ্দিষ্ট দিশ বাছি লয়।',
@@ -73,7 +73,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '04',
       title: 'Grounded Answer Generation & Hallucination Reduction',
       asTitle: 'ভুলহীন প্ৰমাণিত উত্তৰ লাভ',
-      tagColor: 'bg-[#DDD6FE] text-[#0F172A] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
+      tagColor: 'bg-[#DDD6FE] text-[#1E1035] dark:bg-[#3B2868] dark:text-[#FAF8FF]',
       icon: ShieldCheckIcon,
       desc: 'The RAG pipeline retrieves relevant clauses from verified documents and synthesizes an accurate answer citing the exact university name, document title, ordinance section, and page number. If information is missing, it explicitly informs the user.',
       asDesc: 'সহায়কে প্ৰকৃত নথিপত্ৰৰ পৰা তথ্য সংগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ নাম, অধিসূচনা আৰু নিৰ্দিষ্ট পৃষ্ঠা নম্বৰসহ বিশ্বাসযোগ্য উত্তৰ দিয়ে। কোনো মনগঢ়া তথ্য দিয়া নহয়।',
@@ -99,12 +99,12 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
   };
 
   return (
-    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#1E1035] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#1E1035] dark:text-[#FAF8FF]">
             {currentLang === 'as' 
               ? 'UniMitra RAG প্ৰযুক্তি কেনেদৰে কাৰ্যকৰী হয়?' 
               : 'How the Bilingual University RAG Engine Works'}
@@ -137,7 +137,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
                         <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] ${item.tagColor}`}>
                           Step {item.step}
                         </span>
-                        <h3 className="text-lg sm:text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                        <h3 className="text-lg sm:text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
                           {currentLang === 'as' ? item.asTitle : item.title}
                         </h3>
                       </div>
@@ -149,7 +149,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
 
                   {/* Right Column: Features Checklist */}
                   <div className="bg-[#FAF8FF] dark:bg-[#0A0718] p-4 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] w-full lg:w-80 shrink-0 space-y-2 text-xs">
-                    <span className="font-black text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
+                    <span className="font-black text-[#1E1035] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                       Engineering Highlights
                     </span>
                     {(currentLang === 'as' ? item.asFeatures : item.features).map((feat, fidx) => (
@@ -173,7 +173,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
               <ShieldCheckIcon className="w-5 h-5 text-[#6D28D9]" />
               <span>Anti-Hallucination Framework</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               Never Guessing. Always Citing.
             </h2>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">

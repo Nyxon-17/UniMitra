@@ -256,17 +256,17 @@ export const DashboardSyllabus = ({
     <div className="space-y-6">
       
       {/* 3D Header Section */}
-      <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-elevated-cerulean card-3d">
+      <div className="bg-white/95 dark:bg-[#120B24]/95 border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-lg shadow-purple-500/10 card-3d">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
+            <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#7C3AED] dark:text-[#FBBF24]">
               <AcademicCapIcon className="w-4 h-4" />
               <span>Universal Academic Directory • Open Access Curriculums</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#073B4C] dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'অফিচিয়েল পাঠ্যক্ৰম পৰিদৰ্শন' : 'Official Syllabus & Curriculum Explorer'}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl">
               {currentLang === 'as'
                 ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ পাঠ্যক্ৰম, বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু অনুমোদিত পাঠ্যপুথি বিনামূলীয়াকৈ অন্বেষণ কৰক।'
                 : 'Freely browse verified semester units, credit allocation, recommended textbooks, and question blueprints across all Assam universities with zero login barriers.'}
@@ -277,24 +277,24 @@ export const DashboardSyllabus = ({
           <div className="shrink-0">
             <button
               onClick={() => onNavigateTab('assistant', { prefillQuery: 'Summarize the entire 3rd semester syllabus and highlight the highest credit topics.' })}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm"
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#F59E0B] hover:bg-[#D97706] transition-all cursor-pointer shadow-md text-xs sm:text-sm"
             >
-              <SparklesIcon className="w-4 h-4 text-[#FFD166]" />
+              <SparklesIcon className="w-4 h-4 text-white" />
               <span>{currentLang === 'as' ? 'সিলেবাছৰ পৰা প্ৰশ্ন সোধক' : 'Ask AI About Syllabus'}</span>
             </button>
           </div>
         </div>
 
         {/* Multi-University & Degree Selection Ribbon */}
-        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="mt-8 pt-6 border-t border-[#E0D4FD] dark:border-[#3B2868] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase tracking-wider mb-1.5">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয় বাছক' : 'University / Academic Board'}
             </label>
             <select
               value={selectedUniversity}
               onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#7C3AED]"
             >
               {universities.map((univ) => (
                 <option key={univ} value={univ}>{univ}</option>
@@ -303,13 +303,13 @@ export const DashboardSyllabus = ({
           </div>
 
           <div>
-            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase tracking-wider mb-1.5">
               {currentLang === 'as' ? 'পাঠ্যক্ৰম / ডিগ্ৰী' : 'Discipline / Program'}
             </label>
             <select
               value={selectedProgram}
               onChange={(e) => setSelectedProgram(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#7C3AED]"
             >
               {programs.map((p) => (
                 <option key={p.id} value={p.id}>{currentLang === 'as' ? p.asLabel : p.label}</option>
@@ -318,25 +318,25 @@ export const DashboardSyllabus = ({
           </div>
 
           <div>
-            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase tracking-wider mb-1.5">
               {currentLang === 'as' ? 'সন্ধান' : 'Search Subject / Code'}
             </label>
             <div className="relative">
-              <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <SearchIcon className="w-4 h-4 text-[#7C3AED] dark:text-[#C4B5FD] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={currentLang === 'as' ? 'বিষয় বা কোড বিচাৰক...' : 'Filter subject or code...'}
-                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#7C3AED]"
               />
             </div>
           </div>
         </div>
 
         {/* Semester Selection Ribbon */}
-        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center space-x-2 overflow-x-auto pb-1">
-          <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider shrink-0">
+        <div className="mt-5 pt-4 border-t border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-2 overflow-x-auto pb-1">
+          <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD] mr-2 uppercase tracking-wider shrink-0">
             {currentLang === 'as' ? 'ষাণ্মাসিক:' : 'Semester:'}
           </span>
           {semesters.map((sem) => (
@@ -345,8 +345,8 @@ export const DashboardSyllabus = ({
               onClick={() => setSelectedSemester(sem)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0 ${
                 selectedSemester === sem
-                  ? 'bg-[#118AB2] text-white shadow-elevated-cerulean'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                  ? 'bg-[#7C3AED] text-white shadow-md'
+                  : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#555375] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] border border-[#E0D4FD] dark:border-[#3B2868]'
               }`}
             >
               {currentLang === 'as' ? `ষাণ্মাসিক ${sem}` : `Semester ${sem}`}
@@ -358,8 +358,8 @@ export const DashboardSyllabus = ({
       {/* Subject List with 3D Accordion Cards */}
       <div className="space-y-4">
         {filteredSubjects.length === 0 ? (
-          <div className="p-12 text-center bg-white dark:bg-[#111C2E] border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl">
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">
+          <div className="p-12 text-center bg-white/95 dark:bg-[#120B24]/95 border-2 border-dashed border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl">
+            <p className="text-[#555375] dark:text-[#C4B5FD] font-bold text-sm">
               {currentLang === 'as' ? 'কোনো বিষয় পোৱা নগ’ল।' : 'No subjects found matching your search in this semester.'}
             </p>
           </div>
@@ -369,36 +369,36 @@ export const DashboardSyllabus = ({
             return (
               <div 
                 key={subject.code}
-                className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm card-3d transition-all"
+                className="bg-white/95 dark:bg-[#120B24]/95 border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-2xl overflow-hidden shadow-sm card-3d transition-all"
               >
                 {/* Header Row */}
                 <div 
                   onClick={() => setExpandedSubject(isExpanded ? null : subject.code)}
-                  className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors"
+                  className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-[#FAF8FF]/60 dark:hover:bg-[#1A0F33]/40 transition-colors"
                 >
                   <div className="flex items-start space-x-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-[#E7F3F7] dark:bg-slate-800 border border-[#118AB2]/30 text-[#118AB2] dark:text-[#FFD166] flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-12 h-12 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#7C3AED]/30 text-[#7C3AED] dark:text-[#FBBF24] flex items-center justify-center shrink-0 mt-0.5">
                       <BookOpenIcon className="w-6 h-6" />
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#118AB2]/10 dark:bg-[#118AB2]/30 text-[#118AB2] dark:text-sky-300">
+                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#7C3AED]/15 dark:bg-[#7C3AED]/30 text-[#7C3AED] dark:text-[#C4B5FD]">
                           {subject.code}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FAF8FF] dark:bg-[#0A0718] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]">
                           {subject.type}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#06D6A0]/10 text-[#06D6A0]">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#10B981]/15 text-[#10B981]">
                           {subject.credits}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#F59E0B]/10 text-[#D97706] dark:text-[#FBBF24]">
                           {subject.universityStandard}
                         </span>
                       </div>
-                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                      <h3 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
                         {currentLang === 'as' && subject.asTitle ? subject.asTitle : subject.title}
                       </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-xs text-[#555375] dark:text-[#C4B5FD] mt-0.5">
                         {subject.examScheme}
                       </p>
                     </div>
@@ -410,9 +410,9 @@ export const DashboardSyllabus = ({
                         e.stopPropagation();
                         onNavigateTab('assistant', { prefillQuery: `Explain the key concepts of ${subject.title} (${subject.code}) from the official syllabus.` });
                       }}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral shrink-0 flex items-center space-x-1"
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#F59E0B] hover:bg-[#D97706] transition-all cursor-pointer shadow-md shrink-0 flex items-center space-x-1"
                     >
-                      <SparklesIcon className="w-3.5 h-3.5 text-[#FFD166]" />
+                      <SparklesIcon className="w-3.5 h-3.5 text-white" />
                       <span>{currentLang === 'as' ? 'প্ৰশ্ন সোধক' : 'Ask AI'}</span>
                     </button>
 
@@ -421,25 +421,25 @@ export const DashboardSyllabus = ({
                         e.stopPropagation();
                         setPreviewPdfModal(subject);
                       }}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#118AB2] dark:text-[#FFD166] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer border border-slate-200 dark:border-slate-700 flex items-center space-x-1 shrink-0"
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#7C3AED] dark:text-[#FBBF24] bg-[#FAF8FF] dark:bg-[#0A0718] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-1 shrink-0"
                     >
                       <DocumentTextIcon className="w-3.5 h-3.5" />
                       <span>{currentLang === 'as' ? 'পিডিএফ নথি' : 'View PDF'}</span>
                     </button>
 
-                    <div className="p-1 text-slate-400">
-                      <ChevronDownIcon className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#118AB2]' : ''}`} />
+                    <div className="p-1 text-[#555375] dark:text-[#C4B5FD]">
+                      <ChevronDownIcon className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#7C3AED]' : ''}`} />
                     </div>
                   </div>
                 </div>
 
                 {/* Expanded Content View */}
                 {isExpanded && (
-                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF]/50 dark:bg-[#0A0718]/40">
                     
                     {/* Units & Detailed Topics */}
                     <div className="space-y-4 my-4">
-                      <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-[#555375] dark:text-[#C4B5FD]">
                         {currentLang === 'as' ? 'পাঠ্যক্ৰমৰ ভাগসমূহ (ইউনিট)' : 'Prescribed Syllabus Units'}
                       </h4>
 
@@ -447,17 +447,17 @@ export const DashboardSyllabus = ({
                         {subject.modules.map((mod, idx) => (
                           <div 
                             key={idx}
-                            className="p-4 bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 rounded-xl space-y-2"
+                            className="p-4 bg-white/95 dark:bg-[#120B24]/95 border border-[#E0D4FD] dark:border-[#3B2868] rounded-xl space-y-2"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166]">
+                              <span className="text-xs font-bold text-[#7C3AED] dark:text-[#FBBF24]">
                                 {currentLang === 'as' && mod.asUnit ? mod.asUnit : mod.unit}
                               </span>
-                              <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                              <span className="text-[11px] font-semibold text-[#555375] dark:text-[#C4B5FD] bg-[#FAF8FF] dark:bg-[#0A0718] px-2 py-0.5 rounded">
                                 {mod.hours}
                               </span>
                             </div>
-                            <ul className="space-y-1 pl-4 list-disc text-xs text-slate-600 dark:text-slate-300">
+                            <ul className="space-y-1 pl-4 list-disc text-xs text-[#555375] dark:text-[#C4B5FD]">
                               {mod.topics.map((topic, tidx) => (
                                 <li key={tidx} className="leading-relaxed">
                                   {topic}
@@ -470,12 +470,12 @@ export const DashboardSyllabus = ({
                     </div>
 
                     {/* Prescribed Textbooks */}
-                    <div className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                      <div className="flex items-center space-x-2 text-xs font-bold text-amber-700 dark:text-amber-400 mb-2">
-                        <CheckCircleIcon className="w-4 h-4 text-amber-600" />
+                    <div className="mt-5 p-4 rounded-xl bg-[#F59E0B]/10 border border-[#F59E0B]/30">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-[#D97706] dark:text-[#FBBF24] mb-2">
+                        <CheckCircleIcon className="w-4 h-4 text-[#F59E0B]" />
                         <span>{currentLang === 'as' ? 'অনুমোদিত পাঠ্যপুথি আৰু প্ৰসংগ পুথি' : 'Prescribed Textbooks & Reference Readings'}</span>
                       </div>
-                      <ul className="space-y-1 pl-4 list-disc text-xs text-slate-700 dark:text-slate-200 font-medium">
+                      <ul className="space-y-1 pl-4 list-disc text-xs text-[#1E1035] dark:text-[#FAF8FF] font-medium">
                         {subject.books.map((book, bidx) => (
                           <li key={bidx}>{book}</li>
                         ))}
@@ -493,48 +493,48 @@ export const DashboardSyllabus = ({
       {/* Official Syllabus PDF Document Modal */}
       {previewPdfModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative card-3d">
-            <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-700 pb-4 mb-4">
+          <div className="bg-white dark:bg-[#120B24] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative card-3d">
+            <div className="flex items-start justify-between border-b border-[#E0D4FD] dark:border-[#3B2868] pb-4 mb-4">
               <div>
-                <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] uppercase">
+                <span className="text-xs font-bold text-[#7C3AED] dark:text-[#FBBF24] uppercase">
                   Academic Curriculum Repository
                 </span>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
                   {previewPdfModal.title} ({previewPdfModal.code})
                 </h3>
               </div>
               <button 
                 onClick={() => setPreviewPdfModal(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+                className="p-1.5 rounded-lg text-[#555375] hover:text-[#1E1035] dark:hover:text-[#FAF8FF] cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-4 py-2">
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+              <div className="p-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-black text-xs shrink-0">
                   PDF
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <p className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] truncate">
                     Official_{previewPdfModal.code}_Curriculum_Document.pdf
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">
                     State Higher Education Board Verified Seal
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-800 dark:text-emerald-300">
+              <div className="p-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-xl text-xs text-[#10B981]">
                 ✓ Full text and units are ingested into the UniMitra assistant with zero hallucinations. Every question is answered directly from official documents.
               </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 flex items-center justify-end space-x-3 pt-4 border-t border-[#E0D4FD] dark:border-[#3B2868]">
               <button
                 onClick={() => setPreviewPdfModal(null)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#555375] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -543,7 +543,7 @@ export const DashboardSyllabus = ({
                   alert(`Downloading official syllabus document for ${previewPdfModal.code}`);
                   setPreviewPdfModal(null);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-colors cursor-pointer shadow-elevated-cerulean"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors cursor-pointer shadow-md"
               >
                 Download Document
               </button>

@@ -447,7 +447,7 @@ export const AuthModal = ({
               <BuildingLibraryIcon className="w-5 h-5 text-[#FAF8FF]" />
             </div>
             <div>
-              <span className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] leading-tight">
+              <span className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] leading-tight">
                 Uni<span className="text-[#8F00FF]">Mitra</span>
               </span>
               <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD] block font-semibold leading-none">
@@ -458,7 +458,7 @@ export const AuthModal = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 dark:hover:bg-[#0F172A] transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 dark:hover:bg-[#1A0F33] transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <XMarkIcon className="w-5 h-5" />
@@ -474,7 +474,7 @@ export const AuthModal = ({
               className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
                 role === 'student'
                   ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  : 'text-[#1E1035] dark:text-[#C4B5FD]'
               }`}
             >
               <AcademicCapIcon className="w-3.5 h-3.5" />
@@ -487,7 +487,7 @@ export const AuthModal = ({
               className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
                 role === 'faculty'
                   ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  : 'text-[#1E1035] dark:text-[#C4B5FD]'
               }`}
             >
               <IdentificationIcon className="w-3.5 h-3.5" />
@@ -500,7 +500,7 @@ export const AuthModal = ({
               className={`flex-1 py-2 font-black rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 ${
                 role === 'admin'
                   ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'text-[#0F172A] dark:text-[#C4B5FD]'
+                  : 'text-[#1E1035] dark:text-[#C4B5FD]'
               }`}
             >
               <ShieldCheckIcon className="w-3.5 h-3.5" />
@@ -520,7 +520,7 @@ export const AuthModal = ({
                 }}
                 className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
                   mode === 'login'
-                    ? 'bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]'
+                    ? 'bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]'
                     : 'text-[#555375] dark:text-[#C4B5FD]'
                 }`}
               >
@@ -535,7 +535,7 @@ export const AuthModal = ({
                 }}
                 className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
                   mode === 'register'
-                    ? 'bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]'
+                    ? 'bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]'
                     : 'text-[#555375] dark:text-[#C4B5FD]'
                 }`}
               >
@@ -551,7 +551,7 @@ export const AuthModal = ({
           {/* Status Banner */}
           {status.success && status.message && (
             <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 dark:bg-[#0A0718] border-2 border-[#6D28D9] text-center space-y-0.5">
-              <div className="flex items-center justify-center space-x-1.5 text-[#0F172A] dark:text-[#FAF8FF] font-black text-xs sm:text-sm">
+              <div className="flex items-center justify-center space-x-1.5 text-[#1E1035] dark:text-[#FAF8FF] font-black text-xs sm:text-sm">
                 <CheckCircleIcon className="w-4 h-4 text-[#10B981] shrink-0" />
                 <span>{status.message}</span>
               </div>
@@ -572,7 +572,7 @@ export const AuthModal = ({
               {mode === 'login' && (
                 <form onSubmit={handleStudentLogin} className="space-y-3">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Student Email <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -583,13 +583,13 @@ export const AuthModal = ({
                         placeholder="student@university.ac.in"
                         value={studentLogin.email}
                         onChange={(e) => setStudentLogin({ ...studentLogin, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Password <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -600,12 +600,12 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={studentLogin.password}
                         onChange={(e) => setStudentLogin({ ...studentLogin, password: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                       <button
                         type="button"
                         onClick={() => toggleShowPassword('studentLogin')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                         title={showPasswords.studentLogin ? "Hide password" : "Show password"}
                         aria-label={showPasswords.studentLogin ? "Hide password" : "Show password"}
                       >
@@ -627,7 +627,7 @@ export const AuthModal = ({
               {mode === 'register' && step === 'form' && (
                 <form onSubmit={handleStudentRegSubmit} className="space-y-3">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Full Name <span className="text-[#6D28D9]">*</span>
                     </label>
                     <input
@@ -636,12 +636,12 @@ export const AuthModal = ({
                       placeholder="e.g. Partha Pratim Nath"
                       value={studentReg.fullName}
                       onChange={(e) => setStudentReg({ ...studentReg, fullName: e.target.value })}
-                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Email Address <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -652,14 +652,14 @@ export const AuthModal = ({
                         placeholder="student@gmail.com"
                         value={studentReg.email}
                         onChange={(e) => setStudentReg({ ...studentReg, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Password <span className="text-[#6D28D9]">*</span>
                       </label>
                       <div className="relative flex items-center">
@@ -669,12 +669,12 @@ export const AuthModal = ({
                           placeholder="Min 6 chars"
                           value={studentReg.password}
                           onChange={(e) => setStudentReg({ ...studentReg, password: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                         />
                         <button
                           type="button"
                           onClick={() => toggleShowPassword('studentReg')}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                           title={showPasswords.studentReg ? "Hide password" : "Show password"}
                           aria-label={showPasswords.studentReg ? "Hide password" : "Show password"}
                         >
@@ -683,7 +683,7 @@ export const AuthModal = ({
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Confirm <span className="text-[#6D28D9]">*</span>
                       </label>
                       <div className="relative flex items-center">
@@ -693,12 +693,12 @@ export const AuthModal = ({
                           placeholder="Re-enter"
                           value={studentReg.confirmPassword}
                           onChange={(e) => setStudentReg({ ...studentReg, confirmPassword: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                         />
                         <button
                           type="button"
                           onClick={() => toggleShowPassword('studentRegConfirm')}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                           title={showPasswords.studentRegConfirm ? "Hide password" : "Show password"}
                           aria-label={showPasswords.studentRegConfirm ? "Hide password" : "Show password"}
                         >
@@ -721,7 +721,7 @@ export const AuthModal = ({
               {mode === 'register' && step === 'otp' && (
                 <div className="text-center space-y-4">
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
-                    Enter 6-digit code sent to <strong className="text-[#0F172A] dark:text-[#FAF8FF]">{studentReg.email}</strong>
+                    Enter 6-digit code sent to <strong className="text-[#1E1035] dark:text-[#FAF8FF]">{studentReg.email}</strong>
                   </p>
 
                   <form onSubmit={handleVerifyStudentOtp} className="space-y-4">
@@ -735,7 +735,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                         />
                       ))}
                     </div>
@@ -772,7 +772,7 @@ export const AuthModal = ({
               {mode === 'login' && step === 'login_credentials' && (
                 <form onSubmit={handleFacultyLoginCredentials} className="space-y-3">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Unique Faculty Member ID <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -783,13 +783,13 @@ export const AuthModal = ({
                         placeholder="e.g. UM-FAC-7821"
                         value={facultyLogin.memberId}
                         onChange={(e) => setFacultyLogin({ ...facultyLogin, memberId: e.target.value.toUpperCase() })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold tracking-wider rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold tracking-wider rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Password <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -800,12 +800,12 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={facultyLogin.password}
                         onChange={(e) => setFacultyLogin({ ...facultyLogin, password: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                       <button
                         type="button"
                         onClick={() => toggleShowPassword('facultyLogin')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                         title={showPasswords.facultyLogin ? "Hide password" : "Show password"}
                         aria-label={showPasswords.facultyLogin ? "Hide password" : "Show password"}
                       >
@@ -827,7 +827,7 @@ export const AuthModal = ({
               {mode === 'login' && step === 'login_otp' && (
                 <div className="text-center space-y-4">
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
-                    Enter 6-digit OTP sent to email associated with Member ID <strong className="text-[#0F172A] dark:text-[#FAF8FF]">{facultyLogin.memberId}</strong>
+                    Enter 6-digit OTP sent to email associated with Member ID <strong className="text-[#1E1035] dark:text-[#FAF8FF]">{facultyLogin.memberId}</strong>
                   </p>
 
                   <form onSubmit={handleVerifyFacultyOtp} className="space-y-4">
@@ -841,7 +841,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#3B2868]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#3B2868]"
                         />
                       ))}
                     </div>
@@ -860,7 +860,7 @@ export const AuthModal = ({
                     <button
                       type="submit"
                       disabled={status.loading}
-                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#0F172A] bg-[#C4B5FD] dark:bg-[#FAF8FF] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#1E1035] bg-[#C4B5FD] dark:bg-[#FAF8FF] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                     >
                       Verify OTP & Access Portal
                     </button>
@@ -872,7 +872,7 @@ export const AuthModal = ({
                 <form onSubmit={handleFacultyRegSubmit} className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Full Name <span className="text-[#6D28D9]">*</span>
                       </label>
                       <input
@@ -881,11 +881,11 @@ export const AuthModal = ({
                         placeholder="Dr. Full Name"
                         value={facultyReg.fullName}
                         onChange={(e) => setFacultyReg({ ...facultyReg, fullName: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Faculty ID <span className="text-[#6D28D9]">*</span>
                       </label>
                       <input
@@ -894,13 +894,13 @@ export const AuthModal = ({
                         placeholder="GU-FAC-2024"
                         value={facultyReg.facultyId}
                         onChange={(e) => setFacultyReg({ ...facultyReg, facultyId: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Official University Email <span className="text-[#6D28D9]">*</span>
                     </label>
                     <input
@@ -909,12 +909,12 @@ export const AuthModal = ({
                       placeholder="faculty@gauhati.ac.in"
                       value={facultyReg.officialEmail}
                       onChange={(e) => setFacultyReg({ ...facultyReg, officialEmail: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Member / Personal Email <span className="text-[#6D28D9]">*</span>
                     </label>
                     <input
@@ -923,19 +923,19 @@ export const AuthModal = ({
                       placeholder="personal.email@gmail.com"
                       value={facultyReg.memberEmail}
                       onChange={(e) => setFacultyReg({ ...facultyReg, memberEmail: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Department <span className="text-[#6D28D9]">*</span>
                       </label>
                       <select
                         value={facultyReg.department}
                         onChange={(e) => setFacultyReg({ ...facultyReg, department: e.target.value })}
-                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       >
                         {departmentOptions.map((dept) => (
                           <option key={dept} value={dept}>{dept}</option>
@@ -944,13 +944,13 @@ export const AuthModal = ({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Designation <span className="text-[#6D28D9]">*</span>
                       </label>
                       <select
                         value={facultyReg.designation}
                         onChange={(e) => setFacultyReg({ ...facultyReg, designation: e.target.value })}
-                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       >
                         {designationOptions.map((desig) => (
                           <option key={desig} value={desig}>{desig}</option>
@@ -961,7 +961,7 @@ export const AuthModal = ({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Password <span className="text-[#6D28D9]">*</span>
                       </label>
                       <div className="relative flex items-center">
@@ -971,12 +971,12 @@ export const AuthModal = ({
                           placeholder="••••••••"
                           value={facultyReg.password}
                           onChange={(e) => setFacultyReg({ ...facultyReg, password: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                         />
                         <button
                           type="button"
                           onClick={() => toggleShowPassword('facultyReg')}
-                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                           title={showPasswords.facultyReg ? "Hide password" : "Show password"}
                           aria-label={showPasswords.facultyReg ? "Hide password" : "Show password"}
                         >
@@ -985,7 +985,7 @@ export const AuthModal = ({
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                      <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                         Confirm <span className="text-[#6D28D9]">*</span>
                       </label>
                       <div className="relative flex items-center">
@@ -995,12 +995,12 @@ export const AuthModal = ({
                           placeholder="••••••••"
                           value={facultyReg.confirmPassword}
                           onChange={(e) => setFacultyReg({ ...facultyReg, confirmPassword: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                         />
                         <button
                           type="button"
                           onClick={() => toggleShowPassword('facultyRegConfirm')}
-                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                           title={showPasswords.facultyRegConfirm ? "Hide password" : "Show password"}
                           aria-label={showPasswords.facultyRegConfirm ? "Hide password" : "Show password"}
                         >
@@ -1013,7 +1013,7 @@ export const AuthModal = ({
                   <button
                     type="submit"
                     disabled={status.loading}
-                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#0F172A] bg-[#C4B5FD] dark:bg-[#FAF8FF] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#1E1035] bg-[#C4B5FD] dark:bg-[#FAF8FF] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                   >
                     Register & Generate Unique Member ID
                   </button>
@@ -1026,7 +1026,7 @@ export const AuthModal = ({
                     <CheckCircleIcon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                    <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                       Faculty Member ID Created!
                     </h3>
                     <p className="text-xs text-[#555375] dark:text-[#C4B5FD] mt-0.5">
@@ -1035,7 +1035,7 @@ export const AuthModal = ({
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border-2 border-dashed border-[#6D28D9] dark:border-[#FAF8FF] flex items-center justify-between">
-                    <span className="font-mono text-xl font-black tracking-widest text-[#0F172A] dark:text-[#FAF8FF]">
+                    <span className="font-mono text-xl font-black tracking-widest text-[#1E1035] dark:text-[#FAF8FF]">
                       {generatedMemberId}
                     </span>
                     <button
@@ -1071,7 +1071,7 @@ export const AuthModal = ({
               {step === 'credentials' && (
                 <form onSubmit={handleAdminCredentials} className="space-y-3">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Super User Name <span className="text-[#6D28D9]">*</span>
                     </label>
                     <input
@@ -1080,12 +1080,12 @@ export const AuthModal = ({
                       placeholder="System Administrator"
                       value={adminLogin.superName}
                       onChange={(e) => setAdminLogin({ ...adminLogin, superName: e.target.value })}
-                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Super Email <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -1096,13 +1096,13 @@ export const AuthModal = ({
                         placeholder="admin@unimitra.edu.in"
                         value={adminLogin.superEmail}
                         onChange={(e) => setAdminLogin({ ...adminLogin, superEmail: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Super Password <span className="text-[#6D28D9]">*</span>
                     </label>
                     <div className="relative flex items-center">
@@ -1113,12 +1113,12 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={adminLogin.superPassword}
                         onChange={(e) => setAdminLogin({ ...adminLogin, superPassword: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
                       />
                       <button
                         type="button"
                         onClick={() => toggleShowPassword('adminLogin')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] transition-colors cursor-pointer"
                         title={showPasswords.adminLogin ? "Hide password" : "Show password"}
                         aria-label={showPasswords.adminLogin ? "Hide password" : "Show password"}
                       >
@@ -1130,7 +1130,7 @@ export const AuthModal = ({
                   <button
                     type="submit"
                     disabled={status.loading}
-                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#FAF8FF] bg-[#0F172A] hover:bg-[#150F2C] border border-[#3B2868] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#FAF8FF] bg-[#4C1D95] hover:bg-[#6D28D9] border border-[#3B2868] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                   >
                     Send Super Admin OTP
                   </button>
@@ -1140,7 +1140,7 @@ export const AuthModal = ({
               {step === 'otp' && (
                 <div className="text-center space-y-4">
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
-                    Enter 6-digit OTP sent to super email <strong className="text-[#0F172A] dark:text-[#FAF8FF]">{adminLogin.superEmail}</strong>
+                    Enter 6-digit OTP sent to super email <strong className="text-[#1E1035] dark:text-[#FAF8FF]">{adminLogin.superEmail}</strong>
                   </p>
 
                   <form onSubmit={handleVerifyAdminOtp} className="space-y-4">
@@ -1154,7 +1154,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#3B2868]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#3B2868]"
                         />
                       ))}
                     </div>
@@ -1173,7 +1173,7 @@ export const AuthModal = ({
                     <button
                       type="submit"
                       disabled={status.loading}
-                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#0F172A] bg-[#FAF8FF] hover:bg-[#C4B5FD] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                      className="w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm text-[#1E1035] bg-[#FAF8FF] hover:bg-[#C4B5FD] transition-all cursor-pointer shadow-xs disabled:opacity-50"
                     >
                       Verify OTP & Open Admin Console
                     </button>

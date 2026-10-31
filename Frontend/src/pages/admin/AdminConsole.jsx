@@ -26,6 +26,7 @@ import {
   ClockIcon,
   UserGroupIcon
 } from '../../components/common/Icons';
+import { Footer } from '../../components/layout/Footer';
 
 export const AdminConsole = ({ 
   onExit, 
@@ -474,7 +475,7 @@ export const AdminConsole = ({
   });
 
   return (
-    <div className={`relative min-h-screen bg-transparent text-[#0F172A] dark:text-[#FAF8FF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+    <div className={`relative min-h-screen bg-transparent text-[#1E1035] dark:text-[#FAF8FF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       <HomeScreenBackground />
       
       {/* Top Admin Header */}
@@ -484,7 +485,7 @@ export const AdminConsole = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={onExit}
-              className="p-2 rounded-xl text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 cursor-pointer"
+              className="p-2 rounded-xl text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 cursor-pointer"
               title="Return to University Portal"
             >
               <ArrowLeftIcon className="w-5 h-5" />
@@ -496,10 +497,10 @@ export const AdminConsole = ({
 
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                <span className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
                   Uni<span className="text-[#8F00FF]">Mitra</span>
                 </span>
-                <span className="px-2 py-0.5 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] font-black text-[10px] tracking-wider uppercase border border-[#E0D4FD] dark:border-[#3B2868]">
+                <span className="px-2 py-0.5 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] font-black text-[10px] tracking-wider uppercase border border-[#E0D4FD] dark:border-[#3B2868]">
                   Super Admin
                 </span>
               </div>
@@ -512,14 +513,14 @@ export const AdminConsole = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={onToggleTheme}
-              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer"
+              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
             >
-              {isDark ? <SunIcon className="w-4 h-4 text-[#FAF8FF]" /> : <MoonIcon className="w-4 h-4 text-[#0F172A]" />}
+              {isDark ? <SunIcon className="w-4 h-4 text-[#FAF8FF]" /> : <MoonIcon className="w-4 h-4 text-[#1E1035]" />}
             </button>
 
             <button
               onClick={onToggleLang}
-              className="px-3 py-1.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
             >
               {currentLang === 'en' ? 'অসমীয়া' : 'English'}
             </button>
@@ -540,7 +541,7 @@ export const AdminConsole = ({
         
         {/* Toast Alert */}
         {actionAlert && (
-          <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] flex items-center space-x-2">
+          <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] flex items-center space-x-2">
             <CheckCircleIcon className="w-4 h-4 text-[#10B981]" />
             <span>{actionAlert}</span>
           </div>
@@ -566,7 +567,7 @@ export const AdminConsole = ({
               className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === tab.id
                   ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
+                  : 'bg-white dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
               }`}
             >
               {tab.label}
@@ -584,7 +585,7 @@ export const AdminConsole = ({
                 <select
                   value={selectedUnivFilter}
                   onChange={(e) => setSelectedUnivFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]"
+                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
                 >
                   <option value="All">All Universities</option>
                   <option value="Gauhati">Gauhati University (GU)</option>
@@ -596,7 +597,7 @@ export const AdminConsole = ({
                 <select
                   value={selectedCategoryFilter}
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]"
+                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
                 >
                   <option value="All">All Categories</option>
                   {categories.map((c) => (
@@ -612,7 +613,7 @@ export const AdminConsole = ({
                   placeholder="Filter repository by title or ID..."
                   value={searchDocQuery}
                   onChange={(e) => setSearchDocQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
                 />
               </div>
             </div>
@@ -630,9 +631,9 @@ export const AdminConsole = ({
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#0F172A] dark:text-[#FAF8FF]">
+                  <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#1E1035] dark:text-[#FAF8FF]">
                     {filteredDocs.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#0F172A]/40 transition-colors">
+                      <tr key={doc.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#1A0F33]/40 transition-colors">
                         <td className="p-4">
                           <span className="font-mono text-[10px] text-[#6D28D9] font-bold block">{doc.id}</span>
                           <span className="font-black text-xs sm:text-sm">{doc.title}</span>
@@ -684,7 +685,7 @@ export const AdminConsole = ({
         {activeTab === 'upload' && (
           <div className="max-w-3xl mx-auto bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div>
-              <h2 className="text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h2 className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 Upload & Ingest University PDF Document
               </h2>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -695,7 +696,7 @@ export const AdminConsole = ({
             {isUploading ? (
               <div className="p-8 text-center space-y-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
                 <SparklesIcon className="w-10 h-10 text-[#6D28D9] animate-spin mx-auto" />
-                <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">{uploadStepName}</h3>
+                <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">{uploadStepName}</h3>
                 <div className="w-full bg-[#E0D4FD]/40 rounded-full h-3 max-w-md mx-auto overflow-hidden">
                   <div className="bg-[#6D28D9] h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
                 </div>
@@ -704,7 +705,7 @@ export const AdminConsole = ({
             ) : (
               <form onSubmit={handleUploadSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                     Document Title *
                   </label>
                   <input
@@ -713,19 +714,19 @@ export const AdminConsole = ({
                     placeholder="e.g. Revised Ordinance on CBCS Examination & Evaluation 2024"
                     value={uploadFormData.title}
                     onChange={(e) => setUploadFormData({ ...uploadFormData, title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Target University *
                     </label>
                     <select
                       value={uploadFormData.university}
                       onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                     >
                       <option>Gauhati University (GU)</option>
                       <option>Dibrugarh University (DU)</option>
@@ -736,13 +737,13 @@ export const AdminConsole = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                       Document Category *
                     </label>
                     <select
                       value={uploadFormData.category}
                       onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                     >
                       {categories.map((c) => (
                         <option key={c.id} value={c.name}>{c.name}</option>
@@ -752,7 +753,7 @@ export const AdminConsole = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                     Original Source URL or Circular Link
                   </label>
                   <input
@@ -760,7 +761,7 @@ export const AdminConsole = ({
                     placeholder="https://gauhati.ac.in/academic/notification-2024.pdf"
                     value={uploadFormData.sourceUrl}
                     onChange={(e) => setUploadFormData({ ...uploadFormData, sourceUrl: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                   />
                 </div>
 
@@ -772,7 +773,7 @@ export const AdminConsole = ({
                     onChange={(e) => setUploadFormData({ ...uploadFormData, enableOcr: e.target.checked })}
                     className="w-4 h-4 text-[#6D28D9] rounded"
                   />
-                  <label htmlFor="ocr-toggle" className="text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer">
+                  <label htmlFor="ocr-toggle" className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer">
                     Enable Optical Character Recognition (OCR) for scanned Assamese & English PDF pages
                   </label>
                 </div>
@@ -794,7 +795,7 @@ export const AdminConsole = ({
         {activeTab === 'categories' && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF] mb-4">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF] mb-4">
                 Add New Document Category
               </h3>
               <form onSubmit={handleAddCategory} className="flex flex-col sm:flex-row gap-3">
@@ -804,14 +805,14 @@ export const AdminConsole = ({
                   placeholder="Category Name (e.g. Hostels & Welfare)"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                 />
                 <input
                   type="text"
                   placeholder="Code (e.g. WELFARE)"
                   value={newCatCode}
                   onChange={(e) => setNewCatCode(e.target.value)}
-                  className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
+                  className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
                 />
                 <button
                   type="submit"
@@ -831,7 +832,7 @@ export const AdminConsole = ({
                 >
                   <div>
                     <span className="text-[10px] font-mono font-bold text-[#6D28D9] uppercase">{c.code}</span>
-                    <h4 className="text-sm font-black text-[#0F172A] dark:text-[#FAF8FF]">{c.name}</h4>
+                    <h4 className="text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">{c.name}</h4>
                     <span className="text-xs text-[#555375] dark:text-[#C4B5FD] font-semibold">{c.count} Documents Ingested</span>
                   </div>
                   <button
@@ -852,7 +853,7 @@ export const AdminConsole = ({
         {/* =================================================================== */}
         {activeTab === 'processing' && (
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
-            <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
               Real-Time Document Processing & Embedding Pipeline
             </h3>
             <div className="space-y-3">
@@ -890,7 +891,7 @@ export const AdminConsole = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
                 <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">Total Queries</span>
-                <p className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] mt-1">{analyticsData.totalQueries.toLocaleString()}</p>
+                <p className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] mt-1">{analyticsData.totalQueries.toLocaleString()}</p>
                 <span className="text-[11px] text-green-600 font-bold">+14% this month</span>
               </div>
               <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
@@ -900,7 +901,7 @@ export const AdminConsole = ({
               </div>
               <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
                 <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">English Language</span>
-                <p className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] mt-1">{analyticsData.englishQueries.toLocaleString()}</p>
+                <p className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] mt-1">{analyticsData.englishQueries.toLocaleString()}</p>
                 <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">57.9% bilingual query ratio</span>
               </div>
               <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
@@ -912,14 +913,14 @@ export const AdminConsole = ({
 
             {/* Top Query Topics */}
             <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 Top Inquired Academic & Regulatory Topics
               </h3>
               <div className="space-y-2">
                 {analyticsData.topAskedTopics.map((item, idx) => (
                   <div key={idx} className="p-3 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-xl flex items-center justify-between text-xs">
                     <div>
-                      <span className="font-bold text-[#0F172A] dark:text-[#FAF8FF]">{item.topic}</span>
+                      <span className="font-bold text-[#1E1035] dark:text-[#FAF8FF]">{item.topic}</span>
                       <span className="text-[10px] text-[#6D28D9] block">{item.univ}</span>
                     </div>
                     <span className="font-mono font-black text-xs text-[#6D28D9]">{item.count} queries</span>
@@ -936,7 +937,7 @@ export const AdminConsole = ({
         {activeTab === 'unanswered' && (
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
             <div>
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 Unanswered Queries & Missing Context Queue
               </h3>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -954,7 +955,7 @@ export const AdminConsole = ({
                     <span className="text-xs font-mono font-bold text-red-500">{item.id} • {item.confidence}</span>
                     <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">{item.university} • {item.attemptedAt}</span>
                   </div>
-                  <h4 className="text-sm font-black text-[#0F172A] dark:text-[#FAF8FF]">"{item.query}"</h4>
+                  <h4 className="text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">"{item.query}"</h4>
                   <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">Missing Reason: {item.reason}</p>
                   
                   <div className="pt-2 flex justify-end">
@@ -980,7 +981,7 @@ export const AdminConsole = ({
         {activeTab === 'feedback' && (
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
             <div>
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 Student & Faculty AI Feedback Review
               </h3>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -996,14 +997,14 @@ export const AdminConsole = ({
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-black text-[#0F172A] dark:text-[#FAF8FF]">{f.user} ({f.role})</span>
+                      <span className="text-xs font-black text-[#1E1035] dark:text-[#FAF8FF]">{f.user} ({f.role})</span>
                       <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#3B2868]">
                         {f.type}
                       </span>
                     </div>
                     <span className="text-xs font-mono font-bold text-[#6D28D9]">Rating: {f.rating}/5 ★</span>
                   </div>
-                  <p className="text-xs text-[#0F172A] dark:text-[#FAF8FF] leading-relaxed">{f.comments}</p>
+                  <p className="text-xs text-[#1E1035] dark:text-[#FAF8FF] leading-relaxed">{f.comments}</p>
                   
                   <div className="pt-2 flex items-center justify-between border-t border-[#E0D4FD]/40 dark:border-[#3B2868]/40 text-xs">
                     <span className="text-[#555375] dark:text-[#C4B5FD]">Status: <strong>{f.status}</strong></span>
@@ -1026,7 +1027,7 @@ export const AdminConsole = ({
         {activeTab === 'users' && (
           <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl overflow-hidden shadow-xs">
             <div className="p-6 border-b border-[#E0D4FD] dark:border-[#3B2868]">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 User Accounts & Institutional Roles
               </h3>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -1046,9 +1047,9 @@ export const AdminConsole = ({
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#0F172A] dark:text-[#FAF8FF]">
+                <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#1E1035] dark:text-[#FAF8FF]">
                   {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#0F172A]/40">
+                    <tr key={u.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#1A0F33]/40">
                       <td className="p-4">
                         <span className="font-black text-sm block">{u.name}</span>
                         <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">{u.email}</span>
@@ -1110,7 +1111,7 @@ export const AdminConsole = ({
             </div>
 
             <div className="p-6 bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl shadow-xs space-y-3">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 Cluster Resource Allocation
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -1133,7 +1134,7 @@ export const AdminConsole = ({
         {activeTab === 'llm-config' && (
           <div className="max-w-2xl mx-auto bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 LLM Provider & RAG Hyperparameter Configuration
               </h3>
               <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
@@ -1143,7 +1144,7 @@ export const AdminConsole = ({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+                <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                   Select Active LLM Engine
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -1155,7 +1156,7 @@ export const AdminConsole = ({
                       className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${
                         llmConfig.provider === p
                           ? 'bg-[#6D28D9] text-white border-[#6D28D9]'
-                          : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] border-[#E0D4FD] dark:border-[#3B2868]'
+                          : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border-[#E0D4FD] dark:border-[#3B2868]'
                       }`}
                     >
                       {p}
@@ -1165,7 +1166,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                   <span>Temperature (Strict Grounding):</span>
                   <span>{llmConfig.temperature}</span>
                 </div>
@@ -1181,7 +1182,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                   <span>Top-K Retrieved Vector Chunks:</span>
                   <span>{llmConfig.topKChunks}</span>
                 </div>
@@ -1197,7 +1198,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
                   <span>Grounding Strictness Threshold:</span>
                   <span>{llmConfig.strictnessThreshold}</span>
                 </div>
@@ -1228,6 +1229,16 @@ export const AdminConsole = ({
         )}
 
       </main>
+
+      <Footer
+        onNavigate={(page) => {
+          if (page === 'home') navigate('/');
+          else if (page === 'admin') navigate('/admin');
+          else if (page === 'dashboard') navigate('/dashboard/overview');
+          else navigate(`/${page}`);
+        }}
+        currentLang={currentLang}
+      />
 
     </div>
   );

@@ -66,7 +66,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
   ];
 
   return (
-    <div className="bg-[#FAF8FF] dark:bg-[#0A0718] min-h-screen text-[#0F172A] dark:text-[#FAF8FF] transition-colors duration-200">
+    <div className="bg-[#FAF8FF] dark:bg-[#0A0718] min-h-screen text-[#1E1035] dark:text-[#FAF8FF] transition-colors duration-200">
       
       {/* HERO SECTION */}
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 border-b border-[#E0D4FD] dark:border-[#3B2868] bg-grid-pattern">
@@ -84,7 +84,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
               {/* Main Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-[#0F172A] dark:text-[#FAF8FF]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-[#1E1035] dark:text-[#FAF8FF]">
                 {currentLang === 'as' ? (
                   <>
                     অসমৰ বিশ্ববিদ্যালয়সমূহৰ শৈক্ষিক আৰু প্ৰশাসনিক তথ্য এতিয়া <span className="text-[#6D28D9] underline decoration-[#DDD6FE] decoration-4">দ্বিভাষিক AI</span> সহায়কত
@@ -113,7 +113,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                       placeholder={currentLang === 'as' ? 'নিয়ম, পৰীক্ষা, ভৰ্তি বা ছাত্ৰবৃত্তিৰ প্ৰশ্ন লিখক...' : 'Ask regulations, exams, admissions, scholarships...'}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#0F172A] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none font-semibold"
+                      className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#1E1035] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none font-semibold"
                     />
                   </div>
                   <button 
@@ -128,14 +128,14 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 {/* Popular Institutional Query Topics */}
                 <div className="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs text-[#555375] dark:text-[#C4B5FD]">
                   <span className="font-bold">Topics:</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">GU Exam Re-evaluation</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">DU PG Scholarship Norms</span>
-                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#0F172A] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">Hostel Admission Rules</span>
+                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">GU Exam Re-evaluation</span>
+                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">DU PG Scholarship Norms</span>
+                  <span onClick={handlePortalAccess} className="bg-[#E0D4FD]/25 dark:bg-[#0A0718] px-2.5 py-1 rounded-xl text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white cursor-pointer transition-all">Hostel Admission Rules</span>
                 </div>
               </div>
 
               {/* Key Trust Signals */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-2 text-xs sm:text-sm font-black text-[#0F172A] dark:text-[#C4B5FD]">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-2 text-xs sm:text-sm font-black text-[#1E1035] dark:text-[#C4B5FD]">
                 <div className="flex items-center space-x-2">
                   <CheckCircleIcon className="w-5 h-5 text-[#10B981] dark:text-[#FAF8FF]" />
                   <span>Official University Gazettes</span>
@@ -166,7 +166,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-2xl sm:text-4xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-2xl sm:text-4xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' 
                 ? 'UniMitra-ই বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ উত্তৰ কেনেদৰে দিয়ে চাওক' 
                 : 'See How UniMitra Answers Institutional Queries'}
@@ -195,7 +195,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 <button
                   onClick={() => handleDemoSwitch('as')}
                   className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all ${
-                    activeDemoTab === 'as' ? 'bg-[#FAF8FF] text-[#0F172A] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
+                    activeDemoTab === 'as' ? 'bg-[#FAF8FF] text-[#1E1035] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
                   }`}
                 >
                   অসমীয়া
@@ -203,7 +203,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 <button
                   onClick={() => handleDemoSwitch('en')}
                   className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all ${
-                    activeDemoTab === 'en' ? 'bg-[#FAF8FF] text-[#0F172A] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
+                    activeDemoTab === 'en' ? 'bg-[#FAF8FF] text-[#1E1035] shadow-xs' : 'text-[#FAF8FF] hover:text-white'
                   }`}
                 >
                   English
@@ -220,17 +220,17 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                   <span className="text-[#6D28D9] dark:text-[#FAF8FF] font-black flex items-center space-x-1.5">
                     <span>Inquiry Query (প্ৰশ্ন)</span>
                   </span>
-                  <span className="text-[#0F172A] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868] px-2 py-0.5 rounded text-[10px] font-black">
+                  <span className="text-[#1E1035] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868] px-2 py-0.5 rounded text-[10px] font-black">
                     Institutional Regulation Check
                   </span>
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-[#FAF8FF] bg-[#FAF8FF] dark:bg-[#0A0718] p-3.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868]">
+                <div className="text-xs sm:text-sm font-bold text-[#1E1035] dark:text-[#FAF8FF] bg-[#FAF8FF] dark:bg-[#0A0718] p-3.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868]">
                   {demoInput}
                 </div>
               </div>
 
               {/* RAG Workflow Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-[#E0D4FD]/20 dark:bg-[#150F2C] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] text-xs font-bold text-[#0F172A] dark:text-[#C4B5FD]">
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-[#E0D4FD]/20 dark:bg-[#150F2C] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] text-xs font-bold text-[#1E1035] dark:text-[#C4B5FD]">
                 <span className="text-[#6D28D9] dark:text-[#FAF8FF]">1. Natural Language Parse</span>
                 <span className="text-[#6D28D9]">➔</span>
                 <span className="text-[#6D28D9] dark:text-[#FAF8FF]">2. Multilingual E5 Vector Retrieval</span>
@@ -245,12 +245,12 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                     <CheckCircleIcon className="w-5 h-5 text-[#10B981] dark:text-[#FAF8FF]" />
                     <span>Verified Institutional Answer</span>
                   </div>
-                  <span className="text-xs bg-[#E0D4FD]/30 dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] px-3 py-1 rounded-xl font-bold border border-[#6D28D9]/30">
+                  <span className="text-xs bg-[#E0D4FD]/30 dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] px-3 py-1 rounded-xl font-bold border border-[#6D28D9]/30">
                     {demoResponse.confidence}
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-[#0F172A] dark:text-slate-100 leading-relaxed font-semibold">
+                <p className="text-xs sm:text-sm text-[#1E1035] dark:text-slate-100 leading-relaxed font-semibold">
                   {demoResponse.answer}
                 </p>
 
@@ -282,7 +282,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-2xl sm:text-4xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+            <h2 className="text-2xl sm:text-4xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
               {currentLang === 'as' 
                 ? 'UniMitra-ৰ সেৱা আৰু শৈক্ষিক তথ্যৰ পৰিসৰ' 
                 : 'Comprehensive University Assistance Scope'}
@@ -299,7 +299,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#E0D4FD]/30 dark:bg-[#0A0718] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
                 <BuildingLibraryIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 University Regulations & Ordinances
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -312,7 +312,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#DDD6FE] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center mb-5">
                 <ClipboardDocumentCheckIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Examinations & Evaluation Rules
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -325,7 +325,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#E0D4FD]/30 dark:bg-[#0A0718] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
                 <IdentificationIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Academic Programs & Degrees
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -338,7 +338,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#DDD6FE] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center mb-5">
                 <BanknotesIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Scholarships & Financial Grants
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -351,7 +351,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#E0D4FD]/30 dark:bg-[#0A0718] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
                 <DocumentTextIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Admission Procedures & Cut-Offs
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -364,7 +364,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               <div className="w-12 h-12 rounded-2xl bg-[#DDD6FE] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center mb-5">
                 <BuildingOfficeIcon className="w-6 h-6 text-[#6D28D9] dark:text-[#FAF8FF]" />
               </div>
-              <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
+              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
                 Campus Facilities & Services
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
@@ -383,7 +383,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
           
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-8 mb-8 border-b border-[#E0D4FD]/60 dark:border-[#3B2868] gap-4">
             <div>
-              <h3 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h3 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 {currentLang === 'as' ? 'অসমৰ অগ্ৰণী বিশ্ববিদ্যালয়সমূহ' : 'Universities in Assam Knowledge Base'}
               </h3>
               <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-1">
@@ -406,14 +406,14 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 onClick={handlePortalAccess}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black px-2.5 py-1 rounded-xl bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
+                  <span className="text-xs font-black px-2.5 py-1 rounded-xl bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]">
                     {univ.code}
                   </span>
-                  <span className="text-[10px] font-black text-[#0F172A] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868] px-2.5 py-1 rounded-lg">
+                  <span className="text-[10px] font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#DDD6FE] dark:bg-[#3B2868] px-2.5 py-1 rounded-lg">
                     Institutional Index
                   </span>
                 </div>
-                <h4 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">{univ.name}</h4>
+                <h4 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">{univ.name}</h4>
                 <p className="text-xs text-[#555375] dark:text-[#C4B5FD] mb-4">{univ.city}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs text-[#555375] dark:text-[#C4B5FD]">
                   <span className="font-semibold">{univ.domains}</span>

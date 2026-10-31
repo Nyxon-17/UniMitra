@@ -103,7 +103,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
             <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'অধ্যাপক আৰু পৰীক্ষক নিৰ্দেশনা' : 'Faculty & Examiner Directives'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] tracking-tight">
               {currentLang === 'as' ? 'পৰীক্ষা আৰু মূল্যায়নৰ প্ৰতিষ্ঠানিক বিধি' : 'Examination Guidelines & Evaluation Norms'}
             </h1>
             <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-1">
@@ -130,14 +130,14 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
             placeholder="Search evaluation norms, paper setting..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
           />
         </div>
 
         <select
           value={selectedUniv}
           onChange={(e) => setSelectedUniv(e.target.value)}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none cursor-pointer"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none cursor-pointer"
         >
           <option value="All">All University Exam Boards</option>
           <option value="Gauhati">Gauhati University (GU)</option>
@@ -155,7 +155,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
+                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]">
                   {item.category}
                 </span>
                 <span className="text-xs font-mono font-bold text-[#555375] dark:text-[#C4B5FD]">
@@ -163,7 +163,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
                 </span>
               </div>
 
-              <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
+              <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
                 {currentLang === 'as' ? item.asTitle : item.title}
               </h2>
 
@@ -171,13 +171,13 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
                 {currentLang === 'as' ? item.asSummary : item.summary}
               </p>
 
-              <div className="p-3.5 bg-[#FAF8FF] dark:bg-[#0F172A] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-1.5">
+              <div className="p-3.5 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-1.5">
                 <span className="text-[10px] font-black uppercase text-[#3B2868] dark:text-[#FAF8FF] block">
                   Mandatory Examiner Directives:
                 </span>
                 <ul className="space-y-1">
                   {item.duties.map((d, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-xs text-[#0F172A] dark:text-[#FAF8FF]">
+                    <li key={idx} className="flex items-start space-x-2 text-xs text-[#1E1035] dark:text-[#FAF8FF]">
                       <CheckCircleIcon className="w-3.5 h-3.5 text-[#6D28D9] shrink-0 mt-0.5" />
                       <span>{d}</span>
                     </li>
