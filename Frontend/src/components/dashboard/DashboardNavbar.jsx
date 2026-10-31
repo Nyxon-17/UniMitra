@@ -14,7 +14,7 @@ export const DashboardNavbar = ({
   isDark = false, 
   onToggleTheme,
   onNavigateAi,
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University' }
+  studentInfo = { name: 'Student' }
 }) => {
   return (
     <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-[#111C2E]/95 backdrop-blur-xs border-b border-slate-200 dark:border-slate-800 transition-colors duration-200 px-4 sm:px-6 lg:px-8">

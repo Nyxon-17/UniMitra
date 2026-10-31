@@ -13,22 +13,18 @@ import {
 export const DashboardProfile = ({ 
   currentLang = 'en',
   studentInfo = { 
-    name: 'Priyanku Sarma', 
-    email: 'priyanku.sarma@gauhati.ac.in',
-    university: 'Gauhati University', 
-    course: 'BCA (Bachelor of Computer Application)',
-    semester: 'Semester 3',
-    college: 'Cotton University affiliated campus, Jalukbari'
+    name: 'Student Scholar', 
+    email: 'scholar@unimitra.edu',
+    course: 'Computer Science & Higher Education',
+    semester: 'Semester 3'
   },
   onUpdateStudentInfo
 }) => {
   const [formData, setFormData] = useState({
-    name: studentInfo.name || 'Priyanku Sarma',
-    email: studentInfo.email || 'priyanku.sarma@gauhati.ac.in',
-    university: studentInfo.university || 'Gauhati University',
-    course: studentInfo.course || 'BCA (Bachelor of Computer Application)',
+    name: studentInfo.name || 'Student Scholar',
+    email: studentInfo.email || 'scholar@unimitra.edu',
+    course: studentInfo.course || 'Computer Science & Higher Education',
     semester: studentInfo.semester || 'Semester 3',
-    college: studentInfo.college || 'Cotton University affiliated campus, Jalukbari',
     phone: '+91 98640 12345',
     preferredLang: currentLang === 'as' ? 'as' : 'en',
     notifyExam: true,
@@ -44,7 +40,6 @@ export const DashboardProfile = ({
       onUpdateStudentInfo({
         name: formData.name,
         email: formData.email,
-        university: formData.university,
         course: formData.course,
         semester: formData.semester
       });
@@ -72,7 +67,7 @@ export const DashboardProfile = ({
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <span className="px-3 py-1 rounded-lg text-xs font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center space-x-1">
                 <CheckCircleIcon className="w-3.5 h-3.5" />
-                <span>Verified University Student</span>
+                <span>UniMitra Academic Scholar</span>
               </span>
               <span className="px-3 py-1 rounded-lg text-xs font-bold bg-[#118AB2]/10 text-[#118AB2] dark:text-sky-300">
                 {formData.semester}
@@ -84,7 +79,7 @@ export const DashboardProfile = ({
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-              {formData.course} • <span className="font-bold text-[#118AB2] dark:text-[#FFD166]">{formData.university}</span>
+              {formData.course} • <span className="font-bold text-[#118AB2] dark:text-[#FFD166]">Universal Curriculum Access</span>
             </p>
           </div>
         </div>
@@ -112,7 +107,7 @@ export const DashboardProfile = ({
                 {currentLang === 'as' ? 'শৈক্ষিক তথ্য' : 'Academic Credentials'}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {currentLang === 'as' ? 'বিশ্ববিদ্যালয়ৰ তথ্যসমূহ পৰীক্ষা কৰক।' : 'Your registered university and semester syllabus mapping.'}
+                {currentLang === 'as' ? 'আপোনাৰ শৈক্ষিক তথ্যসমূহ পৰীক্ষা কৰক।' : 'Your student profile and degree mapping.'}
               </p>
             </div>
           </div>
@@ -146,25 +141,7 @@ export const DashboardProfile = ({
 
             <div>
               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                {currentLang === 'as' ? 'বিশ্ববিদ্যালয়' : 'Enrolled University'}
-              </label>
-              <select
-                value={formData.university}
-                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs sm:text-sm font-medium outline-none focus:border-[#118AB2]"
-              >
-                <option value="Gauhati University">Gauhati University (GU)</option>
-                <option value="Dibrugarh University">Dibrugarh University (DU)</option>
-                <option value="Tezpur University">Tezpur University (TU)</option>
-                <option value="Cotton University">Cotton University</option>
-                <option value="Assam University">Assam University (Silchar)</option>
-                <option value="Bodoland University">Bodoland University</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                {currentLang === 'as' ? 'ডিগ্ৰী আৰু পাঠ্যক্ৰম' : 'Degree & Program'}
+                {currentLang === 'as' ? 'ডিগ্ৰী আৰু পাঠ্যক্ৰম' : 'Degree & Major Course'}
               </label>
               <input
                 type="text"

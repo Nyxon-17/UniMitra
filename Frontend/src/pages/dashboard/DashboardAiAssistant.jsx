@@ -12,15 +12,15 @@ import {
 export const DashboardAiAssistant = ({ 
   currentLang = 'en',
   prefillQuery = '',
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA (Semester 3)' }
+  studentInfo = { name: 'Student' }
 }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'ai',
       text: currentLang === 'as'
-        ? `নমস্কাৰ ${studentInfo.name}! মই UniMitra শৈক্ষিক সহায়ক। আপোনাৰ বিশ্ববিদ্যালয় (${studentInfo.university}) ৰ ৩য় ষাণ্মাসিকৰ পাঠ্যক্ৰম, পৰীক্ষাৰ নিয়ম বা প্ৰশ্নৰ বিষয়ে মোক সুধিব পাৰে।`
-        : `Hello ${studentInfo.name}! I am your UniMitra Academic Assistant. I am ready to answer any questions from your ${studentInfo.university} syllabus and course materials with exact page citations.`,
+        ? 'নমস্কাৰ! মই UniMitra শৈক্ষিক সহায়ক। অসমৰ যিকোনো বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম, পৰীক্ষাৰ নিয়ম বা প্ৰশ্নৰ বিষয়ে মোক সুধিব পাৰে।'
+        : 'Hello! I am your UniMitra Academic Assistant. I am ready to answer any questions across all university syllabuses and course materials with exact page citations.',
       source: 'Official Academic Ingestion Engine',
       page: 'Verified',
       confidence: '100% Match',
@@ -85,8 +85,8 @@ export const DashboardAiAssistant = ({
         aiResponse.page = 'Page 14, Clause 8.2';
       } else {
         aiResponse.text = currentLang === 'as'
-          ? `আপোনাৰ প্ৰশ্নটো (${sentText}) গুৱাহাটী বিশ্ববিদ্যালয়ৰ ৩য় ষাণ্মাসিকৰ পাঠ্যক্ৰমৰ সৈতে নিৰীক্ষণ কৰা হৈছে। এই বিষয়টো পৰীক্ষাৰ বাবে অত্যন্ত গুৰুত্বপূৰ্ণ। মূল পাঠ্যপুথি আৰু প্ৰশ্নকাকতৰ বিৱৰণ সংলগ্ন PDF পৃষ্ঠাত দিয়া হৈছে।`
-          : `Your inquiry regarding "${sentText}" has been matched against the official ${studentInfo.university} curriculum. All verified units, prescribed authors, and question weightage are extracted from the authorized university document.`;
+          ? `আপোনাৰ প্ৰশ্নটো (${sentText}) বিশ্ববিদ্যালয়ৰ মানক পাঠ্যক্ৰমৰ সৈতে নিৰীক্ষণ কৰা হৈছে। মূল পাঠ্যপুথি আৰু প্ৰশ্নকাকতৰ বিৱৰণ সংলগ্ন PDF পৃষ্ঠাত দিয়া হৈছে।`
+          : `Your inquiry regarding "${sentText}" has been verified against the official university curriculum. All relevant units, prescribed authors, and question weightage are extracted from authorized documents.`;
       }
 
       setMessages((prev) => [...prev, aiResponse]);
@@ -122,7 +122,7 @@ export const DashboardAiAssistant = ({
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Active Scope: <strong className="text-[#118AB2] dark:text-[#FFD166]">{studentInfo.university}</strong>
+              {currentLang === 'as' ? 'প্ৰৱেশ পৰিসৰ: অসমৰ সকলো বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম' : 'Active Scope: All Assam University Curriculums'}
             </p>
           </div>
         </div>

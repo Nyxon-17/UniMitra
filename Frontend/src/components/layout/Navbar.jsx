@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AcademicCapIcon, MenuIcon, XMarkIcon, SparklesIcon, SunIcon, MoonIcon, LanguageIcon } from '../common/Icons';
+import { AcademicCapIcon, MenuIcon, XMarkIcon, SparklesIcon, SunIcon, MoonIcon, LanguageIcon, ArrowRightOnRectangleIcon } from '../common/Icons';
 
 export const Navbar = ({ 
   activePage = 'home', 
@@ -8,7 +8,10 @@ export const Navbar = ({
   currentLang = 'en', 
   onToggleLang,
   isDark = false,
-  onToggleTheme
+  onToggleTheme,
+  isLoggedIn = false,
+  studentInfo = { name: 'Student' },
+  onSignOut
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -19,11 +22,12 @@ export const Navbar = ({
     setMobileMenuOpen(false);
   };
 
+  // Universal navigation links - Completely public, no login required!
+  // Note: Universities page removed per user requirement.
   const navLinks = [
     { id: 'home', label: 'Home', asLabel: 'মূল পৃষ্ঠা' },
+    { id: 'dashboard', label: 'Curriculums & Study Hub', asLabel: 'পাঠ্যক্ৰম আৰু ডেচব’ৰ্ড', isHighlight: true },
     { id: 'features', label: 'Features', asLabel: 'সুবিধাসমূহ' },
-    { id: 'universities', label: 'Universities', asLabel: 'বিশ্ববিদ্যালয়সমূহ' },
-    { id: 'dashboard', label: 'Dashboard', asLabel: 'ডেচব’ৰ্ড', isHighlight: true },
     { id: 'faq', label: 'FAQ', asLabel: 'প্ৰশ্নোত্তৰ' },
     { id: 'about', label: 'About Us', asLabel: 'আমাৰ বিষয়ে' },
     { id: 'contact', label: 'Contact', asLabel: 'যোগাযোগ' },
@@ -52,7 +56,7 @@ export const Navbar = ({
             </div>
           </div>
 
-          {/* Center Navigation Links */}
+          {/* Center Navigation Links - Open to all students */}
           <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <button
@@ -61,6 +65,8 @@ export const Navbar = ({
                 className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   activePage === link.id
                     ? 'bg-[#E7F3F7] dark:bg-[#118AB2]/20 text-[#118AB2] dark:text-[#FFD166] border border-[#118AB2]/30'
+                    : link.isHighlight
+                    ? 'text-[#118AB2] dark:text-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-800'
                     : 'text-slate-700 dark:text-slate-200 hover:text-[#118AB2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
@@ -69,7 +75,7 @@ export const Navbar = ({
             ))}
           </nav>
 
-          {/* Right Action Tools: Language Switcher, Dark/White Mode, Sign In */}
+          {/* Right Action Tools: Language Switcher, Dark/White Mode, Auth Controls */}
           <div className="hidden md:flex items-center space-x-2.5">
             
             {/* Direct Language Switcher on Navbar */}
@@ -106,22 +112,36 @@ export const Navbar = ({
               {isDark ? <SunIcon className="w-5 h-5 text-[#FFD166]" /> : <MoonIcon className="w-5 h-5 text-slate-700" />}
             </button>
 
-            {/* Floating Sign In Modal Trigger */}
-            <button 
-              onClick={() => onOpenAuth && onOpenAuth('login')}
-              className="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] bg-white dark:bg-slate-800 border-2 border-[#118AB2] dark:border-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-700 transition-all cursor-pointer"
-            >
-              {currentLang === 'as' ? 'লগ-ইন' : 'Sign In'}
-            </button>
-
-            {/* Floating Student Registration Modal Trigger */}
-            <button 
-              onClick={() => onOpenAuth && onOpenAuth('register')}
-              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral shrink-0"
+            {/* Open Study Hub Direct Action */}
+            <button
+              onClick={() => handleNav('dashboard')}
+              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-all cursor-pointer shadow-elevated-cerulean shrink-0"
             >
               <SparklesIcon className="w-4 h-4 text-[#FFD166]" />
-              <span>{currentLang === 'as' ? 'পঞ্জীয়ন' : 'Register Free'}</span>
+              <span>{currentLang === 'as' ? 'পাঠ্যক্ৰম চাওক' : 'Open Study Hub'}</span>
             </button>
+
+            {/* Optional Auth Controls */}
+            {!isLoggedIn ? (
+              <button 
+                onClick={() => onOpenAuth && onOpenAuth('login')}
+                className="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] bg-white dark:bg-slate-800 border-2 border-[#118AB2] dark:border-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-700 transition-all cursor-pointer"
+              >
+                {currentLang === 'as' ? 'লগ-ইন' : 'Sign In'}
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to sign out?")) {
+                    if (onSignOut) onSignOut();
+                  }
+                }}
+                className="p-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer border border-red-200 dark:border-red-900/40"
+                title="Sign Out"
+              >
+                <ArrowRightOnRectangleIcon className="w-4 h-4" />
+              </button>
+            )}
 
           </div>
 
@@ -193,23 +213,33 @@ export const Navbar = ({
 
           <div className="pt-2 flex flex-col space-y-2">
             <button 
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAuth && onOpenAuth('login');
-              }}
-              className="w-full py-2.5 rounded-xl text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] border-2 border-[#118AB2] dark:border-[#06D6A0] text-center"
+              onClick={() => handleNav('dashboard')}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white bg-[#118AB2] text-center shadow-md"
             >
-              Student Sign In
+              {currentLang === 'as' ? 'পাঠ্যক্ৰম আৰু অধ্যয়ন হাব' : 'Open Curriculums & Study Hub'}
             </button>
-            <button 
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAuth && onOpenAuth('register');
-              }}
-              className="w-full py-3 rounded-xl text-sm font-bold text-white bg-[#FF7F50] text-center shadow-md"
-            >
-              Register Free Account
-            </button>
+
+            {!isLoggedIn ? (
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAuth && onOpenAuth('login');
+                }}
+                className="w-full py-2.5 rounded-xl text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] border-2 border-[#118AB2] dark:border-[#06D6A0] text-center"
+              >
+                Student Sign In (Optional)
+              </button>
+            ) : (
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onSignOut) onSignOut();
+                }}
+                className="w-full py-2.5 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 border border-red-300 dark:border-red-900 text-center"
+              >
+                {currentLang === 'as' ? 'লগ-আউট' : 'Sign Out'}
+              </button>
+            )}
           </div>
         </div>
       )}

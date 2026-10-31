@@ -50,14 +50,14 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
       asA: 'হয়! প্ৰতিটো উত্তৰৰ তলতে নথিপত্ৰৰ নাম আৰু সঠিক পৃষ্ঠা নম্বৰ সংলগ্ন থাকে, য’ত ক্লিক কৰি আপুনি সম্পূৰ্ণ PDF চাব আৰু সংৰক্ষণ কৰিব পাৰে।'
     },
     {
-      category: 'Universities',
-      q: 'Which universities in Assam are currently supported?',
-      asQ: 'বৰ্তমান অসমৰ কোনবোৰ বিশ্ববিদ্যালয় অন্তৰ্ভুক্ত কৰা হৈছে?',
-      a: 'UniMitra covers major universities including Gauhati University (GU), Dibrugarh University (DU), Tezpur Central University (TU), Assam University (Silchar), Cotton University (CU), Bodoland University (BU), ASTU, and AAU, with catalogs continuously expanding.',
-      asA: 'UniMitra-ত গুৱাহাটী বিশ্ববিদ্যালয়, ডিব্ৰুগড় বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, অসম বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, বড়োলেণ্ড বিশ্ববিদ্যালয়কে ধৰি অসমৰ সকলো অগ্ৰণী বিশ্ববিদ্যালয় অন্তৰ্ভুক্ত কৰা হৈছে।'
+      category: 'Curriculums',
+      q: 'Which universities and curriculums in Assam are currently supported?',
+      asQ: 'বৰ্তমান অসমৰ কোনবোৰ বিশ্ববিদ্যালয় আৰু পাঠ্যক্ৰম অন্তৰ্ভুক্ত কৰা হৈছে?',
+      a: 'UniMitra covers major university curriculums including Gauhati University (GU), Dibrugarh University (DU), Tezpur Central University (TU), Assam University (Silchar), Cotton University (CU), Bodoland University (BU), ASTU, and AAU, with catalogs continuously expanding.',
+      asA: 'UniMitra-ত গুৱাহাটী বিশ্ববিদ্যালয়, ডিব্ৰুগড় বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, অসম বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, বড়োলেণ্ড বিশ্ববিদ্যালয়কে ধৰি অসমৰ সকলো অগ্ৰণী বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম অন্তৰ্ভুক্ত কৰা হৈছে।'
     },
     {
-      category: 'Universities',
+      category: 'Curriculums',
       q: 'What if my college or specific department syllabus is missing?',
       asQ: 'যদি মোৰ মহাবিদ্যালয় বা নিৰ্দিষ্ট বিভাগৰ পাঠ্যক্ৰম উপলব্ধ নহয়, মই কি কৰিব পাৰো?',
       a: 'You can submit a syllabus request through our Contact page or upload the PDF if you are a departmental administrator. Our academic desk typically reviews and indexes new course materials within 24–48 hours.',
@@ -72,7 +72,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
     }
   ];
 
-  const categories = ['All', 'General', 'Language', 'Accuracy', 'Universities', 'Account'];
+  const categories = ['All', 'General', 'Language', 'Accuracy', 'Curriculums', 'Account'];
 
   const filteredFaqs = faqData.filter((item) => {
     const matchesCat = activeCategory === 'All' || item.category === activeCategory;

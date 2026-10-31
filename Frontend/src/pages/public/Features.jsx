@@ -184,10 +184,10 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               Sign In Free ➔
             </button>
             <button
-              onClick={() => onNavigate && onNavigate('universities')}
+              onClick={() => onNavigate && onNavigate('dashboard')}
               className="px-7 py-3.5 rounded-xl font-bold text-white bg-transparent border-2 border-white/50 hover:border-white transition-all cursor-pointer text-sm text-center"
             >
-              View All Universities
+              Open Curriculums Hub
             </button>
           </div>
         </div>

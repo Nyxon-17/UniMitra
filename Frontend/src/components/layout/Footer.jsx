@@ -23,13 +23,13 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             
             <p className="text-sm text-slate-300 leading-relaxed max-w-sm">
               {currentLang === 'as' 
-                ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ শৈক্ষিক তথ্য, পাঠ্যক্ৰম আৰু কৃত্রিম বুদ্ধিমত্তা চালিত প্ৰশ্নোত্তৰ মঞ্চ। ছাত্ৰ-ছাত্ৰীৰ বাবে সম্পূৰ্ণ বিশ্বস্ত সমাধান।'
-                : 'Empowering university scholars across Assam with verified academic documents, syllabuses, and question answering in Assamese and English.'}
+                ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ শৈক্ষিক তথ্য, সকলো পাঠ্যক্ৰম আৰু কৃত্রিম বুদ্ধিমত্তা চালিত প্ৰশ্নোত্তৰ মঞ্চ। ছাত্ৰ-ছাত্ৰীৰ বাবে সম্পূৰ্ণ বিশ্বস্ত সমাধান।'
+                : 'Empowering students across Assam with universal access to verified academic documents, course curriculums, and instant question answering in Assamese and English.'}
             </p>
 
             <div className="pt-2 flex flex-wrap gap-2 text-xs font-bold">
               <span className="bg-white/10 text-[#FFD166] px-3 py-1.5 rounded-lg border border-white/15">
-                Official Syllabuses
+                All University Curriculums
               </span>
               <span className="bg-white/10 text-[#06D6A0] px-3 py-1.5 rounded-lg border border-white/15">
                 Assamese + English
@@ -40,29 +40,29 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </div>
           </div>
 
-          {/* Col 3: Supported Assam Universities */}
+          {/* Col 3: Academic Curriculums */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-[#FFD166] uppercase tracking-wider">
-              {currentLang === 'as' ? 'বিশ্ববিদ্যালয়সমূহ' : 'Assam Universities'}
+              {currentLang === 'as' ? 'পাঠ্যক্ৰম অন্বেষণ' : 'Academic Curriculums'}
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
-              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
-                Gauhati University (GU)
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer">
+                Computer Science & Applications (BCA / B.Sc)
               </li>
-              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
-                Dibrugarh University (DU)
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer">
+                Engineering & Technology (B.Tech / BE)
               </li>
-              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
-                Tezpur University (TU)
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer">
+                Commerce & Management (B.Com / BBA)
               </li>
-              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
-                Assam University (Silchar)
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer">
+                Humanities & Social Sciences (B.A)
               </li>
-              <li onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer">
-                Cotton University (CU)
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer">
+                Physical & Natural Sciences (B.Sc)
               </li>
-              <li onClick={() => onNavigate && onNavigate('universities')} className="text-[#FFD166] font-semibold hover:underline cursor-pointer">
-                + View All 26 Universities ➔
+              <li onClick={() => onNavigate && onNavigate('dashboard')} className="text-[#FFD166] font-semibold hover:underline cursor-pointer">
+                + Browse All Semester Units ➔
               </li>
             </ul>
           </div>
@@ -79,13 +79,13 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer text-left">
-                  Student Features
+                <button onClick={() => onNavigate && onNavigate('dashboard')} className="hover:text-white transition-colors cursor-pointer text-left font-bold text-[#FFD166]">
+                  Curriculums & Study Hub
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('universities')} className="hover:text-white transition-colors cursor-pointer text-left">
-                  Assam Universities Catalog
+                <button onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer text-left">
+                  Student Features
                 </button>
               </li>
               <li>
@@ -100,51 +100,49 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               </li>
               <li>
                 <button onClick={() => onNavigate && onNavigate('contact')} className="hover:text-white transition-colors cursor-pointer text-left">
-                  Contact University Helpdesk
+                  Contact Campus Team
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 5: Student Verification & Auth */}
-          <div className="space-y-3">
+          {/* Col 5: Trust & Compliance */}
+          <div className="space-y-4">
             <h4 className="text-xs font-bold text-[#FF7F50] uppercase tracking-wider">
-              {currentLang === 'as' ? 'ছাত্ৰ প্ৰৱেশ' : 'Student Access'}
+              {currentLang === 'as' ? 'শৈক্ষিক বিশ্বাসযোগ্যতা' : 'Academic Integrity'}
             </h4>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Sign in to save courses, bookmark previous year question papers, and download syllabuses.
-            </p>
-            <button
-              onClick={() => onOpenAuth && onOpenAuth('login')}
-              className="w-full py-2.5 rounded-xl font-bold text-slate-900 bg-[#FFD166] hover:bg-[#F2C353] transition-all cursor-pointer shadow-sm text-xs text-center"
-            >
-              Sign In to Student Account
-            </button>
-            <div className="bg-[#118AB2]/20 border border-[#118AB2]/40 rounded-xl p-3 text-xs space-y-1">
-              <div className="flex items-center space-x-1.5 text-[#06D6A0] font-bold">
+            
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
+              <div className="flex items-center space-x-2 text-[#06D6A0] text-xs font-bold">
                 <ShieldCheckIcon className="w-4 h-4" />
-                <span>Zero Fake Information</span>
+                <span>Verified Materials</span>
               </div>
-              <p className="text-[11px] text-slate-300">
-                Direct quotes from authorized Assam university documents.
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Zero hallucinated answers. Every topic is cited directly from official university syllabus documents.
+              </p>
+            </div>
+
+            <div className="pt-1">
+              <span className="text-xs text-slate-400 block">Languages:</span>
+              <p className="text-xs font-bold text-white mt-0.5">
+                অসমীয়া (Assamese) • English
               </p>
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* Bottom Strip */}
-      <div className="border-t border-slate-700/60 bg-[#052935] dark:bg-[#031018] text-xs py-5 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-slate-400">
-            © {new Date().getFullYear()} <strong className="text-white">UniMitra</strong>. Built for Assam Higher Education.
-          </div>
-          <div className="flex items-center space-x-4 text-slate-400">
-            <span className="text-[#FFD166] font-semibold">Bilingual Assamese & English</span>
-            <span>•</span>
-            <span className="hover:text-white cursor-pointer">Privacy Policy</span>
-            <span>•</span>
-            <span className="hover:text-white cursor-pointer">Terms of Service</span>
+      {/* Bottom Bar */}
+      <div className="border-t border-white/10 bg-black/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <p>
+            © {new Date().getFullYear()} UniMitra. Built for university students across Assam.
+          </p>
+          <div className="flex items-center space-x-6">
+            <span className="hover:text-white cursor-pointer transition-colors">Academic Freedom</span>
+            <span className="hover:text-white cursor-pointer transition-colors">Privacy Notice</span>
+            <span className="hover:text-white cursor-pointer transition-colors">Terms of Use</span>
           </div>
         </div>
       </div>

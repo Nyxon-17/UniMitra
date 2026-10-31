@@ -344,10 +344,10 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               </p>
             </div>
             <button 
-              onClick={() => onNavigate && onNavigate('universities')}
+              onClick={() => onNavigate && onNavigate('dashboard')}
               className="px-5 py-2.5 text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#FFD166] bg-[#E7F3F7] dark:bg-slate-800 rounded-xl border border-[#118AB2]/30 hover:bg-[#118AB2] hover:text-white transition-all cursor-pointer self-start sm:self-auto"
             >
-              View All 26 Universities ➔
+              Browse All Curriculums ➔
             </button>
           </div>
 
@@ -356,7 +356,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               <div 
                 key={univ.code}
                 className="bg-[#FAFAFC] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-[#118AB2] hover:shadow-md transition-all cursor-pointer"
-                onClick={() => alert(`Selected ${univ.name}. Academic course catalog will open in Dashboard.`)}
+                onClick={() => onNavigate && onNavigate('dashboard')}
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
@@ -403,10 +403,10 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               Sign In Free as Student
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('universities')}
+              onClick={() => onNavigate && onNavigate('dashboard')}
               className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-white bg-transparent border-2 border-slate-500 hover:border-white transition-all cursor-pointer text-sm"
             >
-              Explore Universities in Assam
+              Explore Course Curriculums
             </button>
           </div>
         </div>

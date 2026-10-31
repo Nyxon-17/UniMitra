@@ -11,7 +11,7 @@ import {
 export const DashboardSaved = ({ 
   onNavigateTab, 
   currentLang = 'en',
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA (Semester 3)' }
+  studentInfo = { name: 'Student' }
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState('all');
@@ -84,7 +84,7 @@ export const DashboardSaved = ({
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
               <BookmarkIcon className="w-4 h-4 text-[#FF7F50]" />
-              <span>{studentInfo.university} • Personal Study Archive</span>
+              <span>{currentLang === 'as' ? 'ব্যক্তিগত শৈক্ষিক সংগ্ৰহ • সংৰক্ষিত উত্তৰ' : 'Universal Study Archive • Saved Notes & Citations'}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#073B4C] dark:text-white">
               {currentLang === 'as' ? 'সংৰক্ষিত প্ৰশ্নোত্তৰ আৰু টোকা' : 'Saved Answers & Study Bookmarks'}

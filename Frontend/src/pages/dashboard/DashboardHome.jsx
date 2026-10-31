@@ -12,7 +12,7 @@ import {
 export const DashboardHome = ({ 
   onNavigateTab, 
   currentLang = 'en',
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA (Semester 3)' }
+  studentInfo = { name: 'Scholar', course: 'All Curriculums' }
 }) => {
   const [quickQuestion, setQuickQuestion] = useState('');
 
@@ -59,17 +59,17 @@ export const DashboardHome = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
-              {studentInfo.university} • {studentInfo.course}
+              {currentLang === 'as' ? 'উন্মুক্ত শৈক্ষিক হাব • সকলো পাঠ্যক্ৰম উপলব্ধ' : 'Universal Study Hub • All University Curriculums'}
             </span>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#073B4C] dark:text-white tracking-tight">
               {currentLang === 'as' 
-                ? `নমস্কাৰ, ${studentInfo.name}! আপোনাৰ অধ্যয়ন আৰম্ভ কৰক` 
-                : `Welcome back, ${studentInfo.name}!`}
+                ? 'নমস্কাৰ শিক্ষাৰ্থী! আপোনাৰ পাঠ্যক্ৰম অন্বেষণ কৰক' 
+                : 'Welcome! Explore Any Course Curriculum'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
               {currentLang === 'as'
-                ? 'সকলো অফিচিয়েল পাঠ্যক্ৰম আৰু বিশ্ববিদ্যালয়ৰ নিয়ম সংলগ্ন কৰা হৈছে। প্ৰশ্ন সুধক বা সিলেবাছ পৰীক্ষা কৰক।'
-                : 'All official course materials and exam blueprints for your semester are verified. Ask any syllabus question or view official documents.'}
+                ? 'সকলো বিশ্ববিদ্যালয়ৰ অফিচিয়েল পাঠ্যক্ৰম আৰু নিয়ম সংলগ্ন কৰা হৈছে। যিকোনো বিষয়ৰ প্ৰশ্ন সুধক বা সিলেবাছ পৰীক্ষা কৰক।'
+                : 'All official course materials and exam blueprints across Assam universities are verified. Ask any syllabus question or view official documents.'}
             </p>
           </div>
 
@@ -196,14 +196,14 @@ export const DashboardHome = ({
         </div>
       </div>
 
-      {/* 2-Column Section: Enrolled Subjects & Recent Questions */}
+      {/* 2-Column Section: Available Subjects & Recent Questions */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Enrolled Semester Subjects (Cols 7) */}
+        {/* Semester Subjects (Cols 7) */}
         <div className="lg:col-span-7 bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Active Semester Courses</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Featured Semester Curriculums</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">Syllabuses available for instant AI retrieval</p>
             </div>
             <button

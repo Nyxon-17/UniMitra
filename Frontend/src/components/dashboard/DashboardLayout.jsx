@@ -7,6 +7,7 @@ export const DashboardLayout = ({
   activeTab = 'overview', 
   onSelectTab, 
   onExitDashboard, 
+  onSignOut,
   currentLang = 'en', 
   onToggleLang, 
   isDark = false, 
@@ -23,6 +24,7 @@ export const DashboardLayout = ({
         activeTab={activeTab}
         onSelectTab={onSelectTab}
         onExitDashboard={onExitDashboard}
+        onSignOut={onSignOut}
         isOpen={sidebarOpen}
         onCloseMobile={() => setSidebarOpen(false)}
         currentLang={currentLang}

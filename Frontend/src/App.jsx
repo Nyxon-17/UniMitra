@@ -3,7 +3,6 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Home } from './pages/public/Home';
 import { Features } from './pages/public/Features';
-import { Universities } from './pages/public/Universities';
 import { Faq } from './pages/public/Faq';
 import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
@@ -18,7 +17,7 @@ import { DashboardSaved } from './pages/dashboard/DashboardSaved';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'universities' | 'faq' | 'about' | 'contact' | 'dashboard'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'faq' | 'about' | 'contact' | 'dashboard'
   const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'syllabus' | 'saved' | 'profile'
   const [assistantPrefill, setAssistantPrefill] = useState('');
   
@@ -26,13 +25,32 @@ export function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
 
-  const [studentInfo, setStudentInfo] = useState({
-    name: 'Priyanku Sarma',
-    email: 'priyanku.sarma@gauhati.ac.in',
-    university: 'Gauhati University',
-    course: 'BCA (Semester 3)',
-    semester: 'Semester 3',
-    college: 'Cotton University affiliated campus, Jalukbari'
+  // Student Authentication State - Optional session (no lock on curriculums or dashboard)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('unimitra_auth_logged_in') === 'true';
+    }
+    return false;
+  });
+
+  // Universal student profile - No single university specified or locked
+  const [studentInfo, setStudentInfo] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('unimitra_student_info');
+      if (savedUser) {
+        try {
+          return JSON.parse(savedUser);
+        } catch {
+          // fallback
+        }
+      }
+    }
+    return {
+      name: 'Student Scholar',
+      email: 'student@unimitra.edu',
+      course: 'Higher Education Curriculums',
+      semester: 'Semester 3'
+    };
   });
   
   const [theme, setTheme] = useState(() => {
@@ -74,16 +92,35 @@ export function App() {
     setAuthModalOpen(true);
   };
 
+  // Login Success Handler: Activates optional session
   const handleLoginSuccess = (user) => {
+    setIsLoggedIn(true);
+    localStorage.setItem('unimitra_auth_logged_in', 'true');
+    
     if (user?.name) {
-      setStudentInfo((prev) => ({
-        ...prev,
+      const updatedInfo = {
+        ...studentInfo,
         name: user.name,
-        email: user.email || prev.email,
-      }));
+        email: user.email || studentInfo.email,
+      };
+      setStudentInfo(updatedInfo);
+      localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
     }
+
     setCurrentPage('dashboard');
     setDashboardTab('overview');
+  };
+
+  // Sign Out Handler: Revokes session and returns to home
+  const handleSignOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('unimitra_auth_logged_in');
+    setCurrentPage('home');
+  };
+
+  // Direct Navigation: Open to all pages with zero login gating
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
   };
 
   const handleNavigateDashboardTab = (tab, payload) => {
@@ -93,13 +130,20 @@ export function App() {
     }
   };
 
-  // If in Student Dashboard mode, render 3D Dashboard Layout with sidebar and dashboard navbar
+  const handleUpdateStudentInfo = (updated) => {
+    const newInfo = { ...studentInfo, ...updated };
+    setStudentInfo(newInfo);
+    localStorage.setItem('unimitra_student_info', JSON.stringify(newInfo));
+  };
+
+  // Student Dashboard / Study Hub View - Accessible by ALL students without requiring login
   if (currentPage === 'dashboard') {
     return (
       <DashboardLayout
         activeTab={dashboardTab}
         onSelectTab={setDashboardTab}
         onExitDashboard={() => setCurrentPage('home')}
+        onSignOut={handleSignOut}
         currentLang={lang}
         onToggleLang={toggleLanguage}
         isDark={theme === 'dark'}
@@ -138,57 +182,57 @@ export function App() {
           <DashboardProfile
             currentLang={lang}
             studentInfo={studentInfo}
-            onUpdateStudentInfo={(updated) => setStudentInfo((prev) => ({ ...prev, ...updated }))}
+            onUpdateStudentInfo={handleUpdateStudentInfo}
           />
         )}
       </DashboardLayout>
     );
   }
 
-  // Otherwise, render Public University Platform Layout
+  // Public Layout
   return (
     <div className={`min-h-screen flex flex-col bg-[#FAFAFC] dark:bg-[#0B1320] text-[#073B4C] dark:text-slate-100 selection:bg-[#FFD166] selection:text-[#073B4C] transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Top Public Navigation */}
       <Navbar 
         activePage={currentPage} 
-        onNavigate={setCurrentPage} 
+        onNavigate={handleNavigate} 
         onOpenAuth={handleOpenAuth}
         currentLang={lang} 
         onToggleLang={toggleLanguage}
         isDark={theme === 'dark'}
         onToggleTheme={toggleTheme}
+        isLoggedIn={isLoggedIn}
+        studentInfo={studentInfo}
+        onSignOut={handleSignOut}
       />
 
       {/* Main Dynamic Viewport */}
       <main className="flex-1">
         {currentPage === 'home' && (
-          <Home onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Home onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
         {currentPage === 'features' && (
-          <Features onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
-        )}
-        {currentPage === 'universities' && (
-          <Universities onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Features onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
         {currentPage === 'faq' && (
-          <Faq onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Faq onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
         {currentPage === 'about' && (
-          <About onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <About onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
         {currentPage === 'contact' && (
-          <Contact onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} currentLang={lang} />
+          <Contact onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
       </main>
 
       {/* Academic Portal Footer */}
       <Footer 
-        onNavigate={setCurrentPage} 
+        onNavigate={handleNavigate} 
         onOpenAuth={handleOpenAuth}
         currentLang={lang} 
       />
 
-      {/* Floating Login & Registration Modal for Students */}
+      {/* Optional Floating Login & Registration Modal for Students */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

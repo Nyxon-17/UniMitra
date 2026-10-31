@@ -13,10 +13,11 @@ export const DashboardSidebar = ({
   activeTab = 'overview', 
   onSelectTab, 
   onExitDashboard,
+  onSignOut,
   isOpen = false,
   onCloseMobile,
   currentLang = 'en',
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA 3rd Sem' }
+  studentInfo = { name: 'Student', course: 'All Curriculums' }
 }) => {
   const menuItems = [
     { id: 'overview', label: 'Study Overview', asLabel: 'অধ্যয়ন সাৰাংশ', icon: HomeIcon },
@@ -69,18 +70,15 @@ export const DashboardSidebar = ({
             </button>
           </div>
 
-          {/* Student University Active Card */}
-          <div className="p-4 mx-4 my-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
-              <span>ACTIVE ENROLLMENT</span>
-              <span className="w-2 h-2 rounded-full bg-[#06D6A0]"></span>
+          {/* Universal Study Access Card */}
+          <div className="p-3.5 mx-4 my-3 bg-gradient-to-tr from-[#118AB2]/10 via-[#06D6A0]/10 to-transparent border border-[#118AB2]/20 dark:border-slate-700 rounded-2xl">
+            <div className="flex items-center justify-between text-[10px] font-black text-[#118AB2] dark:text-[#06D6A0] uppercase tracking-wider mb-0.5">
+              <span>{currentLang === 'as' ? 'উন্মুক্ত শৈক্ষিক প্ৰৱেশ' : 'Open Study Access'}</span>
+              <span className="w-2 h-2 rounded-full bg-[#06D6A0] animate-pulse"></span>
             </div>
-            <h4 className="text-sm font-black text-slate-900 dark:text-white truncate">
-              {studentInfo.university}
+            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              {currentLang === 'as' ? 'সকলো বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম' : 'All University Curriculums'}
             </h4>
-            <p className="text-xs text-[#118AB2] dark:text-[#FFD166] font-semibold mt-0.5">
-              {studentInfo.course}
-            </p>
           </div>
 
           {/* Navigation Menu */}
@@ -124,7 +122,11 @@ export const DashboardSidebar = ({
           <button
             onClick={() => {
               if (window.confirm("Are you sure you want to sign out?")) {
-                onExitDashboard();
+                if (onSignOut) {
+                  onSignOut();
+                } else {
+                  onExitDashboard();
+                }
               }
             }}
             className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"

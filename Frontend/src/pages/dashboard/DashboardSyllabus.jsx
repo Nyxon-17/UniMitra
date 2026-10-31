@@ -11,13 +11,33 @@ import {
 
 export const DashboardSyllabus = ({ 
   onNavigateTab, 
-  currentLang = 'en',
-  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA (Semester 3)' }
+  currentLang = 'en'
 }) => {
+  const [selectedUniversity, setSelectedUniversity] = useState('All Universities');
+  const [selectedProgram, setSelectedProgram] = useState('BCA');
   const [selectedSemester, setSelectedSemester] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSubject, setExpandedSubject] = useState('BCA-HC-3016');
   const [previewPdfModal, setPreviewPdfModal] = useState(null);
+
+  const universities = [
+    'All Universities',
+    'Gauhati University (GU)',
+    'Dibrugarh University (DU)',
+    'Tezpur University (TU)',
+    'Cotton University (CU)',
+    'Assam University (Silchar)',
+    'Bodoland University (BU)',
+    'Assam Science and Technology University (ASTU)'
+  ];
+
+  const programs = [
+    { id: 'BCA', label: 'BCA / Computer Applications', asLabel: 'BCA / কম্পিউটাৰ এপ্লিকেচন' },
+    { id: 'BSC', label: 'B.Sc (Physical & Math Sciences)', asLabel: 'B.Sc (পদাৰ্থ আৰু গণিত বিজ্ঞান)' },
+    { id: 'BTECH', label: 'B.Tech (Engineering & Tech)', asLabel: 'B.Tech (প্ৰযুক্তি আৰু অভিযান্ত্ৰিক)' },
+    { id: 'BCOM', label: 'B.Com (Commerce & Accountancy)', asLabel: 'B.Com (বাণিজ্য আৰু একাউণ্টেন্সি)' },
+    { id: 'BA', label: 'B.A (Humanities & Social Sciences)', asLabel: 'B.A (মানৱিক আৰু সমাজ বিজ্ঞান)' },
+  ];
 
   const semesters = [1, 2, 3, 4, 5, 6];
 
@@ -27,6 +47,7 @@ export const DashboardSyllabus = ({
         code: 'BCA-HC-3016',
         title: 'Database Management Systems',
         asTitle: 'ডাটাবেছ মেনেজমেন্ট ছিষ্টেম (DBMS)',
+        universityStandard: 'State University CBCS Standard',
         type: 'Core Discipline',
         credits: '6 Credits (4 Theory + 2 Practical)',
         examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
@@ -80,6 +101,7 @@ export const DashboardSyllabus = ({
         code: 'BCA-HC-3026',
         title: 'Operating Systems & System Architecture',
         asTitle: 'অপাৰেটিং ছিষ্টেম আৰু ছিষ্টেম আৰ্কিটেকচাৰ',
+        universityStandard: 'State University CBCS Standard',
         type: 'Core Discipline',
         credits: '6 Credits (4 Theory + 2 Practical)',
         examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
@@ -123,6 +145,7 @@ export const DashboardSyllabus = ({
         code: 'BCA-HC-3036',
         title: 'Computer Networks & Data Communication',
         asTitle: 'কম্পিউটাৰ নেটৱৰ্ক আৰু ডাটা কমিউনিকেচন',
+        universityStandard: 'State University CBCS Standard',
         type: 'Core Discipline',
         credits: '6 Credits (4 Theory + 2 Practical)',
         examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
@@ -165,6 +188,7 @@ export const DashboardSyllabus = ({
         code: 'BCA-SE-3014',
         title: 'Web Technology & Modern Scripting',
         asTitle: 'ৱেব প্ৰযুক্তি আৰু আধুনিক স্ক্ৰিপ্টিং',
+        universityStandard: 'State University CBCS Standard',
         type: 'Skill Enhancement Course (SEC)',
         credits: '4 Credits (2 Theory + 2 Practical)',
         examScheme: 'End-Sem: 60 Marks | Sessional: 40 Marks Practical',
@@ -199,6 +223,7 @@ export const DashboardSyllabus = ({
         code: 'BCA-HC-1016',
         title: 'Introduction to C Programming',
         asTitle: 'চি প্ৰগ্ৰামিংৰ পৰিচয়',
+        universityStandard: 'State University CBCS Standard',
         type: 'Core Discipline',
         credits: '6 Credits',
         examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
@@ -236,15 +261,15 @@ export const DashboardSyllabus = ({
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
               <AcademicCapIcon className="w-4 h-4" />
-              <span>{studentInfo.university} • {studentInfo.course}</span>
+              <span>Universal Academic Directory • Open Access Curriculums</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#073B4C] dark:text-white">
-              {currentLang === 'as' ? 'অফিচিয়েল পাঠ্যক্ৰম পৰিদৰ্শন' : 'Official Syllabus & Curriculum'}
+              {currentLang === 'as' ? 'অফিচিয়েল পাঠ্যক্ৰম পৰিদৰ্শন' : 'Official Syllabus & Curriculum Explorer'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
               {currentLang === 'as'
-                ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক পৰিষদে অনুমোদন জনোৱা প্ৰতিটো বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু পাঠ্যপুথি পৰীক্ষা কৰক।'
-                : 'Browse verified semester units, credit allocation, recommended textbooks, and question blueprint approved by the university academic board.'}
+                ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ পাঠ্যক্ৰম, বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু অনুমোদিত পাঠ্যপুথি বিনামূলীয়াকৈ অন্বেষণ কৰক।'
+                : 'Freely browse verified semester units, credit allocation, recommended textbooks, and question blueprints across all Assam universities with zero login barriers.'}
             </p>
           </div>
 
@@ -260,38 +285,73 @@ export const DashboardSyllabus = ({
           </div>
         </div>
 
-        {/* Semester Selection Ribbon */}
-        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center space-x-2 overflow-x-auto pb-2 sm:pb-0">
-            <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider shrink-0">
-              {currentLang === 'as' ? 'ষাণ্মাসিক:' : 'Semester:'}
-            </span>
-            {semesters.map((sem) => (
-              <button
-                key={sem}
-                onClick={() => setSelectedSemester(sem)}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedSemester === sem
-                    ? 'bg-[#118AB2] text-white shadow-elevated-cerulean'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                {currentLang === 'as' ? `ষাণ্মাসিক ${sem}` : `Semester ${sem}`}
-              </button>
-            ))}
+        {/* Multi-University & Degree Selection Ribbon */}
+        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় বাছক' : 'University / Academic Board'}
+            </label>
+            <select
+              value={selectedUniversity}
+              onChange={(e) => setSelectedUniversity(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+            >
+              {universities.map((univ) => (
+                <option key={univ} value={univ}>{univ}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Search Box */}
-          <div className="relative w-full sm:w-72">
-            <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={currentLang === 'as' ? 'বিষয় বা কোড বিচাৰক...' : 'Filter subject or code...'}
-              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
-            />
+          <div>
+            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              {currentLang === 'as' ? 'পাঠ্যক্ৰম / ডিগ্ৰী' : 'Discipline / Program'}
+            </label>
+            <select
+              value={selectedProgram}
+              onChange={(e) => setSelectedProgram(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+            >
+              {programs.map((p) => (
+                <option key={p.id} value={p.id}>{currentLang === 'as' ? p.asLabel : p.label}</option>
+              ))}
+            </select>
           </div>
+
+          <div>
+            <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              {currentLang === 'as' ? 'সন্ধান' : 'Search Subject / Code'}
+            </label>
+            <div className="relative">
+              <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={currentLang === 'as' ? 'বিষয় বা কোড বিচাৰক...' : 'Filter subject or code...'}
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-[#118AB2]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Semester Selection Ribbon */}
+        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center space-x-2 overflow-x-auto pb-1">
+          <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider shrink-0">
+            {currentLang === 'as' ? 'ষাণ্মাসিক:' : 'Semester:'}
+          </span>
+          {semesters.map((sem) => (
+            <button
+              key={sem}
+              onClick={() => setSelectedSemester(sem)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0 ${
+                selectedSemester === sem
+                  ? 'bg-[#118AB2] text-white shadow-elevated-cerulean'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              {currentLang === 'as' ? `ষাণ্মাসিক ${sem}` : `Semester ${sem}`}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -331,6 +391,9 @@ export const DashboardSyllabus = ({
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#06D6A0]/10 text-[#06D6A0]">
                           {subject.credits}
                         </span>
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                          {subject.universityStandard}
+                        </span>
                       </div>
                       <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
                         {currentLang === 'as' && subject.asTitle ? subject.asTitle : subject.title}
@@ -345,7 +408,7 @@ export const DashboardSyllabus = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onNavigateTab('assistant', { prefillQuery: `Explain the key concepts of ${subject.title} (${subject.code}) from our syllabus.` });
+                        onNavigateTab('assistant', { prefillQuery: `Explain the key concepts of ${subject.title} (${subject.code}) from the official syllabus.` });
                       }}
                       className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral shrink-0 flex items-center space-x-1"
                     >
@@ -434,7 +497,7 @@ export const DashboardSyllabus = ({
             <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-700 pb-4 mb-4">
               <div>
                 <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] uppercase">
-                  {studentInfo.university} Document Repository
+                  Academic Curriculum Repository
                 </span>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white">
                   {previewPdfModal.title} ({previewPdfModal.code})
@@ -455,16 +518,16 @@ export const DashboardSyllabus = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                    GU_{previewPdfModal.code}_Official_Syllabus_Notification.pdf
+                    Official_{previewPdfModal.code}_Curriculum_Document.pdf
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Verified Digital Seal • Academic Board Approved
+                    State Higher Education Board Verified Seal
                   </p>
                 </div>
               </div>
 
               <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-800 dark:text-emerald-300">
-                ✓ Full text and units are ingested into the UniMitra assistant with zero hallucinations. Every question is answered directly from this document.
+                ✓ Full text and units are ingested into the UniMitra assistant with zero hallucinations. Every question is answered directly from official documents.
               </div>
             </div>
 
@@ -492,4 +555,3 @@ export const DashboardSyllabus = ({
     </div>
   );
 };
-
