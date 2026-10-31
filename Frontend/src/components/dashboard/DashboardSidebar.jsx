@@ -92,22 +92,22 @@ export const DashboardSidebar = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#120B24]/95 backdrop-blur-xs border-r border-[#E0D4FD] dark:border-[#3B2868] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#13005A]/95 backdrop-blur-xs border-r border-[#73A5CA]/35 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Upper Sidebar Section */}
         <div className="overflow-y-auto">
           {/* Logo Bar */}
-          <div className="flex items-center justify-between h-20 px-6 border-b border-[#E0D4FD] dark:border-[#3B2868]">
+          <div className="flex items-center justify-between h-20 px-6 border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
             <div className="flex items-center space-x-3 cursor-pointer" onClick={handleLogoClick}>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#6D28D9] via-[#8F00FF] to-[#4C1D95] dark:from-[#4C1D95] dark:to-[#8F00FF] flex items-center justify-center text-white shadow-md border-2 border-[#E0D4FD] dark:border-[#B026FF]/50 dark:shadow-[0_0_12px_rgba(176,38,255,0.4)]">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#73A5CA] via-[#FFCB56] to-[#FF933E] dark:from-[#13005A] dark:to-[#00337C] flex items-center justify-center text-white shadow-md border-2 border-[#73A5CA]/40 dark:border-[#03C988]/50 dark:shadow-[0_0_12px_rgba(176,38,255,0.4)]">
                 <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
               </div>
               <div>
-                <span className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
-                  Uni<span className="text-[#8F00FF] dark:text-[#FBBF24]">Mitra</span>
+                <span className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
+                  Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
                 </span>
-                <span className="text-[10px] font-black text-[#6D28D9] dark:text-[#C4B5FD] block -mt-0.5 uppercase tracking-wider">
+                <span className="text-[10px] font-black text-[#FF933E] dark:text-[#03C988] block -mt-0.5 uppercase tracking-wider">
                   University Portal
                 </span>
               </div>
@@ -132,11 +132,11 @@ export const DashboardSidebar = ({
                   key={item.id}
                   onClick={() => handleItemClick(item.id)}
                   className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
-                      ? 'bg-[#4C1D95] dark:bg-[#6D28D9] text-white shadow-xs dark:shadow-[0_0_12px_rgba(176,38,255,0.35)]'
-                      : 'text-[#1E1035] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1A0F33] hover:text-[#6D28D9] dark:hover:text-[#FAF8FF]'
+                      ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
+                      : 'text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40 dark:hover:bg-[#00337C]/60 hover:text-[#FF933E] dark:hover:text-[#03C988]'
                     }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#6D28D9] dark:text-[#FBBF24]'}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#73A5CA] dark:text-[#03C988]'}`} />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>
                 </button>
               );
@@ -145,14 +145,14 @@ export const DashboardSidebar = ({
         </div>
 
         {/* Lower Sidebar Actions */}
-        <div className="p-4 border-t border-[#E0D4FD] dark:border-[#3B2868] space-y-2">
+        <div className="p-4 border-t border-[#73A5CA]/35 dark:border-[#1C82AD]/40 space-y-2">
           {/* Admin Ingestion Console Access */}
           <button
             onClick={handleAdminClick}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#DDD6FE]/40 dark:bg-[#1A0F33] hover:bg-[#DDD6FE]/70 dark:hover:bg-[#251545] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868]"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#00337C] hover:bg-[#FFCB56] dark:hover:bg-[#1C82AD]/40 transition-all cursor-pointer border border-[#FFCB56] dark:border-[#1C82AD]/50"
           >
             <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono font-black text-[#6D28D9] dark:text-[#FBBF24]">Ingest ⚙️</span>
+            <span className="text-[10px] uppercase font-mono font-black text-[#73A5CA] dark:text-[#03C988]">Ingest ⚙️</span>
           </button>
 
           {/* Secure Sign Out Action */}

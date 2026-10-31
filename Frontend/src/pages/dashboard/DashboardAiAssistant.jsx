@@ -232,24 +232,24 @@ export const DashboardAiAssistant = ({
   };
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex flex-col bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl shadow-sm overflow-hidden">
+    <div className="h-[calc(100vh-8.5rem)] flex flex-col bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-sm overflow-hidden">
       
       {/* Chat Top Header */}
-      <div className="px-6 py-4 bg-[#FAF8FF] dark:bg-[#0A0718] border-b border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between shrink-0">
+      <div className="px-6 py-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#4C1D95] text-white flex items-center justify-center font-black shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white flex items-center justify-center font-black shadow-xs">
             <BuildingLibraryIcon className="w-5 h-5 text-[#FAF8FF]" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-sm sm:text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+              <h2 className="text-sm sm:text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 UniMitra Bilingual Assistant
               </h2>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#E0D4FD]/40 text-[#1E1035] dark:bg-[#3B2868] dark:text-[#FAF8FF]">
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#3B2868] dark:text-[#FFFFFF]">
                 RAG Grounded
               </span>
             </div>
-            <p className="text-[11px] text-[#555375] dark:text-[#C4B5FD] font-semibold">
+            <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80 font-semibold">
               {currentLang === 'as' ? 'অসমীয়া আৰু ইংৰাজীত প্ৰশ্ন সোধক • নিৰ্ভুল উদ্ধৃতি' : 'Ask in Assamese or English • Verifiable institutional citations'}
             </p>
           </div>
@@ -258,10 +258,10 @@ export const DashboardAiAssistant = ({
         {/* Query History Drawer Toggle */}
         <button
           onClick={() => setHistorySidebarOpen(!historySidebarOpen)}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868] ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 ${
             historySidebarOpen 
-              ? 'bg-[#4C1D95] text-white' 
-              : 'bg-[#FAF8FF] dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#E0D4FD]/30'
+              ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white' 
+              : 'bg-[#FFE9A9]/20 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40'
           }`}
           title="Toggle Query History"
         >
@@ -283,22 +283,22 @@ export const DashboardAiAssistant = ({
               <div
                 className={`max-w-2xl rounded-3xl p-4 sm:p-5 text-xs sm:text-sm leading-relaxed transition-all ${
                   msg.sender === 'user'
-                    ? 'bg-[#4C1D95] text-white rounded-br-xs font-bold shadow-xs'
-                    : 'bg-[#FAF8FF] dark:bg-[#0A0718] border-2 border-[#E0D4FD] dark:border-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF] rounded-bl-xs font-semibold shadow-xs'
+                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white rounded-br-xs font-bold shadow-xs'
+                    : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] rounded-bl-xs font-semibold shadow-xs'
                 }`}
               >
                 <p>{msg.text}</p>
 
                 {/* Grounding Source Citation Card */}
                 {msg.sender === 'ai' && msg.source && (
-                  <div className="mt-3.5 pt-3 border-t border-[#E0D4FD]/60 dark:border-[#3B2868] flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#555375] dark:text-[#C4B5FD]">
+                  <div className="mt-3.5 pt-3 border-t border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
                     <div className="flex items-center space-x-1.5">
-                      <DocumentTextIcon className="w-3.5 h-3.5 text-[#6D28D9]" />
+                      <DocumentTextIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                       <span className="font-bold">{msg.source}</span>
                       <span>•</span>
-                      <strong className="text-[#6D28D9] dark:text-[#FAF8FF]">{msg.page}</strong>
+                      <strong className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">{msg.page}</strong>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#E0D4FD]/30 dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] font-black border border-[#6D28D9]/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#FFE9A9]/40 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] font-black border border-[#6D28D9]/30">
                       {msg.confidence}
                     </span>
                   </div>
@@ -306,22 +306,22 @@ export const DashboardAiAssistant = ({
 
                 {/* Save & Feedback Action Bar */}
                 {msg.sender === 'ai' && (
-                  <div className="mt-2.5 pt-2 border-t border-[#E0D4FD]/40 dark:border-[#3B2868]/40 flex items-center justify-between text-[11px]">
+                  <div className="mt-2.5 pt-2 border-t border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 flex items-center justify-between text-[11px]">
                     <div className="flex items-center space-x-2">
                       <button
                         type="button"
                         onClick={() => handleSaveAnswer(msg)}
-                        className="px-2.5 py-1 rounded-lg bg-[#FAF8FF] dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30 text-[#1E1035] dark:text-[#FAF8FF] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-[#FFE9A9]/20 dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 text-[#000000] dark:text-[#FFFFFF] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
                         title="Save answer to your bookmarks"
                       >
-                        <CheckIcon className="w-3.5 h-3.5 text-[#6D28D9]" />
+                        <CheckIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                         <span>Save Answer</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => handleOpenFeedback(msg)}
-                        className="px-2.5 py-1 rounded-lg bg-[#FAF8FF] dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30 text-[#555375] dark:text-[#C4B5FD] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-[#FFE9A9]/20 dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-bold flex items-center space-x-1 cursor-pointer transition-colors"
                         title="Submit feedback or report issue"
                       >
                         <span>Feedback 💬</span>
@@ -331,16 +331,16 @@ export const DashboardAiAssistant = ({
                 )}
               </div>
 
-              <span className="text-[10px] text-[#555375] dark:text-[#C4B5FD] mt-1 px-1 font-semibold">
+              <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1 px-1 font-semibold">
                 {msg.time}
               </span>
             </div>
           ))}
 
           {loading && (
-            <div className="flex items-center space-x-2 p-4 bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] rounded-2xl max-w-xs">
-              <SparklesIcon className="w-4 h-4 text-[#6D28D9] animate-spin" />
-              <span className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]">
+            <div className="flex items-center space-x-2 p-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-2xl max-w-xs">
+              <SparklesIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] animate-spin" />
+              <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
                 Searching university regulations...
               </span>
             </div>
@@ -351,11 +351,11 @@ export const DashboardAiAssistant = ({
 
         {/* History Slide-in Panel */}
         {historySidebarOpen && (
-          <aside className="w-64 sm:w-72 bg-[#FAF8FF] dark:bg-[#0A0718] border-l border-[#E0D4FD] dark:border-[#3B2868] p-4 flex flex-col justify-between shrink-0 overflow-y-auto">
+          <aside className="w-64 sm:w-72 bg-[#FFE9A9]/20 dark:bg-[#13005A] border-l border-[#73A5CA]/40 dark:border-[#1C82AD]/40 p-4 flex flex-col justify-between shrink-0 overflow-y-auto">
             <div className="space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-[#E0D4FD] dark:border-[#3B2868]">
-                <span className="text-xs font-black uppercase text-[#1E1035] dark:text-[#FAF8FF] flex items-center space-x-1">
-                  <ClockIcon className="w-3.5 h-3.5 text-[#6D28D9]" />
+              <div className="flex items-center justify-between pb-2 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <span className="text-xs font-black uppercase text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1">
+                  <ClockIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                   <span>My Query History</span>
                 </span>
                 <button
@@ -369,7 +369,7 @@ export const DashboardAiAssistant = ({
 
               <div className="space-y-2">
                 {queryHistory.length === 0 ? (
-                  <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">No queries in session.</p>
+                  <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">No queries in session.</p>
                 ) : (
                   queryHistory.map((item) => (
                     <button
@@ -377,12 +377,12 @@ export const DashboardAiAssistant = ({
                       onClick={() => {
                         setInputQuery(item.query);
                       }}
-                      className="w-full text-left p-2.5 rounded-xl bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] hover:border-[#6D28D9] transition-all cursor-pointer text-xs"
+                      className="w-full text-left p-2.5 rounded-xl bg-white dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:border-[#6D28D9] transition-all cursor-pointer text-xs"
                     >
-                      <p className="font-bold text-[#1E1035] dark:text-[#FAF8FF] truncate">
+                      <p className="font-bold text-[#000000] dark:text-[#FFFFFF] truncate">
                         {item.query}
                       </p>
-                      <span className="text-[10px] text-[#555375] dark:text-[#C4B5FD]">
+                      <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
                         {item.time}
                       </span>
                     </button>
@@ -391,7 +391,7 @@ export const DashboardAiAssistant = ({
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E0D4FD] dark:border-[#3B2868] text-[10px] text-[#555375] dark:text-[#C4B5FD]">
+            <div className="pt-3 border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
               Queries remain saved in your institutional session.
             </div>
           </aside>
@@ -400,15 +400,15 @@ export const DashboardAiAssistant = ({
       </div>
 
       {/* Suggested Prompt Chips */}
-      <div className="px-4 sm:px-6 py-2 bg-[#FAF8FF] dark:bg-[#0A0718] border-t border-[#E0D4FD]/60 dark:border-[#3B2868] flex items-center space-x-2 overflow-x-auto shrink-0">
-        <span className="text-[10px] font-black uppercase tracking-wider text-[#6D28D9] dark:text-[#C4B5FD] shrink-0">
+      <div className="px-4 sm:px-6 py-2 bg-[#FFE9A9]/20 dark:bg-[#13005A] border-t border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 flex items-center space-x-2 overflow-x-auto shrink-0">
+        <span className="text-[10px] font-black uppercase tracking-wider text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]/80 shrink-0">
           Try:
         </span>
         {promptChips.map((chip, idx) => (
           <button
             key={idx}
             onClick={() => setInputQuery(chip)}
-            className="px-3 py-1 rounded-xl text-[11px] font-bold bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF] hover:bg-[#6D28D9] hover:text-white transition-all cursor-pointer shrink-0"
+            className="px-3 py-1 rounded-xl text-[11px] font-bold bg-white dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white transition-all cursor-pointer shrink-0"
           >
             {chip}
           </button>
@@ -416,7 +416,7 @@ export const DashboardAiAssistant = ({
       </div>
 
       {/* Chat Input Bar */}
-      <div className="p-4 bg-white dark:bg-[#150F2C] border-t border-[#E0D4FD] dark:border-[#3B2868] shrink-0">
+      <div className="p-4 bg-white dark:bg-[#00337C] border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 shrink-0">
         <form onSubmit={handleSend} className="flex items-center space-x-3">
           <input
             type="text"
@@ -424,12 +424,12 @@ export const DashboardAiAssistant = ({
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             disabled={loading}
-            className="flex-1 py-3 px-4 rounded-2xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm text-[#1E1035] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 outline-none focus:border-[#6D28D9] font-semibold"
+            className="flex-1 py-3 px-4 rounded-2xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 outline-none focus:border-[#6D28D9] font-semibold"
           />
           <button
             type="submit"
             disabled={!inputQuery.trim() || loading}
-            className="p-3.5 rounded-2xl bg-[#4C1D95] hover:bg-[#8F00FF] text-white transition-all cursor-pointer shadow-xs hover:shadow-md disabled:opacity-40 shrink-0"
+            className="p-3.5 rounded-2xl bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] text-white transition-all cursor-pointer shadow-xs hover:shadow-md disabled:opacity-40 shrink-0"
             aria-label="Send query"
           >
             <SendIcon className="w-5 h-5" />
@@ -439,7 +439,7 @@ export const DashboardAiAssistant = ({
 
       {/* Action Toast Alert */}
       {actionAlert && (
-        <div className="absolute top-20 right-6 z-50 bg-[#4C1D95] text-white px-4 py-2.5 rounded-2xl shadow-xs hover:shadow-md text-xs font-black flex items-center space-x-2 animate-bounce">
+        <div className="absolute top-20 right-6 z-50 bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white px-4 py-2.5 rounded-2xl shadow-xs hover:shadow-md text-xs font-black flex items-center space-x-2 animate-bounce">
           <CheckCircleIcon className="w-4 h-4 text-[#FAF8FF]" />
           <span>{actionAlert}</span>
         </div>
@@ -448,15 +448,15 @@ export const DashboardAiAssistant = ({
       {/* Interactive Feedback Modal */}
       {feedbackModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[#FAF8FF] dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#E0D4FD] dark:border-[#3B2868] pb-3">
-              <h3 className="text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">
+          <div className="bg-[#FFE9A9]/20 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
+              <h3 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
                 Submit Response Feedback
               </h3>
               <button
                 type="button"
                 onClick={() => setFeedbackModalOpen(false)}
-                className="p-1 rounded-lg text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
+                className="p-1 rounded-lg text-[#000000]/70 hover:text-[#000000] dark:text-[#FFFFFF]/80 dark:hover:text-[#FFFFFF] cursor-pointer"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
@@ -464,7 +464,7 @@ export const DashboardAiAssistant = ({
 
             <form onSubmit={handleSubmitFeedback} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1.5">
+                <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1.5">
                   Was this grounded answer helpful?
                 </label>
                 <div className="flex gap-2">
@@ -473,8 +473,8 @@ export const DashboardAiAssistant = ({
                     onClick={() => setFeedbackRating('helpful')}
                     className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
                       feedbackRating === 'helpful'
-                        ? 'bg-[#4C1D95] text-white border-[#6D28D9]'
-                        : 'bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border-[#E0D4FD] dark:border-[#3B2868]'
+                        ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white border-[#6D28D9]'
+                        : 'bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                     }`}
                   >
                     👍 Accurate & Helpful
@@ -485,7 +485,7 @@ export const DashboardAiAssistant = ({
                     className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
                       feedbackRating === 'unhelpful'
                         ? 'bg-red-600 text-white border-red-600'
-                        : 'bg-white dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border-[#E0D4FD] dark:border-[#3B2868]'
+                        : 'bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                     }`}
                   >
                     👎 Needs Correction
@@ -494,7 +494,7 @@ export const DashboardAiAssistant = ({
               </div>
 
               <div>
-                <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                   Comments / Discrepancy Note (Optional)
                 </label>
                 <textarea
@@ -502,7 +502,7 @@ export const DashboardAiAssistant = ({
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
                   placeholder="e.g. Please verify with 2024 academic gazette..."
-                  className="w-full p-3 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#0A0718] text-xs text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+                  className="w-full p-3 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-xs text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
                 />
               </div>
 
@@ -510,13 +510,13 @@ export const DashboardAiAssistant = ({
                 <button
                   type="button"
                   onClick={() => setFeedbackModalOpen(false)}
-                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#555375] dark:text-[#C4B5FD] cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#6D28D9] hover:bg-[#3B2868] cursor-pointer shadow-xs"
+                  className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer shadow-xs"
                 >
                   Send to Admin
                 </button>

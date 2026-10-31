@@ -475,36 +475,36 @@ export const AdminConsole = ({
   });
 
   return (
-    <div className={`relative min-h-screen bg-transparent text-[#1E1035] dark:text-[#FAF8FF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+    <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       <HomeScreenBackground />
       
       {/* Top Admin Header */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#150F2C]/95 backdrop-blur-xs border-b border-[#E0D4FD] dark:border-[#3B2868] px-4 sm:px-6 lg:px-10 xl:px-12">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="w-full flex items-center justify-between h-20">
           
           <div className="flex items-center space-x-3">
             <button
               onClick={onExit}
-              className="p-2 rounded-xl text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] hover:bg-[#E0D4FD]/30 cursor-pointer"
+              className="p-2 rounded-xl text-[#000000]/70 hover:text-[#000000] dark:text-[#FFFFFF]/80 dark:hover:text-[#FFFFFF] hover:bg-[#FFE9A9]/40 cursor-pointer"
               title="Return to University Portal"
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </button>
 
-            <div className="w-10 h-10 rounded-2xl bg-[#6D28D9] text-white flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white flex items-center justify-center shadow-xs">
               <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
             </div>
 
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
-                  Uni<span className="text-[#8F00FF]">Mitra</span>
+                <span className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
+                  Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
                 </span>
-                <span className="px-2 py-0.5 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] font-black text-[10px] tracking-wider uppercase border border-[#E0D4FD] dark:border-[#3B2868]">
+                <span className="px-2 py-0.5 rounded-lg bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] font-black text-[10px] tracking-wider uppercase border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   Super Admin
                 </span>
               </div>
-              <p className="text-[11px] text-[#555375] dark:text-[#C4B5FD] font-semibold">
+              <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80 font-semibold">
                 Bilingual Knowledge Base & System Governance Console
               </p>
             </div>
@@ -513,21 +513,21 @@ export const AdminConsole = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={onToggleTheme}
-              className="p-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
+              className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
             >
-              {isDark ? <SunIcon className="w-4 h-4 text-[#FAF8FF]" /> : <MoonIcon className="w-4 h-4 text-[#1E1035]" />}
+              {isDark ? <SunIcon className="w-4 h-4 text-[#FAF8FF]" /> : <MoonIcon className="w-4 h-4 text-[#000000]" />}
             </button>
 
             <button
               onClick={onToggleLang}
-              className="px-3 py-1.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-black text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
             >
               {currentLang === 'en' ? 'অসমীয়া' : 'English'}
             </button>
 
             <button
               onClick={onExit}
-              className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#4C1D95] hover:bg-[#3B2868] cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer shadow-xs"
             >
               Exit Console
             </button>
@@ -541,14 +541,14 @@ export const AdminConsole = ({
         
         {/* Toast Alert */}
         {actionAlert && (
-          <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] flex items-center space-x-2">
+          <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2">
             <CheckCircleIcon className="w-4 h-4 text-[#10B981]" />
             <span>{actionAlert}</span>
           </div>
         )}
 
         {/* 10 Navigation Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-[#E0D4FD] dark:border-[#3B2868]">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
           {[
             { id: 'repository', label: '1. Documents & Archives' },
             { id: 'upload', label: '2. Upload PDF' },
@@ -566,8 +566,8 @@ export const AdminConsole = ({
               onClick={() => handleTabChange(tab.id)}
               className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-[#6D28D9] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#150F2C] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
+                  ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
+                  : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
               }`}
             >
               {tab.label}
@@ -580,12 +580,12 @@ export const AdminConsole = ({
         {/* =================================================================== */}
         {activeTab === 'repository' && (
           <div className="space-y-4">
-            <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                 <select
                   value={selectedUnivFilter}
                   onChange={(e) => setSelectedUnivFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
+                  className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                 >
                   <option value="All">All Universities</option>
                   <option value="Gauhati">Gauhati University (GU)</option>
@@ -597,7 +597,7 @@ export const AdminConsole = ({
                 <select
                   value={selectedCategoryFilter}
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
+                  className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                 >
                   <option value="All">All Categories</option>
                   {categories.map((c) => (
@@ -607,22 +607,22 @@ export const AdminConsole = ({
               </div>
 
               <div className="relative w-full sm:w-72">
-                <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3 top-1/2 -translate-y-1/2" />
+                <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Filter repository by title or ID..."
                   value={searchDocQuery}
                   onChange={(e) => setSearchDocQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                 />
               </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl overflow-hidden shadow-xs">
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FAF8FF] dark:bg-[#0A0718] border-b border-[#E0D4FD] dark:border-[#3B2868] text-[#555375] dark:text-[#C4B5FD] font-black uppercase text-[10px]">
+                  <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                     <tr>
                       <th className="p-4">Document Title & ID</th>
                       <th className="p-4">University & Category</th>
@@ -631,21 +631,21 @@ export const AdminConsole = ({
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#1E1035] dark:text-[#FAF8FF]">
+                  <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#000000] dark:text-[#FFFFFF]">
                     {filteredDocs.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#1A0F33]/40 transition-colors">
+                      <tr key={doc.id} className="hover:bg-[#FFE9A9]/20/60 dark:hover:bg-[#1C82AD]/40/40 transition-colors">
                         <td className="p-4">
-                          <span className="font-mono text-[10px] text-[#6D28D9] font-bold block">{doc.id}</span>
+                          <span className="font-mono text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold block">{doc.id}</span>
                           <span className="font-black text-xs sm:text-sm">{doc.title}</span>
-                          <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD] block">{doc.department}</span>
+                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80 block">{doc.department}</span>
                         </td>
                         <td className="p-4">
                           <span className="font-bold block">{doc.university}</span>
-                          <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">{doc.category}</span>
+                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">{doc.category}</span>
                         </td>
                         <td className="p-4">
                           <span className="font-bold">{doc.pages} pages</span>
-                          <span className="text-[11px] text-[#6D28D9] block">{doc.chunksCount} chunks (512-t)</span>
+                          <span className="text-[11px] text-[#FF933E] dark:text-[#03C988] block">{doc.chunksCount} chunks (512-t)</span>
                         </td>
                         <td className="p-4">
                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase ${
@@ -659,7 +659,7 @@ export const AdminConsole = ({
                         <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                           <button
                             onClick={() => handleArchiveDoc(doc.id)}
-                            className="px-2.5 py-1 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30 font-bold text-[11px] cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 font-bold text-[11px] cursor-pointer"
                           >
                             {doc.status === 'Archived' ? 'Restore' : 'Archive'}
                           </button>
@@ -683,29 +683,29 @@ export const AdminConsole = ({
         {/* 2. UPLOAD PDF DOCUMENTS                                             */}
         {/* =================================================================== */}
         {activeTab === 'upload' && (
-          <div className="max-w-3xl mx-auto bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="max-w-3xl mx-auto bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div>
-              <h2 className="text-xl font-black text-[#1E1035] dark:text-[#FAF8FF]">
+              <h2 className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
                 Upload & Ingest University PDF Document
               </h2>
-              <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 Upload official gazettes, circulars, or regulations for automated OCR, Multilingual E5 chunk embedding, and vector indexing.
               </p>
             </div>
 
             {isUploading ? (
-              <div className="p-8 text-center space-y-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
-                <SparklesIcon className="w-10 h-10 text-[#6D28D9] animate-spin mx-auto" />
-                <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">{uploadStepName}</h3>
+              <div className="p-8 text-center space-y-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <SparklesIcon className="w-10 h-10 text-[#FF933E] dark:text-[#03C988] animate-spin mx-auto" />
+                <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">{uploadStepName}</h3>
                 <div className="w-full bg-[#E0D4FD]/40 rounded-full h-3 max-w-md mx-auto overflow-hidden">
-                  <div className="bg-[#6D28D9] h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                  <div className="bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
                 </div>
-                <span className="text-xs font-mono font-bold text-[#6D28D9]">{uploadProgress}% Complete</span>
+                <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{uploadProgress}% Complete</span>
               </div>
             ) : (
               <form onSubmit={handleUploadSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                     Document Title *
                   </label>
                   <input
@@ -714,19 +714,19 @@ export const AdminConsole = ({
                     placeholder="e.g. Revised Ordinance on CBCS Examination & Evaluation 2024"
                     value={uploadFormData.title}
                     onChange={(e) => setUploadFormData({ ...uploadFormData, title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                       Target University *
                     </label>
                     <select
                       value={uploadFormData.university}
                       onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                     >
                       <option>Gauhati University (GU)</option>
                       <option>Dibrugarh University (DU)</option>
@@ -737,13 +737,13 @@ export const AdminConsole = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                    <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                       Document Category *
                     </label>
                     <select
                       value={uploadFormData.category}
                       onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                     >
                       {categories.map((c) => (
                         <option key={c.id} value={c.name}>{c.name}</option>
@@ -753,7 +753,7 @@ export const AdminConsole = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                  <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                     Original Source URL or Circular Link
                   </label>
                   <input
@@ -761,7 +761,7 @@ export const AdminConsole = ({
                     placeholder="https://gauhati.ac.in/academic/notification-2024.pdf"
                     value={uploadFormData.sourceUrl}
                     onChange={(e) => setUploadFormData({ ...uploadFormData, sourceUrl: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
 
@@ -771,16 +771,16 @@ export const AdminConsole = ({
                     id="ocr-toggle"
                     checked={uploadFormData.enableOcr}
                     onChange={(e) => setUploadFormData({ ...uploadFormData, enableOcr: e.target.checked })}
-                    className="w-4 h-4 text-[#6D28D9] rounded"
+                    className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] rounded"
                   />
-                  <label htmlFor="ocr-toggle" className="text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer">
+                  <label htmlFor="ocr-toggle" className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer">
                     Enable Optical Character Recognition (OCR) for scanned Assamese & English PDF pages
                   </label>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-2xl font-black text-sm text-white bg-[#4C1D95] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
+                  className="w-full py-3.5 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
                 >
                   Start PDF Extraction & Vector Indexing Pipeline
                 </button>
@@ -794,8 +794,8 @@ export const AdminConsole = ({
         {/* =================================================================== */}
         {activeTab === 'categories' && (
           <div className="space-y-6">
-            <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs">
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF] mb-4">
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF] mb-4">
                 Add New Document Category
               </h3>
               <form onSubmit={handleAddCategory} className="flex flex-col sm:flex-row gap-3">
@@ -805,18 +805,18 @@ export const AdminConsole = ({
                   placeholder="Category Name (e.g. Hostels & Welfare)"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                 />
                 <input
                   type="text"
                   placeholder="Code (e.g. WELFARE)"
                   value={newCatCode}
                   onChange={(e) => setNewCatCode(e.target.value)}
-                  className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none"
+                  className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#4C1D95] hover:bg-[#3B2868] cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer"
                 >
                   Create Category
                 </button>
@@ -828,12 +828,12 @@ export const AdminConsole = ({
               {categories.map((c) => (
                 <div 
                   key={c.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between shadow-xs"
+                  className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shadow-xs"
                 >
                   <div>
-                    <span className="text-[10px] font-mono font-bold text-[#6D28D9] uppercase">{c.code}</span>
-                    <h4 className="text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">{c.name}</h4>
-                    <span className="text-xs text-[#555375] dark:text-[#C4B5FD] font-semibold">{c.count} Documents Ingested</span>
+                    <span className="text-[10px] font-mono font-bold text-[#FF933E] dark:text-[#03C988] uppercase">{c.code}</span>
+                    <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">{c.name}</h4>
+                    <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 font-semibold">{c.count} Documents Ingested</span>
                   </div>
                   <button
                     onClick={() => handleDeleteCategory(c.id)}
@@ -852,18 +852,18 @@ export const AdminConsole = ({
         {/* 4. VIEW DOCUMENT PROCESSING STATUS                                  */}
         {/* =================================================================== */}
         {activeTab === 'processing' && (
-          <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
-            <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+            <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
               Real-Time Document Processing & Embedding Pipeline
             </h3>
             <div className="space-y-3">
               {pipelineJobs.map((job) => (
                 <div 
                   key={job.id} 
-                  className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-2"
+                  className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs font-mono font-bold text-[#6D28D9]">{job.id} • {job.docName}</span>
+                    <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{job.id} • {job.docName}</span>
                     <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
                       job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                     }`}>
@@ -871,9 +871,9 @@ export const AdminConsole = ({
                     </span>
                   </div>
                   <div className="w-full bg-[#E0D4FD]/40 rounded-full h-2 overflow-hidden">
-                    <div className="bg-[#6D28D9] h-full" style={{ width: `${job.progress}%` }}></div>
+                    <div className="bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] h-full" style={{ width: `${job.progress}%` }}></div>
                   </div>
-                  <div className="flex justify-between text-[11px] text-[#555375] dark:text-[#C4B5FD]">
+                  <div className="flex justify-between text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
                     <span>Stage: {job.stage}</span>
                     <span>{job.progress}%</span>
                   </div>
@@ -889,41 +889,41 @@ export const AdminConsole = ({
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
-                <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">Total Queries</span>
-                <p className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] mt-1">{analyticsData.totalQueries.toLocaleString()}</p>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Total Queries</span>
+                <p className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">{analyticsData.totalQueries.toLocaleString()}</p>
                 <span className="text-[11px] text-green-600 font-bold">+14% this month</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
-                <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">Assamese Language</span>
-                <p className="text-2xl sm:text-3xl font-black text-[#6D28D9] mt-1">{analyticsData.assameseQueries.toLocaleString()}</p>
-                <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">42.1% bilingual query ratio</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Assamese Language</span>
+                <p className="text-2xl sm:text-3xl font-black text-[#FF933E] dark:text-[#03C988] mt-1">{analyticsData.assameseQueries.toLocaleString()}</p>
+                <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">42.1% bilingual query ratio</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
-                <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">English Language</span>
-                <p className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] mt-1">{analyticsData.englishQueries.toLocaleString()}</p>
-                <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">57.9% bilingual query ratio</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">English Language</span>
+                <p className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">{analyticsData.englishQueries.toLocaleString()}</p>
+                <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">57.9% bilingual query ratio</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868]">
-                <span className="text-xs font-black text-[#555375] dark:text-[#C4B5FD] uppercase">Hallucination Rejection</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Hallucination Rejection</span>
                 <p className="text-2xl sm:text-3xl font-black text-green-600 mt-1">{analyticsData.hallucinationRejectionRate}</p>
-                <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">Strict RAG source grounding</span>
+                <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">Strict RAG source grounding</span>
               </div>
             </div>
 
             {/* Top Query Topics */}
-            <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 Top Inquired Academic & Regulatory Topics
               </h3>
               <div className="space-y-2">
                 {analyticsData.topAskedTopics.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-xl flex items-center justify-between text-xs">
+                  <div key={idx} className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl flex items-center justify-between text-xs">
                     <div>
-                      <span className="font-bold text-[#1E1035] dark:text-[#FAF8FF]">{item.topic}</span>
-                      <span className="text-[10px] text-[#6D28D9] block">{item.univ}</span>
+                      <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{item.topic}</span>
+                      <span className="text-[10px] text-[#FF933E] dark:text-[#03C988] block">{item.univ}</span>
                     </div>
-                    <span className="font-mono font-black text-xs text-[#6D28D9]">{item.count} queries</span>
+                    <span className="font-mono font-black text-xs text-[#FF933E] dark:text-[#03C988]">{item.count} queries</span>
                   </div>
                 ))}
               </div>
@@ -935,12 +935,12 @@ export const AdminConsole = ({
         {/* 6. VIEW UNANSWERED QUESTIONS                                        */}
         {/* =================================================================== */}
         {activeTab === 'unanswered' && (
-          <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
             <div>
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 Unanswered Queries & Missing Context Queue
               </h3>
-              <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 Student/Faculty queries where AI lacked official document coverage. Upload the requested circular to fill the knowledge gap.
               </p>
             </div>
@@ -949,14 +949,14 @@ export const AdminConsole = ({
               {unansweredList.map((item) => (
                 <div 
                   key={item.id}
-                  className="p-5 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-2"
+                  className="p-5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-mono font-bold text-red-500">{item.id} • {item.confidence}</span>
-                    <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">{item.university} • {item.attemptedAt}</span>
+                    <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{item.university} • {item.attemptedAt}</span>
                   </div>
-                  <h4 className="text-sm font-black text-[#1E1035] dark:text-[#FAF8FF]">"{item.query}"</h4>
-                  <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">Missing Reason: {item.reason}</p>
+                  <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">"{item.query}"</h4>
+                  <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">Missing Reason: {item.reason}</p>
                   
                   <div className="pt-2 flex justify-end">
                     <button
@@ -964,7 +964,7 @@ export const AdminConsole = ({
                         setUploadFormData((prev) => ({ ...prev, title: `Circular for ${item.query.slice(0, 40)}`, university: item.university }));
                         handleTabChange('upload');
                       }}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#4C1D95] hover:bg-[#3B2868] cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer"
                     >
                       Upload Circular to Ground This Query ➔
                     </button>
@@ -979,12 +979,12 @@ export const AdminConsole = ({
         {/* 7. REVIEW FEEDBACK                                                  */}
         {/* =================================================================== */}
         {activeTab === 'feedback' && (
-          <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4">
+          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
             <div>
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 Student & Faculty AI Feedback Review
               </h3>
-              <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 Feedback submitted directly from the bilingual assistant interface.
               </p>
             </div>
@@ -993,24 +993,24 @@ export const AdminConsole = ({
               {feedbackList.map((f) => (
                 <div 
                   key={f.id}
-                  className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-2"
+                  className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-black text-[#1E1035] dark:text-[#FAF8FF]">{f.user} ({f.role})</span>
-                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#3B2868]">
+                      <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">{f.user} ({f.role})</span>
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#3B2868]">
                         {f.type}
                       </span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-[#6D28D9]">Rating: {f.rating}/5 ★</span>
+                    <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">Rating: {f.rating}/5 ★</span>
                   </div>
-                  <p className="text-xs text-[#1E1035] dark:text-[#FAF8FF] leading-relaxed">{f.comments}</p>
+                  <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed">{f.comments}</p>
                   
-                  <div className="pt-2 flex items-center justify-between border-t border-[#E0D4FD]/40 dark:border-[#3B2868]/40 text-xs">
-                    <span className="text-[#555375] dark:text-[#C4B5FD]">Status: <strong>{f.status}</strong></span>
+                  <div className="pt-2 flex items-center justify-between border-t border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 text-xs">
+                    <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80">Status: <strong>{f.status}</strong></span>
                     <button
                       onClick={() => handleResolveFeedback(f.id)}
-                      className="px-3 py-1 rounded-lg text-xs font-bold border border-[#6D28D9] hover:bg-[#6D28D9] hover:text-white cursor-pointer"
+                      className="px-3 py-1 rounded-lg text-xs font-bold border border-[#6D28D9] hover:bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:text-white cursor-pointer"
                     >
                       {f.status === 'Reviewed & Resolved' ? 'Mark Pending' : 'Mark Resolved'}
                     </button>
@@ -1025,19 +1025,19 @@ export const AdminConsole = ({
         {/* 8. MANAGE USERS AND ROLES                                           */}
         {/* =================================================================== */}
         {activeTab === 'users' && (
-          <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl overflow-hidden shadow-xs">
-            <div className="p-6 border-b border-[#E0D4FD] dark:border-[#3B2868]">
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs">
+            <div className="p-6 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 User Accounts & Institutional Roles
               </h3>
-              <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 Verified accounts across Students, Faculty Members (with Unique Member IDs), and Super Administrators.
               </p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#FAF8FF] dark:bg-[#0A0718] border-b border-[#E0D4FD] dark:border-[#3B2868] text-[#555375] dark:text-[#C4B5FD] font-black uppercase text-[10px]">
+                <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                   <tr>
                     <th className="p-4">Name & Email</th>
                     <th className="p-4">Institutional Role</th>
@@ -1047,22 +1047,22 @@ export const AdminConsole = ({
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#1E1035] dark:text-[#FAF8FF]">
+                <tbody className="divide-y divide-[#E0D4FD]/40 dark:divide-[#3B2868]/40 text-[#000000] dark:text-[#FFFFFF]">
                   {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-[#FAF8FF]/60 dark:hover:bg-[#1A0F33]/40">
+                    <tr key={u.id} className="hover:bg-[#FFE9A9]/20/60 dark:hover:bg-[#1C82AD]/40/40">
                       <td className="p-4">
                         <span className="font-black text-sm block">{u.name}</span>
-                        <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">{u.email}</span>
+                        <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{u.email}</span>
                       </td>
                       <td className="p-4">
-                        <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#DDD6FE] dark:bg-[#3B2868]">
+                        <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#FFE9A9] dark:bg-[#3B2868]">
                           {u.role}
                         </span>
                       </td>
-                      <td className="p-4 font-mono font-bold text-xs text-[#6D28D9]">{u.identifier}</td>
+                      <td className="p-4 font-mono font-bold text-xs text-[#FF933E] dark:text-[#03C988]">{u.identifier}</td>
                       <td className="p-4">
                         <span className="font-bold block">{u.department}</span>
-                        {u.designation && <span className="text-[11px] text-[#555375] dark:text-[#C4B5FD]">{u.designation}</span>}
+                        {u.designation && <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">{u.designation}</span>}
                       </td>
                       <td className="p-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
@@ -1074,7 +1074,7 @@ export const AdminConsole = ({
                       <td className="p-4 text-right">
                         <button
                           onClick={() => handleToggleUserStatus(u.id)}
-                          className="px-2.5 py-1 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30 font-bold text-[11px] cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40 font-bold text-[11px] cursor-pointer"
                         >
                           {u.status === 'Active' ? 'Deactivate' : 'Activate'}
                         </button>
@@ -1093,34 +1093,34 @@ export const AdminConsole = ({
         {activeTab === 'health' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                <span className="text-[10px] font-black uppercase text-[#555375] dark:text-[#C4B5FD]">FastAPI Microservice</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">FastAPI Microservice</span>
                 <p className="text-lg font-black text-green-600">{systemHealth.apiStatus}</p>
-                <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">Uptime: {systemHealth.uptime}</span>
+                <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">Uptime: {systemHealth.uptime}</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                <span className="text-[10px] font-black uppercase text-[#555375] dark:text-[#C4B5FD]">Vector Search Latency</span>
-                <p className="text-lg font-black text-[#6D28D9]">{systemHealth.vectorSearchLatencyMs} ms</p>
-                <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">MongoDB Atlas Atlas Index</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">Vector Search Latency</span>
+                <p className="text-lg font-black text-[#FF933E] dark:text-[#03C988]">{systemHealth.vectorSearchLatencyMs} ms</p>
+                <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">MongoDB Atlas Atlas Index</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
-                <span className="text-[10px] font-black uppercase text-[#555375] dark:text-[#C4B5FD]">Embedding Inference</span>
-                <p className="text-lg font-black text-[#6D28D9]">{systemHealth.embeddingLatencyMs} ms</p>
-                <span className="text-xs text-[#555375] dark:text-[#C4B5FD]">{systemHealth.embeddingModel}</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">Embedding Inference</span>
+                <p className="text-lg font-black text-[#FF933E] dark:text-[#03C988]">{systemHealth.embeddingLatencyMs} ms</p>
+                <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{systemHealth.embeddingModel}</span>
               </div>
             </div>
 
-            <div className="p-6 bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl shadow-xs space-y-3">
-              <h3 className="text-base font-black text-[#1E1035] dark:text-[#FAF8FF]">
+            <div className="p-6 bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-xs space-y-3">
+              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 Cluster Resource Allocation
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-3 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-xl border border-[#E0D4FD]/40 dark:border-[#3B2868]">
-                  <span className="text-[#555375] dark:text-[#C4B5FD] block">RAM Allocation:</span>
+                <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
+                  <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80 block">RAM Allocation:</span>
                   <strong className="text-sm font-black">{systemHealth.clusterMemoryUsage}</strong>
                 </div>
-                <div className="p-3 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-xl border border-[#E0D4FD]/40 dark:border-[#3B2868]">
-                  <span className="text-[#555375] dark:text-[#C4B5FD] block">Active Indexed Chunks:</span>
+                <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
+                  <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80 block">Active Indexed Chunks:</span>
                   <strong className="text-sm font-black">{systemHealth.activeChunkCount.toLocaleString()} Vectors</strong>
                 </div>
               </div>
@@ -1132,19 +1132,19 @@ export const AdminConsole = ({
         {/* 10. CONFIGURE THE LLM PROVIDER                                     */}
         {/* =================================================================== */}
         {activeTab === 'llm-config' && (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="max-w-2xl mx-auto bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div>
-              <h3 className="text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
+              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
                 LLM Provider & RAG Hyperparameter Configuration
               </h3>
-              <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 Configure the primary inference backend between Google Gemini and Groq Cloud.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-2">
+                <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                   Select Active LLM Engine
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -1155,8 +1155,8 @@ export const AdminConsole = ({
                       onClick={() => setLlmConfig({ ...llmConfig, provider: p })}
                       className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${
                         llmConfig.provider === p
-                          ? 'bg-[#6D28D9] text-white border-[#6D28D9]'
-                          : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#1E1035] dark:text-[#FAF8FF] border-[#E0D4FD] dark:border-[#3B2868]'
+                          ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white border-[#6D28D9]'
+                          : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                       }`}
                     >
                       {p}
@@ -1166,7 +1166,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                   <span>Temperature (Strict Grounding):</span>
                   <span>{llmConfig.temperature}</span>
                 </div>
@@ -1182,7 +1182,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                   <span>Top-K Retrieved Vector Chunks:</span>
                   <span>{llmConfig.topKChunks}</span>
                 </div>
@@ -1198,7 +1198,7 @@ export const AdminConsole = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] mb-1">
+                <div className="flex justify-between text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
                   <span>Grounding Strictness Threshold:</span>
                   <span>{llmConfig.strictnessThreshold}</span>
                 </div>
@@ -1213,14 +1213,14 @@ export const AdminConsole = ({
                 />
               </div>
 
-              <div className="p-3 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-xl border border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs text-[#555375] dark:text-[#C4B5FD]">
+              <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 API Status: <strong className="text-green-600">Active & Authorized via Environment Variable</strong>
               </div>
 
               <button
                 type="button"
                 onClick={() => triggerToast('LLM Configuration saved and propagated to FastAPI service!')}
-                className="w-full py-3 rounded-2xl font-black text-sm text-white bg-[#4C1D95] hover:bg-[#3B2868] cursor-pointer shadow-sm"
+                className="w-full py-3 rounded-2xl font-black text-sm text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] cursor-pointer shadow-sm"
               >
                 Save LLM & Retrieval Configuration
               </button>

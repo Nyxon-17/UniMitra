@@ -61,7 +61,7 @@ function PublicLayoutWrapper({
   const isAuthPage = location.pathname.startsWith('/auth');
 
   return (
-    <div className={`relative min-h-screen flex flex-col bg-transparent text-[#1E1035] dark:text-[#FAF8FF] selection:bg-[#6D28D9] selection:text-white transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+    <div className={`relative min-h-screen flex flex-col bg-transparent text-[#000000] dark:text-[#FFFFFF] selection:bg-[#FF933E] selection:text-white dark:selection:bg-[#03C988] dark:selection:text-black transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       {/* Realistic Animated College Boy Looking to University Background on All Public Pages */}
       <HomeScreenBackground />
       {/* Top Public Navigation */}

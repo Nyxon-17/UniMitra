@@ -21,7 +21,7 @@ export const DashboardLayout = ({
   const navigate = useNavigate();
 
   return (
-    <div className={`relative min-h-screen bg-transparent text-[#1E1035] dark:text-[#FAF8FF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+    <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       {/* Universal Home Screen Background with Animated College Boy Looking to University */}
       <HomeScreenBackground />
 

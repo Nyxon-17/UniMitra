@@ -93,22 +93,22 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
+            <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
               {currentLang === 'as' ? 'অধ্যাপকৰ সংৰক্ষিত বাৰ্তালাপ' : 'Faculty Research & Administrative Records'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               {currentLang === 'as' ? 'সংৰক্ষিত শৈক্ষিক পৰামৰ্শসমূহ' : 'Saved Academic Consultations & Ordinances'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-1">
+            <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">
               Archived statutory queries on CAS career promotions, PhD doctoral regulations, and syllabus moderation.
             </p>
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF]">
+            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF]">
               {consultations.length} Consultations
             </span>
           </div>
@@ -116,15 +116,15 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search saved faculty consultations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
           />
         </div>
 
@@ -135,8 +135,8 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               onClick={() => setSelectedTag(tag)}
               className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all shrink-0 ${
                 selectedTag === tag
-                  ? 'bg-[#4C1D95] text-white shadow-xs'
-                  : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]'
+                  ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
+                  : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000]/70 dark:text-[#FFFFFF]/80 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
               }`}
             >
               {tag}
@@ -150,14 +150,14 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
         {filtered.map((item) => (
           <div 
             key={item.id}
-            className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
+            className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E0D4FD]/40 dark:border-[#3B2868]/40 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 pb-3">
               <div className="flex items-center space-x-2">
                 <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#3B2868] text-[#FAF8FF]">
                   {item.tag}
                 </span>
-                <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD] flex items-center space-x-1">
+                <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 flex items-center space-x-1">
                   <ClockIcon className="w-3.5 h-3.5" />
                   <span>{item.date}</span>
                 </span>
@@ -166,10 +166,10 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handleCopy(item.id, `${item.title}\n\nQ: ${item.query}\n\nA: ${item.response}\n\nSource: ${item.source}`)}
-                  className="p-1.5 rounded-lg border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/20 text-[#1E1035] dark:text-[#FAF8FF] cursor-pointer"
+                  className="p-1.5 rounded-lg border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#E0D4FD]/20 text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
                   title="Copy consultation"
                 >
-                  {copiedId === item.id ? <CheckIcon className="w-4 h-4 text-green-600" /> : <DocumentDuplicateIcon className="w-4 h-4 text-[#6D28D9]" />}
+                  {copiedId === item.id ? <CheckIcon className="w-4 h-4 text-green-600" /> : <DocumentDuplicateIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />}
                 </button>
                 <button
                   onClick={() => handleDelete(item.id)}
@@ -181,21 +181,21 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               </div>
             </div>
 
-            <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF]">
+            <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
               {item.title}
             </h2>
 
-            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#0A0718] rounded-xl text-xs text-[#1E1035] dark:text-[#FAF8FF] font-bold">
+            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#13005A] rounded-xl text-xs text-[#000000] dark:text-[#FFFFFF] font-bold">
               Q: {item.query}
             </div>
 
-            <div className="p-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] text-xs sm:text-sm text-[#1E1035] dark:text-[#FAF8FF] leading-relaxed">
+            <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
               {item.response}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-[#555375] dark:text-[#C4B5FD]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
               <div className="flex items-center space-x-1.5">
-                <ShieldCheckIcon className="w-4 h-4 text-[#6D28D9] shrink-0" />
+                <ShieldCheckIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
                 <span className="font-bold">{item.source}</span>
                 <span>•</span>
                 <span>{item.university}</span>
@@ -203,7 +203,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
 
               <button
                 onClick={() => onNavigateTab && onNavigateTab('assistant', { prefillQuery: item.query })}
-                className="text-xs font-bold text-[#6D28D9] dark:text-[#FAF8FF] hover:underline flex items-center space-x-1 cursor-pointer self-start sm:self-auto"
+                className="text-xs font-bold text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] hover:underline flex items-center space-x-1 cursor-pointer self-start sm:self-auto"
               >
                 <SparklesIcon className="w-3.5 h-3.5" />
                 <span>Re-consult Assistant</span>

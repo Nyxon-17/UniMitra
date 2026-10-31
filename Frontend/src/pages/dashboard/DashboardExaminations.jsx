@@ -128,16 +128,16 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Top Banner Card */}
-      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
+            <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
               {currentLang === 'as' ? 'পৰীক্ষা আৰু মূল্যায়ন নিৰ্দেশনা' : 'Institutional Examination Guidelines & Ordinances'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1035] dark:text-[#FAF8FF] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয়ৰ পৰীক্ষা তথ্য আৰু মূল্যায়ন নীতি' : 'Official University Examination Rules & Passing Criteria'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 max-w-2xl leading-relaxed">
               {currentLang === 'as'
                 ? 'উত্তীৰ্ণ নম্বৰ, বেক পৰীক্ষাৰ নিয়ম, CGPA গণনা, উপস্থিতিৰ ৰেহাই আৰু উত্তৰবহী পুনৰীক্ষণ সম্পৰ্কীয় চৰকাৰী নিয়মসমূহ।'
                 : 'Verified statutes on passing criteria, arrear/backlog clearing, CGPA conversion formulas, scrutiny re-evaluation, and attendance condonation across Assam universities.'}
@@ -147,7 +147,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
           <div className="shrink-0 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => handleAskAiAboutExam('Examination Backlog and Grading Rules')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black text-white bg-[#6D28D9] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
             >
               <SparklesIcon className="w-4 h-4 text-[#FAF8FF]" />
               <span>{currentLang === 'as' ? 'AI ক পৰীক্ষাৰ নিয়ম সোধক' : 'Ask AI About Exam Rules'}</span>
@@ -157,17 +157,17 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
         
         {/* Search */}
         <div className="relative w-full lg:w-96">
-          <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder={currentLang === 'as' ? 'পৰীক্ষাৰ নিয়ম বা অধিসূচনা বিচাৰক...' : 'Search exam rules, CGPA, backlogs...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
           />
         </div>
 
@@ -176,7 +176,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
           <select
             value={selectedUniv}
             onChange={(e) => setSelectedUniv(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs font-bold text-[#1E1035] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9] cursor-pointer"
+            className="px-3.5 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9] cursor-pointer"
           >
             <option value="All">All Universities (সকলো বিশ্ববিদ্যালয়)</option>
             <option value="Gauhati">Gauhati University (GU)</option>
@@ -191,8 +191,8 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
                 onClick={() => setActiveCategory(cat)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all ${
                   activeCategory === cat
-                    ? 'bg-[#4C1D95] text-white shadow-xs'
-                    : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]'
+                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
+                    : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000]/70 dark:text-[#FFFFFF]/80 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                 }`}
               >
                 {cat === 'all' ? 'All Rules' : cat}
@@ -208,35 +208,35 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
         {filteredGuidelines.map((guideline) => (
           <div 
             key={guideline.id}
-            className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-7 shadow-sm space-y-4 flex flex-col justify-between"
+            className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4 flex flex-col justify-between"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#1E1035] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#C4B5FD]/40">
+                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#C4B5FD]/40">
                   {guideline.category}
                 </span>
-                <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD] font-mono">
+                <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 font-mono">
                   {guideline.ordinanceNo}
                 </span>
               </div>
 
-              <h2 className="text-base sm:text-lg font-black text-[#1E1035] dark:text-[#FAF8FF] leading-snug">
+              <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] leading-snug">
                 {currentLang === 'as' ? guideline.asTitle : guideline.title}
               </h2>
 
-              <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
                 {currentLang === 'as' ? guideline.asSummary : guideline.summary}
               </p>
 
               {/* Specific Ordinance Bullet Points */}
-              <div className="p-3.5 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-1.5">
-                <span className="text-[10px] font-black uppercase text-[#6D28D9] dark:text-[#FAF8FF] block">
+              <div className="p-3.5 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-1.5">
+                <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] block">
                   Statutory Rule Points:
                 </span>
                 <ul className="space-y-1">
                   {guideline.details.map((point, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-xs text-[#1E1035] dark:text-[#FAF8FF]">
-                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#6D28D9] shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start space-x-2 text-xs text-[#000000] dark:text-[#FFFFFF]">
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988] shrink-0 mt-0.5" />
                       <span>{point}</span>
                     </li>
                   ))}
@@ -245,9 +245,9 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
             </div>
 
             {/* Citation & Action */}
-            <div className="pt-3 border-t border-[#E0D4FD]/50 dark:border-[#3B2868]/50 flex items-center justify-between gap-2">
-              <div className="flex items-center space-x-1.5 text-[11px] text-[#555375] dark:text-[#C4B5FD]">
-                <ShieldCheckIcon className="w-4 h-4 text-[#6D28D9] shrink-0" />
+            <div className="pt-3 border-t border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40/50 flex items-center justify-between gap-2">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                <ShieldCheckIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
                 <span className="truncate max-w-[200px] sm:max-w-[280px]" title={guideline.citation}>
                   {guideline.citation}
                 </span>
@@ -256,7 +256,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
               <button
                 type="button"
                 onClick={() => handleAskAiAboutExam(guideline.title)}
-                className="px-3 py-1.5 rounded-xl text-xs font-black text-[#1E1035] dark:text-[#FAF8FF] bg-[#C4B5FD] dark:bg-[#FAF8FF] hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs shrink-0 flex items-center space-x-1"
+                className="px-3 py-1.5 rounded-xl text-xs font-black text-[#000000] dark:text-[#FFFFFF] bg-[#C4B5FD] dark:bg-[#FFE9A9]/20 hover:bg-[#d6be73] transition-all cursor-pointer shadow-xs shrink-0 flex items-center space-x-1"
               >
                 <span>Ask AI</span>
                 <ArrowRightIcon className="w-3.5 h-3.5" />
