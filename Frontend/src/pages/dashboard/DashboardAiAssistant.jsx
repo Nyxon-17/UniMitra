@@ -4,7 +4,6 @@ import {
   SparklesIcon, 
   CheckCircleIcon, 
   DocumentTextIcon, 
-  BookmarkIcon, 
   AcademicCapIcon,
   LanguageIcon 
 } from '../../components/common/Icons';
@@ -30,7 +29,6 @@ export const DashboardAiAssistant = ({
 
   const [inputQuery, setInputQuery] = useState(prefillQuery || '');
   const [loading, setLoading] = useState(false);
-  const [savedIds, setSavedIds] = useState([]);
   const chatBottomRef = useRef(null);
 
   useEffect(() => {
@@ -92,15 +90,6 @@ export const DashboardAiAssistant = ({
       setMessages((prev) => [...prev, aiResponse]);
       setLoading(false);
     }, 900);
-  };
-
-  const toggleBookmark = (id) => {
-    if (savedIds.includes(id)) {
-      setSavedIds(savedIds.filter((item) => item !== id));
-    } else {
-      setSavedIds([...savedIds, id]);
-      alert("Answer saved to your bookmarks!");
-    }
   };
 
   return (
@@ -176,17 +165,6 @@ export const DashboardAiAssistant = ({
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => toggleBookmark(msg.id)}
-                      className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
-                        savedIds.includes(msg.id)
-                          ? 'bg-[#FF7F50] text-white border-[#FF7F50]'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                      title="Bookmark this answer"
-                    >
-                      <BookmarkIcon className="w-3.5 h-3.5" />
-                    </button>
                     <button
                       onClick={() => alert(`Opening official university document: ${msg.source}`)}
                       className="text-[11px] font-bold text-[#118AB2] dark:text-[#06D6A0] hover:underline cursor-pointer"

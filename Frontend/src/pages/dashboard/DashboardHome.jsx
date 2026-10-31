@@ -5,7 +5,6 @@ import {
   DocumentTextIcon, 
   CheckCircleIcon, 
   ArrowRightIcon, 
-  BookmarkIcon,
   SearchIcon 
 } from '../../components/common/Icons';
 
@@ -118,13 +117,13 @@ export const DashboardHome = ({
 
         <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Saved Bookmarks</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Curriculum Units</span>
             <div className="w-8 h-8 rounded-xl bg-[#FFF0EB] dark:bg-slate-800 text-[#FF7F50] flex items-center justify-center">
-              <BookmarkIcon className="w-4 h-4" />
+              <BookOpenIcon className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">8 Topics</div>
-          <span className="text-[11px] font-semibold text-[#FF7F50]">Stored in Account</span>
+          <div className="text-2xl font-black text-slate-900 dark:text-white">18 Modules</div>
+          <span className="text-[11px] font-semibold text-[#FF7F50]">Full Syllabuses</span>
         </div>
 
         <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm card-3d">
@@ -249,10 +248,10 @@ export const DashboardHome = ({
               <p className="text-xs text-slate-500 dark:text-slate-400">Answers with exact page numbers</p>
             </div>
             <button
-              onClick={() => onNavigateTab('saved')}
+              onClick={() => onNavigateTab('assistant')}
               className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] hover:underline cursor-pointer"
             >
-              Saved ➔
+              Ask AI ➔
             </button>
           </div>
 

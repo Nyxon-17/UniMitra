@@ -3,6 +3,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Home } from './pages/public/Home';
 import { Features } from './pages/public/Features';
+import { HowItWorks } from './pages/public/HowItWorks';
 import { Faq } from './pages/public/Faq';
 import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
@@ -13,12 +14,11 @@ import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { DashboardHome } from './pages/dashboard/DashboardHome';
 import { DashboardAiAssistant } from './pages/dashboard/DashboardAiAssistant';
 import { DashboardSyllabus } from './pages/dashboard/DashboardSyllabus';
-import { DashboardSaved } from './pages/dashboard/DashboardSaved';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 
 export function App() {
   const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'faq' | 'about' | 'contact' | 'dashboard'
-  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'syllabus' | 'saved' | 'profile'
+  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'syllabus' | 'profile'
   const [assistantPrefill, setAssistantPrefill] = useState('');
   
   const [lang, setLang] = useState('en'); // 'en' or 'as'
@@ -171,13 +171,6 @@ export function App() {
             studentInfo={studentInfo}
           />
         )}
-        {dashboardTab === 'saved' && (
-          <DashboardSaved
-            onNavigateTab={handleNavigateDashboardTab}
-            currentLang={lang}
-            studentInfo={studentInfo}
-          />
-        )}
         {dashboardTab === 'profile' && (
           <DashboardProfile
             currentLang={lang}
@@ -213,6 +206,9 @@ export function App() {
         )}
         {currentPage === 'features' && (
           <Features onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
+        )}
+        {currentPage === 'how-it-works' && (
+          <HowItWorks onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />
         )}
         {currentPage === 'faq' && (
           <Faq onNavigate={handleNavigate} onOpenAuth={handleOpenAuth} currentLang={lang} />

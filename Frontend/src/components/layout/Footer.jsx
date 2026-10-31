@@ -89,6 +89,11 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
                 </button>
               </li>
               <li>
+                <button onClick={() => onNavigate && onNavigate('how-it-works')} className="hover:text-white transition-colors cursor-pointer text-left">
+                  How It Works
+                </button>
+              </li>
+              <li>
                 <button onClick={() => onNavigate && onNavigate('faq')} className="hover:text-white transition-colors cursor-pointer text-left">
                   FAQ & Student Help
                 </button>

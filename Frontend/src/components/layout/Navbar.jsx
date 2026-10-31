@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AcademicCapIcon, MenuIcon, XMarkIcon, SparklesIcon, SunIcon, MoonIcon, LanguageIcon, ArrowRightOnRectangleIcon } from '../common/Icons';
+import { AcademicCapIcon, MenuIcon, XMarkIcon, SunIcon, MoonIcon, LanguageIcon, ArrowRightOnRectangleIcon } from '../common/Icons';
 
 export const Navbar = ({ 
   activePage = 'home', 
@@ -10,7 +10,6 @@ export const Navbar = ({
   isDark = false,
   onToggleTheme,
   isLoggedIn = false,
-  studentInfo = { name: 'Student' },
   onSignOut
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,11 +21,9 @@ export const Navbar = ({
     setMobileMenuOpen(false);
   };
 
-  // Universal navigation links - Completely public, no login required!
-  // Note: Universities page removed per user requirement.
+  // Clean public navigation links
   const navLinks = [
     { id: 'home', label: 'Home', asLabel: 'মূল পৃষ্ঠা' },
-    { id: 'dashboard', label: 'Curriculums & Study Hub', asLabel: 'পাঠ্যক্ৰম আৰু ডেচব’ৰ্ড', isHighlight: true },
     { id: 'features', label: 'Features', asLabel: 'সুবিধাসমূহ' },
     { id: 'faq', label: 'FAQ', asLabel: 'প্ৰশ্নোত্তৰ' },
     { id: 'about', label: 'About Us', asLabel: 'আমাৰ বিষয়ে' },
@@ -56,17 +53,15 @@ export const Navbar = ({
             </div>
           </div>
 
-          {/* Center Navigation Links - Open to all students */}
+          {/* Center Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <button
                 key={link.id}
                 onClick={() => handleNav(link.id)}
-                className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   activePage === link.id
                     ? 'bg-[#E7F3F7] dark:bg-[#118AB2]/20 text-[#118AB2] dark:text-[#FFD166] border border-[#118AB2]/30'
-                    : link.isHighlight
-                    ? 'text-[#118AB2] dark:text-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-800'
                     : 'text-slate-700 dark:text-slate-200 hover:text-[#118AB2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
@@ -112,20 +107,11 @@ export const Navbar = ({
               {isDark ? <SunIcon className="w-5 h-5 text-[#FFD166]" /> : <MoonIcon className="w-5 h-5 text-slate-700" />}
             </button>
 
-            {/* Open Study Hub Direct Action */}
-            <button
-              onClick={() => handleNav('dashboard')}
-              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-all cursor-pointer shadow-elevated-cerulean shrink-0"
-            >
-              <SparklesIcon className="w-4 h-4 text-[#FFD166]" />
-              <span>{currentLang === 'as' ? 'পাঠ্যক্ৰম চাওক' : 'Open Study Hub'}</span>
-            </button>
-
-            {/* Optional Auth Controls */}
+            {/* Auth Controls */}
             {!isLoggedIn ? (
               <button 
                 onClick={() => onOpenAuth && onOpenAuth('login')}
-                className="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] bg-white dark:bg-slate-800 border-2 border-[#118AB2] dark:border-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-700 transition-all cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] bg-white dark:bg-slate-800 border-2 border-[#118AB2] dark:border-[#06D6A0] hover:bg-[#E7F3F7] dark:hover:bg-slate-700 transition-all cursor-pointer"
               >
                 {currentLang === 'as' ? 'লগ-ইন' : 'Sign In'}
               </button>
@@ -212,13 +198,6 @@ export const Navbar = ({
           </div>
 
           <div className="pt-2 flex flex-col space-y-2">
-            <button 
-              onClick={() => handleNav('dashboard')}
-              className="w-full py-3 rounded-xl text-sm font-bold text-white bg-[#118AB2] text-center shadow-md"
-            >
-              {currentLang === 'as' ? 'পাঠ্যক্ৰম আৰু অধ্যয়ন হাব' : 'Open Curriculums & Study Hub'}
-            </button>
-
             {!isLoggedIn ? (
               <button 
                 onClick={() => {
@@ -227,7 +206,7 @@ export const Navbar = ({
                 }}
                 className="w-full py-2.5 rounded-xl text-sm font-bold text-[#118AB2] dark:text-[#06D6A0] border-2 border-[#118AB2] dark:border-[#06D6A0] text-center"
               >
-                Student Sign In (Optional)
+                Student Sign In
               </button>
             ) : (
               <button 

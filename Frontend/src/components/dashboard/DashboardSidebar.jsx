@@ -3,7 +3,6 @@ import {
   HomeIcon, 
   ChatBubbleIcon, 
   BookOpenIcon, 
-  BookmarkIcon, 
   UserIcon, 
   ArrowRightOnRectangleIcon, 
   XMarkIcon 
@@ -12,18 +11,16 @@ import {
 export const DashboardSidebar = ({ 
   activeTab = 'overview', 
   onSelectTab, 
-  onExitDashboard,
+  onExitDashboard, 
   onSignOut,
   isOpen = false,
   onCloseMobile,
-  currentLang = 'en',
-  studentInfo = { name: 'Student', course: 'All Curriculums' }
+  currentLang = 'en'
 }) => {
   const menuItems = [
     { id: 'overview', label: 'Study Overview', asLabel: 'অধ্যয়ন সাৰাংশ', icon: HomeIcon },
     { id: 'assistant', label: 'Ask UniMitra AI', asLabel: 'সহায়কৰ লগত বাৰ্তালাপ', icon: ChatBubbleIcon },
     { id: 'syllabus', label: 'Syllabus Explorer', asLabel: 'পাঠ্যক্ৰম অন্বেষণ', icon: BookOpenIcon },
-    { id: 'saved', label: 'Bookmarks & Saved', asLabel: 'সংৰক্ষিত বিষয়সমূহ', icon: BookmarkIcon },
     { id: 'profile', label: 'Student Profile', asLabel: 'ছাত্ৰ প্ৰফাইল', icon: UserIcon },
   ];
 
@@ -70,19 +67,8 @@ export const DashboardSidebar = ({
             </button>
           </div>
 
-          {/* Universal Study Access Card */}
-          <div className="p-3.5 mx-4 my-3 bg-gradient-to-tr from-[#118AB2]/10 via-[#06D6A0]/10 to-transparent border border-[#118AB2]/20 dark:border-slate-700 rounded-2xl">
-            <div className="flex items-center justify-between text-[10px] font-black text-[#118AB2] dark:text-[#06D6A0] uppercase tracking-wider mb-0.5">
-              <span>{currentLang === 'as' ? 'উন্মুক্ত শৈক্ষিক প্ৰৱেশ' : 'Open Study Access'}</span>
-              <span className="w-2 h-2 rounded-full bg-[#06D6A0] animate-pulse"></span>
-            </div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              {currentLang === 'as' ? 'সকলো বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম' : 'All University Curriculums'}
-            </h4>
-          </div>
-
           {/* Navigation Menu */}
-          <nav className="px-4 space-y-1.5">
+          <nav className="p-4 space-y-1.5">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -139,4 +125,3 @@ export const DashboardSidebar = ({
     </>
   );
 };
-
