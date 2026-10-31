@@ -710,7 +710,7 @@ export const AdminConsole = ({
       <HomeScreenBackground />
 
       {/* Mobile Top Header */}
-      <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -723,7 +723,7 @@ export const AdminConsole = ({
             <span className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
               Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[9px] font-black uppercase border border-[#FFCB56] dark:border-[#03C988]">
+            <span className="px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[9px] font-black uppercase border border-[#FFCB56] dark:border-[#03C988]">
               Admin
             </span>
           </div>
@@ -732,7 +732,7 @@ export const AdminConsole = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={onToggleTheme}
-            className="p-1.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
+            className="p-1.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
           >
             {isDark ? <SunIcon className="w-4 h-4 text-[#03C988]" /> : <MoonIcon className="w-4 h-4 text-[#FF933E]" />}
           </button>
@@ -757,7 +757,7 @@ export const AdminConsole = ({
       {/* ADMINISTRATOR NAVIGATION SIDEBAR                                    */}
       {/* =================================================================== */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-r border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-r border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
         <div className="flex flex-col h-full overflow-hidden">
@@ -773,7 +773,7 @@ export const AdminConsole = ({
                   <span className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
                     Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[9px] font-black uppercase border border-[#FFCB56] dark:border-[#03C988]">
+                  <span className="px-1.5 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[9px] font-black uppercase border border-[#FFCB56] dark:border-[#03C988]">
                     Super Admin
                   </span>
                 </div>
@@ -850,10 +850,10 @@ export const AdminConsole = ({
           </nav>
 
           {/* Lower Sidebar Controls */}
-          <div className="p-4 border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shrink-0 bg-white/50 dark:bg-[#00337C]/50">
+          <div className="p-4 border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shrink-0 bg-white/50 dark:bg-[#141414]/50">
 
             {/* System Status Pill */}
-            <div className="p-2.5 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#13005A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between text-[11px]">
+            <div className="p-2.5 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between text-[11px]">
               <span className="text-[#000000]/70 dark:text-[#FFFFFF]/70 font-bold">Vector Ingestion:</span>
               <span className="font-black text-[#03C988] flex items-center space-x-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#03C988] animate-ping" />
@@ -865,14 +865,14 @@ export const AdminConsole = ({
             <div className="flex items-center justify-between gap-2">
               <button
                 onClick={onToggleLang}
-                className="flex-1 py-2 px-3 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-black text-[#000000] dark:text-[#FFFFFF] cursor-pointer text-center"
+                className="flex-1 py-2 px-3 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-black text-[#000000] dark:text-[#FFFFFF] cursor-pointer text-center"
               >
                 {currentLang === 'en' ? 'অসমীয়া' : 'English'}
               </button>
 
               <button
                 onClick={onToggleTheme}
-                className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer shrink-0"
+                className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer shrink-0"
               >
                 {isDark ? <SunIcon className="w-4 h-4 text-[#03C988]" /> : <MoonIcon className="w-4 h-4 text-[#FF933E]" />}
               </button>
@@ -897,7 +897,7 @@ export const AdminConsole = ({
       <div className="flex-1 min-w-0 flex flex-col min-h-screen relative z-10">
 
         {/* Top Header Bar for Desktop */}
-        <header className="hidden lg:flex sticky top-0 z-30 bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-6 lg:px-8 py-4 items-center justify-between">
+        <header className="hidden lg:flex sticky top-0 z-30 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-6 lg:px-8 py-4 items-center justify-between">
           <div className="flex items-center space-x-3">
             <span className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
               {adminNavItems.find(i => i.id === activeTab)?.label}
@@ -931,7 +931,7 @@ export const AdminConsole = ({
 
           {/* Toast Notification Alert */}
           {actionAlert && (
-            <div className="p-3.5 rounded-2xl bg-[#FFE9A9] dark:bg-[#00337C] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 shadow-xs animate-fade-in">
+            <div className="p-3.5 rounded-2xl bg-[#FFE9A9] dark:bg-[#141414] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 shadow-xs animate-fade-in">
               <CheckCircleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
               <span>{actionAlert}</span>
             </div>
@@ -943,10 +943,10 @@ export const AdminConsole = ({
           {activeTab === 'univ-details' && (
             <div className="space-y-6 animate-fade-in">
               {/* Header Hero */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="neo-surface rounded-3xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[10px] font-black uppercase text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                    <span className="px-2.5 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[10px] font-black uppercase text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                       Institutional Master Config
                     </span>
                     <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
@@ -999,12 +999,12 @@ export const AdminConsole = ({
                     onClick={() => setUnivSection(subTab.id)}
                     className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all flex items-center space-x-1.5 ${univSection === subTab.id
                         ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                        : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
+                        : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
                       }`}
                   >
                     <span>{currentLang === 'as' ? subTab.asLabel : subTab.label}</span>
                     {subTab.count !== undefined && (
-                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${univSection === subTab.id ? 'bg-black/20 text-white dark:text-black' : 'bg-[#FFE9A9] dark:bg-[#13005A]'
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${univSection === subTab.id ? 'bg-black/20 text-white dark:text-black' : 'bg-[#FFE9A9] dark:bg-[#0A0A0A]'
                         }`}>
                         {subTab.count}
                       </span>
@@ -1015,7 +1015,7 @@ export const AdminConsole = ({
 
               {/* Sub-Section 1: University Profile */}
               {univSection === 'profile' && (
-                <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm space-y-6">
+                <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-6">
                   <div className="flex items-center justify-between border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
                     <div>
                       <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
@@ -1037,7 +1037,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.name || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1049,7 +1049,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.asName || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, asName: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1061,7 +1061,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.motto || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, motto: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1073,7 +1073,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.asMotto || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, asMotto: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1085,7 +1085,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.viceChancellor || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, viceChancellor: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1097,7 +1097,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.asViceChancellor || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, asViceChancellor: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1109,7 +1109,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.registrar || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, registrar: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1121,7 +1121,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.asRegistrar || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, asRegistrar: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1133,7 +1133,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.location || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1145,7 +1145,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.helpline || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, helpline: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1157,7 +1157,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.naacAccreditation || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, naacAccreditation: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -1169,7 +1169,7 @@ export const AdminConsole = ({
                           type="text"
                           value={profileForm.nirfRank || ''}
                           onChange={(e) => setProfileForm({ ...profileForm, nirfRank: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
                     </div>
@@ -1212,10 +1212,10 @@ export const AdminConsole = ({
                     {univRegulations.map((reg) => (
                       <div
                         key={reg.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                             {reg.ordinanceNo}
                           </span>
                           <button
@@ -1271,10 +1271,10 @@ export const AdminConsole = ({
                     {univExaminations.map((exam) => (
                       <div
                         key={exam.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                             {exam.category} • {exam.ordinanceNo}
                           </span>
                           <button
@@ -1328,10 +1328,10 @@ export const AdminConsole = ({
                     {univProgrammes.map((prog) => (
                       <div
                         key={prog.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                             {prog.level} • {prog.code}
                           </span>
                           <button
@@ -1385,10 +1385,10 @@ export const AdminConsole = ({
                     {univScholarships.map((schol) => (
                       <div
                         key={schol.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                             {schol.type}
                           </span>
                           <button
@@ -1442,10 +1442,10 @@ export const AdminConsole = ({
                     {univAdmissions.map((adm) => (
                       <div
                         key={adm.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                             {adm.category}
                           </span>
                           <button
@@ -1504,10 +1504,10 @@ export const AdminConsole = ({
                     {univFacilities.map((fac) => (
                       <div
                         key={fac.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                             {fac.category}
                           </span>
                           <button
@@ -1561,7 +1561,7 @@ export const AdminConsole = ({
                     {univNotices.map((not) => (
                       <div
                         key={not.id}
-                        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center space-x-2">
@@ -1600,9 +1600,9 @@ export const AdminConsole = ({
 
               {/* Sub-Section 9: Benchmark Test Scenarios Evaluation Center */}
               {univSection === 'test-scenarios' && (
-                <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm space-y-6">
+                <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-6">
                   <div className="space-y-1 border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
-                    <span className="px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[10px] font-black uppercase text-[#000000] dark:text-[#FFFFFF]">
+                    <span className="px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[10px] font-black uppercase text-[#000000] dark:text-[#FFFFFF]">
                       Problem Statement Mandate (Item 5)
                     </span>
                     <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
@@ -1620,7 +1620,7 @@ export const AdminConsole = ({
                         <span>🟢 3 Assamese Test Scenarios</span>
                       </h4>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                           Test 1 • Academic Regulations & Passing Criteria
                         </span>
@@ -1639,7 +1639,7 @@ export const AdminConsole = ({
                         </button>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                           Test 2 • Attendance & Medical Condonation
                         </span>
@@ -1658,7 +1658,7 @@ export const AdminConsole = ({
                         </button>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <div className="flex items-center space-x-1.5">
                           <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                             Test 3 • Language-Specific Behaviour
@@ -1689,7 +1689,7 @@ export const AdminConsole = ({
                         <span>🔵 3 English Test Scenarios</span>
                       </h4>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                           Test 1 • Examination & Attendance Norms
                         </span>
@@ -1708,7 +1708,7 @@ export const AdminConsole = ({
                         </button>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                           Test 2 • Evaluation & Script Re-checking
                         </span>
@@ -1727,7 +1727,7 @@ export const AdminConsole = ({
                         </button>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
                         <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                           Test 3 • Facilities & Hostel Accommodation
                         </span>
@@ -1787,7 +1787,7 @@ export const AdminConsole = ({
               )}
 
               {/* Filter Hub */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+              <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
 
                 {/* Workflow Status Filter Pills */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -1808,7 +1808,7 @@ export const AdminConsole = ({
                           ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
                           : pill.alert
                             ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700'
-                            : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                            : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                         }`}
                     >
                       <span>{pill.label}</span>
@@ -1825,7 +1825,7 @@ export const AdminConsole = ({
                     <select
                       value={selectedUnivFilter}
                       onChange={(e) => setSelectedUnivFilter(e.target.value)}
-                      className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                      className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                     >
                       <option value="All">All Universities</option>
                       <option value="Gauhati">Gauhati University (GU)</option>
@@ -1837,7 +1837,7 @@ export const AdminConsole = ({
                     <select
                       value={selectedCategoryFilter}
                       onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                      className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                      className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                     >
                       <option value="All">All Categories</option>
                       {categories.map((c) => (
@@ -1853,17 +1853,17 @@ export const AdminConsole = ({
                       placeholder="Search title, ID, or author..."
                       value={searchDocQuery}
                       onChange={(e) => setSearchDocQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Document Table */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs">
+              <div className="neo-surface rounded-3xl overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
+                    <thead className="bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                       <tr>
                         <th className="p-4">Document Title & ID</th>
                         <th className="p-4">Origin & Author</th>
@@ -1886,11 +1886,11 @@ export const AdminConsole = ({
                             <span className="font-bold block">{doc.university}</span>
                             <div className="flex items-center space-x-1 mt-0.5">
                               {doc.uploaderRole === 'Faculty' ? (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                                   Faculty: {doc.uploaderName}
                                 </span>
                               ) : (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#73A5CA]/20 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#73A5CA]/20 dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                                   Super Admin Direct
                                 </span>
                               )}
@@ -1914,7 +1914,7 @@ export const AdminConsole = ({
                                 <span>Rejected</span>
                               </span>
                             ) : doc.status === 'Archived' ? (
-                              <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#13005A] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                              <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#0A0A0A] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                                 Archived
                               </span>
                             ) : (
@@ -1931,7 +1931,7 @@ export const AdminConsole = ({
                                 Live for Students
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/30 dark:bg-[#13005A] text-[#000000]/70 dark:text-[#FFFFFF]/70 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
+                              <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] text-[#000000]/70 dark:text-[#FFFFFF]/70 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
                                 Locked from Chatbot
                               </span>
                             )}
@@ -2007,7 +2007,7 @@ export const AdminConsole = ({
             <div className="space-y-6 max-w-5xl mx-auto">
 
               {/* Header Banner */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase tracking-wider">
@@ -2022,7 +2022,7 @@ export const AdminConsole = ({
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#13005A] border border-[#FFCB56] dark:border-[#03C988] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] shrink-0">
+                  <div className="p-3 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] shrink-0">
                     <span className="block text-[10px] uppercase text-[#FF933E] dark:text-[#03C988] font-black">Clearance Authority</span>
                     <span>Admin Uploads = Auto-Approved & Live</span>
                   </div>
@@ -2031,8 +2031,8 @@ export const AdminConsole = ({
 
               {/* Progress Pipeline Simulation */}
               {isUploading ? (
-                <div className="p-8 sm:p-12 text-center space-y-5 bg-white dark:bg-[#00337C] rounded-3xl border-2 border-[#FF933E] dark:border-[#03C988] shadow-lg animate-fade-in">
-                  <div className="w-16 h-16 rounded-3xl bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black shadow-md">
+                <div className="p-8 sm:p-12 text-center space-y-5 bg-white dark:bg-[#141414] rounded-3xl border-2 border-[#FF933E] dark:border-[#03C988] shadow-lg animate-fade-in">
+                  <div className="w-16 h-16 rounded-3xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black shadow-md">
                     <SparklesIcon className="w-9 h-9 animate-spin" />
                   </div>
                   <div className="space-y-1">
@@ -2056,7 +2056,7 @@ export const AdminConsole = ({
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                   {/* Left Column: Interactive Form */}
-                  <div className="lg:col-span-2 bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs">
+                  <div className="lg:col-span-2 neo-surface rounded-3xl p-6 sm:p-8 shadow-xs">
                     <form onSubmit={handleUploadSubmit} className="space-y-5">
 
                       {/* Drag & Drop File Zone */}
@@ -2073,7 +2073,7 @@ export const AdminConsole = ({
                               ? 'border-[#FF933E] bg-[#FFE9A9]/40 scale-[1.01]'
                               : selectedPdfFile
                                 ? 'border-[#03C988] bg-[#03C988]/10'
-                                : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#13005A] hover:border-[#FF933E]'
+                                : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] hover:border-[#FF933E]'
                             }`}
                         >
                           <input
@@ -2084,7 +2084,7 @@ export const AdminConsole = ({
                             className="hidden"
                           />
 
-                          <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black mb-2 shadow-xs">
+                          <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black mb-2 shadow-xs">
                             <CloudArrowUpIcon className="w-6 h-6" />
                           </div>
 
@@ -2133,7 +2133,7 @@ export const AdminConsole = ({
                             placeholder="e.g. Revised Ordinance on CBCS Examination & Evaluation 2024"
                             value={uploadFormData.title}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, title: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           />
                         </div>
 
@@ -2146,7 +2146,7 @@ export const AdminConsole = ({
                             placeholder="যেনে: চি.বি.চি.এছ. পৰীক্ষা আৰু মূল্যায়নৰ সংশোধিত অধিনিয়ম ২০২৪"
                             value={uploadFormData.asTitle}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, asTitle: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           />
                         </div>
                       </div>
@@ -2160,7 +2160,7 @@ export const AdminConsole = ({
                           <select
                             value={uploadFormData.university}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           >
                             <option>Gauhati University (GU)</option>
                             <option>Dibrugarh University (DU)</option>
@@ -2178,7 +2178,7 @@ export const AdminConsole = ({
                           <select
                             value={uploadFormData.category}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           >
                             {categories.map((c) => (
                               <option key={c.id} value={c.name}>{c.name}</option>
@@ -2197,7 +2197,7 @@ export const AdminConsole = ({
                             type="text"
                             value={uploadFormData.department}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, department: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           />
                         </div>
 
@@ -2209,7 +2209,7 @@ export const AdminConsole = ({
                             type="text"
                             value={uploadFormData.academicYear}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, academicYear: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           />
                         </div>
 
@@ -2222,7 +2222,7 @@ export const AdminConsole = ({
                             placeholder="e.g. GU/EXAM/NOTIF/2024/02"
                             value={uploadFormData.refNo}
                             onChange={(e) => setUploadFormData({ ...uploadFormData, refNo: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                           />
                         </div>
                       </div>
@@ -2237,7 +2237,7 @@ export const AdminConsole = ({
                           placeholder="https://gauhati.ac.in/academic/notification-2024.pdf"
                           value={uploadFormData.sourceUrl}
                           onChange={(e) => setUploadFormData({ ...uploadFormData, sourceUrl: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
@@ -2251,12 +2251,12 @@ export const AdminConsole = ({
                           placeholder="Summary of passing criteria, attendance exemptions, evaluation frameworks, or scholarship quotas..."
                           value={uploadFormData.summary}
                           onChange={(e) => setUploadFormData({ ...uploadFormData, summary: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                         />
                       </div>
 
                       {/* OCR Checkbox Toggle */}
-                      <div className="p-3.5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center space-x-3">
+                      <div className="p-3.5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center space-x-3">
                         <input
                           type="checkbox"
                           id="admin-ocr-toggle"
@@ -2282,7 +2282,7 @@ export const AdminConsole = ({
 
                   {/* Right Column: Ingestion Architecture Guidance */}
                   <div className="space-y-4">
-                    <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-3">
+                    <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-3">
                       <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase">
                         <ShieldCheckIcon className="w-4 h-4" />
                         <span>Immediate Clearance</span>
@@ -2295,7 +2295,7 @@ export const AdminConsole = ({
                       </p>
                     </div>
 
-                    <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-3">
+                    <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-3">
                       <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase">
                         <CpuChipIcon className="w-4 h-4" />
                         <span>RAG Pipeline Specs</span>
@@ -2327,7 +2327,7 @@ export const AdminConsole = ({
           {/* =================================================================== */}
           {activeTab === 'categories' && (
             <div className="space-y-6">
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs">
+              <div className="neo-surface rounded-3xl p-6 shadow-xs">
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF] mb-4">
                   Add New Document Category to Taxonomy
                 </h3>
@@ -2338,14 +2338,14 @@ export const AdminConsole = ({
                     placeholder="Category Name (e.g. Hostels & Welfare)"
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                   <input
                     type="text"
                     placeholder="Code (e.g. WELFARE)"
                     value={newCatCode}
                     onChange={(e) => setNewCatCode(e.target.value)}
-                    className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                   <button
                     type="submit"
@@ -2361,7 +2361,7 @@ export const AdminConsole = ({
                 {categories.map((c) => (
                   <div
                     key={c.id}
-                    className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shadow-xs"
+                    className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shadow-xs"
                   >
                     <div>
                       <span className="text-[10px] font-mono font-bold text-[#FF933E] dark:text-[#03C988] uppercase">{c.code}</span>
@@ -2385,7 +2385,7 @@ export const AdminConsole = ({
           {/* TAB 4: VIEW DOCUMENT PROCESSING STATUS                              */}
           {/* =================================================================== */}
           {activeTab === 'processing' && (
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-4">
               <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 Real-Time Document Processing & Embedding Pipeline
               </h3>
@@ -2393,7 +2393,7 @@ export const AdminConsole = ({
                 {pipelineJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
+                    className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{job.id} • {job.docName}</span>
@@ -2420,22 +2420,22 @@ export const AdminConsole = ({
           {activeTab === 'analytics' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Total Queries</span>
                   <p className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">{analyticsData.totalQueries.toLocaleString()}</p>
                   <span className="text-[11px] text-green-600 font-bold">+14% this month</span>
                 </div>
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Assamese Language</span>
                   <p className="text-2xl sm:text-3xl font-black text-[#FF933E] dark:text-[#03C988] mt-1">{analyticsData.assameseQueries.toLocaleString()}</p>
                   <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">42.1% bilingual query ratio</span>
                 </div>
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">English Language</span>
                   <p className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">{analyticsData.englishQueries.toLocaleString()}</p>
                   <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">57.9% bilingual query ratio</span>
                 </div>
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   <span className="text-xs font-black text-[#000000]/70 dark:text-[#FFFFFF]/80 uppercase">Grounding Accuracy</span>
                   <p className="text-2xl sm:text-3xl font-black text-green-600 mt-1">{analyticsData.hallucinationRejectionRate}</p>
                   <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">Strict source citations</span>
@@ -2443,13 +2443,13 @@ export const AdminConsole = ({
               </div>
 
               {/* Top Query Topics */}
-              <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+              <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-4">
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                   Top Inquired Academic & Regulatory Topics
                 </h3>
                 <div className="space-y-2">
                   {analyticsData.topAskedTopics.map((item, idx) => (
-                    <div key={idx} className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl flex items-center justify-between text-xs">
+                    <div key={idx} className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{item.topic}</span>
                         <span className="text-[10px] text-[#FF933E] dark:text-[#03C988] block">{item.univ}</span>
@@ -2466,7 +2466,7 @@ export const AdminConsole = ({
           {/* TAB 6: VIEW UNANSWERED QUESTIONS                                    */}
           {/* =================================================================== */}
           {activeTab === 'unanswered' && (
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-4">
               <div>
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                   Unanswered Queries & Missing Context Queue
@@ -2480,7 +2480,7 @@ export const AdminConsole = ({
                 {unansweredList.map((item) => (
                   <div
                     key={item.id}
-                    className="p-5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
+                    className="p-5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="text-xs font-mono font-bold text-red-500">{item.id} • {item.confidence}</span>
@@ -2510,7 +2510,7 @@ export const AdminConsole = ({
           {/* TAB 7: REVIEW FEEDBACK                                              */}
           {/* =================================================================== */}
           {activeTab === 'feedback' && (
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-4">
               <div>
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                   Student & Faculty AI Feedback Review
@@ -2524,12 +2524,12 @@ export const AdminConsole = ({
                 {feedbackList.map((f) => (
                   <div
                     key={f.id}
-                    className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
+                    className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-2"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">{f.user} ({f.role})</span>
-                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#13005A] border border-[#FFCB56] dark:border-[#03C988]">
+                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988]">
                           {f.type}
                         </span>
                       </div>
@@ -2556,7 +2556,7 @@ export const AdminConsole = ({
           {/* TAB 8: MANAGE USERS AND ROLES                                       */}
           {/* =================================================================== */}
           {activeTab === 'users' && (
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs">
+            <div className="neo-surface rounded-3xl overflow-hidden shadow-xs">
               <div className="p-6 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                   User Accounts & Institutional Roles
@@ -2568,7 +2568,7 @@ export const AdminConsole = ({
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
+                  <thead className="bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                     <tr>
                       <th className="p-4">Name & Email</th>
                       <th className="p-4">Institutional Role</th>
@@ -2586,7 +2586,7 @@ export const AdminConsole = ({
                           <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{u.email}</span>
                         </td>
                         <td className="p-4">
-                          <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#FFE9A9] dark:bg-[#13005A] border border-[#FFCB56] dark:border-[#03C988]">
+                          <span className="px-2.5 py-0.5 rounded-md text-xs font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988]">
                             {u.role}
                           </span>
                         </td>
@@ -2622,33 +2622,33 @@ export const AdminConsole = ({
           {activeTab === 'health' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
                   <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">FastAPI Microservice</span>
                   <p className="text-lg font-black text-green-600">{systemHealth.apiStatus}</p>
                   <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">Uptime: {systemHealth.uptime}</span>
                 </div>
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
                   <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">Vector Search Latency</span>
                   <p className="text-lg font-black text-[#FF933E] dark:text-[#03C988]">{systemHealth.vectorSearchLatencyMs} ms</p>
                   <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">ChromaDB / MongoDB Atlas</span>
                 </div>
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-1">
                   <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/80">Embedding Inference</span>
                   <p className="text-lg font-black text-[#FF933E] dark:text-[#03C988]">{systemHealth.embeddingLatencyMs} ms</p>
                   <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">{systemHealth.embeddingModel}</span>
                 </div>
               </div>
 
-              <div className="p-6 bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-xs space-y-3">
+              <div className="p-6 neo-surface rounded-3xl shadow-xs space-y-3">
                 <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                   Cluster Resource Allocation
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
+                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
                     <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80 block">RAM Allocation:</span>
                     <strong className="text-sm font-black">{systemHealth.clusterMemoryUsage}</strong>
                   </div>
-                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
+                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40">
                     <span className="text-[#000000]/70 dark:text-[#FFFFFF]/80 block">Active Indexed Chunks:</span>
                     <strong className="text-sm font-black">{systemHealth.activeChunkCount.toLocaleString()} Vectors</strong>
                   </div>
@@ -2661,7 +2661,7 @@ export const AdminConsole = ({
           {/* TAB 10: CONFIGURE THE LLM PROVIDER                                  */}
           {/* =================================================================== */}
           {activeTab === 'llm-config' && (
-            <div className="max-w-2xl mx-auto bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="max-w-2xl mx-auto neo-surface rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
               <div>
                 <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
                   LLM Provider & RAG Hyperparameter Configuration
@@ -2684,7 +2684,7 @@ export const AdminConsole = ({
                         onClick={() => setLlmConfig({ ...llmConfig, provider: p })}
                         className={`p-3 rounded-2xl border-2 text-xs font-black cursor-pointer transition-all ${llmConfig.provider === p
                             ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] border-[#FF933E] dark:border-[#03C988]'
-                            : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                            : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                           }`}
                       >
                         {p}
@@ -2741,7 +2741,7 @@ export const AdminConsole = ({
                   />
                 </div>
 
-                <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                   API Status: <strong className="text-green-600">Active & Authorized via Environment Variable</strong>
                 </div>
 
@@ -2762,7 +2762,7 @@ export const AdminConsole = ({
       {/* Universal Add University Item Modal */}
       {univAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-up">
+          <div className="neo-surface rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-up">
             <div className="flex items-center justify-between border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
               <div>
                 <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988] block">
@@ -2792,7 +2792,7 @@ export const AdminConsole = ({
                     value={newItemForm.title || newItemForm.name || ''}
                     onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value, name: e.target.value })}
                     placeholder="e.g. CBCS Minimum Passing Criteria"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
 
@@ -2806,7 +2806,7 @@ export const AdminConsole = ({
                     value={newItemForm.asTitle || newItemForm.asName || ''}
                     onChange={(e) => setNewItemForm({ ...newItemForm, asTitle: e.target.value, asName: e.target.value })}
                     placeholder="e.g. স্নাতক উত্তীৰ্ণ হোৱাৰ নূন্যতম চৰ্ত"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
               </div>
@@ -2823,7 +2823,7 @@ export const AdminConsole = ({
                       value={newItemForm.ordinanceNo || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, ordinanceNo: e.target.value })}
                       placeholder="e.g. DU/AC/ORD/2024/22"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
 
@@ -2836,7 +2836,7 @@ export const AdminConsole = ({
                       value={newItemForm.category || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, category: e.target.value })}
                       placeholder="e.g. Attendance & Ordinances"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
@@ -2851,7 +2851,7 @@ export const AdminConsole = ({
                     <select
                       value={newItemForm.level || 'Postgraduate'}
                       onChange={(e) => setNewItemForm({ ...newItemForm, level: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     >
                       <option value="Undergraduate">Undergraduate (UG)</option>
                       <option value="Postgraduate">Postgraduate (PG)</option>
@@ -2869,7 +2869,7 @@ export const AdminConsole = ({
                       value={newItemForm.code || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, code: e.target.value })}
                       placeholder="e.g. MTECH-CSE"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
 
@@ -2881,7 +2881,7 @@ export const AdminConsole = ({
                       type="number"
                       value={newItemForm.intake || 60}
                       onChange={(e) => setNewItemForm({ ...newItemForm, intake: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
@@ -2898,7 +2898,7 @@ export const AdminConsole = ({
                       value={newItemForm.amount || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, amount: e.target.value })}
                       placeholder="e.g. ₹5,400 per month"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
 
@@ -2911,7 +2911,7 @@ export const AdminConsole = ({
                       value={newItemForm.provider || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, provider: e.target.value })}
                       placeholder="e.g. UGC / DHE Assam"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
 
@@ -2924,7 +2924,7 @@ export const AdminConsole = ({
                       value={newItemForm.deadline || ''}
                       onChange={(e) => setNewItemForm({ ...newItemForm, deadline: e.target.value })}
                       placeholder="e.g. 31st December"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
@@ -2940,7 +2940,7 @@ export const AdminConsole = ({
                   value={newItemForm.summary || newItemForm.eligibility || newItemForm.rules || ''}
                   onChange={(e) => setNewItemForm({ ...newItemForm, summary: e.target.value, eligibility: e.target.value, rules: e.target.value })}
                   placeholder="Executive summary or statutory rules..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                 />
               </div>
 
@@ -2953,7 +2953,7 @@ export const AdminConsole = ({
                   value={newItemForm.asSummary || newItemForm.asEligibility || newItemForm.asRules || ''}
                   onChange={(e) => setNewItemForm({ ...newItemForm, asSummary: e.target.value, asEligibility: e.target.value, asRules: e.target.value })}
                   placeholder="অসমীয়াত সাৰাংশ বা চৰ্তসমূহ..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                 />
               </div>
 
@@ -2967,7 +2967,7 @@ export const AdminConsole = ({
                     value={newItemForm.citation || newItemForm.sourceDoc || ''}
                     onChange={(e) => setNewItemForm({ ...newItemForm, citation: e.target.value, sourceDoc: e.target.value })}
                     placeholder="e.g. DU Academic Ordinance Clause 4.3"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
 
@@ -2980,7 +2980,7 @@ export const AdminConsole = ({
                     value={newItemForm.department || newItemForm.location || newItemForm.portalUrl || ''}
                     onChange={(e) => setNewItemForm({ ...newItemForm, department: e.target.value, location: e.target.value, portalUrl: e.target.value })}
                     placeholder="e.g. Academic Council / https://dibru.ac.in"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
                   />
                 </div>
               </div>
@@ -3008,13 +3008,13 @@ export const AdminConsole = ({
       {/* Administrator Inspect Document Modal */}
       {inspectDocModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
+          <div className="neo-surface rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
 
             <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
               <div className="flex items-center space-x-2">
                 <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
                 <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{inspectDocModal.id}</span>
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                   {inspectDocModal.category}
                 </span>
               </div>
@@ -3038,7 +3038,7 @@ export const AdminConsole = ({
             </div>
 
             {/* Status & Governance Banner */}
-            <div className="p-3.5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-black uppercase text-[#000000]/70 dark:text-[#FFFFFF]/70 block">
                   Governance Status
@@ -3081,7 +3081,7 @@ export const AdminConsole = ({
             </p>
 
             {/* Metadata Breakdown */}
-            <div className="grid grid-cols-2 gap-3 p-4 bg-white dark:bg-[#00337C] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
+            <div className="grid grid-cols-2 gap-3 p-4 bg-white dark:bg-[#141414] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
               <div>
                 <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">University & Dept:</span>
                 <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{inspectDocModal.university} ({inspectDocModal.department || 'General'})</span>
@@ -3103,7 +3103,7 @@ export const AdminConsole = ({
             </div>
 
             {inspectDocModal.citation && (
-              <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+              <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                 <strong>Official Citation Source:</strong> {inspectDocModal.citation}
               </div>
             )}

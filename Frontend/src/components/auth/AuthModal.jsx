@@ -438,10 +438,10 @@ export const AuthModal = ({
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-lg bg-[#FAF8FF] dark:bg-[#150F2C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
+      <div className="relative w-full max-w-lg bg-[#FAF8FF] dark:bg-black border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl shadow-2xl z-10 overflow-hidden my-auto max-h-[92vh] flex flex-col transition-all duration-200">
         
         {/* Header with Brand & Close Button */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#E0D4FD]/25 dark:bg-[#0A0718] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-[#E0D4FD]/25 dark:bg-black border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] flex items-center justify-center text-white shadow-xs">
               <BuildingLibraryIcon className="w-5 h-5 text-[#FAF8FF]" />
@@ -467,7 +467,7 @@ export const AuthModal = ({
 
         {/* 3 Role Switcher Tabs */}
         <div className="px-6 pt-4 shrink-0 space-y-3">
-          <div className="flex bg-[#E0D4FD]/30 dark:bg-[#0A0718] p-1 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
+          <div className="flex bg-[#E0D4FD]/30 dark:bg-black p-1 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
             <button
               type="button"
               onClick={() => handleSelectRole('student')}
@@ -510,7 +510,7 @@ export const AuthModal = ({
 
           {/* Mode Switcher: Sign In vs Register (for Student & Faculty) */}
           {role !== 'admin' && step !== 'created_id' && step !== 'otp' && step !== 'login_otp' && (
-            <div className="flex bg-white dark:bg-[#150F2C] p-1 rounded-xl border border-[#E0D4FD]/70 dark:border-[#3B2868]/70 text-[11px]">
+            <div className="flex bg-white dark:bg-black p-1 rounded-xl border border-[#E0D4FD]/70 dark:border-[#3B2868]/70 text-[11px]">
               <button
                 type="button"
                 onClick={() => {
@@ -520,7 +520,7 @@ export const AuthModal = ({
                 }}
                 className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
                   mode === 'login'
-                    ? 'bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF]'
+                    ? 'bg-[#FFE9A9] dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF]'
                     : 'text-[#000000]/70 dark:text-[#FFFFFF]/80'
                 }`}
               >
@@ -535,7 +535,7 @@ export const AuthModal = ({
                 }}
                 className={`flex-1 py-1.5 font-black rounded-lg transition-all cursor-pointer ${
                   mode === 'register'
-                    ? 'bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF]'
+                    ? 'bg-[#FFE9A9] dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF]'
                     : 'text-[#000000]/70 dark:text-[#FFFFFF]/80'
                 }`}
               >
@@ -550,7 +550,7 @@ export const AuthModal = ({
           
           {/* Status Banner */}
           {status.success && status.message && (
-            <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 dark:bg-[#0A0718] border-2 border-[#6D28D9] text-center space-y-0.5">
+            <div className="p-3 rounded-2xl bg-[#E0D4FD]/40 dark:bg-black border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 text-center space-y-0.5">
               <div className="flex items-center justify-center space-x-1.5 text-[#000000] dark:text-[#FFFFFF] font-black text-xs sm:text-sm">
                 <CheckCircleIcon className="w-4 h-4 text-[#10B981] shrink-0" />
                 <span>{status.message}</span>
@@ -583,7 +583,7 @@ export const AuthModal = ({
                         placeholder="student@university.ac.in"
                         value={studentLogin.email}
                         onChange={(e) => setStudentLogin({ ...studentLogin, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                   </div>
@@ -600,7 +600,7 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={studentLogin.password}
                         onChange={(e) => setStudentLogin({ ...studentLogin, password: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                       <button
                         type="button"
@@ -636,7 +636,7 @@ export const AuthModal = ({
                       placeholder="e.g. Partha Pratim Nath"
                       value={studentReg.fullName}
                       onChange={(e) => setStudentReg({ ...studentReg, fullName: e.target.value })}
-                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                     />
                   </div>
 
@@ -652,7 +652,7 @@ export const AuthModal = ({
                         placeholder="student@gmail.com"
                         value={studentReg.email}
                         onChange={(e) => setStudentReg({ ...studentReg, email: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                   </div>
@@ -669,7 +669,7 @@ export const AuthModal = ({
                           placeholder="Min 6 chars"
                           value={studentReg.password}
                           onChange={(e) => setStudentReg({ ...studentReg, password: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                         />
                         <button
                           type="button"
@@ -693,7 +693,7 @@ export const AuthModal = ({
                           placeholder="Re-enter"
                           value={studentReg.confirmPassword}
                           onChange={(e) => setStudentReg({ ...studentReg, confirmPassword: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                          className="w-full pl-3 pr-8 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                         />
                         <button
                           type="button"
@@ -735,7 +735,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                         />
                       ))}
                     </div>
@@ -783,7 +783,7 @@ export const AuthModal = ({
                         placeholder="e.g. UM-FAC-7821"
                         value={facultyLogin.memberId}
                         onChange={(e) => setFacultyLogin({ ...facultyLogin, memberId: e.target.value.toUpperCase() })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold tracking-wider rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold tracking-wider rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                   </div>
@@ -800,7 +800,7 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={facultyLogin.password}
                         onChange={(e) => setFacultyLogin({ ...facultyLogin, password: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                       <button
                         type="button"
@@ -841,7 +841,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#3B2868]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#3B2868]"
                         />
                       ))}
                     </div>
@@ -881,7 +881,7 @@ export const AuthModal = ({
                         placeholder="Dr. Full Name"
                         value={facultyReg.fullName}
                         onChange={(e) => setFacultyReg({ ...facultyReg, fullName: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                     <div>
@@ -894,7 +894,7 @@ export const AuthModal = ({
                         placeholder="GU-FAC-2024"
                         value={facultyReg.facultyId}
                         onChange={(e) => setFacultyReg({ ...facultyReg, facultyId: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                   </div>
@@ -909,7 +909,7 @@ export const AuthModal = ({
                       placeholder="faculty@gauhati.ac.in"
                       value={facultyReg.officialEmail}
                       onChange={(e) => setFacultyReg({ ...facultyReg, officialEmail: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                     />
                   </div>
 
@@ -923,7 +923,7 @@ export const AuthModal = ({
                       placeholder="personal.email@gmail.com"
                       value={facultyReg.memberEmail}
                       onChange={(e) => setFacultyReg({ ...facultyReg, memberEmail: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                     />
                   </div>
 
@@ -935,7 +935,7 @@ export const AuthModal = ({
                       <select
                         value={facultyReg.department}
                         onChange={(e) => setFacultyReg({ ...facultyReg, department: e.target.value })}
-                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       >
                         {departmentOptions.map((dept) => (
                           <option key={dept} value={dept}>{dept}</option>
@@ -950,7 +950,7 @@ export const AuthModal = ({
                       <select
                         value={facultyReg.designation}
                         onChange={(e) => setFacultyReg({ ...facultyReg, designation: e.target.value })}
-                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full px-2 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       >
                         {designationOptions.map((desig) => (
                           <option key={desig} value={desig}>{desig}</option>
@@ -971,7 +971,7 @@ export const AuthModal = ({
                           placeholder="••••••••"
                           value={facultyReg.password}
                           onChange={(e) => setFacultyReg({ ...facultyReg, password: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                         />
                         <button
                           type="button"
@@ -995,7 +995,7 @@ export const AuthModal = ({
                           placeholder="••••••••"
                           value={facultyReg.confirmPassword}
                           onChange={(e) => setFacultyReg({ ...facultyReg, confirmPassword: e.target.value })}
-                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                          className="w-full pl-3 pr-8 py-2 text-xs rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                         />
                         <button
                           type="button"
@@ -1034,14 +1034,14 @@ export const AuthModal = ({
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border-2 border-dashed border-[#6D28D9] dark:border-[#FAF8FF] flex items-center justify-between">
+                  <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-black border-2 border-dashed border-[#FF933E]/50 dark:border-[#03C988]/50 dark:border-[#FAF8FF] flex items-center justify-between">
                     <span className="font-mono text-xl font-black tracking-widest text-[#000000] dark:text-[#FFFFFF]">
                       {generatedMemberId}
                     </span>
                     <button
                       type="button"
                       onClick={handleCopyMemberId}
-                      className="p-1.5 rounded-lg bg-white dark:bg-[#150F2C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 cursor-pointer"
+                      className="p-1.5 rounded-lg bg-white dark:bg-black border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 cursor-pointer"
                     >
                       {copiedId ? <CheckIcon className="w-4 h-4 text-green-600" /> : <DocumentDuplicateIcon className="w-4 h-4 text-[#6D28D9]" />}
                     </button>
@@ -1080,7 +1080,7 @@ export const AuthModal = ({
                       placeholder="System Administrator"
                       value={adminLogin.superName}
                       onChange={(e) => setAdminLogin({ ...adminLogin, superName: e.target.value })}
-                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                      className="w-full px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                     />
                   </div>
 
@@ -1096,7 +1096,7 @@ export const AuthModal = ({
                         placeholder="admin@unimitra.edu.in"
                         value={adminLogin.superEmail}
                         onChange={(e) => setAdminLogin({ ...adminLogin, superEmail: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                     </div>
                   </div>
@@ -1113,7 +1113,7 @@ export const AuthModal = ({
                         placeholder="••••••••"
                         value={adminLogin.superPassword}
                         onChange={(e) => setAdminLogin({ ...adminLogin, superPassword: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
+                        className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988]"
                       />
                       <button
                         type="button"
@@ -1154,7 +1154,7 @@ export const AuthModal = ({
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#3B2868]"
+                          className="w-10 h-12 text-center font-black text-base rounded-xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#3B2868]"
                         />
                       ))}
                     </div>

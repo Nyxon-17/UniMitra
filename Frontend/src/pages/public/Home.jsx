@@ -1,21 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { universityService } from '../../services/universityService';
 import { UniversityHero3D } from '../../components/common/Graphic3D';
-import { 
-  SearchIcon, 
-  BuildingLibraryIcon, 
-  BrainIcon, 
-  ShieldCheckIcon, 
-  ArrowRightIcon, 
-  CheckCircleIcon, 
-  DocumentTextIcon, 
-  ClipboardDocumentCheckIcon, 
-  BanknotesIcon, 
+import {
+  SearchIcon,
+  BuildingLibraryIcon,
+  BrainIcon,
+  ShieldCheckIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  DocumentTextIcon,
+  ClipboardDocumentCheckIcon,
+  BanknotesIcon,
   BuildingOfficeIcon,
   IdentificationIcon,
   UserGroupIcon
 } from '../../components/common/Icons';
 
 export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+
+  useEffect(() => {
+    const handleUnivChange = (e) => {
+      if (e.detail?.profile) {
+        setUnivProfile(e.detail.profile);
+      } else {
+        setUnivProfile(universityService.getProfile());
+      }
+    };
+    window.addEventListener('unimitra_university_changed', handleUnivChange);
+    return () => window.removeEventListener('unimitra_university_changed', handleUnivChange);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDemoTab, setActiveDemoTab] = useState('as');
   const [demoInput, setDemoInput] = useState('গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতকোত্তৰ হোষ্টেল আবণ্টন আৰু ছাত্ৰবৃত্তিৰ চৰ্ত কি?');
@@ -66,7 +81,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
   return (
     <div className="bg-transparent min-h-screen text-[#0F172A] dark:text-[#FAF8FF] transition-colors duration-200">
-      
+
       {/* HERO SECTION */}
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-grid-pattern">
         {/* Soft Ambient Glow */}
@@ -74,10 +89,10 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
+
             {/* Left Content (Cols 7) */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              
+
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-[#000000] dark:text-[#FFFFFF]">
                 {currentLang === 'as' ? (
@@ -103,15 +118,15 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="flex-1 flex items-center px-4 neo-inset rounded-full">
                     <SearchIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mr-2 shrink-0" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder={currentLang === 'as' ? 'নিয়ম, পৰীক্ষা, ভৰ্তি বা ছাত্ৰবৃত্তিৰ প্ৰশ্ন লিখক...' : 'Ask regulations, exams, admissions, scholarships...'}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full py-3 bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/60 focus:outline-none font-semibold"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={handlePortalAccess}
                     className="flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF933E] to-[#FFCB56] hover:from-[#E87A24] hover:to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] text-xs sm:text-sm font-black transition-all cursor-pointer shadow-md hover:scale-105 shrink-0"
                   >
@@ -119,13 +134,13 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                     <ArrowRightIcon className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 {/* Popular Institutional Query Topics */}
                 <div className="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-[#73A5CA]/25 dark:border-[#1C82AD]/30 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
                   <span className="font-bold">Topics:</span>
-                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Exam Passing (৪০% নম্বৰ)</span>
-                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Ishan Uday (ঈশান উদয়)</span>
-                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#13005A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Attendance (উপস্থিতি ৰেহাই)</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Exam Passing (৪০% নম্বৰ)</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Ishan Uday (ঈশান উদয়)</span>
+                  <span onClick={handlePortalAccess} className="bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] px-3 py-1 rounded-full text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-all">Attendance (উপস্থিতি ৰেহাই)</span>
                 </div>
               </div>
 
@@ -157,13 +172,13 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
       </section>
 
       {/* LIVE INTERACTIVE GROUNDED ASSISTANCE PREVIEW */}
-      <section className="py-20 bg-white/70 dark:bg-[#00337C]/70 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 transition-colors duration-200">
+      <section className="py-20 bg-white/70 dark:bg-[#141414]/70 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 transition-colors duration-200">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-2xl sm:text-4xl font-black text-[#000000] dark:text-[#FFFFFF]">
-              {currentLang === 'as' 
-                ? 'UniMitra-ই বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ উত্তৰ কেনেদৰে দিয়ে চাওক' 
+              {currentLang === 'as'
+                ? 'UniMitra-ই বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ উত্তৰ কেনেদৰে দিয়ে চাওক'
                 : 'See How UniMitra Answers Institutional Queries'}
             </h2>
             <p className="text-sm sm:text-base text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-3">
@@ -173,7 +188,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
           {/* Interactive Neomorphic Demo Card */}
           <div className="w-full max-w-5xl mx-auto neo-surface rounded-[2.5rem] shadow-[0_24px_70px_rgba(115,165,202,0.22)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.65)] overflow-hidden border border-white/80 dark:border-[#1C82AD]/40">
-            
+
             {/* Card Header */}
             <div className="bg-gradient-to-r from-[#FF933E] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white dark:text-black">
               <div className="flex items-center space-x-2">
@@ -184,22 +199,20 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                   UniMitra Live Grounded Assistant
                 </span>
               </div>
-              
+
               {/* Language Switch Pills */}
               <div className="flex items-center space-x-1 bg-black/20 p-1 rounded-full">
                 <button
                   onClick={() => handleDemoSwitch('as')}
-                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${
-                    activeDemoTab === 'as' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
-                  }`}
+                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${activeDemoTab === 'as' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
+                    }`}
                 >
                   অসমীয়া
                 </button>
                 <button
                   onClick={() => handleDemoSwitch('en')}
-                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${
-                    activeDemoTab === 'en' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
-                  }`}
+                  className={`px-3 py-1 text-xs font-black rounded-full cursor-pointer transition-all ${activeDemoTab === 'en' ? 'bg-white text-black shadow-xs' : 'text-white/80 hover:text-white'
+                    }`}
                 >
                   English
                 </button>
@@ -208,14 +221,14 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
             {/* Content Area */}
             <div className="p-6 sm:p-8 space-y-5">
-              
+
               {/* Institutional Query Box */}
               <div className="neo-inset p-4 rounded-2xl">
                 <div className="flex items-center justify-between text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 mb-1.5">
                   <span className="text-[#FF933E] dark:text-[#03C988] font-black flex items-center space-x-1.5">
                     <span>Inquiry Query (প্ৰশ্ন)</span>
                   </span>
-                  <span className="text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#13005A] px-2.5 py-0.5 rounded-full text-[10px] font-black">
+                  <span className="text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#0A0A0A] px-2.5 py-0.5 rounded-full text-[10px] font-black">
                     Institutional Regulation Check
                   </span>
                 </div>
@@ -225,7 +238,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
               </div>
 
               {/* RAG Workflow Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#FFE9A9]/30 dark:bg-[#00337C] rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/35 text-xs font-bold text-[#000000] dark:text-[#FFFFFF]/80">
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#FFE9A9]/30 dark:bg-[#141414] rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/35 text-xs font-bold text-[#000000] dark:text-[#FFFFFF]/80">
                 <span className="text-[#FF933E] dark:text-[#03C988]">1. Natural Language Parse</span>
                 <span className="text-[#FF933E] dark:text-[#03C988]">➔</span>
                 <span className="text-[#FF933E] dark:text-[#03C988]">2. Multilingual Dense Vector Search</span>
@@ -240,7 +253,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                     <CheckCircleIcon className="w-5 h-5 text-[#03C988]" />
                     <span>Verified Institutional Answer</span>
                   </div>
-                  <span className="text-xs bg-[#FFE9A9]/40 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] px-3 py-1 rounded-xl font-bold border border-[#6D28D9]/30">
+                  <span className="text-xs bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] px-3 py-1 rounded-xl font-bold border border-[#FF933E]/50 dark:border-[#03C988]/50/30">
                     {demoResponse.confidence}
                   </span>
                 </div>
@@ -257,7 +270,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                     <span className="text-[#FF933E] dark:text-[#03C988]">•</span>
                     <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] font-black">{demoResponse.page}</span>
                   </div>
-                  <button 
+                  <button
                     onClick={handlePortalAccess}
                     className="text-xs font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] hover:underline cursor-pointer"
                   >
@@ -275,11 +288,11 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
       {/* 6 INSTITUTIONAL DOMAINS */}
       <section className="py-20 bg-transparent border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 transition-colors duration-200">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-2xl sm:text-4xl font-black text-[#000000] dark:text-[#FFFFFF]">
-              {currentLang === 'as' 
-                ? 'UniMitra-ৰ সেৱা আৰু শৈক্ষিক তথ্যৰ পৰিসৰ' 
+              {currentLang === 'as'
+                ? 'UniMitra-ৰ সেৱা আৰু শৈক্ষিক তথ্যৰ পৰিসৰ'
                 : 'Comprehensive University Assistance Scope'}
             </h2>
             <p className="text-sm sm:text-base text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-3">
@@ -288,81 +301,81 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
+
             {/* Domain 1: Regulations */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#13005A] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
-                <BuildingLibraryIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <BuildingLibraryIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 University Regulations & Ordinances
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 Institutional statutes, code of conduct, academic council policies, attendance thresholds, and grievance redressal mechanisms.
               </p>
             </div>
 
             {/* Domain 2: Examinations */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-center mb-5">
-                <ClipboardDocumentCheckIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <ClipboardDocumentCheckIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Examinations & Evaluation Rules
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 Passing criteria, grading system (CBCS / NEP 2020), back paper rules, re-evaluation guidelines, and exam schedules.
               </p>
             </div>
 
             {/* Domain 3: Academic Programs */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#13005A] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
-                <IdentificationIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <IdentificationIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Academic Programs & Degrees
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 Undergraduate, Postgraduate, Diploma, and Ph.D. degree structures, department profiles, duration, and credit frameworks.
               </p>
             </div>
 
             {/* Domain 4: Scholarships */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-center mb-5">
-                <BanknotesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <BanknotesIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Scholarships & Financial Grants
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 State merit schemes, Ishan Uday scholarships, post-matric funds, eligibility criteria, required documentation, and deadlines.
               </p>
             </div>
 
             {/* Domain 5: Admissions */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#13005A] border border-[#6D28D9]/40 flex items-center justify-center mb-5">
-                <DocumentTextIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <DocumentTextIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Admission Procedures & Cut-Offs
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 Step-by-step application steps, entrance test guidelines, reservation policies, document verification, and seat matrices.
               </p>
             </div>
 
             {/* Domain 6: Campus Facilities */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-center mb-5">
-                <BuildingOfficeIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]" />
+            <div className="neo-surface p-6 sm:p-7 rounded-[2rem] hover:scale-[1.02] transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <BuildingOfficeIcon className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
+              <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Campus Facilities & Services
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 leading-relaxed">
                 Hostel allotment guidelines, central library timing, health centers, student welfare cells, laboratory guidelines, and sports facilities.
               </p>
             </div>
@@ -372,79 +385,85 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
         </div>
       </section>
 
-      {/* SUPPORTED UNIVERSITIES DIRECTORY */}
-      <section className="py-20 bg-white/70 dark:bg-[#00337C]/70 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 transition-colors duration-200">
+      {/* SINGLE UNIVERSITY PROFILE SHOWCASE */}
+      <section className="py-20 bg-transparent border-b border-black/5 dark:border-white/10 transition-colors duration-200">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-8 mb-8 border-b border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 gap-4">
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-8 mb-8 border-b border-black/5 dark:border-white/10 gap-4">
             <div>
+              <div className="flex items-center space-x-2 mb-1">
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988]">
+                  Institutional Profile
+                </span>
+                <span className="text-[10px] font-bold text-black/50 dark:text-white/50">
+                  {univProfile.abbreviation || 'MU'}
+                </span>
+              </div>
               <h3 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF]">
-                {currentLang === 'as' ? 'অসমৰ অগ্ৰণী বিশ্ববিদ্যালয়সমূহ' : 'Universities in Assam Knowledge Base'}
+                {univProfile.name || 'My University'}
               </h3>
-              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">
-                Centralized access to official regulations, admissions, notices, and ordinances across institutions.
+              <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 mt-1">
+                {univProfile.motto || 'Knowledge, Research & Innovation'}
               </p>
             </div>
-            <button 
+            <button
               onClick={handlePortalAccess}
-              className="px-5 py-2.5 text-xs sm:text-sm font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] rounded-2xl border border-[#6D28D9] transition-all cursor-pointer self-start sm:self-auto shadow-xs"
+              className="px-5 py-2.5 text-xs sm:text-sm font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-[#000000] rounded-full transition-all cursor-pointer self-start sm:self-auto shadow-sm"
             >
               Enter University Portal ➔
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {universitiesList.map((univ) => (
-              <div 
-                key={univ.code}
-                className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 hover:border-[#6D28D9] transition-all cursor-pointer"
-                onClick={handlePortalAccess}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black px-2.5 py-1 rounded-xl bg-white dark:bg-[#00337C] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF]">
-                    {univ.code}
-                  </span>
-                  <span className="text-[10px] font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#3B2868] px-2.5 py-1 rounded-lg">
-                    Institutional Index
-                  </span>
-                </div>
-                <h4 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mb-1">{univ.name}</h4>
-                <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mb-4">{univ.city}</p>
-                <div className="flex items-center justify-between pt-3 border-t border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                  <span className="font-semibold">{univ.domains}</span>
-                  <span className="font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] flex items-center space-x-1">
-                    <span>Ask AI</span>
-                    <ArrowRightIcon className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="neo-surface p-5 rounded-2xl space-y-1">
+              <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase">Governance</span>
+              <h4 className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">Vice Chancellor</h4>
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">{univProfile.viceChancellor || 'Prof. Vice Chancellor'}</p>
+            </div>
+
+            <div className="neo-surface p-5 rounded-2xl space-y-1">
+              <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase">Accreditation</span>
+              <h4 className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">NAAC Status</h4>
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">{univProfile.naacAccreditation || 'Grade A++'}</p>
+            </div>
+
+            <div className="neo-surface p-5 rounded-2xl space-y-1">
+              <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase">Campus Area</span>
+              <h4 className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">Main Campus</h4>
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">{univProfile.campusArea || '500+ Acres'}</p>
+            </div>
+
+            <div className="neo-surface p-5 rounded-2xl space-y-1">
+              <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase">Student Helpline</span>
+              <h4 className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">Official Contact</h4>
+              <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70 truncate">{univProfile.helpline || '+91-373-2370000'}</p>
+            </div>
           </div>
 
         </div>
       </section>
 
       {/* FINAL CALL TO ACTION */}
-      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-[#4C1D95] via-[#3B0764] to-[#0A0718] text-[#FAF8FF]">
+      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-[#FFE9A9]/50 via-white to-[#FFCB56]/30 dark:from-black dark:via-[#0A0A0A] dark:to-black text-[#000000] dark:text-white border-t border-black/5 dark:border-white/10">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 text-center space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#FAF8FF]">
-            {currentLang === 'as' 
-              ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক আৰু প্ৰশাসনিক তথ্য এতিয়া আঙুলিৰ মূৰত' 
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#000000] dark:text-white">
+            {currentLang === 'as'
+              ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক আৰু প্ৰশাসনিক তথ্য এতিয়া আঙুলিৰ মূৰত'
               : 'Your University. Your Language. Your AI Assistant.'}
           </h2>
 
-          <p className="text-sm sm:text-lg text-[#C4B5FD] max-w-2xl mx-auto leading-relaxed">
-            Join students, faculty members, and administrative staff across Assam accessing natural language answers to official university regulations, exams, admissions, and facilities.
+          <p className="text-sm sm:text-lg text-[#000000]/70 dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
+            Join students, faculty members, and administrative staff accessing natural language answers to official university regulations, exams, admissions, and facilities.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
-            <button 
+            <button
               onClick={() => onOpenAuth && onOpenAuth('login')}
               className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-elevated-sage text-sm"
             >
               Sign In to Access Portal
             </button>
-            <button 
+            <button
               onClick={() => onNavigate && onNavigate('features')}
               className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-[#FAF8FF] bg-transparent border-2 border-[#3B2868] hover:border-[#FAF8FF] transition-all cursor-pointer text-sm"
             >

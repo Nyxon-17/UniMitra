@@ -108,7 +108,7 @@ export const DashboardSidebar = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#13005A]/95 backdrop-blur-xs border-r border-[#73A5CA]/35 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xs border-r border-[#73A5CA]/35 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Upper Sidebar Section */}
@@ -161,16 +161,7 @@ export const DashboardSidebar = ({
         </div>
 
         {/* Lower Sidebar Actions */}
-        <div className="p-4 border-t border-[#73A5CA]/35 dark:border-[#1C82AD]/40 space-y-2">
-          {/* Admin Ingestion Console Access */}
-          <button
-            onClick={handleAdminClick}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#00337C] hover:bg-[#FFCB56] dark:hover:bg-[#1C82AD]/40 transition-all cursor-pointer border border-[#FFCB56] dark:border-[#1C82AD]/50"
-          >
-            <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono font-black text-[#73A5CA] dark:text-[#03C988]">Ingest ⚙️</span>
-          </button>
-
+        <div className="p-4 border-t border-[#73A5CA]/35 dark:border-white/10 space-y-2">
           {/* Secure Sign Out Action */}
           <button
             onClick={() => {

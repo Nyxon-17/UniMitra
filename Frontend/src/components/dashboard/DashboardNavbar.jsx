@@ -18,7 +18,7 @@ export const DashboardNavbar = ({
   studentInfo = { name: 'Scholar', role: 'Student' }
 }) => {
   return (
-    <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-[#13005A]/95 backdrop-blur-xs border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40 transition-colors duration-200 px-4 sm:px-6 lg:px-8 shadow-xs">
+    <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xs border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40 transition-colors duration-200 px-4 sm:px-6 lg:px-8 shadow-xs">
       <div className="flex items-center justify-between h-full">
         
         {/* Left: Mobile Sidebar Button + Search Input */}
@@ -37,7 +37,7 @@ export const DashboardNavbar = ({
             <input
               type="text"
               placeholder={currentLang === 'as' ? 'নিয়ম, পৰীক্ষা, ভৰ্তি বা ছাত্ৰবৃত্তি বিচাৰক...' : 'Search regulations, exams, admissions, scholarships...'}
-              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#00337C]/60 text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988] transition-all font-semibold"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#141414]/60 text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E] dark:focus:border-[#03C988] transition-all font-semibold"
             />
           </div>
         </div>
@@ -55,7 +55,7 @@ export const DashboardNavbar = ({
           </button>
 
           {/* Language Switcher */}
-          <div className="flex items-center p-1 bg-[#FFE9A9]/40 dark:bg-[#00337C] rounded-xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
+          <div className="flex items-center p-1 bg-[#FFE9A9]/40 dark:bg-[#141414] rounded-xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
             <button
               onClick={() => currentLang !== 'as' && onToggleLang()}
               className={`px-2 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
@@ -82,7 +82,7 @@ export const DashboardNavbar = ({
           <button
             onClick={onToggleTheme}
             aria-label="Toggle theme"
-            className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#00337C]/60 text-[#1E1035] dark:text-[#03C988] hover:bg-[#E0D4FD]/40 cursor-pointer dark:hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]"
+            className="p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#141414]/60 text-[#1E1035] dark:text-[#03C988] hover:bg-[#E0D4FD]/40 cursor-pointer dark:hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]"
           >
             {isDark ? <SunIcon className="w-4 h-4 text-[#03C988]" /> : <MoonIcon className="w-4 h-4 text-[#FF933E]" />}
           </button>
@@ -90,7 +90,7 @@ export const DashboardNavbar = ({
           {/* Notifications Indicator */}
           <button
             onClick={() => alert("No pending institutional notices or circular alerts.")}
-            className="relative p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#00337C]/60 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#E0D4FD]/40 cursor-pointer"
+            className="relative p-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#141414]/60 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#E0D4FD]/40 cursor-pointer"
             aria-label="View notifications"
           >
             <BellIcon className="w-4 h-4" />

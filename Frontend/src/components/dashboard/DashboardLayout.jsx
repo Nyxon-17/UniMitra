@@ -36,7 +36,7 @@ export const DashboardLayout = ({
       />
 
       {/* Main Content Area (offset by sidebar on desktop) */}
-      <div className="lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10">
+      <div className={`lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10 ${activeTab === 'assistant' ? 'h-screen max-h-screen overflow-hidden' : ''}`}>
         
         {/* Top Dashboard Navbar */}
         <DashboardNavbar
@@ -50,8 +50,8 @@ export const DashboardLayout = ({
         />
 
         {/* Dynamic Viewport (Zero wasted margins on AI chat for maximum breathing room) */}
-        <main className={`flex-1 ${activeTab === 'assistant' ? 'p-2 sm:p-3' : 'p-4 sm:p-6 lg:p-8'}`}>
-          <div className="w-full h-full">
+        <main className={`flex-1 min-h-0 ${activeTab === 'assistant' ? 'p-2 sm:p-3 overflow-hidden flex flex-col' : 'p-4 sm:p-6 lg:p-8 overflow-y-auto'}`}>
+          <div className="w-full h-full flex flex-col min-h-0 overflow-hidden">
             {children || <Outlet />}
           </div>
         </main>

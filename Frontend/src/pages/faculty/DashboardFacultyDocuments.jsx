@@ -208,11 +208,11 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
     <div className="space-y-6">
       
       {/* Faculty Quick Access Hub */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+              <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                 {currentLang === 'as' ? 'অধ্যাপক আৰু গৱেষক পৰ্টেল' : 'Faculty Research & Academic Hub'}
               </span>
               <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
@@ -231,7 +231,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 shrink-0">
             <button
               onClick={() => onNavigateTab && onNavigateTab('assistant', { prefillQuery: 'What are UGC CAS promotion criteria for Associate Professor?' })}
-              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
+              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
               title="Ask Academic Questions"
             >
               <SparklesIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
@@ -241,7 +241,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('regulations')}
-              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
+              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
               title="Search Regulations"
             >
               <BuildingLibraryIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
@@ -251,7 +251,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('faculty-exams')}
-              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
+              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
               title="Examination Guidelines"
             >
               <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
@@ -261,7 +261,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('faculty-saved')}
-              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
+              className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
               title="Saved Conversations"
             >
               <ShieldCheckIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
@@ -273,7 +273,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
         {/* Global Toast Message */}
         {toastAlert && (
-          <div className="mt-4 p-3 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 animate-fade-in">
+          <div className="mt-4 p-3 rounded-2xl bg-[#FFE9A9] dark:bg-[#0A0A0A] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 animate-fade-in">
             <CheckCircleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
             <span>{toastAlert}</span>
           </div>
@@ -286,7 +286,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'repository'
                 ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
             }`}
           >
             <BuildingLibraryIcon className="w-4 h-4" />
@@ -298,7 +298,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'upload'
                 ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
             }`}
           >
             <CloudArrowUpIcon className="w-4 h-4" />
@@ -310,7 +310,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'my-submissions'
                 ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
             }`}
           >
             <ClockIcon className="w-4 h-4" />
@@ -325,7 +325,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       {activeTab === 'repository' && (
         <div className="space-y-6">
           {/* Search & Category Filter */}
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="relative w-full md:w-80">
               <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
@@ -333,7 +333,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 placeholder="Search CAS, API scores, PhD rules, workload..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
               />
             </div>
 
@@ -341,7 +341,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               <select
                 value={selectedUniv}
                 onChange={(e) => setSelectedUniv(e.target.value)}
-                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]"
+                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]"
               >
                 <option value="All">All Universities</option>
                 <option value="Gauhati">Gauhati University (GU)</option>
@@ -353,7 +353,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]"
+                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]"
               >
                 <option value="All">All Categories</option>
                 {categories.map((c) => (
@@ -368,11 +368,11 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             {filteredAuthorizedDocs.map((doc) => (
               <div 
                 key={doc.id}
-                className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                className="neo-surface rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                    <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                       {doc.category}
                     </span>
                     <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">
@@ -388,7 +388,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                     {doc.summary}
                   </p>
 
-                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-1.5 text-xs">
+                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-1.5 text-xs">
                     <div className="flex items-center justify-between text-[11px] font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
                       <span>Authority: {doc.university}</span>
                       <span>{doc.pages} Pages ({doc.chunksCount} chunks)</span>
@@ -437,7 +437,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       {/* TAB 2: FACULTY PDF & DOCUMENT INGESTION FORM                        */}
       {/* =================================================================== */}
       {activeTab === 'upload' && (
-        <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
           
           <div className="border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-4">
             <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase tracking-wider">
@@ -453,7 +453,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
           </div>
 
           {/* Institutional Governance Notice Banner */}
-          <div className="p-4 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#13005A] border-2 border-[#FFCB56] dark:border-[#03C988] flex items-start space-x-3">
+          <div className="p-4 rounded-2xl bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] border-2 border-[#FFCB56] dark:border-[#03C988] flex items-start space-x-3">
             <ShieldCheckIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] shrink-0 mt-0.5" />
             <div className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
               <strong className="block font-black uppercase text-[11px] text-[#FF933E] dark:text-[#03C988] mb-0.5">
@@ -478,7 +478,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   ? 'border-[#FF933E] bg-[#FFE9A9]/40 scale-[1.01]' 
                   : selectedFile 
                     ? 'border-[#03C988] bg-[#03C988]/10' 
-                    : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#13005A] hover:border-[#FF933E]'
+                    : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] hover:border-[#FF933E]'
               }`}
             >
               <input 
@@ -489,7 +489,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 className="hidden" 
               />
 
-              <div className="w-14 h-14 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black mb-3 shadow-xs">
+              <div className="w-14 h-14 rounded-2xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black mb-3 shadow-xs">
                 <CloudArrowUpIcon className="w-7 h-7" />
               </div>
 
@@ -540,7 +540,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   placeholder="e.g. M.Sc. Data Science Syllabus & Ordinance 2024"
                   value={uploadFormData.title}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, title: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
                 />
               </div>
 
@@ -553,7 +553,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   placeholder="যেনে: এম.এছচি. ডাটা চাইন্স পাঠ্যক্ৰম আৰু নিৰ্দেশনাৱলী ২০২৪"
                   value={uploadFormData.asTitle}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, asTitle: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
                 />
               </div>
 
@@ -564,7 +564,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 <select
                   value={uploadFormData.university}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                 >
                   <option value="Gauhati University (GU)">Gauhati University (GU)</option>
                   <option value="Dibrugarh University (DU)">Dibrugarh University (DU)</option>
@@ -582,7 +582,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 <select
                   value={uploadFormData.category}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.name}>{c.name}</option>
@@ -599,7 +599,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   required
                   value={uploadFormData.department}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, department: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
                 />
               </div>
 
@@ -611,7 +611,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   type="text"
                   value={uploadFormData.academicYear}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, academicYear: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
                 />
               </div>
             </div>
@@ -625,13 +625,13 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 placeholder="Brief summary of ordinances, passing thresholds, attendance condonation, or syllabus modules covered..."
                 value={uploadFormData.summary}
                 onChange={(e) => setUploadFormData({ ...uploadFormData, summary: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
+                className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]"
               />
             </div>
 
             {/* OCR & Ingestion Pipeline Progress */}
             {isProcessing && (
-              <div className="p-5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#13005A] border-2 border-[#FF933E] dark:border-[#03C988] space-y-3">
+              <div className="p-5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border-2 border-[#FF933E] dark:border-[#03C988] space-y-3">
                 <div className="flex items-center justify-between text-xs font-black text-[#000000] dark:text-[#FFFFFF]">
                   <div className="flex items-center space-x-2">
                     <ArrowPathIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] animate-spin" />
@@ -665,7 +665,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       {/* =================================================================== */}
       {activeTab === 'my-submissions' && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm">
+          <div className="neo-surface rounded-3xl p-6 shadow-sm">
             <h2 className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
               Departmental Submissions & Governance Workflow
             </h2>
@@ -674,10 +674,10 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-sm">
+          <div className="neo-surface rounded-3xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#FFE9A9]/20 dark:bg-[#13005A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
+                <thead className="bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000]/70 dark:text-[#FFFFFF]/80 font-black uppercase text-[10px]">
                   <tr>
                     <th className="p-4">Submission ID & Title</th>
                     <th className="p-4">University & Dept</th>
@@ -763,12 +763,12 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       {/* Inspect Document Modal */}
       {activeModalDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="neo-surface rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
               <div className="flex items-center space-x-2">
                 <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
                 <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{activeModalDoc.id}</span>
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#13005A]">
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A]">
                   {activeModalDoc.approvalStatus}
                 </span>
               </div>
@@ -786,7 +786,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               {activeModalDoc.summary}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
+            <div className="grid grid-cols-2 gap-3 p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
               <div>
                 <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">University & Dept:</span>
                 <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{activeModalDoc.university} ({activeModalDoc.department})</span>
@@ -805,7 +805,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               </div>
             </div>
 
-            <div className="p-3 bg-[#E0D4FD]/25 dark:bg-[#13005A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
+            <div className="p-3 bg-[#E0D4FD]/25 dark:bg-[#0A0A0A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
               <strong>Institutional Citation:</strong> {activeModalDoc.citation}
             </div>
 

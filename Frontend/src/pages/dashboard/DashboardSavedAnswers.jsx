@@ -95,7 +95,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Card */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
@@ -110,7 +110,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF]">
+            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
               {savedList.length} Saved Items
             </span>
           </div>
@@ -118,7 +118,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-sm">
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-sm">
         <div className="relative w-full">
           <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -126,14 +126,14 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
             placeholder={currentLang === 'as' ? 'সংৰক্ষিত উত্তৰৰ মাজত অনুসন্ধান কৰক...' : 'Search your saved answers by keyword...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
           />
         </div>
       </div>
 
       {/* Saved Answers Cards */}
       {filteredList.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl space-y-3">
+        <div className="text-center py-16 neo-surface rounded-3xl space-y-3">
           <DocumentTextIcon className="w-12 h-12 text-[#FF933E] dark:text-[#03C988] mx-auto opacity-50" />
           <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">No saved answers found</h3>
           <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
@@ -145,7 +145,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
           {filteredList.map((item) => (
             <div 
               key={item.id}
-              className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
+              className="neo-surface rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 pb-3">
                 <div className="flex items-center space-x-2">
@@ -182,7 +182,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
               </h2>
 
               {/* Grounded Answer */}
-              <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
+              <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
                 {item.answer}
               </div>
 

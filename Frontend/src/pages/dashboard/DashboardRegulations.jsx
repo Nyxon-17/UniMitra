@@ -52,7 +52,7 @@ export const DashboardRegulations = ({
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -80,7 +80,7 @@ export const DashboardRegulations = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Category Selector */}
           <div>
@@ -90,7 +90,7 @@ export const DashboardRegulations = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
             >
               {categories.map((c) => (
                 <option key={c}>{c}</option>
@@ -110,7 +110,7 @@ export const DashboardRegulations = ({
                 placeholder="Attendance, condonation, credit..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
               />
             </div>
           </div>
@@ -124,11 +124,11 @@ export const DashboardRegulations = ({
           return (
             <div
               key={reg.id}
-              className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-5 sm:p-6 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all space-y-4"
+              className="neo-surface rounded-3xl p-5 sm:p-6 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all space-y-4"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                     {reg.ordinanceNo || 'Statutory Ordinance'}
                   </span>
                   <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
@@ -138,7 +138,7 @@ export const DashboardRegulations = ({
 
                 <button
                   onClick={() => onNavigateTab('assistant', { prefillQuery: currentLang === 'as' ? reg.asTitle || reg.title : reg.title })}
-                  className="px-3 py-1.5 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#13005A] text-xs font-black text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black transition-all cursor-pointer flex items-center space-x-1.5 self-start sm:self-auto"
+                  className="px-3 py-1.5 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] text-xs font-black text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black transition-all cursor-pointer flex items-center space-x-1.5 self-start sm:self-auto"
                 >
                   <SparklesIcon className="w-3.5 h-3.5" />
                   <span>Ask AI Assistant</span>

@@ -81,7 +81,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
     <div className="space-y-6 max-w-4xl mx-auto">
       
       {/* Header */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="space-y-2">
           <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
             {currentLang === 'as' ? 'প্ৰণালীৰ মানোন্নয়ন আৰু মতামত' : 'User Quality Assurance & Feedback'}
@@ -98,14 +98,14 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
       </div>
 
       {submittedAlert && (
-        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#000000] dark:text-[#FFFFFF] font-black text-xs sm:text-sm flex items-center space-x-2">
+        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 text-[#000000] dark:text-[#FFFFFF] font-black text-xs sm:text-sm flex items-center space-x-2">
           <CheckCircleIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
           <span>Thank you! Your feedback has been forwarded to the University Ingestion Team.</span>
         </div>
       )}
 
       {/* Submission Form */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -115,7 +115,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
               <select
                 value={feedbackType}
                 onChange={(e) => setFeedbackType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               >
                 <option>Accuracy & Citations</option>
                 <option>Outdated Regulation</option>
@@ -132,7 +132,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
               <select
                 value={university}
                 onChange={(e) => setUniversity(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               >
                 <option>Gauhati University (GU)</option>
                 <option>Dibrugarh University (DU)</option>
@@ -156,7 +156,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
                   className={`w-9 h-9 rounded-xl font-black text-sm flex items-center justify-center cursor-pointer transition-all ${
                     rating >= star
                       ? 'bg-[#C4B5FD] dark:bg-[#FFE9A9]/20 text-[#000000]'
-                      : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000]/70 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                      : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000]/70 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
                   }`}
                 >
                   ★ {star}
@@ -175,7 +175,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
               placeholder="Describe your feedback, specify any missing ordinance or citation discrepancy..."
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              className="w-full p-3.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+              className="w-full p-3.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
             />
           </div>
 
@@ -189,7 +189,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
       </div>
 
       {/* Previous Submissions Log */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
         <h2 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
           My Submitted Feedback History
         </h2>
@@ -198,11 +198,11 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
           {submissions.map((item) => (
             <div 
               key={item.id} 
-              className="p-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 rounded-2xl space-y-2"
+              className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 rounded-2xl space-y-2"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF]">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
                     {item.type}
                   </span>
                   <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">

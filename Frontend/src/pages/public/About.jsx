@@ -76,7 +76,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
         {/* The Institutional Challenge & Solution */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-8 shadow-sm">
+          <div className="neo-surface rounded-3xl p-8 shadow-sm">
             <h2 className="text-lg sm:text-xl font-black text-[#000000] dark:text-[#FFFFFF] mb-3">
               The Institutional Information Challenge
             </h2>
@@ -85,7 +85,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#6D28D9] rounded-3xl p-8 shadow-elevated-sage dark:shadow-elevated-gold">
+          <div className="bg-white dark:bg-[#141414] border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 rounded-3xl p-8 shadow-elevated-sage dark:shadow-elevated-gold">
             <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] mb-3">
               <CheckCircleIcon className="w-6 h-6 text-[#10B981]" />
               <h2 className="text-lg sm:text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
@@ -112,8 +112,8 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {targetAudiences.map((aud, i) => (
-              <div key={i} className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d">
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+              <div key={i} className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                   {aud.tag}
                 </span>
                 <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] mt-3 mb-2">
@@ -130,7 +130,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
         {/* Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {platformFeatures.map((f, idx) => (
-            <div key={idx} className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm card-3d">
+            <div key={idx} className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
               <span className="text-[10px] font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] uppercase tracking-wider">
                 {f.badge}
               </span>

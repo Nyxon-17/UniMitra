@@ -48,7 +48,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -76,7 +76,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1">
             {categories.map((cat) => (
@@ -86,7 +86,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
                 className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all ${
                   activeCategory === cat.id
                     ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                    : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
+                    : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
                 }`}
               >
                 {cat.label}
@@ -101,7 +101,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
               placeholder="Search marks, re-evaluation, backlogs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
             />
           </div>
         </div>
@@ -112,10 +112,10 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
         {filtered.map((exam) => (
           <div
             key={exam.id}
-            className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+            className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                 {exam.category} • {exam.ordinanceNo}
               </span>
               <button
@@ -142,7 +142,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
             </div>
 
             {exam.details && (
-              <div className="p-3 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs text-[#000000]/80 dark:text-[#FFFFFF]/80">
+              <div className="p-3 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs text-[#000000]/80 dark:text-[#FFFFFF]/80">
                 <strong>Key Provision:</strong> {exam.details}
               </div>
             )}

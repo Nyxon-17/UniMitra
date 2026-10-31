@@ -93,7 +93,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
@@ -108,7 +108,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF]">
+            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
               {consultations.length} Consultations
             </span>
           </div>
@@ -116,7 +116,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
           <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -124,7 +124,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
             placeholder="Search saved faculty consultations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
           />
         </div>
 
@@ -136,7 +136,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all shrink-0 ${
                 selectedTag === tag
                   ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
-                  : 'bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000]/70 dark:text-[#FFFFFF]/80 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+                  : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000]/70 dark:text-[#FFFFFF]/80 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
               }`}
             >
               {tag}
@@ -150,7 +150,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
         {filtered.map((item) => (
           <div 
             key={item.id}
-            className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
+            className="neo-surface rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 pb-3">
               <div className="flex items-center space-x-2">
@@ -185,11 +185,11 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               {item.title}
             </h2>
 
-            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#13005A] rounded-xl text-xs text-[#000000] dark:text-[#FFFFFF] font-bold">
+            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#0A0A0A] rounded-xl text-xs text-[#000000] dark:text-[#FFFFFF] font-bold">
               Q: {item.query}
             </div>
 
-            <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
+            <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
               {item.response}
             </div>
 

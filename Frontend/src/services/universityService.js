@@ -17,32 +17,32 @@ const STORAGE_KEY = 'unimitra_university_master_config';
 
 export const DEFAULT_UNIVERSITY_CONFIG = {
   profile: {
-    id: 'UNIV-DU',
-    name: 'Dibrugarh University',
-    asName: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়',
-    abbreviation: 'DU',
-    motto: 'Knowledge is Light',
-    asMotto: 'নিত্যং জ্ঞান প্ৰদীপঃ (জ্ঞান অমৰ জ্যোতি)',
+    id: 'UNIV-MYUNIV',
+    name: 'My University',
+    asName: 'মোৰ বিশ্ববিদ্যালয়',
+    abbreviation: 'MU',
+    motto: 'Excellence in Knowledge & Research',
+    asMotto: 'জ্ঞান আৰু গৱেষণাত উৎকৃষ্টতা',
     establishedYear: 1965,
     campusType: 'State University (UGC Recognized, NAAC A++ Grade)',
     asCampusType: 'ৰাজ্যিক বিশ্ববিদ্যালয় (UGC স্বীকৃত, NAAC A++ মানপ্ৰাপ্ত)',
-    campusArea: '550 Acres (Rajabheta Campus, Dibrugarh)',
-    asCampusArea: '৫৫০ একৰ (ৰাজভেটা চৌহদ, ডিব্ৰুগড়)',
-    location: 'Dibrugarh, Assam, India - 786004',
-    asLocation: 'ডিব্ৰুগড়, অসম, ভাৰত - ৭৮৬০০৪',
-    chancellor: 'Hon’ble Governor of Assam, Shri Lakshman Prasad Acharya',
-    asChancellor: 'অসমৰ সন্মানীয় ৰাজ্যপাল, শ্ৰী লক্ষ্মণ প্ৰসাদ আচাৰ্য্য',
-    viceChancellor: 'Prof. Jiten Hazarika',
-    asViceChancellor: 'অধ্যাপক জীতেন হাজৰিকা',
-    registrar: 'Dr. Paramananda Sonowal',
-    asRegistrar: 'ড° পৰমানন্দ সোণোৱাল',
-    email: 'registrar@dibru.ac.in',
-    helpline: '+91-373-2370231 / +91-373-2370239',
-    admissionsEmail: 'admissions@dibru.ac.in',
-    examBranchEmail: 'exam@dibru.ac.in',
-    website: 'https://dibru.ac.in',
+    campusArea: '500+ Acres Main Campus',
+    asCampusArea: '৫০০+ একৰ মুখ্য চৌহদ',
+    location: 'University Campus, Assam, India',
+    asLocation: 'বিশ্ববিদ্যালয় চৌহদ, অসম, ভাৰত',
+    chancellor: 'Hon’ble Governor of Assam',
+    asChancellor: 'অসমৰ সন্মানীয় ৰাজ্যপাল',
+    viceChancellor: 'Prof. Vice Chancellor',
+    asViceChancellor: 'অধ্যাপক উপাচাৰ্য্য',
+    registrar: 'Registrar',
+    asRegistrar: 'পঞ্জীয়ক',
+    email: 'registrar@myuniversity.edu.in',
+    helpline: '+91-373-2370000 / +91-373-2370001',
+    admissionsEmail: 'admissions@myuniversity.edu.in',
+    examBranchEmail: 'exam@myuniversity.edu.in',
+    website: 'https://myuniversity.edu.in',
     naacAccreditation: 'Grade A++ (CGPA 3.62 / 4.0)',
-    nirfRank: 'Top 70 in India Universities Ranking 2024'
+    nirfRank: 'Top Tier University'
   },
 
   regulations: [
@@ -364,9 +364,20 @@ class UniversityService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
+        let profile = parsed.profile || DEFAULT_UNIVERSITY_CONFIG.profile;
+        if (profile.name === 'Dibrugarh University') {
+          profile = {
+            ...profile,
+            name: 'My University',
+            asName: 'মোৰ বিশ্ববিদ্যালয়',
+            abbreviation: 'MU',
+            email: 'registrar@myuniversity.edu.in',
+            website: 'https://myuniversity.edu.in'
+          };
+        }
         // Ensure all top-level keys exist
         return {
-          profile: parsed.profile || DEFAULT_UNIVERSITY_CONFIG.profile,
+          profile: profile,
           regulations: parsed.regulations || DEFAULT_UNIVERSITY_CONFIG.regulations,
           examinations: parsed.examinations || DEFAULT_UNIVERSITY_CONFIG.examinations,
           programmes: parsed.programmes || DEFAULT_UNIVERSITY_CONFIG.programmes,
@@ -671,6 +682,12 @@ class UniversityService {
     const lower = query.toLowerCase().trim();
     const isAssamese = lang === 'as' || /[\u0980-\u09FF]/.test(query);
 
+    const uName = this.data.profile?.name || 'My University';
+    const uAsName = this.data.profile?.asName || 'মোৰ বিশ্ববিদ্যালয়';
+    const uAbbr = this.data.profile?.abbreviation || 'MU';
+    const uHelpline = this.data.profile?.helpline || '+91-373-2370000';
+    const uEmail = this.data.profile?.email || 'registrar@myuniversity.edu.in';
+
     // 1. Search in Approved Uploaded Documents (Faculty/Admin Ingested)
     if (approvedDocs && approvedDocs.length > 0) {
       for (const doc of approvedDocs) {
@@ -691,8 +708,8 @@ class UniversityService {
         if (titleMatch || asTitleMatch || (words.length > 0 && hasOverlap)) {
           return {
             answer: isAssamese && doc.asTitle
-              ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ প্ৰমাণিত নথিপত্ৰ (${doc.fileName || doc.title}) অনুসৰি: ${doc.summary}`
-              : `According to authorized Dibrugarh University documentation (${doc.fileName || doc.title}): ${doc.summary}`,
+              ? `${uAsName}ৰ প্ৰমাণিত নথিপত্ৰ (${doc.fileName || doc.title}) অনুসৰি: ${doc.summary}`
+              : `According to authorized ${uName} documentation (${doc.fileName || doc.title}): ${doc.summary}`,
             source: doc.fileName || doc.title,
             page: doc.citation || `Clause ${doc.category}`,
             confidence: '99.8% Grounded Document Match',
@@ -714,9 +731,9 @@ class UniversityService {
       const reg = this.data.regulations.find((r) => r.id === 'REG-01') || this.data.regulations[0];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ বিধিবদ্ধ নিয়মাৱলী (Statutory Attendance Regulations) অনুসৰি, প্ৰতিটো ষাণ্মাসিকত পৰীক্ষাত অৱতীৰ্ণ হ'বলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। কিন্তু প্ৰমাণিত চিকিৎসাজনিত কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) অনুমোদন আৰু বৈধ মেডিকেল চাৰ্টিফিকেট দাখিল কৰিলে নূন্যতম ৬৫% লৈকে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Medical Condonation) প্ৰদান কৰা হয়। ৬৫% তকৈ কম উপস্থিতি থকা শিক্ষাৰ্থীক কোনো কাৰণতে পৰীক্ষাত বহিবলৈ দিয়া নহয়।`
-          : `According to statutory regulations of Dibrugarh University, students must maintain a mandatory minimum of 75% physical attendance in each semester to appear in end-semester examinations. Medical condonation up to 10% (allowing students with attendance between 65% and 74%) is permissible strictly on verified health grounds upon the recommendation of the Head of the Department. Candidates with less than 65% attendance are strictly debarred from semester examinations.`,
-        source: reg ? reg.sourceDoc : 'DU_Attendance_Regulations_2024.pdf',
+          ? `${uAsName}ৰ বিধিবদ্ধ নিয়মাৱলী (Statutory Attendance Regulations) অনুসৰি, প্ৰতিটো ষাণ্মাসিকত পৰীক্ষাত অৱতীৰ্ণ হ'বলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। কিন্তু প্ৰমাণিত চিকিৎসাজনিত কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) অনুমোদন আৰু বৈধ মেডিকেল চাৰ্টিফিকেট দাখিল কৰিলে নূন্যতম ৬৫% লৈকে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Medical Condonation) প্ৰদান কৰা হয়। ৬৫% তকৈ কম উপস্থিতি থকা শিক্ষাৰ্থীক কোনো কাৰণতে পৰীক্ষাত বহিবলৈ দিয়া নহয়।`
+          : `According to statutory regulations of ${uName}, students must maintain a mandatory minimum of 75% physical attendance in each semester to appear in end-semester examinations. Medical condonation up to 10% (allowing students with attendance between 65% and 74%) is permissible strictly on verified health grounds upon the recommendation of the Head of the Department. Candidates with less than 65% attendance are strictly debarred from semester examinations.`,
+        source: reg ? reg.sourceDoc : `${uAbbr}_Attendance_Regulations.pdf`,
         page: reg ? reg.citation : 'Section 4.3, Page 9, Ordinance 09',
         confidence: '99.6% Institutional Ordinance Match',
         domain: 'Attendance & Ordinances'
@@ -736,9 +753,9 @@ class UniversityService {
       const exam = this.data.examinations.find((e) => e.id === 'EXAM-01') || this.data.examinations[0];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ স্নাতক (FYUGP/CBCS) পৰীক্ষাৰ নিয়মাৱলী অনুসৰি, প্ৰতিটো পাঠ্যক্ৰমত (Course/Paper) উত্তীৰ্ণ হ'বলৈ পৰীক্ষাৰ্থীয়ে In-Semester (Internal Sessional ২০ নম্বৰ) আৰু End-Semester (চূড়ান্ত পৰীক্ষা ৮০ নম্বৰ) উভয়তে সুকীয়াকৈ সুকীয়াকৈ ন্যূনতম ৪০% নম্বৰ লাভ কৰাটো বাধ্যতামূলক। যদি কোনো ছাত্ৰ-ছাত্ৰীয়ে ইয়াৰে এটাত ৪০% তকৈ কম নম্বৰ পায়, তেন্তে তেওঁক সেই কাকতত অনুত্তীৰ্ণ (Backlog/Arrear) হিচাপে গণ্য কৰা হয়।`
-          : `Under Dibrugarh University examination ordinances (FYUGP & CBCS frameworks), a candidate must secure a minimum of 40% marks in In-Semester Internal Assessment (sessional tests, assignments, seminar) and End-Semester final examinations separately to pass each paper and earn course credits. Failing to secure 40% in either component results in a backlog paper.`,
-        source: exam ? exam.sourceDoc : 'DU_Exam_Ordinances_2024.pdf',
+          ? `${uAsName}ৰ স্নাতক (FYUGP/CBCS) পৰীক্ষাৰ নিয়মাৱলী অনুসৰি, প্ৰতিটো পাঠ্যক্ৰমত (Course/Paper) উত্তীৰ্ণ হ'বলৈ পৰীক্ষাৰ্থীয়ে In-Semester (Internal Sessional ২০ নম্বৰ) আৰু End-Semester (চূড়ান্ত পৰীক্ষা ৮০ নম্বৰ) উভয়তে সুকীয়াকৈ সুকীয়াকৈ ন্যূনতম ৪০% নম্বৰ লাভ কৰাটো বাধ্যতামূলক। যদি কোনো ছাত্ৰ-ছাত্ৰীয়ে ইয়াৰে এটাত ৪০% তকৈ কম নম্বৰ পায়, তেন্তে তেওঁক সেই কাকতত অনুত্তীৰ্ণ (Backlog/Arrear) হিচাপে গণ্য কৰা হয়।`
+          : `Under ${uName} examination ordinances (FYUGP & CBCS frameworks), a candidate must secure a minimum of 40% marks in In-Semester Internal Assessment (sessional tests, assignments, seminar) and End-Semester final examinations separately to pass each paper and earn course credits. Failing to secure 40% in either component results in a backlog paper.`,
+        source: exam ? exam.sourceDoc : `${uAbbr}_Exam_Ordinances.pdf`,
         page: exam ? exam.citation : 'Section 8.2, Clause 12, Page 29',
         confidence: '99.4% Grounded Examination Match',
         domain: 'Examinations & Evaluation'
@@ -759,9 +776,9 @@ class UniversityService {
       const exam = this.data.examinations.find((e) => e.id === 'EXAM-02') || this.data.examinations[1];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষা শাখাৰ বিধি অনুসৰি, ফলাফল ঘোষণাৰ দিনাৰ পৰা ২০ (বিংশতি) দিনৰ ভিতৰত উত্তৰবহী পুনৰমূল্যায়ন (Re-evaluation) আৰু স্ক্ৰিপ্টৰ ফটোকপিৰ বাবে অফিচিয়েল পৰ্টেলযোগে আবেদন কৰিব লাগিব। প্ৰতিখন তাত্বিক কাকতৰ মাচুল হৈছে ৩৫০ টকা। এগৰাকী পৰীক্ষাৰ্থীয়ে এটা ষাণ্মাসিকত সৰ্বাধিক ৩খন কাকতৰ বাবে পুনৰমূল্যায়ন বিচাৰিব পাৰে।`
-          : `Under Dibrugarh University Examination Regulations, candidates can apply online for answer script re-evaluation and certified photocopies within 20 calendar days from the date of online mark sheet declaration. The prescribed fee is INR 350 per theory paper, with a maximum allowance of 3 papers per semester.`,
-        source: exam ? exam.sourceDoc : 'DU_ReEvaluation_Norms.pdf',
+          ? `${uAsName}ৰ পৰীক্ষা শাখাৰ বিধি অনুসৰি, ফলাফল ঘোষণাৰ দিনাৰ পৰা ২০ (বিংশতি) দিনৰ ভিতৰত উত্তৰবহী পুনৰমূল্যায়ন (Re-evaluation) আৰু স্ক্ৰিপ্টৰ ফটোকপিৰ বাবে অফিচিয়েল পৰ্টেলযোগে আবেদন কৰিব লাগিব। প্ৰতিখন তাত্বিক কাকতৰ মাচুল হৈছে ৩৫০ টকা। এগৰাকী পৰীক্ষাৰ্থীয়ে এটা ষাণ্মাসিকত সৰ্বাধিক ৩খন কাকতৰ বাবে পুনৰমূল্যায়ন বিচাৰিব পাৰে।`
+          : `Under ${uName} Examination Regulations, candidates can apply online for answer script re-evaluation and certified photocopies within 20 calendar days from the date of online mark sheet declaration. The prescribed fee is INR 350 per theory paper, with a maximum allowance of 3 papers per semester.`,
+        source: exam ? exam.sourceDoc : `${uAbbr}_ReEvaluation_Norms.pdf`,
         page: exam ? exam.citation : 'Clause 14.1, Ordinance 05, Page 52',
         confidence: '99.2% Grounded Procedural Match',
         domain: 'Examination Re-Evaluation'
@@ -779,9 +796,9 @@ class UniversityService {
       const exam = this.data.examinations.find((e) => e.id === 'EXAM-03') || this.data.examinations[2];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ বেক পেপাৰ নিয়মাৱলী অনুসৰি, অনুত্তীৰ্ণ হোৱা পাঠ্যক্ৰমসমূহ পৰৱৰ্তী অনুৰূপ ষাণ্মাসিকত (অযুগ্মৰ সৈতে অযুগ্ম, আৰু যুগ্মৰ সৈতে যুগ্ম) ক্লিয়াৰ কৰিব পাৰিব। ৩ বছৰীয়া স্নাতক ডিগ্ৰী সম্পূৰ্ণ কৰাৰ সৰ্বোচ্চ সময়সীমা হৈছে N+2 অৰ্থাৎ ৫ শৈক্ষিক বছৰ। বেটাৰমেণ্টৰ সুবিধা এটা ষাণ্মাসিকত সৰ্বাধিক ২খন তাত্বিক কাকতত এবাৰৰ বাবে উপলব্ধ।`
-          : `According to Dibrugarh University backlog guidelines, failed courses must be cleared in corresponding subsequent semester examinations (Odd semesters with Odd, Even semesters with Even) within a maximum permissible period of N+2 years (5 academic years for 3-year degrees). Betterment is permissible for up to two theory courses per semester once.`,
-        source: exam ? exam.sourceDoc : 'DU_Backlog_Betterment_Rules.pdf',
+          ? `${uAsName}ৰ বেক পেপাৰ নিয়মাৱলী অনুসৰি, অনুত্তীৰ্ণ হোৱা পাঠ্যক্ৰমসমূহ পৰৱৰ্তী অনুৰূপ ষাণ্মাসিকত (অযুগ্মৰ সৈতে অযুগ্ম, আৰু যুগ্মৰ সৈতে যুগ্ম) ক্লিয়াৰ কৰিব পাৰিব। ৩ বছৰীয়া স্নাতক ডিগ্ৰী সম্পূৰ্ণ কৰাৰ সৰ্বোচ্চ সময়সীমা হৈছে N+2 অৰ্থাৎ ৫ শৈক্ষিক বছৰ। বেটাৰমেণ্টৰ সুবিধা এটা ষাণ্মাসিকত সৰ্বাধিক ২খন তাত্বিক কাকতত এবাৰৰ বাবে উপলব্ধ।`
+          : `According to ${uName} backlog guidelines, failed courses must be cleared in corresponding subsequent semester examinations (Odd semesters with Odd, Even semesters with Even) within a maximum permissible period of N+2 years (5 academic years for 3-year degrees). Betterment is permissible for up to two theory courses per semester once.`,
+        source: exam ? exam.sourceDoc : `${uAbbr}_Backlog_Betterment_Rules.pdf`,
         page: exam ? exam.citation : 'Clause 12(A), Page 44',
         confidence: '99.1% Grounded Ordinance Match',
         domain: 'Backlog Guidelines'
@@ -803,9 +820,9 @@ class UniversityService {
       const schol = this.data.scholarships.find((s) => s.id === 'SCHOL-01') || this.data.scholarships[0];
       return {
         answer: isAssamese
-          ? `উত্তৰ-পূৰ্বাঞ্চলৰ শিক্ষাৰ্থীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি (Ishan Uday Scholarship) আৰু অসম চৰকাৰৰ DHE বৃত্তিৰ মূল চৰ্তসমূহ হ'ল: (১) অসম/উত্তৰ-পূবৰ স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ (PRC) বাধ্যতামূলক, (২) অভিভাৱকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ'ব লাগিব, (৩) দ্বাদশ শ্ৰেণীত নূন্যতম ৬০% নম্বৰ থাকিব লাগিব, আৰু (৪) নিয়মীয়া স্নাতক প্ৰথম বৰ্ষত নামভৰ্তি থাকিব লাগিব। জেনেৰেল ডিগ্ৰীত প্ৰতিমাহে ৫,৪০০ টকা আৰু টেকনিকেল ডিগ্ৰীত ৭,৮০০ টকা প্ৰদান কৰা হয়। আবেদন ৰাষ্ট্ৰীয় ছাত্ৰবৃত্তি পৰ্টেল (NSP) যোগে কৰিব লাগে।`
-          : `For UGC Ishan Uday and Assam DHE Combined Merit Scholarships: (1) Valid Permanent Resident Certificate (PRC) of Assam/NER is mandatory, (2) Annual parental family income must not exceed INR 4.5 Lakhs, (3) Minimum 60% aggregate in qualifying Class 12 exam, and (4) Enrolled in first year of regular degree program at Dibrugarh University. Awards are ₹5,400/month for General degree and ₹7,800/month for Technical programs disbursed through NSP portal.`,
-        source: schol ? schol.sourceDoc : 'Assam_DHE_Scholarship_Norms_2024.pdf',
+          ? `উত্তৰ-পূৰ্বাঞ্চলৰ শিক্ষাৰ্থীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি (Ishan Uday Scholarship) আৰু অসম চৰকাৰৰ DHE বৃত্তিৰ মূল চৰ্তসমূহ হ'ল: (১) অসম/উত্তৰ-পূবৰ স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ (PRC) বাধ্যতামূলক, (২) অভিভাৱকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ'ব লাগিব, (৩) দ্বাদশ শ্ৰেণীত নূন্যতম ৬০% নম্বৰ থাকিব লাগিব, আৰু (৪) ${uAsName}ৰ নিয়মীয়া পাঠ্যক্ৰমত নামভৰ্তি থাকিব লাগিব। জেনেৰেল ডিগ্ৰীত প্ৰতিমাহে ৫,৪০০ টকা আৰু টেকনিকেল ডিগ্ৰীত ৭,৮০০ টকা প্ৰদান কৰা হয়। আবেদন ৰাষ্ট্ৰীয় ছাত্ৰবৃত্তি পৰ্টেল (NSP) যোগে কৰিব লাগে।`
+          : `For UGC Ishan Uday and Assam DHE Combined Merit Scholarships: (1) Valid Permanent Resident Certificate (PRC) of Assam/NER is mandatory, (2) Annual parental family income must not exceed INR 4.5 Lakhs, (3) Minimum 60% aggregate in qualifying Class 12 exam, and (4) Enrolled in first year of regular degree program at ${uName}. Awards are ₹5,400/month for General degree and ₹7,800/month for Technical programs disbursed through NSP portal.`,
+        source: schol ? schol.sourceDoc : 'Assam_DHE_Scholarship_Norms.pdf',
         page: schol ? schol.citation : 'Section 3.1, Clause 5, Page 6',
         confidence: '99.5% Verified Welfare Match',
         domain: 'Scholarships & Grants'
@@ -826,32 +843,30 @@ class UniversityService {
       const fac = this.data.facilities.find((f) => f.id === 'FAC-01') || this.data.facilities[0];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ হোষ্টেল আসন আবণ্টন নীতি অনুসৰি: চৌহদত ১৬টা ছাত্ৰ আৰু ছাত্ৰী নিৱাস আছে (মুঠ ক্ষমতা ৩,২০০ গৱেষক আৰু শিক্ষাৰ্থী)। আসন আবণ্টন সম্পূৰ্ণৰূপে প্ৰৱেশ পৰীক্ষাৰ মেধা তালিকা (Merit Rank) আৰু ডিব্ৰুগড় চহৰৰ পৰা স্থায়ী ঘৰৰ দূৰত্বৰ (> ৩৫ কি.মি.) ভিত্তিত কৰা হয়। প্ৰয়োজনীয় নথি: মেধা কাৰ্ড, স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ, স্থানীয় অভিভাৱকৰ ঘোষণাপত্ৰ, আৰু বাধ্যতামূলক এণ্টি-ৰেগিং শপতনামা। ছোৱালী হোষ্টেলৰ গেট বন্ধৰ সময় সন্ধ্যা ৭:০০ বজা আৰু ল'ৰা হোষ্টেলৰ নিশা ৮:০০ বজা।`
-          : `Under Dibrugarh University Hostel Bylaws: The campus hosts 16 halls of residence with 3,200 capacity. Allotments are strictly made on two criteria: Academic entrance merit ranking and permanent residential distance from Dibrugarh campus (> 35 km). Required documents: Admission receipt, PRC, Local Guardian undertaking, and statutory anti-ragging affidavit. Hostel closing curfew is 7:00 PM for Girls and 8:00 PM for Boys.`,
-        source: 'DU_Hostel_Bylaws_2024.pdf',
+          ? `${uAsName}ৰ হোষ্টেল আসন আবণ্টন নীতি অনুসৰি: চৌহদত ১৬টা ছাত্ৰ আৰু ছাত্ৰী নিৱাস আছে (মুঠ ক্ষমতা ৩,২০০ গৱেষক আৰু শিক্ষাৰ্থী)। আসন আবণ্টন সম্পূৰ্ণৰূপে প্ৰৱেশ পৰীক্ষাৰ মেধা তালিকা (Merit Rank) আৰু বিশ্ববিদ্যালয় চৌহদৰ পৰা স্থায়ী ঘৰৰ দূৰত্বৰ (> ৩৫ কি.মি.) ভিত্তিত কৰা হয়। প্ৰয়োজনীয় নথি: মেধা কাৰ্ড, স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ, স্থানীয় অভিভাৱকৰ ঘোষণাপত্ৰ, আৰু বাধ্যতামূলক এণ্টি-ৰেগিং শপতনামা। ছোৱালী হোষ্টেলৰ গেট বন্ধৰ সময় সন্ধ্যা ৭:০০ বজা আৰু ল'ৰা হোষ্টেলৰ নিশা ৮:০০ বজা।`
+          : `Under ${uName} Hostel Bylaws: The campus hosts 16 halls of residence with 3,200 capacity. Allotments are strictly made on two criteria: Academic entrance merit ranking and permanent residential distance from campus (> 35 km). Required documents: Admission receipt, PRC, Local Guardian undertaking, and statutory anti-ragging affidavit. Hostel closing curfew is 7:00 PM for Girls and 8:00 PM for Boys.`,
+        source: `${uAbbr}_Hostel_Bylaws.pdf`,
         page: 'Clause 7.2, Allotment Rules, Page 11',
         confidence: '99.3% Grounded Facility Match',
         domain: 'Campus Facilities'
       };
     }
 
-    // 8. Specialized Check: Admissions & DUPGET / Samarth
+    // 8. Specialized Check: Admissions & Entrance Tests
     if (
       lower.includes('admiss') ||
       lower.includes('ভৰ্তি') ||
       lower.includes('নামভৰ্তি') ||
-      lower.includes('dupget') ||
       lower.includes('entrance') ||
       lower.includes('প্ৰৱেশ') ||
       lower.includes('samarth')
     ) {
-      const adm = this.data.admissions[0];
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ত স্নাতকোত্তৰ (PG) নামভৰ্তি DUPGET (Dibrugarh University Post Graduate Entrance Test) পৰীক্ষাৰ জৰিয়তে হয়। স্নাতক ডিগ্ৰীত নূন্যতম ৪৫% - ৫০% নম্বৰ থকা ছাত্ৰ-ছাত্ৰীয়ে আবেদন কৰিব পাৰে। প্ৰৱেশ পৰীক্ষাত ১০০টা MCQ প্ৰশ্ন থাকে। স্নাতক (UG/FYUGP) নামভৰ্তি অসম চৰকাৰৰ সমৰ্থ (Samarth e-Gov) পৰ্টেলৰ জৰিয়তে উচ্চতৰ মাধ্যমিকৰ মেধাৰ ভিত্তিত হয়।`
-          : `Admissions to Postgraduate courses at Dibrugarh University are conducted through DUPGET entrance test. Candidates need a bachelor's degree with 45%-50% marks to apply. The entrance comprises 100 MCQs (2 hours duration). Undergraduate (FYUGP) admissions are processed centrally via the Assam Samarth e-Gov admission portal based on Higher Secondary merit rankings.`,
-        source: 'DU_PG_Admissions_Guide_2024.pdf',
-        page: 'DUPGET Gazette Ordinance 441, Page 4',
+          ? `${uAsName}ত স্নাতকোত্তৰ (PG) নামভৰ্তি বিশ্ববিদ্যালয়ৰ প্ৰৱেশ পৰীক্ষাৰ জৰিয়তে হয়। স্নাতক ডিগ্ৰীত নূন্যতম ৪৫% - ৫০% নম্বৰ থকা ছাত্ৰ-ছাত্ৰীয়ে আবেদন কৰিব পাৰে। প্ৰৱেশ পৰীক্ষাত ১০০টা MCQ প্ৰশ্ন থাকে। স্নাতক (UG/FYUGP) নামভৰ্তি অসম চৰকাৰৰ সমৰ্থ (Samarth e-Gov) পৰ্টেলৰ জৰিয়তে উচ্চতৰ মাধ্যমিকৰ মেধাৰ ভিত্তিত হয়।`
+          : `Admissions to Postgraduate courses at ${uName} are conducted through official university entrance tests. Candidates need a bachelor's degree with 45%-50% marks to apply. The entrance comprises 100 MCQs (2 hours duration). Undergraduate (FYUGP) admissions are processed centrally via the Assam Samarth e-Gov admission portal based on Higher Secondary merit rankings.`,
+        source: `${uAbbr}_PG_Admissions_Guide.pdf`,
+        page: 'Admissions Gazette Ordinance, Page 4',
         confidence: '99.0% Grounded Admission Match',
         domain: 'Admissions'
       };
@@ -870,9 +885,9 @@ class UniversityService {
     ) {
       return {
         answer: isAssamese
-          ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পিএইচ.ডি. (Ph.D.) নিয়মাৱলী অনুসৰি: প্ৰৱেশৰ বাবে DURAT পৰীক্ষা বা UGC-NET JRF উত্তীৰ্ণ হোৱা আৱশ্যক। থিচিছ জমা দিয়াৰ পূৰ্বে গৱেষক ছাত্ৰই UGC-CARE তালিকাভুক্ত জাৰ্ণেলত নূন্যতম দুখন (2) গৱেষণা পত্ৰ প্ৰকাশ কৰা আৰু দুখন ৰাষ্ট্ৰীয়/আন্তঃৰাষ্ট্ৰীয় সন্মিলনত প্ৰবন্ধ উপস্থাপন কৰা বাধ্যতামূলক। এগৰাকী সহযোগী অধ্যাপকে একে সময়তে সৰ্বাধিক ৬জন আৰু অধ্যাপকে ৮জন পিএইচ.ডি. গৱেষকক নিৰ্দেশনা (Guide) দিব পাৰে।`
-          : `Under Dibrugarh University Ph.D. Regulations: Admission requires qualifying DURAT or UGC-NET JRF. Before thesis submission, scholars must publish at least two (2) research papers in UGC-CARE indexed journals and present at least two papers in national/international conferences. Supervision quotas: Professor can guide up to 8 scholars, Associate Professor up to 6, and Assistant Professor up to 4 scholars.`,
-        source: 'DU_Doctoral_Research_Ordinance.pdf',
+          ? `${uAsName}ৰ পিএইচ.ডি. (Ph.D.) নিয়মাৱলী অনুসৰি: প্ৰৱেশৰ বাবে গৱেষণা প্ৰৱেশ পৰীক্ষা বা UGC-NET JRF উত্তীৰ্ণ হোৱা আৱশ্যক। থিচিছ জমা দিয়াৰ পূৰ্বে গৱেষক ছাত্ৰই UGC-CARE তালিকাভুক্ত জাৰ্ণেলত নূন্যতম দুখন (2) গৱেষণা পত্ৰ প্ৰকাশ কৰা আৰু দুখন ৰাষ্ট্ৰীয়/আন্তঃৰাষ্ট্ৰীয় সন্মিলনত প্ৰবন্ধ উপস্থাপন কৰা বাধ্যতামূলক। এগৰাকী সহযোগী অধ্যাপকে একে সময়তে সৰ্বাধিক ৬জন আৰু অধ্যাপকে ৮জন পিএইচ.ডি. গৱেষকক নিৰ্দেশনা (Guide) দিব পাৰে।`
+          : `Under ${uName} Ph.D. Regulations: Admission requires qualifying the Research Admission Test or UGC-NET JRF. Before thesis submission, scholars must publish at least two (2) research papers in UGC-CARE indexed journals and present at least two papers in national/international conferences. Supervision quotas: Professor can guide up to 8 scholars, Associate Professor up to 6, and Assistant Professor up to 4 scholars.`,
+        source: `${uAbbr}_Doctoral_Research_Ordinance.pdf`,
         page: 'Clause 9.4, Page 31',
         confidence: '99.5% Grounded Research Match',
         domain: 'Research & Doctoral Supervision'
@@ -905,15 +920,13 @@ class UniversityService {
     }
 
     // 11. Strict Anti-Hallucination Guardrail:
-    // When no grounded record matches the university's database, transparently declare lack of records
-    // and route query to Admin Queue for verification.
     return {
       answer: isAssamese
-        ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ বৰ্তমানৰ প্ৰমাণিত অধিনিয়ম আৰু নথিপত্ৰত এই প্ৰশ্নৰ সৈতে পোনপটীয়া কোনো চৰকাৰী তথ্য পোৱা নগ'ল। ভুৱা তথ্য প্ৰতিৰোধ (Hallucination Prevention)ৰ বাবে ইয়াক প্ৰশাসনিক পৰ্যালোচনাৰ (Admin Review) বাবে পঞ্জীয়ন কৰা হৈছে। অধিক তথ্যৰ বাবে ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ হেল্পলাইন (+91-373-2370231) বা পঞ্জীয়কৰ কাৰ্যালয়ত যোগাযোগ কৰিব পাৰে।`
-        : `No direct verified statutory records were located in the official Dibrugarh University repository for this inquiry. In accordance with strict anti-hallucination protocols, this query has been forwarded to the Administrator for verification and document indexing. For urgent queries, please contact the Registrar's Office at registrar@dibru.ac.in or helpline +91-373-2370231.`,
+        ? `${uAsName}ৰ বৰ্তমানৰ প্ৰমাণিত অধিনিয়ম আৰু নথিপত্ৰত এই প্ৰশ্নৰ সৈতে পোনপটীয়া কোনো চৰকাৰী তথ্য পোৱা নগ'ল। ভুৱা তথ্য প্ৰতিৰোধৰ বাবে ইয়াক প্ৰশাসনিক পৰ্যালোচনাৰ বাবে পঞ্জীয়ন কৰা হৈছে। অধিক তথ্যৰ বাবে বিশ্ববিদ্যালয়ৰ হেল্পলাইন (${uHelpline}) বা পঞ্জীয়কৰ কাৰ্যালয়ত যোগাযোগ কৰিব পাৰে।`
+        : `No direct verified statutory records were located in the official ${uName} repository for this inquiry. In accordance with strict verification protocols, this query has been forwarded to the Administrator for indexing. For urgent queries, please contact the Registrar's Office at ${uEmail} or helpline ${uHelpline}.`,
       source: 'Official Institutional Helpdesk & Registrar Office',
       page: 'Statutory Verification Pending',
-      confidence: 'Hallucination Guard Active (Unverified Query)',
+      confidence: 'Institutional Guard Active (Unverified Query)',
       domain: 'Unverified Query',
       isUnverified: true
     };

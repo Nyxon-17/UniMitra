@@ -16,7 +16,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '01',
       title: 'Institutional Document Ingestion & OCR',
       asTitle: 'অফিচিয়েল নথিপত্ৰ সংগ্ৰহ আৰু প্ৰস্তুতি',
-      tagColor: 'bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#3B2868] dark:text-[#FFFFFF]',
+      tagColor: 'bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#1A1A1A] dark:text-[#FFFFFF]',
       icon: DocumentTextIcon,
       desc: 'Authorized university regulations, examination ordinances, admission brochures, circulars, and scholarship gazettes are parsed using high-accuracy PDF extractors and specialized OCR for scanned Assamese & English documents.',
       asDesc: 'গুৱাহাটী, ডিব্ৰুগড়, তেজপুৰকে ধৰি অসমৰ সকলো বিশ্ববিদ্যালয়ৰ অফিচিয়েল নিয়মাৱলী, পৰীক্ষাৰ জাননী আৰু অধিসূচনা সংগ্ৰহ কৰি উন্নত OCR প্ৰযুক্তিয়ে নিৰীক্ষণ কৰে।',
@@ -35,7 +35,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '02',
       title: 'Bilingual Semantic Indexing (Multilingual E5)',
       asTitle: 'দ্বিভাষিক অৰ্থপূৰ্ণ ইনডেক্সিং',
-      tagColor: 'bg-[#FFE9A9] text-[#000000] dark:bg-[#3B2868] dark:text-[#FFFFFF]',
+      tagColor: 'bg-[#FFE9A9] text-[#000000] dark:bg-[#1A1A1A] dark:text-[#FFFFFF]',
       icon: BrainIcon,
       desc: 'Document text chunks are converted into dense multilingual semantic vectors using Multilingual E5 embedding models trained to capture Assamese academic vocabulary, regional idioms, and English ordinances.',
       asDesc: 'অসমীয়া আৰু ইংৰাজী দুয়োটা ভাষাৰ শৈক্ষিক আৰু আইনী শব্দাৱলী স্পষ্টকৈ বুজিব পৰাকৈ আধুনিক দ্বিভাষিক ভেক্টৰ মডেলৰ জৰিয়তে তথ্যসমূহ ইনডেক্স কৰা হয়।',
@@ -54,7 +54,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '03',
       title: 'Natural Language Query Processing',
       asTitle: 'প্ৰাকৃতিক ভাষাৰ প্ৰশ্ন বিশ্লেষণ',
-      tagColor: 'bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#3B2868] dark:text-[#FFFFFF]',
+      tagColor: 'bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#1A1A1A] dark:text-[#FFFFFF]',
       icon: LanguageIcon,
       desc: 'Students, faculty members, and staff can submit natural queries in Assamese or English. The query understanding module detects user intent across regulations, exams, admissions, or scholarships.',
       asDesc: 'ছাত্ৰ-ছাত্ৰী আৰু শিক্ষকসকলে মূল অসমীয়া লিপি বা ইংৰাজীত প্ৰশ্ন সুধিব পাৰে। সহায়কে উদ্দেশ্য নিৰূপণ কৰি নিৰ্দিষ্ট দিশ বাছি লয়।',
@@ -73,7 +73,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       step: '04',
       title: 'Grounded Answer Generation & Hallucination Reduction',
       asTitle: 'ভুলহীন প্ৰমাণিত উত্তৰ লাভ',
-      tagColor: 'bg-[#FFE9A9] text-[#000000] dark:bg-[#3B2868] dark:text-[#FFFFFF]',
+      tagColor: 'bg-[#FFE9A9] text-[#000000] dark:bg-[#1A1A1A] dark:text-[#FFFFFF]',
       icon: ShieldCheckIcon,
       desc: 'The RAG pipeline retrieves relevant clauses from verified documents and synthesizes an accurate answer citing the exact university name, document title, ordinance section, and page number. If information is missing, it explicitly informs the user.',
       asDesc: 'সহায়কে প্ৰকৃত নথিপত্ৰৰ পৰা তথ্য সংগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ নাম, অধিসূচনা আৰু নিৰ্দিষ্ট পৃষ্ঠা নম্বৰসহ বিশ্বাসযোগ্য উত্তৰ দিয়ে। কোনো মনগঢ়া তথ্য দিয়া নহয়।',
@@ -123,7 +123,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
             return (
               <div 
                 key={item.step}
-                className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm hover:border-[#6D28D9] transition-all card-3d"
+                className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300"
               >
                 <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
                   
@@ -148,7 +148,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
                   </div>
 
                   {/* Right Column: Features Checklist */}
-                  <div className="bg-[#FFE9A9]/20 dark:bg-[#13005A] p-4 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 w-full lg:w-80 shrink-0 space-y-2 text-xs">
+                  <div className="bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] p-4 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 w-full lg:w-80 shrink-0 space-y-2 text-xs">
                     <span className="font-black text-[#000000] dark:text-[#FFFFFF] block uppercase tracking-wider text-[10px]">
                       Engineering Highlights
                     </span>
@@ -167,7 +167,7 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
         </div>
 
         {/* Gen AI Safeguards Box */}
-        <div className="bg-white dark:bg-[#00337C] border-2 border-[#6D28D9] rounded-3xl p-8 sm:p-10 shadow-elevated-sage dark:shadow-elevated-gold mb-16">
+        <div className="bg-white dark:bg-[#141414] border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 rounded-3xl p-8 sm:p-10 shadow-elevated-sage dark:shadow-elevated-gold mb-16">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <div className="inline-flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] font-black text-xs uppercase tracking-wider">
               <ShieldCheckIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />

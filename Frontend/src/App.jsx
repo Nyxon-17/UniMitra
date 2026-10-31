@@ -61,6 +61,11 @@ function PublicLayoutWrapper({
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
 
+  // If any unauthenticated user attempts to access public pages, immediately redirect to login page
+  if (!isLoggedIn && !isAuthPage) {
+    return <Navigate to="/auth" replace />;
+  }
+
   return (
     <div className={`relative min-h-screen flex flex-col bg-transparent text-[#000000] dark:text-[#FFFFFF] selection:bg-[#FF933E] selection:text-white dark:selection:bg-[#03C988] dark:selection:text-black transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       {/* Realistic Animated College Boy Looking to University Background on All Public Pages */}

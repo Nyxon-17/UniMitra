@@ -104,7 +104,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
             placeholder={currentLang === 'as' ? 'প্ৰশ্ন বা শব্দ বিচাৰক...' : 'Search questions, regulations, exams, admissions...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none focus:border-[#6D28D9] text-xs sm:text-sm font-semibold shadow-xs"
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50 text-xs sm:text-sm font-semibold shadow-xs"
           />
         </div>
 
@@ -116,7 +116,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${activeCategory === cat
                   ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
+                  : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/40'
                 }`}
             >
               {cat}
@@ -127,7 +127,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
         {/* FAQ Accordion List */}
         <div className="space-y-4 mb-16">
           {filteredFaqs.length === 0 ? (
-            <div className="text-center py-12 bg-white dark:bg-[#00337C] rounded-3xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+            <div className="text-center py-12 bg-white dark:bg-[#141414] rounded-3xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
               No queries match your search keyword. Try searching for "attendance", "scholarship", or "exam".
             </div>
           ) : (
@@ -136,21 +136,21 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
               return (
                 <div
                   key={index}
-                  className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl overflow-hidden shadow-xs transition-all"
+                  className="neo-surface rounded-3xl overflow-hidden shadow-xs transition-all"
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
                     className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#E0D4FD]/10"
                   >
                     <div className="space-y-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                         {faq.category}
                       </span>
                       <h3 className="text-sm sm:text-base font-black text-[#000000] dark:text-[#FFFFFF] pt-1">
                         {currentLang === 'as' ? faq.asQ : faq.q}
                       </h3>
                     </div>
-                    <div className={`w-8 h-8 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-center shrink-0 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                    <div className={`w-8 h-8 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-center shrink-0 text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF] transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
                       <ChevronDownIcon className="w-4 h-4" />
                     </div>
                   </button>
@@ -167,7 +167,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
         </div>
 
         {/* Need Help Box */}
-        <div className="bg-[#FFE9A9]/40 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-8 text-center space-y-3">
+        <div className="bg-[#FFE9A9]/40 dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-8 text-center space-y-3">
           <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
             Have an unlisted university circular or ordinance query?
           </h3>

@@ -73,7 +73,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
     <div className="space-y-6">
       
       {/* 3D Header Section */}
-      <div className="bg-white/95 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-3xl p-6 sm:p-8 shadow-lg shadow-purple-500/10 card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -110,7 +110,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <select
               value={univA}
               onChange={(e) => setUnivA(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               {universities.map((u) => (
                 <option key={u} value={u} disabled={u === univB}>{u}</option>
@@ -125,7 +125,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <select
               value={univB}
               onChange={(e) => setUnivB(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               {universities.map((u) => (
                 <option key={u} value={u} disabled={u === univA}>{u}</option>
@@ -140,7 +140,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <select
               value={selectedDiscipline}
               onChange={(e) => setSelectedDiscipline(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               <option value="BCA-DBMS">DBMS (BCA Sem 3)</option>
               <option value="BCA-DBMS">Operating Systems (BCA Sem 3)</option>
@@ -155,7 +155,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <select
               value={selectedSemester}
               onChange={(e) => setSelectedSemester(Number(e.target.value))}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               <option value={1}>Semester 1</option>
               <option value={2}>Semester 2</option>
@@ -169,7 +169,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
       </div>
 
       {/* Alignment Summary Banner */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#FFE9A9] dark:bg-[#00337C] border-2 border-[#FFCB56] dark:border-[#03C988] flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-3d">
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#FFE9A9] dark:bg-[#141414] border-2 border-[#FFCB56] dark:border-[#03C988] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] flex items-center justify-center font-black shrink-0">
             ✓
@@ -196,7 +196,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* University A Column */}
-        <div className="bg-white/95 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-3xl p-6 shadow-sm card-3d space-y-6">
+        <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 space-y-6">
           <div className="pb-4 border-b border-[#E0D4FD] dark:border-[#3B2868] flex items-start justify-between">
             <div>
               <span className="text-[11px] font-black text-[#FF933E] dark:text-[#03C988] uppercase tracking-wider">
@@ -207,18 +207,18 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
               </h3>
               <p className="text-xs text-[#000000]/75 dark:text-[#FFFFFF]/80">{activeCompare.title}</p>
             </div>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988] dark:text-[#C4B5FD]">
+            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] dark:text-[#C4B5FD]">
               {activeCompare.univAData.credits}
             </span>
           </div>
 
           {/* Scheme & Hours */}
           <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
+            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
               <span className="text-[#FF933E] dark:text-[#03C988] font-bold block text-[10px]">EXAMINATION SCHEME</span>
               <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{activeCompare.univAData.examScheme}</span>
             </div>
-            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
+            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
               <span className="text-[#FF933E] dark:text-[#03C988] font-bold block text-[10px]">LAB PRACTICAL</span>
               <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{activeCompare.univAData.labHours}</span>
             </div>
@@ -229,7 +229,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <h4 className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">Prescribed Units</h4>
             <div className="space-y-2">
               {activeCompare.univAData.units.map((u, i) => (
-                <div key={i} className="p-3 rounded-xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between text-xs">
+                <div key={i} className="p-3 rounded-xl bg-[#FAF8FF] dark:bg-black border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between text-xs">
                   <span className="font-semibold text-[#000000] dark:text-[#FFFFFF]">{u.name}</span>
                   <span className="text-[#000000]/75 dark:text-[#FFFFFF]/80 text-[11px] shrink-0 ml-2">{u.hours}</span>
                 </div>
@@ -255,7 +255,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
         </div>
 
         {/* University B Column */}
-        <div className="bg-white/95 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-3xl p-6 shadow-sm card-3d space-y-6">
+        <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 space-y-6">
           <div className="pb-4 border-b border-[#E0D4FD] dark:border-[#3B2868] flex items-start justify-between">
             <div>
               <span className="text-[11px] font-black text-[#03C988] uppercase tracking-wider">
@@ -266,18 +266,18 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
               </h3>
               <p className="text-xs text-[#000000]/75 dark:text-[#FFFFFF]/80">{activeCompare.title}</p>
             </div>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#03C988]">
+            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#03C988]">
               {activeCompare.univBData.credits}
             </span>
           </div>
 
           {/* Scheme & Hours */}
           <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
+            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
               <span className="text-[#FF933E] dark:text-[#03C988] font-bold block text-[10px]">EXAMINATION SCHEME</span>
               <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{activeCompare.univBData.examScheme}</span>
             </div>
-            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
+            <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-xl border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
               <span className="text-[#FF933E] dark:text-[#03C988] font-bold block text-[10px]">LAB PRACTICAL</span>
               <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{activeCompare.univBData.labHours}</span>
             </div>
@@ -288,7 +288,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
             <h4 className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">Prescribed Units</h4>
             <div className="space-y-2">
               {activeCompare.univBData.units.map((u, i) => (
-                <div key={i} className="p-3 rounded-xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between text-xs">
+                <div key={i} className="p-3 rounded-xl bg-[#FAF8FF] dark:bg-black border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-between text-xs">
                   <span className="font-semibold text-[#000000] dark:text-[#FFFFFF]">{u.name}</span>
                   <span className="text-[#000000]/75 dark:text-[#FFFFFF]/80 text-[11px] shrink-0 ml-2">{u.hours}</span>
                 </div>

@@ -102,14 +102,14 @@ export const Contact = ({ currentLang = 'en' }) => {
 
           {/* Left Column: Form (Cols 7) */}
           <div className="lg:col-span-7">
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
               <h2 className="text-lg sm:text-xl font-black text-[#000000] dark:text-[#FFFFFF] mb-6 flex items-center space-x-2">
                 <BuildingLibraryIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
                 <span>Submit Institutional Query</span>
               </h2>
 
               {status.submitted && (
-                <div className="mb-6 p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#000000] dark:text-[#FFFFFF] font-black text-xs sm:text-sm flex items-center space-x-2">
+                <div className="mb-6 p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 text-[#000000] dark:text-[#FFFFFF] font-black text-xs sm:text-sm flex items-center space-x-2">
                   <CheckCircleIcon className="w-5 h-5 text-[#10B981]" />
                   <span>Your query has been submitted. The academic desk will review your inquiry shortly.</span>
                 </div>
@@ -127,7 +127,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                       placeholder="e.g. Dr. B. Barua / Student"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                     />
                   </div>
 
@@ -141,7 +141,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                       placeholder="user@university.ac.in"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                     />
                   </div>
                 </div>
@@ -154,7 +154,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                     <select
                       value={formData.university}
                       onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                     >
                       <option>Gauhati University (GU)</option>
                       <option>Dibrugarh University (DU)</option>
@@ -173,7 +173,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                     <select
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                     >
                       <option>Student / Research Scholar</option>
                       <option>Faculty Member</option>
@@ -190,7 +190,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                   <select
                     value={formData.inquiryType}
                     onChange={(e) => setFormData({ ...formData, inquiryType: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                   >
                     <option>Regulation Clarification</option>
                     <option>Examination Ordinance & Re-evaluation</option>
@@ -211,7 +211,7 @@ export const Contact = ({ currentLang = 'en' }) => {
                     placeholder="Provide details about your query or the specific circular reference..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#6D28D9]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
                   />
                 </div>
 
@@ -230,7 +230,7 @@ export const Contact = ({ currentLang = 'en' }) => {
           {/* Right Column: Key Contacts & Quick FAQ (Cols 5) */}
           <div className="lg:col-span-5 space-y-6">
 
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm space-y-4">
+            <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                 UniMitra Support Desk
               </h3>
@@ -252,7 +252,7 @@ export const Contact = ({ currentLang = 'en' }) => {
             </div>
 
             {/* Quick Expandable FAQs */}
-            <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-sm space-y-3">
+            <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-3">
               <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF] mb-2">
                 Frequently Addressed Queries
               </h3>

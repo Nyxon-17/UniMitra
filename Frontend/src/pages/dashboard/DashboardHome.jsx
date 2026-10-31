@@ -117,7 +117,7 @@ export const DashboardHome = ({
     <div className="space-y-8">
       
       {/* 3D Welcome Institutional Banner Card */}
-      <div className="relative bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs card-3d overflow-hidden">
+      <div className="relative neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 overflow-hidden">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -145,13 +145,13 @@ export const DashboardHome = ({
             </button>
             <button
               onClick={() => onNavigateTab('regulations')}
-              className="px-5 py-3 rounded-2xl font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9]/20 dark:bg-[#13005A] hover:bg-[#FFE9A9]/40 transition-all cursor-pointer text-xs sm:text-sm border border-[#73A5CA]/40 dark:border-[#1C82AD]/40"
+              className="px-5 py-3 rounded-2xl font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFE9A9]/40 transition-all cursor-pointer text-xs sm:text-sm border border-[#73A5CA]/40 dark:border-[#1C82AD]/40"
             >
               {currentLang === 'as' ? 'নিয়মাৱলী চাওক' : 'View Regulations'}
             </button>
             <button
               onClick={() => onNavigateTab('scholarships')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#13005A] hover:bg-[#FFE9A9]/80 transition-all cursor-pointer text-xs sm:text-sm border border-[#73A5CA]/40 dark:border-[#1C82AD]/40"
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-[#000000] dark:text-[#FFFFFF] bg-[#FFE9A9] dark:bg-[#0A0A0A] hover:bg-[#FFE9A9]/80 transition-all cursor-pointer text-xs sm:text-sm border border-[#73A5CA]/40 dark:border-[#1C82AD]/40"
             >
               <BanknotesIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
               <span>{currentLang === 'as' ? 'ছাত্ৰবৃত্তি' : 'Scholarships'}</span>
@@ -161,9 +161,9 @@ export const DashboardHome = ({
       </div>
 
       {/* Quick Natural Language Assistant Prompt Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-5 shadow-xs">
+      <div className="neo-surface rounded-3xl p-4 sm:p-5 shadow-xs">
         <form onSubmit={handleQuickAsk} className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center px-4 bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+          <div className="flex-1 flex items-center px-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
             <SearchIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mr-3 shrink-0" />
             <input
               type="text"
@@ -206,14 +206,14 @@ export const DashboardHome = ({
               <div
                 key={domain.id}
                 onClick={() => onNavigateTab(domain.id)}
-                className="group relative bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-5 sm:p-6 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer flex flex-col justify-between space-y-4"
+                className="group relative neo-surface rounded-3xl p-5 sm:p-6 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#13005A] border border-[#FFCB56] dark:border-[#03C988] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-[#FFE9A9] dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988] flex items-center justify-center">
                       <Icon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988]" />
                     </div>
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9]/40 dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9]/40 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
                       {domain.count}
                     </span>
                   </div>
@@ -239,7 +239,7 @@ export const DashboardHome = ({
       </div>
 
       {/* Grounded Institutional Citations Callout */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 shadow-xs space-y-4">
+      <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-4">
         <div className="flex items-center space-x-2">
           <ShieldCheckIcon className="w-5 h-5 text-[#03C988]" />
           <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
@@ -251,7 +251,7 @@ export const DashboardHome = ({
           {recentAnswers.map((item, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 space-y-2"
+              className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 space-y-2"
             >
               <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
                 {item.domain}

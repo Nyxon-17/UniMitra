@@ -82,7 +82,7 @@ export const Navbar = ({
           className="flex items-center space-x-2 sm:space-x-2.5 cursor-pointer select-none shrink-0" 
           onClick={() => handleNav('home')}
         >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-[#73A5CA] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#00337C] flex items-center justify-center text-white shadow-sm">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-[#73A5CA] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white shadow-sm">
             <BuildingLibraryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-black" />
           </div>
           <div className="flex flex-col">
@@ -90,8 +90,8 @@ export const Navbar = ({
               <span className="text-base sm:text-lg font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
                 Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
               </span>
-              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#03C988] hidden sm:inline">
-                {univProfile.abbreviation || 'DU'}
+              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-[#FFE9A9] dark:bg-white/10 text-[#000000] dark:text-[#03C988] hidden sm:inline">
+                {univProfile.abbreviation || 'MU'}
               </span>
             </div>
           </div>
@@ -106,7 +106,7 @@ export const Navbar = ({
               className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentActive === link.id
                   ? 'bg-[#FF933E] text-white dark:bg-[#03C988] dark:text-[#000000] shadow-xs'
-                  : 'text-[#000000]/80 dark:text-[#FFFFFF]/80 hover:text-[#FF933E] dark:hover:text-[#03C988] hover:bg-[#FFE9A9]/30 dark:hover:bg-[#13005A]/60'
+                  : 'text-[#000000]/80 dark:text-[#FFFFFF]/80 hover:text-[#FF933E] dark:hover:text-[#03C988] hover:bg-[#FFE9A9]/30 dark:hover:bg-white/10'
               }`}
             >
               {currentLang === 'as' ? link.asLabel : link.label}
@@ -118,7 +118,7 @@ export const Navbar = ({
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           
           {/* Direct Language Switcher */}
-          <div className="flex items-center p-0.5 bg-[#FFE9A9]/30 dark:bg-[#13005A] rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
+          <div className="flex items-center p-0.5 bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/40">
             <button
               onClick={() => currentLang !== 'as' && onToggleLang()}
               className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all cursor-pointer ${
@@ -145,7 +145,7 @@ export const Navbar = ({
           <button
             onClick={onToggleTheme}
             aria-label="Toggle Dark and Light Mode"
-            className="p-1.5 sm:p-2 rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-[#000000] dark:text-[#03C988] hover:bg-[#FFE9A9]/50 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-full border border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#03C988] hover:bg-[#FFE9A9]/50 transition-colors cursor-pointer"
             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
             {isDark ? <SunIcon className="w-4 h-4 text-[#03C988]" /> : <MoonIcon className="w-4 h-4 text-[#FF933E]" />}
@@ -192,10 +192,10 @@ export const Navbar = ({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-2 rounded-3xl neo-surface bg-white/95 dark:bg-[#00337C]/95 backdrop-blur-2xl border border-white/60 dark:border-[#1C82AD]/40 px-4 pt-3 pb-6 space-y-4 shadow-xl">
+        <div className="lg:hidden mt-2 rounded-3xl neo-surface bg-white/95 dark:bg-[#141414]/95 backdrop-blur-2xl border border-white/60 dark:border-[#1C82AD]/40 px-4 pt-3 pb-6 space-y-4 shadow-xl">
           
           {/* Mobile Language Switcher */}
-          <div className="flex items-center justify-between p-2.5 bg-[#FFE9A9]/30 dark:bg-[#13005A] rounded-2xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
+          <div className="flex items-center justify-between p-2.5 bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
             <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1.5">
               <LanguageIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
               <span>ভাষা / Language:</span>

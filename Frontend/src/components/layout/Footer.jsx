@@ -16,7 +16,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
   };
 
   return (
-    <footer className="relative z-20 w-full bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border-t-4 border-[#FF933E] dark:border-[#03C988] transition-colors duration-200">
+    <footer className="relative z-20 w-full bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border-t-4 border-[#FF933E] dark:border-[#03C988] transition-colors duration-200">
       {/* Upper Footer */}
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 pt-14 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -42,13 +42,13 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </p>
 
             <div className="pt-2 flex flex-wrap gap-2 text-xs font-black">
-              <span className="bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
+              <span className="bg-[#FFE9A9] dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
                 Institutional Regulations
               </span>
-              <span className="bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
+              <span className="bg-[#FFE9A9] dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
                 অসমীয়া + English
               </span>
-              <span className="bg-[#FFE9A9] dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
+              <span className="bg-[#FFE9A9] dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] px-3 py-1.5 rounded-xl border border-[#FFCB56] dark:border-[#1C82AD]">
                 Verified Page Citations
               </span>
             </div>
@@ -131,7 +131,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               {currentLang === 'as' ? 'তথ্যৰ বিশ্বাসযোগ্যতা' : 'Integrity & Verification'}
             </h4>
             
-            <div className="p-4 bg-[#FFE9A9]/40 dark:bg-[#00337C] border border-[#FFCB56] dark:border-[#1C82AD] rounded-2xl space-y-2">
+            <div className="p-4 bg-[#FFE9A9]/40 dark:bg-[#141414] border border-[#FFCB56] dark:border-[#1C82AD] rounded-2xl space-y-2">
               <div className="flex items-center space-x-2 text-[#000000] dark:text-[#FFFFFF]">
                 <ShieldCheckIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
                 <span className="text-xs font-black">Zero Hallucination Policy</span>
@@ -151,7 +151,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/30 dark:bg-[#00337C] py-5">
+      <div className="border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/30 dark:bg-[#141414] py-5">
         <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#000000]/80 dark:text-[#FFFFFF]/80">
           <p>
             © {new Date().getFullYear()} <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">UniMitra</span>. Higher Education Institutional Assistant Platform.

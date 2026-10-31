@@ -432,48 +432,46 @@ export const DashboardAiAssistant = ({
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col neo-surface rounded-[2.5rem] shadow-[0_20px_60px_rgba(115,165,202,0.18)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.65)] overflow-hidden transition-all duration-300 min-h-[calc(100vh-6rem)]">
+    <div className="w-full h-full flex flex-col neo-surface rounded-3xl overflow-hidden transition-all duration-300 min-h-0">
       
-      {/* Top Header Bar (Organic Spatial Pill) */}
-      <div className="px-5 py-3.5 bg-gradient-to-r from-[#FFE9A9]/30 via-white/50 to-transparent dark:from-[#13005A] dark:via-[#00337C]/80 dark:to-transparent border-b border-[#73A5CA]/25 dark:border-[#1C82AD]/30 flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] flex items-center justify-center font-black shadow-md">
-            <BuildingLibraryIcon className="w-5 h-5" />
+      {/* Top Header Bar (Compact & Clean) */}
+      <div className="px-4 py-2 bg-gradient-to-r from-[#FFE9A9]/30 via-white/50 to-transparent dark:from-white/5 dark:via-transparent dark:to-transparent border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] flex items-center justify-center font-black shadow-xs">
+            <BuildingLibraryIcon className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-sm sm:text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                {univProfile.name || 'Dibrugarh University'} Assistant
+            <div className="flex items-center space-x-1.5">
+              <h2 className="text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] leading-tight">
+                {univProfile.name || 'My University'} Assistant
               </h2>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#FFE9A9] text-[#000000] dark:bg-[#00337C] dark:text-[#03C988] border border-[#FFCB56] dark:border-[#03C988]">
-                Voice & RAG
-              </span>
+              <span className="w-2 h-2 rounded-full bg-[#03C988] animate-pulse" title="Online" />
             </div>
-            <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/75 font-semibold">
+            <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 leading-tight">
               {currentLang === 'as' 
-                ? `${univProfile.asName}ৰ অধিসূচনাৰ সৈতে পোনপটীয়া সংযোগ • ভয়েচ সক্ৰিয়` 
-                : `Grounded in ${univProfile.name} gazettes & ordinances • Voice enabled`}
+                ? 'বিশ্ববিদ্যালয় সহায়ক • ভয়েচ সক্ৰিয়' 
+                : 'University Assistant • Voice Enabled'}
             </p>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           {/* Voice Output Speaker Toggle */}
           <button
             onClick={() => {
               if (isSpeaking) stopSpeaking();
               setVoiceOutputEnabled(!voiceOutputEnabled);
             }}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
+            className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer border ${
               voiceOutputEnabled
                 ? 'bg-[#FF933E]/20 text-[#FF933E] dark:bg-[#03C988]/20 dark:text-[#03C988] border-[#FF933E]/40 dark:border-[#03C988]/40'
                 : 'text-[#000000]/40 dark:text-[#FFFFFF]/40 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             title={voiceOutputEnabled ? 'Voice Auto-Playback Active' : 'Voice Auto-Playback Muted'}
           >
-            <SpeakerWaveIcon className="w-4 h-4" />
-            <span className="hidden sm:inline text-[11px]">
+            <SpeakerWaveIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[10px]">
               {voiceOutputEnabled ? 'Voice: ON' : 'Voice: OFF'}
             </span>
           </button>
@@ -481,16 +479,16 @@ export const DashboardAiAssistant = ({
           {/* Query History Drawer Toggle */}
           <button
             onClick={() => setHistorySidebarOpen(!historySidebarOpen)}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 ${
+            className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer border border-black/10 dark:border-white/10 ${
               historySidebarOpen 
                 ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000]' 
-                : 'bg-white/80 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40'
+                : 'bg-white/80 dark:bg-white/5 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40'
             }`}
             title="Toggle Query History"
           >
-            <ClockIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF]">
+            <ClockIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[10px]">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-[#FFE9A9] dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF]">
               {queryHistory.length}
             </span>
           </button>
@@ -542,73 +540,28 @@ export const DashboardAiAssistant = ({
         </div>
       )}
 
-      {/* Benchmark Test Scenarios Pill Dock */}
-      <div className="px-4 py-2.5 bg-white/40 dark:bg-[#13005A]/40 border-b border-[#73A5CA]/25 dark:border-[#1C82AD]/30 shrink-0">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-[11px] font-black uppercase text-[#FF933E] dark:text-[#03C988] flex items-center space-x-1">
-              <SparklesIcon className="w-3.5 h-3.5" />
-              <span>Benchmark Scenarios:</span>
-            </span>
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => setActiveTestCategory('as')}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-black cursor-pointer transition-all ${
-                  activeTestCategory === 'as'
-                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                    : 'bg-white/80 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF]'
-                }`}
-              >
-                3 Assamese Tests
-              </button>
-              <button
-                onClick={() => setActiveTestCategory('en')}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-black cursor-pointer transition-all ${
-                  activeTestCategory === 'en'
-                    ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                    : 'bg-white/80 dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF]'
-                }`}
-              >
-                3 English Tests
-              </button>
-            </div>
-          </div>
-
-          <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 font-semibold hidden md:inline">
-            Click any scenario to execute live RAG query with source citations
-          </span>
-        </div>
-
-        <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-          {benchmarkTestScenarios
-            .filter((t) => t.lang === activeTestCategory)
-            .map((scenario) => (
-              <button
-                key={scenario.id}
-                onClick={() => executeQuery(scenario.query)}
-                className="text-left p-2.5 rounded-2xl bg-white/90 dark:bg-[#00337C]/80 border border-[#73A5CA]/30 dark:border-[#1C82AD]/35 hover:border-[#FF933E] dark:hover:border-[#03C988] hover:scale-[1.01] transition-all cursor-pointer group shadow-2xs"
-                title={scenario.desc}
-              >
-                <div className="flex items-center justify-between text-[10px] font-black text-[#FF933E] dark:text-[#03C988] mb-0.5">
-                  <span>{scenario.tag}</span>
-                  <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-                <p className="text-[11px] font-bold text-[#000000] dark:text-[#FFFFFF] truncate">
-                  {scenario.label}
-                </p>
-                <p className="text-[10px] text-[#000000]/65 dark:text-[#FFFFFF]/65 truncate italic">
-                  "{scenario.query}"
-                </p>
-              </button>
-            ))}
-        </div>
+      {/* Quick Questions (Compact Single-Line Bar) */}
+      <div className="px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/5 dark:border-white/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar shrink-0">
+        <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase shrink-0">
+          {currentLang === 'as' ? 'দ্ৰুত প্ৰশ্ন:' : 'Quick:'}
+        </span>
+        {benchmarkTestScenarios.map((scenario) => (
+          <button
+            key={scenario.id}
+            onClick={() => executeQuery(scenario.query)}
+            className="px-2.5 py-1 rounded-full bg-white dark:bg-white/5 hover:bg-[#FFE9A9]/40 dark:hover:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-black/5 dark:border-white/10 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 shadow-2xs"
+            title={scenario.desc}
+          >
+            {scenario.label}
+          </button>
+        ))}
       </div>
 
       {/* Main Chat Messages Stream + History Drawer */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         
         {/* Messages Stream */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
+        <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 min-h-0">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -652,7 +605,7 @@ export const DashboardAiAssistant = ({
                           {msg.source}
                         </span>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] font-sans font-bold shrink-0 ml-2">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] font-sans font-bold shrink-0 ml-2">
                         {msg.page}
                       </span>
                     </div>
@@ -667,7 +620,7 @@ export const DashboardAiAssistant = ({
                         {/* Voice Listen Button */}
                         <button
                           onClick={() => speakText(msg.text)}
-                          className="px-3 py-1 rounded-full bg-[#FFE9A9]/50 dark:bg-[#00337C] hover:bg-[#FFE9A9] text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] cursor-pointer flex items-center space-x-1"
+                          className="px-3 py-1 rounded-full bg-[#FFE9A9]/50 dark:bg-[#141414] hover:bg-[#FFE9A9] text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] cursor-pointer flex items-center space-x-1"
                           title="Listen with Text-to-Speech"
                         >
                           <SpeakerWaveIcon className="w-3.5 h-3.5" />
@@ -676,7 +629,7 @@ export const DashboardAiAssistant = ({
 
                         <button
                           onClick={() => handleSaveAnswer(msg)}
-                          className="px-3 py-1 rounded-full bg-white dark:bg-[#00337C] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                          className="px-3 py-1 rounded-full bg-white dark:bg-[#141414] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
                         >
                           <DocumentDuplicateIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                           <span>Bookmark</span>
@@ -684,7 +637,7 @@ export const DashboardAiAssistant = ({
 
                         <button
                           onClick={() => handleOpenFeedback(msg)}
-                          className="px-3 py-1 rounded-full bg-white dark:bg-[#00337C] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                          className="px-3 py-1 rounded-full bg-white dark:bg-[#141414] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
                         >
                           <CheckCircleIcon className="w-3.5 h-3.5 text-[#03C988]" />
                           <span>Feedback</span>
@@ -718,7 +671,7 @@ export const DashboardAiAssistant = ({
 
         {/* History Drawer */}
         {historySidebarOpen && (
-          <aside className="w-72 sm:w-80 border-l border-[#73A5CA]/30 dark:border-[#1C82AD]/30 bg-white/90 dark:bg-[#13005A]/90 backdrop-blur-xl p-4 flex flex-col justify-between shrink-0 animate-fade-in">
+          <aside className="w-72 sm:w-80 border-l border-[#73A5CA]/30 dark:border-[#1C82AD]/30 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-xl p-4 flex flex-col justify-between shrink-0 animate-fade-in">
             <div className="space-y-3 overflow-y-auto">
               <div className="flex items-center justify-between pb-2 border-b border-[#73A5CA]/20">
                 <div className="flex items-center space-x-2">
@@ -745,11 +698,11 @@ export const DashboardAiAssistant = ({
                     <button
                       key={item.id}
                       onClick={() => executeQuery(item.query)}
-                      className="w-full text-left p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#00337C]/60 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer group"
+                      className="w-full text-left p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#141414]/60 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-between text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 mb-1">
                         <span className="font-bold">{item.time}</span>
-                        <span className="px-1.5 py-0.2 rounded bg-white dark:bg-[#13005A] text-[9px] uppercase font-bold">
+                        <span className="px-1.5 py-0.2 rounded bg-white dark:bg-[#0A0A0A] text-[9px] uppercase font-bold">
                           {item.lang || 'en'}
                         </span>
                       </div>
@@ -779,78 +732,50 @@ export const DashboardAiAssistant = ({
 
       </div>
 
-      {/* Suggested Prompt Chips */}
-      <div className="px-5 py-2 bg-white/40 dark:bg-[#13005A]/40 border-t border-[#73A5CA]/20 flex items-center gap-2 overflow-x-auto shrink-0">
-        <span className="text-[10px] font-black uppercase text-[#000000]/50 dark:text-[#FFFFFF]/50 shrink-0">
-          Suggestions:
-        </span>
-        {promptChips.map((chip, idx) => (
-          <button
-            key={idx}
-            onClick={() => executeQuery(chip)}
-            className="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-[#00337C] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-[#000000] dark:text-[#FFFFFF] hover:border-[#FF933E] dark:hover:border-[#03C988] whitespace-nowrap cursor-pointer transition-colors shadow-2xs"
-          >
-            {chip}
-          </button>
-        ))}
-      </div>
-
-      {/* SPACIOUS TEXTAREA INPUT AREA (Edge-to-edge fluid, generous height, zero margin) */}
+      {/* COMPACT INPUT AREA (Maximizes chat space, fits 100% on screen) */}
       <form 
         onSubmit={handleSend} 
-        className="p-4 bg-white/80 dark:bg-[#13005A]/90 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 shrink-0"
+        className="p-2 sm:p-2.5 bg-white/70 dark:bg-black/80 backdrop-blur-md border-t border-black/5 dark:border-white/10 shrink-0"
       >
-        <div className="rounded-3xl neo-inset p-3 sm:p-4 space-y-2">
-          {/* Multi-line expansive textarea */}
+        <div className="rounded-2xl neo-inset px-3 py-1.5 flex items-center gap-2">
+          {/* Voice Input Microphone Button */}
+          <button
+            type="button"
+            onClick={toggleListening}
+            className={`p-2 rounded-full transition-all cursor-pointer shrink-0 ${
+              isListening
+                ? 'bg-red-500 text-white animate-pulse shadow-md'
+                : 'bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988] hover:scale-105'
+            }`}
+            title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak query)'}
+          >
+            <MicrophoneIcon className="w-4 h-4" />
+          </button>
+
+          {/* Compact multi-line textarea */}
           <textarea
             ref={textareaRef}
-            rows={3}
+            rows={1}
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={
               currentLang === 'as'
-                ? `${univProfile.asName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী, পৰীক্ষা বা ছাত্ৰবৃত্তিৰ বিষয়ে বহলাই প্ৰশ্ন সোধক (মাইক্ৰ’ফোন টিপিও কথা পাতিব পাৰে)...`
-                : `Ask any question on ${univProfile.name || 'Dibrugarh University'} regulations, examinations, or scholarships in detail (or tap mic to speak)...`
+                ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ বিষয়ে প্ৰশ্ন সোধক (মাইক্ৰ’ফোন টিপিও কথা পাতিব পাৰে)...`
+                : `Ask any question on ${univProfile.name || 'university'} regulations, exams...`
             }
-            className="w-full bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/50 outline-none resize-none leading-relaxed"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/50 outline-none resize-none leading-relaxed py-1 max-h-20"
           />
 
-          {/* Action Row Underneath Textarea */}
-          <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5">
-            {/* Voice Input Microphone Button */}
-            <div className="flex items-center space-x-2">
-              <button
-                type="button"
-                onClick={toggleListening}
-                className={`px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center space-x-1.5 ${
-                  isListening
-                    ? 'bg-red-500 text-white animate-pulse shadow-md'
-                    : 'bg-[#FFE9A9] dark:bg-[#00337C] text-[#FF933E] dark:text-[#03C988] hover:scale-105'
-                }`}
-                title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak query)'}
-              >
-                <MicrophoneIcon className="w-4 h-4" />
-                <span className="text-xs font-black">
-                  {isListening ? 'Listening...' : 'Speak (ভয়েচ)'}
-                </span>
-              </button>
-
-              <span className="text-[11px] text-[#000000]/50 dark:text-[#FFFFFF]/50 hidden sm:inline">
-                Shift + Enter for new line • Enter to send
-              </span>
-            </div>
-
-            {/* Send Button */}
-            <button
-              type="submit"
-              disabled={!inputQuery.trim() || loading}
-              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#FF933E] to-[#FFCB56] hover:from-[#E87A24] hover:to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] text-xs sm:text-sm font-black disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-md flex items-center space-x-1.5"
-            >
-              <SendIcon className="w-4 h-4" />
-              <span>{currentLang === 'as' ? 'প্ৰেৰণ' : 'Ask Question'}</span>
-            </button>
-          </div>
+          {/* Send Button */}
+          <button
+            type="submit"
+            disabled={!inputQuery.trim() || loading}
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-[#FF933E] to-[#FFCB56] hover:from-[#E87A24] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0"
+          >
+            <SendIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
+          </button>
         </div>
       </form>
 

@@ -56,11 +56,11 @@ export const DashboardProfile = ({
     <div className="space-y-6 max-w-4xl mx-auto">
       
       {/* 3D Profile Header Card */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] transition-all duration-300">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {/* 3D Avatar */}
           <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] p-1 shadow-lg shrink-0">
-            <div className="w-full h-full bg-[#FFE9A9]/20 dark:bg-[#13005A] rounded-[22px] flex items-center justify-center">
+            <div className="w-full h-full bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-[22px] flex items-center justify-center">
               <span className="text-3xl font-black text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
                 {formData.name.charAt(0)}
               </span>
@@ -69,15 +69,15 @@ export const DashboardProfile = ({
 
           <div className="flex-1 text-center sm:text-left space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#13005A] dark:text-[#FFFFFF] border border-[#6D28D9]/40 flex items-center space-x-1">
+              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#E0D4FD]/40 text-[#000000] dark:bg-[#0A0A0A] dark:text-[#FFFFFF] border border-[#FF933E]/50 dark:border-[#03C988]/50/40 flex items-center space-x-1">
                 <CheckCircleIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                 <span>Verified Institutional User</span>
               </span>
-              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#FFE9A9] dark:bg-[#3B2868] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
                 Role: {formData.role}
               </span>
               {formData.memberId && (
-                <span className="px-3 py-1 rounded-xl text-xs font-black bg-white dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#6D28D9] font-mono">
+                <span className="px-3 py-1 rounded-xl text-xs font-black bg-white dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FF933E]/50 dark:border-[#03C988]/50 font-mono">
                   Member ID: {formData.memberId}
                 </span>
               )}
@@ -96,7 +96,7 @@ export const DashboardProfile = ({
 
       {/* Success Notification Alert */}
       {savedSuccess && (
-        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm font-black flex items-center space-x-2">
+        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#FF933E]/50 dark:border-[#03C988]/50 text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm font-black flex items-center space-x-2">
           <CheckCircleIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
           <span>{currentLang === 'as' ? 'প্ৰফাইল তথ্য সফলতাৰে সংৰক্ষণ কৰা হ’ল!' : 'Institutional profile details successfully updated!'}</span>
         </div>
@@ -106,7 +106,7 @@ export const DashboardProfile = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Personal & Institutional Details Section */}
-        <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
           <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] border-b border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40 pb-3 flex items-center space-x-2">
             <UserGroupIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
             <span>Institutional Identity</span>
@@ -122,7 +122,7 @@ export const DashboardProfile = ({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               />
             </div>
 
@@ -135,7 +135,7 @@ export const DashboardProfile = ({
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               />
             </div>
 
@@ -146,7 +146,7 @@ export const DashboardProfile = ({
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               >
                 <option>Student</option>
                 <option>Research Scholar</option>
@@ -163,14 +163,14 @@ export const DashboardProfile = ({
                 type="text"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#6D28D9]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
               />
             </div>
           </div>
         </div>
 
         {/* Notifications & Language Preferences */}
-        <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
           <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] border-b border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40 pb-3 flex items-center space-x-2">
             <BellIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
             <span>Institutional Circular Alerts</span>

@@ -240,14 +240,14 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
             <div className="flex flex-col text-left pr-1">
               <div className="flex items-center space-x-1.5">
                 <span className="text-xs font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
-                  UniMitra AI
+                  {univProfile.abbreviation || 'MU'} Assistant
                 </span>
-                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#FF933E] dark:text-[#03C988]">
-                  Voice & RAG
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988]">
+                  Voice
                 </span>
               </div>
               <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/70 font-semibold">
-                {currentLang === 'as' ? 'কথোপকথন / প্ৰশ্ন সোধক' : 'Ask or speak queries'}
+                {currentLang === 'as' ? 'প্ৰশ্ন সোধক বা কওক' : 'Ask questions'}
               </p>
             </div>
           </button>
@@ -258,26 +258,24 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       {isOpen && (
         <aside 
           aria-label="UniMitra Spatial AI Assistant Window"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[460px] h-[640px] max-h-[85vh] neo-surface rounded-[2rem] shadow-[0_24px_70px_rgba(0,0,0,0.35)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden border border-white/70 dark:border-[#1C82AD]/40 animate-scale-up"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] h-[560px] max-h-[80vh] neo-surface rounded-[2rem] shadow-[0_24px_70px_rgba(0,0,0,0.35)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden border border-white/70 dark:border-white/10 animate-scale-up"
         >
           
           {/* Header Bar */}
-          <div className="px-5 py-3.5 bg-gradient-to-r from-[#FFE9A9]/40 via-white/40 to-transparent dark:from-[#13005A] dark:via-[#00337C]/80 dark:to-transparent border-b border-[#73A5CA]/25 dark:border-[#1C82AD]/30 flex items-center justify-between shrink-0">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-xs">
-                <BuildingLibraryIcon className="w-4 h-4" />
+          <div className="px-4 py-2.5 bg-gradient-to-r from-[#FFE9A9]/40 via-white/40 to-transparent dark:from-white/5 dark:via-transparent dark:to-transparent border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-xs">
+                <BuildingLibraryIcon className="w-3.5 h-3.5" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
-                  <h3 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                    {univProfile.abbreviation || 'DU'} Assistant
+                  <h3 className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
+                    {univProfile.name || 'My University'} Assistant
                   </h3>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-[#FFE9A9] text-[#000000] dark:bg-[#00337C] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
-                    Grounded
-                  </span>
+                  <span className="w-2 h-2 rounded-full bg-[#03C988] animate-pulse" />
                 </div>
                 <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/70">
-                  {currentLang === 'as' ? 'দ্বিভাষিক ভয়েচ আৰু ৰেগ সহায়ক' : 'Bilingual Voice & Text AI'}
+                  {currentLang === 'as' ? 'বিশ্ববিদ্যালয় তথ্য সহায়ক' : 'Official University Assistant'}
                 </p>
               </div>
             </div>
@@ -361,7 +359,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           )}
 
           {/* Quick Prompts Bar */}
-          <div className="px-3 py-1.5 bg-white/40 dark:bg-[#13005A]/40 border-b border-[#73A5CA]/20 flex items-center gap-1.5 overflow-x-auto shrink-0">
+          <div className="px-3 py-1.5 bg-white/40 dark:bg-[#0A0A0A]/40 border-b border-[#73A5CA]/20 flex items-center gap-1.5 overflow-x-auto shrink-0">
             {[
               { label: 'Passing Criteria (৪০% নম্বৰ)', q: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?' },
               { label: 'Attendance (উপস্থিতি ৰেহাই)', q: 'মেডিকেল কাৰণত উপস্থিতি কিমান শতাংশলৈ ৰেহাই পোৱা যায়?' },
@@ -370,7 +368,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
               <button
                 key={i}
                 onClick={() => executeQuery(p.q)}
-                className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/80 dark:bg-[#00337C] hover:bg-[#FFE9A9]/50 text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 whitespace-nowrap cursor-pointer transition-colors shadow-2xs"
+                className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/80 dark:bg-[#141414] hover:bg-[#FFE9A9]/50 text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 whitespace-nowrap cursor-pointer transition-colors shadow-2xs"
               >
                 {p.label}
               </button>
@@ -396,7 +394,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                   {/* AI Grounded Citation Card */}
                   {msg.sender === 'ai' && (
                     <div className="mt-2.5 pt-2 border-t border-[#73A5CA]/25 dark:border-[#1C82AD]/30 space-y-2">
-                      <div className="p-2 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#13005A] text-[10px] font-mono flex items-center justify-between">
+                      <div className="p-2 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] text-[10px] font-mono flex items-center justify-between">
                         <div className="flex items-center space-x-1.5 truncate">
                           <DocumentTextIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988] shrink-0" />
                           <span className="truncate font-bold">{msg.source}</span>
@@ -440,7 +438,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           {/* Spacious Fluid Textarea & Voice Bar (No extra margin, edge-to-edge breathing room) */}
           <form 
             onSubmit={handleSend}
-            className="p-3 bg-white/70 dark:bg-[#13005A]/80 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 shrink-0 space-y-2"
+            className="p-3 bg-white/70 dark:bg-[#0A0A0A]/80 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 shrink-0 space-y-2"
           >
             {/* Expanded Textarea for rich typing space */}
             <div className="relative rounded-2xl neo-inset p-2">
@@ -466,7 +464,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                   className={`p-1.5 rounded-full transition-all cursor-pointer flex items-center space-x-1 ${
                     isListening
                       ? 'bg-red-500 text-white animate-pulse shadow-md'
-                      : 'bg-[#FFE9A9]/60 dark:bg-[#00337C] text-[#FF933E] dark:text-[#03C988] hover:scale-105'
+                      : 'bg-[#FFE9A9]/60 dark:bg-[#141414] text-[#FF933E] dark:text-[#03C988] hover:scale-105'
                   }`}
                   title={isListening ? 'Stop Listening' : 'Speak your question (Voice Input)'}
                 >

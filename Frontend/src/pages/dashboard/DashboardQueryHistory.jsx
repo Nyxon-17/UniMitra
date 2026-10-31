@@ -79,7 +79,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] transition-all duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
@@ -117,7 +117,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
       </div>
 
       {/* Search History */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-5 shadow-xs">
+      <div className="neo-surface rounded-3xl p-4 sm:p-5 shadow-xs">
         <div className="relative">
           <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -125,7 +125,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
             placeholder="Search within your query history..."
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
           />
         </div>
       </div>
@@ -133,14 +133,14 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
       {/* History Items */}
       <div className="space-y-4">
         {filteredHistory.length === 0 ? (
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-10 text-center text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+          <div className="neo-surface rounded-3xl p-10 text-center text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
             No queries match your search. Start a new conversation in the AI Assistant.
           </div>
         ) : (
           filteredHistory.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-5 sm:p-6 shadow-xs space-y-3"
+              className="neo-surface rounded-3xl p-5 sm:p-6 shadow-xs space-y-3"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40 pb-3">
                 <div className="flex items-center space-x-2">
@@ -153,7 +153,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#13005A] dark:text-[#FFFFFF] border border-[#6D28D9]/30 flex items-center space-x-1">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#0A0A0A] dark:text-[#FFFFFF] border border-[#FF933E]/50 dark:border-[#03C988]/50/30 flex items-center space-x-1">
                     <CheckCircleIcon className="w-3 h-3 text-[#FF933E] dark:text-[#03C988]" />
                     <span>{item.status}</span>
                   </span>

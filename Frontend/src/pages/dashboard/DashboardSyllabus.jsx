@@ -256,7 +256,7 @@ export const DashboardSyllabus = ({
     <div className="space-y-6">
 
       {/* 3D Header Section */}
-      <div className="bg-white/95 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-3xl p-6 sm:p-8 shadow-lg shadow-purple-500/10 card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -294,7 +294,7 @@ export const DashboardSyllabus = ({
             <select
               value={selectedUniversity}
               onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               {universities.map((univ) => (
                 <option key={univ} value={univ}>{univ}</option>
@@ -309,7 +309,7 @@ export const DashboardSyllabus = ({
             <select
               value={selectedProgram}
               onChange={(e) => setSelectedProgram(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
             >
               {programs.map((p) => (
                 <option key={p.id} value={p.id}>{currentLang === 'as' ? p.asLabel : p.label}</option>
@@ -328,7 +328,7 @@ export const DashboardSyllabus = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={currentLang === 'as' ? 'বিষয় বা কোড বিচাৰক...' : 'Filter subject or code...'}
-                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0A0718] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
               />
             </div>
           </div>
@@ -345,7 +345,7 @@ export const DashboardSyllabus = ({
               onClick={() => setSelectedSemester(sem)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0 ${selectedSemester === sem
                   ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-md'
-                  : 'bg-[#FAF8FF] dark:bg-[#0A0718] text-[#000000]/75 dark:text-[#FFFFFF]/80 hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] border border-[#E0D4FD] dark:border-[#3B2868]'
+                  : 'bg-[#FAF8FF] dark:bg-black text-[#000000]/75 dark:text-[#FFFFFF]/80 hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] border border-[#E0D4FD] dark:border-[#3B2868]'
                 }`}
             >
               {currentLang === 'as' ? `ষাণ্মাসিক ${sem}` : `Semester ${sem}`}
@@ -357,7 +357,7 @@ export const DashboardSyllabus = ({
       {/* Subject List with 3D Accordion Cards */}
       <div className="space-y-4">
         {filteredSubjects.length === 0 ? (
-          <div className="p-12 text-center bg-white/95 dark:bg-[#120B24]/95 border-2 border-dashed border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl">
+          <div className="p-12 text-center bg-white/95 dark:bg-[#0A0A0A]/95 border-2 border-dashed border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl">
             <p className="text-[#000000]/75 dark:text-[#FFFFFF]/80 font-bold text-sm">
               {currentLang === 'as' ? 'কোনো বিষয় পোৱা নগ’ল।' : 'No subjects found matching your search in this semester.'}
             </p>
@@ -368,7 +368,7 @@ export const DashboardSyllabus = ({
             return (
               <div
                 key={subject.code}
-                className="bg-white/95 dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-2xl overflow-hidden shadow-sm card-3d transition-all"
+                className="bg-white/95 dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 transition-all"
               >
                 {/* Header Row */}
                 <div
@@ -376,15 +376,15 @@ export const DashboardSyllabus = ({
                   className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-[#FFE9A9]/30 dark:hover:bg-[#13005A]/40 transition-colors"
                 >
                   <div className="flex items-start space-x-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#7C3AED]/30 text-[#FF933E] dark:text-[#03C988] flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-12 h-12 rounded-2xl bg-[#FAF8FF] dark:bg-black border border-[#7C3AED]/30 text-[#FF933E] dark:text-[#03C988] flex items-center justify-center shrink-0 mt-0.5">
                       <BookOpenIcon className="w-6 h-6" />
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#03C988]">
+                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#03C988]">
                           {subject.code}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FAF8FF] dark:bg-[#0A0718] text-[#000000]/75 dark:text-[#FFFFFF]/80 border border-[#E0D4FD] dark:border-[#3B2868]">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FAF8FF] dark:bg-black text-[#000000]/75 dark:text-[#FFFFFF]/80 border border-[#E0D4FD] dark:border-[#3B2868]">
                           {subject.type}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#03C988]/20 text-[#000000] dark:text-[#03C988]">
@@ -420,7 +420,7 @@ export const DashboardSyllabus = ({
                         e.stopPropagation();
                         setPreviewPdfModal(subject);
                       }}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#03C988] bg-[#FAF8FF] dark:bg-[#0A0718] hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-1 shrink-0"
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#FF933E] dark:text-[#03C988] bg-[#FAF8FF] dark:bg-black hover:bg-[#E0D4FD]/40 dark:hover:bg-[#1A0F33] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-1 shrink-0"
                     >
                       <DocumentTextIcon className="w-3.5 h-3.5" />
                       <span>{currentLang === 'as' ? 'পিডিএফ নথি' : 'View PDF'}</span>
@@ -434,7 +434,7 @@ export const DashboardSyllabus = ({
 
                 {/* Expanded Content View */}
                 {isExpanded && (
-                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A]/50">
+                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A]/50">
 
                     {/* Units & Detailed Topics */}
                     <div className="space-y-4 my-4">
@@ -446,13 +446,13 @@ export const DashboardSyllabus = ({
                         {subject.modules.map((mod, idx) => (
                           <div
                             key={idx}
-                            className="p-4 bg-white dark:bg-[#13005A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/40 rounded-xl space-y-2"
+                            className="p-4 bg-white dark:bg-[#0A0A0A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/40 rounded-xl space-y-2"
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
                                 {currentLang === 'as' && mod.asUnit ? mod.asUnit : mod.unit}
                               </span>
-                              <span className="text-[11px] font-semibold text-[#000000]/75 dark:text-[#FFFFFF]/80 bg-[#FAF8FF] dark:bg-[#0A0718] px-2 py-0.5 rounded">
+                              <span className="text-[11px] font-semibold text-[#000000]/75 dark:text-[#FFFFFF]/80 bg-[#FAF8FF] dark:bg-black px-2 py-0.5 rounded">
                                 {mod.hours}
                               </span>
                             </div>
@@ -469,7 +469,7 @@ export const DashboardSyllabus = ({
                     </div>
 
                     {/* Prescribed Textbooks */}
-                    <div className="mt-5 p-4 rounded-xl bg-[#FFE9A9] dark:bg-[#00337C] border border-[#FFCB56] dark:border-[#1C82AD]">
+                    <div className="mt-5 p-4 rounded-xl bg-[#FFE9A9] dark:bg-[#141414] border border-[#FFCB56] dark:border-[#1C82AD]">
                       <div className="flex items-center space-x-2 text-xs font-bold text-[#D97706] dark:text-[#FBBF24] mb-2">
                         <CheckCircleIcon className="w-4 h-4 text-[#F59E0B]" />
                         <span>{currentLang === 'as' ? 'অনুমোদিত পাঠ্যপুথি আৰু প্ৰসংগ পুথি' : 'Prescribed Textbooks & Reference Readings'}</span>
@@ -492,7 +492,7 @@ export const DashboardSyllabus = ({
       {/* Official Syllabus PDF Document Modal */}
       {previewPdfModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/50 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative card-3d">
+          <div className="neo-surface rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative transition-all duration-300">
             <div className="flex items-start justify-between border-b border-[#E0D4FD] dark:border-[#3B2868] pb-4 mb-4">
               <div>
                 <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988] uppercase">
@@ -511,7 +511,7 @@ export const DashboardSyllabus = ({
             </div>
 
             <div className="space-y-4 py-2">
-              <div className="p-4 bg-[#FAF8FF] dark:bg-[#0A0718] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-3">
+              <div className="p-4 bg-[#FAF8FF] dark:bg-black rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-black text-xs shrink-0">
                   PDF
                 </div>

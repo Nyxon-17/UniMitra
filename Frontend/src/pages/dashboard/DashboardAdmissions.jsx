@@ -50,7 +50,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-6 sm:p-8 shadow-xs card-3d">
+      <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
@@ -78,7 +78,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
       </div>
 
       {/* Filter and Tab Bar */}
-      <div className="bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <button
@@ -86,7 +86,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
               className={`px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-all ${
                 activeTab === 'procedures'
                   ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                  : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
+                  : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
               }`}
             >
               Admission Procedures ({admissionsList.length})
@@ -96,7 +96,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
               className={`px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-all ${
                 activeTab === 'programmes'
                   ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                  : 'bg-white dark:bg-[#00337C] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
+                  : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
               }`}
             >
               Degree Programmes ({programmesList.length})
@@ -110,7 +110,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
               placeholder="Search DUPGET, M.Tech, eligibility..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#13005A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
             />
           </div>
         </div>
@@ -122,10 +122,10 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           {filteredAdmissions.map((adm) => (
             <div
               key={adm.id}
-              className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+              className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                   {adm.category}
                 </span>
                 <button
@@ -148,7 +148,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
                 )}
               </div>
 
-              <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] space-y-1 text-xs">
+              <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] space-y-1 text-xs">
                 <div>
                   <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 block font-bold">Important Dates:</span>
                   <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{adm.dates}</span>
@@ -200,10 +200,10 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           {filteredProgrammes.map((prog) => (
             <div
               key={prog.id}
-              className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#00337C] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+              className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#13005A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
                   {prog.level} • {prog.code}
                 </span>
                 <button
@@ -226,7 +226,7 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
                 )}
               </div>
 
-              <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#13005A] grid grid-cols-2 gap-2 text-xs">
+              <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 block font-bold">Department:</span>
                   <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{prog.department}</span>
