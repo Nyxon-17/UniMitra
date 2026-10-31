@@ -81,15 +81,15 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
     <div className="space-y-6 max-w-4xl mx-auto">
       
       {/* Header */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="space-y-2">
-          <span className="text-xs font-black tracking-wider uppercase text-[#84A282] dark:text-[#FFF2B4]">
+          <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
             {currentLang === 'as' ? 'প্ৰণালীৰ মানোন্নয়ন আৰু মতামত' : 'User Quality Assurance & Feedback'}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] tracking-tight">
             {currentLang === 'as' ? 'মতামত আৰু প্ৰতিক্ৰিয়া প্ৰেৰণ কৰক' : 'Submit Institutional AI Feedback'}
           </h1>
-          <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
             {currentLang === 'as'
               ? 'AI ৰ উত্তৰৰ নিৰ্ভুলতা, কোনো অধিসূচনাৰ অভাৱ বা অসমীয়া অনুবাদ সম্পৰ্কে প্ৰশাসনক পোনপটীয়াকৈ জনাওক।'
               : 'Help eliminate hallucinations and improve university document indexing. Your feedback is sent directly to administrators for review.'}
@@ -98,24 +98,24 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
       </div>
 
       {submittedAlert && (
-        <div className="p-4 rounded-2xl bg-[#B8CFB3]/40 border-2 border-[#84A282] text-[#15370D] dark:text-[#FFF2B4] font-black text-xs sm:text-sm flex items-center space-x-2">
-          <CheckCircleIcon className="w-5 h-5 text-[#84A282]" />
+        <div className="p-4 rounded-2xl bg-[#E0D4FD]/40 border-2 border-[#6D28D9] text-[#0F172A] dark:text-[#FAF8FF] font-black text-xs sm:text-sm flex items-center space-x-2">
+          <CheckCircleIcon className="w-5 h-5 text-[#6D28D9]" />
           <span>Thank you! Your feedback has been forwarded to the University Ingestion Team.</span>
         </div>
       )}
 
       {/* Submission Form */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
                 Feedback Focus / Category
               </label>
               <select
                 value={feedbackType}
                 onChange={(e) => setFeedbackType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               >
                 <option>Accuracy & Citations</option>
                 <option>Outdated Regulation</option>
@@ -126,13 +126,13 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+              <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
                 University Context
               </label>
               <select
                 value={university}
                 onChange={(e) => setUniversity(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
               >
                 <option>Gauhati University (GU)</option>
                 <option>Dibrugarh University (DU)</option>
@@ -144,7 +144,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Satisfaction Rating (1 to 5 Stars)
             </label>
             <div className="flex items-center space-x-2">
@@ -155,8 +155,8 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
                   onClick={() => setRating(star)}
                   className={`w-9 h-9 rounded-xl font-black text-sm flex items-center justify-center cursor-pointer transition-all ${
                     rating >= star
-                      ? 'bg-[#E5CD82] dark:bg-[#FFF2B4] text-[#15370D]'
-                      : 'bg-[#FEFAF3] dark:bg-[#15370D] text-[#4F6D4B] border border-[#B8CFB3] dark:border-[#728E6D]'
+                      ? 'bg-[#C4B5FD] dark:bg-[#FAF8FF] text-[#0F172A]'
+                      : 'bg-[#FAF8FF] dark:bg-[#0F172A] text-[#555375] border border-[#E0D4FD] dark:border-[#3B2868]'
                   }`}
                 >
                   ★ {star}
@@ -166,7 +166,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Your Feedback or Reported Issue *
             </label>
             <textarea
@@ -175,13 +175,13 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
               placeholder="Describe your feedback, specify any missing ordinance or citation discrepancy..."
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              className="w-full p-3.5 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs sm:text-sm text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+              className="w-full p-3.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs sm:text-sm text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto px-6 py-3 rounded-2xl font-black text-sm text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-sm"
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl font-black text-sm text-white bg-[#6D28D9] hover:bg-[#3B2868] transition-all cursor-pointer shadow-sm"
           >
             Submit Feedback to University Admin
           </button>
@@ -189,8 +189,8 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
       </div>
 
       {/* Previous Submissions Log */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+        <h2 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
           My Submitted Feedback History
         </h2>
 
@@ -198,22 +198,22 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
           {submissions.map((item) => (
             <div 
               key={item.id} 
-              className="p-4 bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3]/60 dark:border-[#728E6D] rounded-2xl space-y-2"
+              className="p-4 bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD]/60 dark:border-[#3B2868] rounded-2xl space-y-2"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
                     {item.type}
                   </span>
-                  <span className="text-xs font-bold text-[#4F6D4B] dark:text-[#E5CD82]">
+                  <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD]">
                     {item.university}
                   </span>
                 </div>
-                <span className="text-xs font-mono font-bold text-[#84A282] dark:text-[#FFF2B4]">
+                <span className="text-xs font-mono font-bold text-[#6D28D9] dark:text-[#FAF8FF]">
                   Status: {item.status}
                 </span>
               </div>
-              <p className="text-xs text-[#15370D] dark:text-[#FFF2B4]">{item.comments}</p>
+              <p className="text-xs text-[#0F172A] dark:text-[#FAF8FF]">{item.comments}</p>
             </div>
           ))}
         </div>

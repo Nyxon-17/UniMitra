@@ -121,17 +121,17 @@ export const DashboardRegulations = ({
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-elevated-sage dark:shadow-elevated-gold card-3d">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#84A282] dark:text-[#FFF2B4]">
+            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               <BuildingLibraryIcon className="w-4 h-4" />
               <span>Official University Gazettes & Ordinances</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'বিশ্ববিদ্যালয় নিয়মাৱলী আৰু অধিসূচনা' : 'University Regulations & Ordinances'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
               {currentLang === 'as'
                 ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ পৰীক্ষাৰ মূল্যায়ন, উপস্থিতিৰ চৰ্ত, পুনৰমূল্যায়নৰ মাচুল আৰু আইনী অধিসূচনাসমূহ অন্বেষণ কৰক।'
                 : 'Browse verified statutory regulations, attendance rules, re-evaluation guidelines, and academic council ordinances across Assam universities.'}
@@ -140,26 +140,26 @@ export const DashboardRegulations = ({
 
           <button
             onClick={() => onNavigateTab('assistant', { prefillQuery: 'Summarize Gauhati and Dibrugarh University examination passing marks and attendance rules.' })}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm shrink-0"
+            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-xs hover:shadow-md text-xs sm:text-sm shrink-0"
           >
-            <SparklesIcon className="w-4 h-4 text-[#FFF2B4]" />
+            <SparklesIcon className="w-4 h-4 text-[#FAF8FF]" />
             <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Ask AI to Explain'}</span>
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* University Selector */}
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Select University
             </label>
             <select
               value={selectedUniversity}
               onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
             >
               {universities.map((u) => (
                 <option key={u}>{u}</option>
@@ -169,13 +169,13 @@ export const DashboardRegulations = ({
 
           {/* Category Selector */}
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Regulation Domain
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
             >
               {categories.map((c) => (
                 <option key={c}>{c}</option>
@@ -185,17 +185,17 @@ export const DashboardRegulations = ({
 
           {/* Keyword Search */}
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Search Clauses
             </label>
             <div className="relative">
-              <SearchIcon className="w-4 h-4 text-[#84A282] absolute left-3 top-1/2 -translate-y-1/2" />
+              <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Attendance, re-evaluation, passing..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
               />
             </div>
           </div>
@@ -209,65 +209,65 @@ export const DashboardRegulations = ({
           return (
             <div
               key={reg.id}
-              className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl overflow-hidden shadow-xs transition-all"
+              className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl overflow-hidden shadow-xs transition-all"
             >
               <div 
                 onClick={() => setExpandedDoc(isExpanded ? '' : reg.id)}
-                className="p-5 sm:p-6 cursor-pointer hover:bg-[#B8CFB3]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-5 sm:p-6 cursor-pointer hover:bg-[#E0D4FD]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#84A282] text-white">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#4C1D95] text-white">
                       {reg.university}
                     </span>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                       {reg.category}
                     </span>
-                    <span className="text-[10px] text-[#4F6D4B] dark:text-[#E5CD82] font-semibold">
+                    <span className="text-[10px] text-[#555375] dark:text-[#C4B5FD] font-semibold">
                       Updated: {reg.lastUpdated}
                     </span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-black text-[#15370D] dark:text-[#FFF2B4] pt-1">
+                  <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
                     {currentLang === 'as' ? reg.asTitle : reg.title}
                   </h3>
-                  <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                  <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
                     {reg.summary}
                   </p>
                 </div>
 
                 <div className="flex items-center space-x-2 shrink-0">
-                  <span className="text-xs font-black text-[#84A282] dark:text-[#FFF2B4]">
+                  <span className="text-xs font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                     {isExpanded ? 'Hide Clauses' : 'View Clauses'}
                   </span>
-                  <div className={`w-8 h-8 rounded-xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] flex items-center justify-center text-[#84A282] dark:text-[#FFF2B4] transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+                  <div className={`w-8 h-8 rounded-xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF] transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
                     <ChevronDownIcon className="w-4 h-4" />
                   </div>
                 </div>
               </div>
 
               {isExpanded && (
-                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#B8CFB3]/40 dark:border-[#728E6D] space-y-4 bg-[#FEFAF3]/50 dark:bg-[#15370D]/40">
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E0D4FD]/40 dark:border-[#3B2868] space-y-4 bg-[#FAF8FF]/50 dark:bg-[#0F172A]/40">
                   <div className="space-y-3 pt-2">
                     {reg.sections.map((sec, sidx) => (
-                      <div key={sidx} className="p-4 rounded-2xl bg-white dark:bg-[#1C4412] border border-[#B8CFB3] dark:border-[#728E6D] space-y-1">
-                        <h4 className="text-xs sm:text-sm font-black text-[#15370D] dark:text-[#FFF2B4]">
+                      <div key={sidx} className="p-4 rounded-2xl bg-white dark:bg-[#150F2C] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
+                        <h4 className="text-xs sm:text-sm font-black text-[#0F172A] dark:text-[#FAF8FF]">
                           {sec.heading}
                         </h4>
-                        <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                        <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                           {sec.details}
                         </p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="pt-3 border-t border-[#B8CFB3]/40 dark:border-[#728E6D] flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center space-x-2 text-[#4F6D4B] dark:text-[#E5CD82]">
-                      <DocumentTextIcon className="w-4 h-4 text-[#84A282]" />
+                  <div className="pt-3 border-t border-[#E0D4FD]/40 dark:border-[#3B2868] flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center space-x-2 text-[#555375] dark:text-[#C4B5FD]">
+                      <DocumentTextIcon className="w-4 h-4 text-[#6D28D9]" />
                       <span className="font-bold">Original Citation: {reg.pdfSource}</span>
                     </div>
                     <button
                       onClick={() => onNavigateTab('assistant', { prefillQuery: `What are the details of ${reg.title}?` })}
-                      className="text-xs font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer flex items-center space-x-1"
+                      className="text-xs font-black text-[#6D28D9] dark:text-[#FAF8FF] hover:underline cursor-pointer flex items-center space-x-1"
                     >
                       <SparklesIcon className="w-3.5 h-3.5" />
                       <span>Ask AI Questions on this Document ➔</span>

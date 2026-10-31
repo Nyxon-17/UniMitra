@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react
 // Public Layout Components
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
+import { HomeScreenBackground } from './components/common/HomeScreenBackground';
 
 // Public Pages
 import { Home } from './pages/public/Home';
@@ -58,7 +59,9 @@ function PublicLayoutWrapper({
   const isAuthPage = location.pathname.startsWith('/auth');
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] selection:bg-[#84A282] selection:text-white transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+    <div className={`relative min-h-screen flex flex-col bg-transparent text-[#0F172A] dark:text-[#FAF8FF] selection:bg-[#6D28D9] selection:text-white transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+      {/* Realistic Animated College Boy Looking to University Background on All Public Pages */}
+      <HomeScreenBackground />
       {/* Top Public Navigation */}
       <Navbar
         onNavigate={onNavigate}
@@ -73,7 +76,7 @@ function PublicLayoutWrapper({
       />
 
       {/* Main Dynamic Viewport */}
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <Outlet />
       </main>
 

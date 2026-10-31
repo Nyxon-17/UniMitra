@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardNavbar } from './DashboardNavbar';
+import { HomeScreenBackground } from '../common/HomeScreenBackground';
 
 export const DashboardLayout = ({ 
   children, 
@@ -18,8 +19,10 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] flex flex-col transition-colors duration-200">
-      
+    <div className={`relative min-h-screen bg-transparent text-[#0F172A] dark:text-[#FAF8FF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
+      {/* Universal Home Screen Background with Animated College Boy Looking to University */}
+      <HomeScreenBackground />
+
       {/* Fixed Sidebar */}
       <DashboardSidebar
         activeTab={activeTab}
@@ -33,7 +36,7 @@ export const DashboardLayout = ({
       />
 
       {/* Main Content Area (offset by sidebar on desktop) */}
-      <div className="lg:pl-72 flex-1 flex flex-col min-w-0">
+      <div className="lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10">
         
         {/* Top Dashboard Navbar */}
         <DashboardNavbar

@@ -78,17 +78,17 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-elevated-sage dark:shadow-elevated-gold card-3d">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#84A282] dark:text-[#FFF2B4]">
+            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               <IdentificationIcon className="w-4 h-4" />
               <span>Academic Programs & Admission Portal</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'শৈক্ষিক পাঠ্যক্ৰম আৰু নামভৰ্তি' : 'Academic Programs & Admission Procedures'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
               {currentLang === 'as'
                 ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ ডিগ্ৰী পাঠ্যক্ৰম, ভৰ্তিৰ অৰ্হতা, আসন সংখ্যা আৰু নিৰ্বাচন প্ৰক্ৰিয়াৰ সঠিক বিৱৰণ লাভ কৰক।'
                 : 'Inspect program structures, degree eligibility criteria, entrance test rules, and Samarth admission timelines with official gazette citations.'}
@@ -97,25 +97,25 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
 
           <button
             onClick={() => onNavigateTab('assistant', { prefillQuery: 'Compare PG admission eligibility and entrance test dates between Gauhati University and Tezpur University.' })}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm shrink-0"
+            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-xs hover:shadow-md text-xs sm:text-sm shrink-0"
           >
-            <SparklesIcon className="w-4 h-4 text-[#FFF2B4]" />
+            <SparklesIcon className="w-4 h-4 text-[#FAF8FF]" />
             <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Ask AI Admission Desk'}</span>
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Select University
             </label>
             <select
               value={selectedUniv}
               onChange={(e) => setSelectedUniv(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
             >
               {universities.map((u) => (
                 <option key={u}>{u}</option>
@@ -124,13 +124,13 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Degree Level
             </label>
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
             >
               {levels.map((l) => (
                 <option key={l}>{l}</option>
@@ -139,17 +139,17 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-black text-[#15370D] dark:text-[#FFF2B4] mb-1">
+            <label className="block text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] mb-1">
               Search Programs
             </label>
             <div className="relative">
-              <SearchIcon className="w-4 h-4 text-[#84A282] absolute left-3 top-1/2 -translate-y-1/2" />
+              <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Computer Science, MBA, Ph.D..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
               />
             </div>
           </div>
@@ -161,29 +161,29 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
         {filteredPrograms.map((prog) => (
           <div
             key={prog.id}
-            className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-xs space-y-4"
+            className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#B8CFB3]/50 dark:border-[#728E6D] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#84A282] text-white">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#4C1D95] text-white">
                     {prog.university}
                   </span>
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                     {prog.level}
                   </span>
-                  <span className="text-xs font-bold text-[#4F6D4B] dark:text-[#E5CD82]">
+                  <span className="text-xs font-bold text-[#555375] dark:text-[#C4B5FD]">
                     {prog.duration} • {prog.intake}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4] pt-1">
+                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
                   {prog.program}
                 </h3>
               </div>
 
               <button
                 onClick={() => onNavigateTab('assistant', { prefillQuery: `What are the full admission details and eligibility for ${prog.program} at ${prog.university}?` })}
-                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-xs self-start sm:self-auto shrink-0 flex items-center space-x-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-xs self-start sm:self-auto shrink-0 flex items-center space-x-1.5"
               >
                 <SparklesIcon className="w-3.5 h-3.5" />
                 <span>Ask AI Details</span>
@@ -191,31 +191,31 @@ export const DashboardAdmissions = ({ onNavigateTab, currentLang = 'en' }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] space-y-1">
-                <strong className="text-[#15370D] dark:text-[#FFF2B4] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
+                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Academic Eligibility Criteria
                 </strong>
-                <p className="text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                   {prog.eligibility}
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] space-y-1">
-                <strong className="text-[#15370D] dark:text-[#FFF2B4] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1">
+                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Selection & Application Protocol
                 </strong>
-                <p className="text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                   {prog.admissionProcess}
                 </p>
               </div>
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[#555375] dark:text-[#C4B5FD]">
               <div className="flex items-center space-x-2">
-                <DocumentTextIcon className="w-4 h-4 text-[#84A282]" />
+                <DocumentTextIcon className="w-4 h-4 text-[#6D28D9]" />
                 <span className="font-bold">Official Document: {prog.gazetteSource}</span>
               </div>
-              <span className="text-[11px] font-semibold text-[#84A282] dark:text-[#FFF2B4]">
+              <span className="text-[11px] font-semibold text-[#6D28D9] dark:text-[#FAF8FF]">
                 {prog.keyDates}
               </span>
             </div>

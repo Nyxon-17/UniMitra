@@ -112,22 +112,22 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
     <div className="space-y-6">
       
       {/* Banner */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-black tracking-wider uppercase text-[#84A282] dark:text-[#FFF2B4]">
+            <span className="text-xs font-black tracking-wider uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'অনুমোদিত প্ৰতিষ্ঠানিক সংগ্ৰহালয়' : 'Authorized Institutional Repository'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF] tracking-tight">
               {currentLang === 'as' ? 'অধ্যাপক আৰু শৈক্ষিক নথিপত্ৰ ভাণ্ডাৰ' : 'Authorized Faculty Documents & Statutes'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] mt-1">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-1">
               Statutory gazettes, UGC Career Advancement Scheme (CAS) guidelines, PhD supervision limits, and workload ordinances.
             </p>
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]">
+            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
               {facultyDocuments.length} Verified Gazettes
             </span>
           </div>
@@ -135,15 +135,15 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
       </div>
 
       {/* Search & Category Filter */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <SearchIcon className="w-4 h-4 text-[#84A282] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search CAS, API scores, PhD rules, workload..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none focus:border-[#84A282]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none focus:border-[#6D28D9]"
           />
         </div>
 
@@ -154,8 +154,8 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
               onClick={() => setSelectedCategory(cat)}
               className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all shrink-0 ${
                 selectedCategory === cat
-                  ? 'bg-[#84A282] text-white shadow-xs'
-                  : 'bg-[#FEFAF3] dark:bg-[#15370D] text-[#4F6D4B] dark:text-[#E5CD82] border border-[#B8CFB3] dark:border-[#728E6D]'
+                  ? 'bg-[#4C1D95] text-white shadow-xs'
+                  : 'bg-[#FAF8FF] dark:bg-[#0F172A] text-[#555375] dark:text-[#C4B5FD] border border-[#E0D4FD] dark:border-[#3B2868]'
               }`}
             >
               {cat}
@@ -169,34 +169,34 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
         {filteredDocs.map((doc) => (
           <div 
             key={doc.id}
-            className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-7 shadow-sm space-y-4 flex flex-col justify-between"
+            className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-7 shadow-sm space-y-4 flex flex-col justify-between"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#F6E2E9] dark:bg-[#728E6D] text-[#15370D] dark:text-[#FFF2B4]">
+                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#DDD6FE] dark:bg-[#3B2868] text-[#0F172A] dark:text-[#FAF8FF]">
                   {doc.category}
                 </span>
-                <span className="text-xs font-mono font-bold text-[#4F6D4B] dark:text-[#E5CD82]">
+                <span className="text-xs font-mono font-bold text-[#555375] dark:text-[#C4B5FD]">
                   {doc.refNo}
                 </span>
               </div>
 
-              <h2 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4]">
+              <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
                 {currentLang === 'as' ? doc.asTitle : doc.title}
               </h2>
 
-              <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82]">
+              <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD]">
                 {doc.summary}
               </p>
 
-              <div className="p-3 bg-[#FEFAF3] dark:bg-[#15370D] rounded-2xl border border-[#B8CFB3]/60 dark:border-[#728E6D] space-y-1 text-xs">
-                <span className="text-[10px] font-black uppercase text-[#84A282] dark:text-[#FFF2B4] block">
+              <div className="p-3 bg-[#FAF8FF] dark:bg-[#0F172A] rounded-2xl border border-[#E0D4FD]/60 dark:border-[#3B2868] space-y-1 text-xs">
+                <span className="text-[10px] font-black uppercase text-[#6D28D9] dark:text-[#FAF8FF] block">
                   Core Statutory Provisions:
                 </span>
                 <ul className="space-y-0.5">
                   {doc.keyPoints.slice(0, 3).map((kp, idx) => (
-                    <li key={idx} className="flex items-start space-x-1.5 text-[11px] text-[#15370D] dark:text-[#FFF2B4]">
-                      <span className="text-[#84A282]">•</span>
+                    <li key={idx} className="flex items-start space-x-1.5 text-[11px] text-[#0F172A] dark:text-[#FAF8FF]">
+                      <span className="text-[#6D28D9]">•</span>
                       <span>{kp}</span>
                     </li>
                   ))}
@@ -204,9 +204,9 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#B8CFB3]/50 dark:border-[#728E6D]/50 flex items-center justify-between gap-2">
-              <div className="flex items-center space-x-1.5 text-[11px] text-[#4F6D4B] dark:text-[#E5CD82]">
-                <ShieldCheckIcon className="w-4 h-4 text-[#84A282] shrink-0" />
+            <div className="pt-3 border-t border-[#E0D4FD]/50 dark:border-[#3B2868]/50 flex items-center justify-between gap-2">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#555375] dark:text-[#C4B5FD]">
+                <ShieldCheckIcon className="w-4 h-4 text-[#6D28D9] shrink-0" />
                 <span className="truncate max-w-[200px]" title={doc.citation}>
                   {doc.citation}
                 </span>
@@ -216,7 +216,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
                 <button
                   type="button"
                   onClick={() => setActiveModalDoc(doc)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/20 text-[#15370D] dark:text-[#FFF2B4] cursor-pointer flex items-center space-x-1"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/20 text-[#0F172A] dark:text-[#FAF8FF] cursor-pointer flex items-center space-x-1"
                 >
                   <EyeIcon className="w-3.5 h-3.5" />
                   <span>Inspect</span>
@@ -225,7 +225,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
                 <button
                   type="button"
                   onClick={() => onNavigateTab && onNavigateTab('assistant', { prefillQuery: `What are the criteria and provisions of: ${doc.title}?` })}
-                  className="px-3 py-1.5 rounded-xl text-xs font-black text-white bg-[#84A282] hover:bg-[#728E6D] transition-all cursor-pointer shadow-xs flex items-center space-x-1"
+                  className="px-3 py-1.5 rounded-xl text-xs font-black text-white bg-[#6D28D9] hover:bg-[#3B2868] transition-all cursor-pointer shadow-xs flex items-center space-x-1"
                 >
                   <span>Ask AI</span>
                   <ArrowRightIcon className="w-3.5 h-3.5" />
@@ -239,39 +239,39 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
       {/* Inspect Document Modal */}
       {activeModalDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[#FEFAF3] dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#B8CFB3] dark:border-[#728E6D] pb-3">
+          <div className="bg-[#FAF8FF] dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#E0D4FD] dark:border-[#3B2868] pb-3">
               <div className="flex items-center space-x-2">
-                <DocumentTextIcon className="w-5 h-5 text-[#84A282]" />
-                <span className="text-xs font-mono font-bold text-[#84A282] dark:text-[#FFF2B4]">{activeModalDoc.refNo}</span>
+                <DocumentTextIcon className="w-5 h-5 text-[#6D28D9]" />
+                <span className="text-xs font-mono font-bold text-[#6D28D9] dark:text-[#FAF8FF]">{activeModalDoc.refNo}</span>
               </div>
               <button
                 onClick={() => setActiveModalDoc(null)}
-                className="p-1 rounded-lg text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] cursor-pointer"
+                className="p-1 rounded-lg text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
 
-            <h3 className="text-lg font-black text-[#15370D] dark:text-[#FFF2B4]">{activeModalDoc.title}</h3>
+            <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">{activeModalDoc.title}</h3>
             
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
               {activeModalDoc.summary}
             </p>
 
-            <div className="space-y-2 p-4 bg-white dark:bg-[#15370D] rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D]">
-              <span className="text-xs font-black uppercase text-[#84A282] block">Verified Statutes & Ordinances</span>
+            <div className="space-y-2 p-4 bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868]">
+              <span className="text-xs font-black uppercase text-[#6D28D9] block">Verified Statutes & Ordinances</span>
               <ul className="space-y-1.5">
                 {activeModalDoc.keyPoints.map((pt, i) => (
-                  <li key={i} className="flex items-start space-x-2 text-xs text-[#15370D] dark:text-[#FFF2B4]">
-                    <CheckCircleIcon className="w-4 h-4 text-[#84A282] shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start space-x-2 text-xs text-[#0F172A] dark:text-[#FAF8FF]">
+                    <CheckCircleIcon className="w-4 h-4 text-[#6D28D9] shrink-0 mt-0.5" />
                     <span>{pt}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="p-3 bg-[#B8CFB3]/25 dark:bg-[#15370D] rounded-xl text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+            <div className="p-3 bg-[#E0D4FD]/25 dark:bg-[#0F172A] rounded-xl text-xs text-[#555375] dark:text-[#C4B5FD]">
               <strong>Exact Citation Source:</strong> {activeModalDoc.citation}
             </div>
 
@@ -285,7 +285,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en' })
                     onNavigateTab('assistant', { prefillQuery: `Explain the detailed clauses in: ${doc.title}` });
                   }
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#84A282] hover:bg-[#728E6D] cursor-pointer shadow-xs"
+                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#6D28D9] hover:bg-[#3B2868] cursor-pointer shadow-xs"
               >
                 Ask Assistant About This Document
               </button>

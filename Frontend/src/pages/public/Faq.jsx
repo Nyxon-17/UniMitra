@@ -81,15 +81,15 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
   });
 
   return (
-    <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
 
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
             {currentLang === 'as' ? 'সঘনাই সোধা প্ৰশ্নসমূহ (FAQ)' : 'Frequently Asked Institutional Questions'}
           </h1>
-          <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
             {currentLang === 'as'
               ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম, পৰীক্ষা, ভৰ্তি, ছাত্ৰবৃত্তি আৰু মঞ্চ ব্যৱহাৰৰ বিষয়ে প্ৰয়োজনীয় উত্তৰসমূহ।'
               : 'Find quick, verified answers regarding university statutes, examination evaluation, admissions, scholarships, and bilingual AI assistance.'}
@@ -98,13 +98,13 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
 
         {/* Search Bar */}
         <div className="relative max-w-2xl mx-auto mb-10">
-          <SearchIcon className="w-5 h-5 text-[#84A282] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <SearchIcon className="w-5 h-5 text-[#6D28D9] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder={currentLang === 'as' ? 'প্ৰশ্ন বা শব্দ বিচাৰক...' : 'Search questions, regulations, exams, admissions...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#B8CFB3] dark:border-[#728E6D] bg-white dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] placeholder-[#4F6D4B]/70 dark:placeholder-[#E5CD82]/60 focus:outline-none focus:border-[#84A282] text-xs sm:text-sm font-semibold shadow-xs"
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-[#E0D4FD] dark:border-[#3B2868] bg-white dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] placeholder-[#555375]/70 dark:placeholder-[#C4B5FD]/60 focus:outline-none focus:border-[#6D28D9] text-xs sm:text-sm font-semibold shadow-xs"
           />
         </div>
 
@@ -115,8 +115,8 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${activeCategory === cat
-                  ? 'bg-[#84A282] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30'
+                  ? 'bg-[#6D28D9] text-white shadow-xs'
+                  : 'bg-white dark:bg-[#150F2C] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
                 }`}
             >
               {cat}
@@ -127,7 +127,7 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
         {/* FAQ Accordion List */}
         <div className="space-y-4 mb-16">
           {filteredFaqs.length === 0 ? (
-            <div className="text-center py-12 bg-white dark:bg-[#1C4412] rounded-3xl border border-[#B8CFB3] dark:border-[#728E6D] text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82]">
+            <div className="text-center py-12 bg-white dark:bg-[#150F2C] rounded-3xl border border-[#E0D4FD] dark:border-[#3B2868] text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD]">
               No queries match your search keyword. Try searching for "attendance", "scholarship", or "exam".
             </div>
           ) : (
@@ -136,27 +136,27 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
               return (
                 <div
                   key={index}
-                  className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl overflow-hidden shadow-xs transition-all"
+                  className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl overflow-hidden shadow-xs transition-all"
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
-                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#B8CFB3]/10"
+                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#E0D4FD]/10"
                   >
                     <div className="space-y-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4]">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF]">
                         {faq.category}
                       </span>
-                      <h3 className="text-sm sm:text-base font-black text-[#15370D] dark:text-[#FFF2B4] pt-1">
+                      <h3 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
                         {currentLang === 'as' ? faq.asQ : faq.q}
                       </h3>
                     </div>
-                    <div className={`w-8 h-8 rounded-xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] flex items-center justify-center shrink-0 text-[#84A282] dark:text-[#FFF2B4] transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                    <div className={`w-8 h-8 rounded-xl bg-[#FAF8FF] dark:bg-[#0A0718] border border-[#E0D4FD] dark:border-[#3B2868] flex items-center justify-center shrink-0 text-[#6D28D9] dark:text-[#FAF8FF] transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
                       <ChevronDownIcon className="w-4 h-4" />
                     </div>
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#B8CFB3]/40 dark:border-[#728E6D] text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed font-semibold">
+                    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E0D4FD]/40 dark:border-[#3B2868] text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed font-semibold">
                       <p>{currentLang === 'as' ? faq.asA : faq.a}</p>
                     </div>
                   )}
@@ -167,17 +167,17 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
         </div>
 
         {/* Need Help Box */}
-        <div className="bg-[#B8CFB3]/30 dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-8 text-center space-y-3">
-          <h3 className="text-lg font-black text-[#15370D] dark:text-[#FFF2B4]">
+        <div className="bg-[#E0D4FD]/30 dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-8 text-center space-y-3">
+          <h3 className="text-lg font-black text-[#0F172A] dark:text-[#FAF8FF]">
             Have an unlisted university circular or ordinance query?
           </h3>
-          <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-xl mx-auto">
             Our academic ingestion desk reviews newly issued university notices and circulars every 24 hours.
           </p>
           <div className="pt-2">
             <button
               onClick={() => onNavigate && onNavigate('contact')}
-              className="px-6 py-2.5 rounded-xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] text-xs transition-all cursor-pointer shadow-xs"
+              className="px-6 py-2.5 rounded-xl font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] text-xs transition-all cursor-pointer shadow-xs"
             >
               Contact University Desk ➔
             </button>

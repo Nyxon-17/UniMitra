@@ -111,17 +111,17 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
   };
 
   return (
-    <div className="bg-[#FEFAF3] dark:bg-[#15370D] min-h-screen text-[#15370D] dark:text-[#FFF2B4] py-16 transition-colors duration-200">
+    <div className="bg-transparent relative z-10 min-h-screen text-[#0F172A] dark:text-[#FAF8FF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#15370D] dark:text-[#FFF2B4]">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#0F172A] dark:text-[#FAF8FF]">
             {currentLang === 'as' 
               ? 'UniMitra-ৰ শৈক্ষিক আৰু প্ৰশাসনিক সেৱাসমূহ' 
               : 'Institutional Assistance Built for University Life'}
           </h1>
-          <p className="text-sm sm:text-base text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
             {currentLang === 'as'
               ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ অফিচিয়েল নিয়মাৱলী, পৰীক্ষাৰ নিয়ম, ভৰ্তি আৰু ছাত্ৰবৃত্তি সহজে বুজি পাবলৈ আধুনিক আৰু বিশ্বস্ত সঁজুলিসমূহ।'
               : 'Explore the full spectrum of capabilities engineered to help students, faculty members, and administrative staff navigate higher education with complete clarity.'}
@@ -135,29 +135,29 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
             return (
               <div 
                 key={index}
-                className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-sm hover:border-[#84A282] transition-all card-3d flex flex-col justify-between"
+                className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-sm hover:border-[#6D28D9] transition-all card-3d flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[#B8CFB3]/30 dark:bg-[#15370D] border border-[#84A282]/40 flex items-center justify-center text-[#84A282] dark:text-[#FFF2B4]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#E0D4FD]/30 dark:bg-[#0A0718] border border-[#6D28D9]/40 flex items-center justify-center text-[#6D28D9] dark:text-[#FAF8FF]">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#F6E2E9] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D]">
+                    <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-[#DDD6FE] dark:bg-[#0A0718] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868]">
                       {feat.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4] mb-2">
+                  <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] mb-2">
                     {currentLang === 'as' ? feat.asTitle : feat.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-[#B8CFB3]/50 dark:border-[#728E6D] flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#84A282] dark:text-[#FFF2B4]">Verified Grounded Access</span>
-                  <span className="text-[#84A282]">➔</span>
+                <div className="pt-4 mt-4 border-t border-[#E0D4FD]/50 dark:border-[#3B2868] flex items-center justify-between text-xs">
+                  <span className="font-bold text-[#6D28D9] dark:text-[#FAF8FF]">Verified Grounded Access</span>
+                  <span className="text-[#6D28D9]">➔</span>
                 </div>
               </div>
             );
@@ -165,26 +165,26 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
         </div>
 
         {/* 3-Step Workflow Section */}
-        <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-8 sm:p-12 mb-20 shadow-elevated-sage dark:shadow-elevated-gold">
+        <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-8 sm:p-12 mb-20 shadow-elevated-sage dark:shadow-elevated-gold">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'কাৰ্যপ্ৰণালী – তিনিটা সহজ পদক্ষেপ' : 'How Students & Staff Use UniMitra'}
             </h2>
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] mt-2">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] mt-2">
               Fast, transparent, and accurate assistance in seconds.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {workflowSteps.map((s) => (
-              <div key={s.num} className="relative bg-[#FEFAF3] dark:bg-[#15370D] p-6 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] space-y-3">
-                <span className="text-3xl font-black text-[#84A282] dark:text-[#FFF2B4]">
+              <div key={s.num} className="relative bg-[#FAF8FF] dark:bg-[#0A0718] p-6 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] space-y-3">
+                <span className="text-3xl font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                   {s.num}
                 </span>
-                <h4 className="text-base font-black text-[#15370D] dark:text-[#FFF2B4]">
+                <h4 className="text-base font-black text-[#0F172A] dark:text-[#FAF8FF]">
                   {currentLang === 'as' ? s.asTitle : s.title}
                 </h4>
-                <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                <p className="text-xs text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                   {s.desc}
                 </p>
               </div>
@@ -196,7 +196,7 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
         <div className="text-center">
           <button
             onClick={handlePortalAccess}
-            className="px-8 py-3.5 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-sm"
+            className="px-8 py-3.5 rounded-2xl font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-elevated-sage text-sm"
           >
             Enter University Assistance Portal ➔
           </button>

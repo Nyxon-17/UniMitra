@@ -83,17 +83,17 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 sm:p-8 shadow-elevated-sage dark:shadow-elevated-gold card-3d">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 sm:p-8 shadow-xs hover:shadow-md dark:shadow-[0_0_15px_rgba(176,38,255,0.25)] card-3d">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#84A282] dark:text-[#FFF2B4]">
+            <div className="flex items-center space-x-2 text-xs font-black uppercase text-[#6D28D9] dark:text-[#FAF8FF]">
               <BanknotesIcon className="w-4 h-4" />
               <span>Institutional & State Financial Aid Desk</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#15370D] dark:text-[#FFF2B4]">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
               {currentLang === 'as' ? 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান' : 'Scholarships & Financial Grants'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#4F6D4B] dark:text-[#E5CD82] max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#555375] dark:text-[#C4B5FD] max-w-2xl leading-relaxed">
               {currentLang === 'as'
                 ? 'অসম চৰকাৰৰ উচ্চ শিক্ষা সঞ্চালকালয়, UGC ঈশান উদয় আৰু সংৰক্ষিত শ্ৰেণীৰ ছাত্ৰবৃত্তিৰ চৰ্ত, বাৰ্ষিক আয় আৰু আবেদনৰ নিয়ম চাওক।'
                 : 'Access verified state and central scholarship circulars, family income ceilings, document checklists, and application guidelines.'}
@@ -102,16 +102,16 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
 
           <button
             onClick={() => onNavigateTab('assistant', { prefillQuery: 'What are the required documents and income limits for Ishan Uday and DHE combined merit scholarships?' })}
-            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#84A282] hover:bg-[#6F8E6D] transition-all cursor-pointer shadow-elevated-sage text-xs sm:text-sm shrink-0"
+            className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-black text-white bg-[#4C1D95] hover:bg-[#8F00FF] transition-all cursor-pointer shadow-xs hover:shadow-md text-xs sm:text-sm shrink-0"
           >
-            <SparklesIcon className="w-4 h-4 text-[#FFF2B4]" />
+            <SparklesIcon className="w-4 h-4 text-[#FAF8FF]" />
             <span>{currentLang === 'as' ? 'সহায়কক সোধক' : 'Check Eligibility with AI'}</span>
           </button>
         </div>
       </div>
 
       {/* Filter and Search */}
-      <div className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             {categories.map((cat) => (
@@ -120,8 +120,8 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all ${
                   selectedCategory === cat
-                    ? 'bg-[#84A282] text-white shadow-xs'
-                    : 'bg-[#FEFAF3] dark:bg-[#15370D] text-[#15370D] dark:text-[#FFF2B4] border border-[#B8CFB3] dark:border-[#728E6D] hover:bg-[#B8CFB3]/30'
+                    ? 'bg-[#4C1D95] text-white shadow-xs'
+                    : 'bg-[#FAF8FF] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#FAF8FF] border border-[#E0D4FD] dark:border-[#3B2868] hover:bg-[#E0D4FD]/30'
                 }`}
               >
                 {cat}
@@ -130,13 +130,13 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
           </div>
 
           <div className="relative w-full sm:w-64">
-            <SearchIcon className="w-4 h-4 text-[#84A282] absolute left-3 top-1/2 -translate-y-1/2" />
+            <SearchIcon className="w-4 h-4 text-[#6D28D9] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search scheme name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#15370D] text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-[#FAF8FF] outline-none"
             />
           </div>
         </div>
@@ -147,53 +147,53 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
         {filtered.map((sch) => (
           <div
             key={sch.id}
-            className="bg-white dark:bg-[#1C4412] border-2 border-[#B8CFB3] dark:border-[#728E6D] rounded-3xl p-6 shadow-xs space-y-4"
+            className="bg-white dark:bg-[#150F2C] border-2 border-[#E0D4FD] dark:border-[#3B2868] rounded-3xl p-6 shadow-xs space-y-4"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#B8CFB3]/50 dark:border-[#728E6D] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E0D4FD]/50 dark:border-[#3B2868] pb-3">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#84A282] text-white">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#4C1D95] text-white">
                     {sch.category}
                   </span>
-                  <span className="text-xs font-black text-[#84A282] dark:text-[#FFF2B4]">
+                  <span className="text-xs font-black text-[#6D28D9] dark:text-[#FAF8FF]">
                     Deadline: {sch.deadline}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#15370D] dark:text-[#FFF2B4] pt-1">
+                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-[#FAF8FF] pt-1">
                   {currentLang === 'as' ? sch.asTitle : sch.title}
                 </h3>
-                <p className="text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+                <p className="text-xs text-[#555375] dark:text-[#C4B5FD]">
                   Issuing Authority: {sch.authority}
                 </p>
               </div>
 
-              <div className="bg-[#F6E2E9] dark:bg-[#15370D] px-3.5 py-2 rounded-2xl border border-[#B8CFB3] dark:border-[#728E6D] text-center self-start sm:self-auto shrink-0">
-                <span className="text-[10px] font-black uppercase block text-[#4F6D4B] dark:text-[#E5CD82]">Benefit Value</span>
-                <span className="text-xs font-black text-[#15370D] dark:text-[#FFF2B4]">{sch.amount}</span>
+              <div className="bg-[#DDD6FE] dark:bg-[#0F172A] px-3.5 py-2 rounded-2xl border border-[#E0D4FD] dark:border-[#3B2868] text-center self-start sm:self-auto shrink-0">
+                <span className="text-[10px] font-black uppercase block text-[#555375] dark:text-[#C4B5FD]">Benefit Value</span>
+                <span className="text-xs font-black text-[#0F172A] dark:text-[#FAF8FF]">{sch.amount}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] space-y-1.5">
-                <strong className="text-[#15370D] dark:text-[#FFF2B4] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
+                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Eligibility & Income Ceiling
                 </strong>
-                <p className="text-[#4F6D4B] dark:text-[#E5CD82] leading-relaxed">
+                <p className="text-[#555375] dark:text-[#C4B5FD] leading-relaxed">
                   {sch.eligibility}
                 </p>
-                <div className="text-[11px] font-black text-[#84A282] dark:text-[#FFF2B4] pt-1">
+                <div className="text-[11px] font-black text-[#6D28D9] dark:text-[#FAF8FF] pt-1">
                   Income Limit: {sch.incomeCeiling}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FEFAF3] dark:bg-[#15370D] border border-[#B8CFB3] dark:border-[#728E6D] space-y-1.5">
-                <strong className="text-[#15370D] dark:text-[#FFF2B4] block uppercase tracking-wider text-[10px]">
+              <div className="p-4 rounded-2xl bg-[#FAF8FF] dark:bg-[#0F172A] border border-[#E0D4FD] dark:border-[#3B2868] space-y-1.5">
+                <strong className="text-[#0F172A] dark:text-[#FAF8FF] block uppercase tracking-wider text-[10px]">
                   Mandatory Document Checklist
                 </strong>
-                <ul className="space-y-1 text-[#4F6D4B] dark:text-[#E5CD82]">
+                <ul className="space-y-1 text-[#555375] dark:text-[#C4B5FD]">
                   {sch.documents.map((doc, d) => (
                     <li key={d} className="flex items-center space-x-1.5">
-                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#84A282] shrink-0" />
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#6D28D9] shrink-0" />
                       <span>{doc}</span>
                     </li>
                   ))}
@@ -201,14 +201,14 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
               </div>
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[#4F6D4B] dark:text-[#E5CD82]">
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[#555375] dark:text-[#C4B5FD]">
               <div className="flex items-center space-x-2">
-                <DocumentTextIcon className="w-4 h-4 text-[#84A282]" />
+                <DocumentTextIcon className="w-4 h-4 text-[#6D28D9]" />
                 <span className="font-bold">Official Circular: {sch.citation}</span>
               </div>
               <button
                 onClick={() => onNavigateTab('assistant', { prefillQuery: `Guide me on the step-by-step application procedure for ${sch.title}.` })}
-                className="text-xs font-black text-[#84A282] dark:text-[#FFF2B4] hover:underline cursor-pointer"
+                className="text-xs font-black text-[#6D28D9] dark:text-[#FAF8FF] hover:underline cursor-pointer"
               >
                 Ask Assistant Application Steps ➔
               </button>

@@ -58,9 +58,7 @@ export const DashboardSidebar = ({
     { id: 'regulations', label: 'Academic Regulations & Workload', asLabel: 'শৈক্ষিক নিয়মাৱলী আৰু কৰ্মভাৰ', icon: BuildingLibraryIcon },
     { id: 'faculty-exams', label: 'Examination Guidelines', asLabel: 'পৰীক্ষা আৰু মূল্যায়ন নিৰ্দেশনা', icon: ClipboardDocumentCheckIcon },
     { id: 'faculty-documents', label: 'Authorized Documents', asLabel: 'অনুমোদিত প্ৰতিষ্ঠানিক নথিপত্ৰ', icon: DocumentTextIcon },
-    { id: 'faculty-saved', label: 'Saved Consultations', asLabel: 'সংৰক্ষিত শৈক্ষিক বাৰ্তালাপ', icon: ShieldCheckIcon },
-    { id: 'feedback', label: 'Quality Feedback', asLabel: 'মতামত আৰু পৰামৰ্শ', icon: CheckCircleIcon },
-    { id: 'profile', label: 'Faculty Profile (Member ID)', asLabel: 'অধ্যাপক প্ৰফাইল (Member ID)', icon: UserIcon },
+    { id: 'faculty-saved', label: 'Saved Reference Circulars', asLabel: 'সংৰক্ষিত জাননীসমূহ', icon: DocumentTextIcon },
   ];
 
   const menuItems = isFaculty ? facultyMenuItems : studentMenuItems;
@@ -94,22 +92,22 @@ export const DashboardSidebar = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#FEFAF3] dark:bg-[#1C4412] border-r border-[#B8CFB3] dark:border-[#728E6D] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#150F2C]/95 backdrop-blur-xs border-r border-[#E0D4FD] dark:border-[#3B2868] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Upper Sidebar Section */}
         <div className="overflow-y-auto">
           {/* Logo Bar */}
-          <div className="flex items-center justify-between h-20 px-6 border-b border-[#B8CFB3] dark:border-[#728E6D]">
+          <div className="flex items-center justify-between h-20 px-6 border-b border-[#E0D4FD] dark:border-[#3B2868]">
             <div className="flex items-center space-x-3 cursor-pointer" onClick={handleLogoClick}>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#84A282] to-[#B8CFB3] flex items-center justify-center text-white shadow-md border-2 border-[#84A282]/40">
-                <BuildingLibraryIcon className="w-6 h-6 text-[#FEFAF3]" />
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#6D28D9] via-[#8F00FF] to-[#4C1D95] dark:from-[#4C1D95] dark:to-[#8F00FF] flex items-center justify-center text-white shadow-md border-2 border-[#E0D4FD] dark:border-[#B026FF]/50 dark:shadow-[0_0_12px_rgba(176,38,255,0.4)]">
+                <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
               </div>
               <div>
-                <span className="text-xl font-black text-[#15370D] dark:text-[#FFF2B4]">
-                  Uni<span className="text-[#84A282]">Mitra</span>
+                <span className="text-xl font-black text-[#0F172A] dark:text-[#FAF8FF]">
+                  Uni<span className="text-[#8F00FF] dark:text-[#00F5D4]">Mitra</span>
                 </span>
-                <span className="text-[10px] font-black text-[#84A282] dark:text-[#E5CD82] block -mt-0.5 uppercase tracking-wider">
+                <span className="text-[10px] font-black text-[#6D28D9] dark:text-[#C4B5FD] block -mt-0.5 uppercase tracking-wider">
                   University Portal
                 </span>
               </div>
@@ -118,7 +116,7 @@ export const DashboardSidebar = ({
             {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-[#4F6D4B] hover:text-[#15370D] dark:text-[#E5CD82] dark:hover:text-[#FFF2B4] cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg text-[#555375] hover:text-[#0F172A] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -134,11 +132,11 @@ export const DashboardSidebar = ({
                   key={item.id}
                   onClick={() => handleItemClick(item.id)}
                   className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
-                      ? 'bg-[#84A282] text-white shadow-elevated-sage'
-                      : 'text-[#15370D] dark:text-[#E5CD82] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#15370D] hover:text-[#15370D] dark:hover:text-[#FFF2B4]'
+                      ? 'bg-[#4C1D95] dark:bg-[#6D28D9] text-white shadow-xs dark:shadow-[0_0_12px_rgba(176,38,255,0.35)]'
+                      : 'text-[#0F172A] dark:text-[#C4B5FD] hover:bg-[#E0D4FD]/35 dark:hover:bg-[#1F163D] hover:text-[#6D28D9] dark:hover:text-[#FAF8FF]'
                     }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FFF2B4]' : 'text-[#84A282] dark:text-[#E5CD82]'}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#6D28D9] dark:text-[#00F5D4]'}`} />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>
                 </button>
               );
@@ -147,14 +145,14 @@ export const DashboardSidebar = ({
         </div>
 
         {/* Lower Sidebar Actions */}
-        <div className="p-4 border-t border-[#B8CFB3] dark:border-[#728E6D] space-y-2">
+        <div className="p-4 border-t border-[#E0D4FD] dark:border-[#3B2868] space-y-2">
           {/* Admin Ingestion Console Access */}
           <button
             onClick={handleAdminClick}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#15370D] hover:bg-[#F6E2E9]/80 dark:hover:bg-[#235417] transition-all cursor-pointer border border-[#B8CFB3] dark:border-[#728E6D]"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-black text-[#0F172A] dark:text-[#FAF8FF] bg-[#DDD6FE]/40 dark:bg-[#1F163D] hover:bg-[#DDD6FE]/70 dark:hover:bg-[#281C50] transition-all cursor-pointer border border-[#E0D4FD] dark:border-[#3B2868]"
           >
             <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono font-black text-[#84A282] dark:text-[#FFF2B4]">Ingest ⚙️</span>
+            <span className="text-[10px] uppercase font-mono font-black text-[#6D28D9] dark:text-[#00F5D4]">Ingest ⚙️</span>
           </button>
 
           {/* Secure Sign Out Action */}
