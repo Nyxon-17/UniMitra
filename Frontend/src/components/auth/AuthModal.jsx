@@ -8,7 +8,7 @@ import {
   LockClosedIcon 
 } from '../common/Icons';
 
-export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang = 'en' }) => {
+export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang = 'en', onSuccessLogin }) => {
   // Modes: 'login' | 'register' | 'forgot'
   const [mode, setMode] = useState(initialMode);
   
@@ -137,6 +137,9 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
       });
       setTimeout(() => {
         onClose();
+        if (onSuccessLogin) {
+          onSuccessLogin({ email: loginData.email, name: loginData.email.split('@')[0] });
+        }
       }, 1100);
     }, 600);
   };
@@ -184,6 +187,9 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login', currentLang 
       });
       setTimeout(() => {
         onClose();
+        if (onSuccessLogin) {
+          onSuccessLogin({ email: registerData.email, name: registerData.fullName || registerData.email.split('@')[0] });
+        }
       }, 1200);
     }, 700);
   };

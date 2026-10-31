@@ -1,0 +1,495 @@
+import { useState } from 'react';
+import { 
+  BookOpenIcon, 
+  SearchIcon, 
+  SparklesIcon, 
+  DocumentTextIcon, 
+  CheckCircleIcon, 
+  ChevronDownIcon,
+  AcademicCapIcon
+} from '../../components/common/Icons';
+
+export const DashboardSyllabus = ({ 
+  onNavigateTab, 
+  currentLang = 'en',
+  studentInfo = { name: 'Priyanku Sarma', university: 'Gauhati University', course: 'BCA (Semester 3)' }
+}) => {
+  const [selectedSemester, setSelectedSemester] = useState(3);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSubject, setExpandedSubject] = useState('BCA-HC-3016');
+  const [previewPdfModal, setPreviewPdfModal] = useState(null);
+
+  const semesters = [1, 2, 3, 4, 5, 6];
+
+  const syllabusCatalog = {
+    3: [
+      {
+        code: 'BCA-HC-3016',
+        title: 'Database Management Systems',
+        asTitle: 'ডাটাবেছ মেনেজমেন্ট ছিষ্টেম (DBMS)',
+        type: 'Core Discipline',
+        credits: '6 Credits (4 Theory + 2 Practical)',
+        examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
+        modules: [
+          {
+            unit: 'Unit 1: Fundamentals of Database & ER Modeling',
+            asUnit: 'ইউনিট ১: ডাটাবেছৰ প্ৰাথমিক ধাৰণা আৰু ER মডেলিং',
+            hours: '10 Hours',
+            topics: [
+              'Data independence, DBMS architecture, 3-level schema architecture',
+              'Entity types, attributes, constraints, ER diagrams to relational tables',
+              'Relational algebra: Select, Project, Join, Set operations'
+            ]
+          },
+          {
+            unit: 'Unit 2: SQL & Relational Database Design',
+            asUnit: 'ইউনিট ২: SQL আৰু ৰিলেচনেল ডাটাবেছ ডিজাইন',
+            hours: '12 Hours',
+            topics: [
+              'DDL, DML, DCL, Views, subqueries, group by, joins',
+              'Functional dependency, Armstrong axioms, closure of attributes',
+              'Normalization: 1NF, 2NF, 3NF, BCNF, loss-less join decomposition'
+            ]
+          },
+          {
+            unit: 'Unit 3: Transaction Management & Concurrency Control',
+            asUnit: 'ইউনিট ৩: লেনদেন ব্যৱস্থাপনা আৰু সমকালীন নিয়ন্ত্ৰণ',
+            hours: '10 Hours',
+            topics: [
+              'ACID properties, serializability, conflict vs view serializability',
+              'Lock-based protocols: 2-Phase Locking (2PL), strict 2PL',
+              'Deadlock handling, detection, prevention, and timestamp ordering'
+            ]
+          },
+          {
+            unit: 'Unit 4: Storage, File Structure & Indexing',
+            asUnit: 'ইউনিট ৪: সংৰক্ষণ আৰু ইনডেক্সিং',
+            hours: '8 Hours',
+            topics: [
+              'RAID levels, file organization, heap vs ordered records',
+              'B-Tree and B+ Tree indexing structures, hashing techniques'
+            ]
+          }
+        ],
+        books: [
+          'Silberschatz, Korth, Sudarshan — Database System Concepts (7th Ed.)',
+          'Elmasri, Navathe — Fundamentals of Database Systems (Pearson)'
+        ]
+      },
+      {
+        code: 'BCA-HC-3026',
+        title: 'Operating Systems & System Architecture',
+        asTitle: 'অপাৰেটিং ছিষ্টেম আৰু ছিষ্টেম আৰ্কিটেকচাৰ',
+        type: 'Core Discipline',
+        credits: '6 Credits (4 Theory + 2 Practical)',
+        examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
+        modules: [
+          {
+            unit: 'Unit 1: Process Management & CPU Scheduling',
+            asUnit: 'ইউনিট ১: প্ৰক্ৰিয়া ব্যৱস্থাপনা আৰু CPU শ্বিডিউলিং',
+            hours: '12 Hours',
+            topics: [
+              'Process states, PCB, context switching, inter-process communication',
+              'Scheduling algorithms: FCFS, SJF, Priority, Round Robin (RR)',
+              'Thread models, multithreading libraries, multicore programming'
+            ]
+          },
+          {
+            unit: 'Unit 2: Process Synchronization & Deadlocks',
+            asUnit: 'ইউনিট ২: প্ৰক্ৰিয়া সমন্বয় আৰু ডেডলক',
+            hours: '10 Hours',
+            topics: [
+              'Critical section problem, Peterson’s solution, Semaphores, Mutex locks',
+              'Classical synchronization problems: Producer-Consumer, Dining Philosophers',
+              'Deadlock conditions, Bankers algorithm, resource allocation graphs'
+            ]
+          },
+          {
+            unit: 'Unit 3: Memory Management & Virtual Memory',
+            asUnit: 'ইউনিট ৩: স্মৃতি ব্যৱস্থাপনা আৰু ভাৰ্চুৱেল মেমৰি',
+            hours: '10 Hours',
+            topics: [
+              'Paging, segmentation, TLB, internal and external fragmentation',
+              'Demand paging, page fault handling, FIFO, LRU, Optimal page replacement'
+            ]
+          }
+        ],
+        books: [
+          'Silberschatz, Galvin, Gagne — Operating System Concepts (Wiley)',
+          'William Stallings — Operating Systems: Internals and Design Principles'
+        ]
+      },
+      {
+        code: 'BCA-HC-3036',
+        title: 'Computer Networks & Data Communication',
+        asTitle: 'কম্পিউটাৰ নেটৱৰ্ক আৰু ডাটা কমিউনিকেচন',
+        type: 'Core Discipline',
+        credits: '6 Credits (4 Theory + 2 Practical)',
+        examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
+        modules: [
+          {
+            unit: 'Unit 1: Network Architectures & Physical Layer',
+            asUnit: 'ইউনিট ১: নেটৱৰ্ক আৰ্কিটেকচাৰ আৰু ভৌতিক স্তৰ',
+            hours: '10 Hours',
+            topics: [
+              'OSI 7-layer reference model vs TCP/IP model',
+              'Transmission media: Twisted pair, coaxial, optical fiber, wireless channels',
+              'Bandwidth, data rate, Shannon capacity theorem, Nyquist bit rate'
+            ]
+          },
+          {
+            unit: 'Unit 2: Data Link Layer & MAC Protocols',
+            asUnit: 'ইউনিট ২: ডাটা লিংক স্তৰ আৰু MAC প্ৰট’কল',
+            hours: '10 Hours',
+            topics: [
+              'Framing, error detection CRC, Stop-and-Wait, Go-Back-N, Selective Repeat',
+              'CSMA/CD (Ethernet IEEE 802.3), CSMA/CA (Wi-Fi IEEE 802.11)'
+            ]
+          },
+          {
+            unit: 'Unit 3: Network Layer & IP Routing',
+            asUnit: 'ইউনিট ৩: নেটৱৰ্ক স্তৰ আৰু IP ৰাউটিং',
+            hours: '10 Hours',
+            topics: [
+              'IPv4 vs IPv6 addressing, subnetting, CIDR mask calculation',
+              'Routing algorithms: Distance Vector (RIP), Link State (OSPF), BGP'
+            ]
+          }
+        ],
+        books: [
+          'Andrew S. Tanenbaum — Computer Networks (Pearson)',
+          'Behrouz A. Forouzan — Data Communications and Networking (McGraw-Hill)'
+        ]
+      },
+      {
+        code: 'BCA-SE-3014',
+        title: 'Web Technology & Modern Scripting',
+        asTitle: 'ৱেব প্ৰযুক্তি আৰু আধুনিক স্ক্ৰিপ্টিং',
+        type: 'Skill Enhancement Course (SEC)',
+        credits: '4 Credits (2 Theory + 2 Practical)',
+        examScheme: 'End-Sem: 60 Marks | Sessional: 40 Marks Practical',
+        modules: [
+          {
+            unit: 'Unit 1: Semantic HTML5, CSS3 & Responsive Grids',
+            asUnit: 'ইউনিট ১: ছিমেন্তিক HTML5 আৰু CSS3',
+            hours: '8 Hours',
+            topics: [
+              'Modern HTML5 document trees, semantic tags, forms validation',
+              'CSS Flexbox, CSS Grid layouts, media queries for mobile accessibility'
+            ]
+          },
+          {
+            unit: 'Unit 2: JavaScript ES6+ & DOM Events',
+            asUnit: 'ইউনিট ২: জাভাস্ক্ৰিপ্ট ES6+ আৰু DOM ঘটনাৱলী',
+            hours: '10 Hours',
+            topics: [
+              'Arrow functions, destructuring, promises, async/await',
+              'DOM manipulation, event delegation, web storage API'
+            ]
+          }
+        ],
+        books: [
+          'Jon Duckett — HTML & CSS: Design and Build Websites',
+          'David Flanagan — JavaScript: The Definitive Guide (O’Reilly)'
+        ]
+      }
+    ],
+    1: [
+      {
+        code: 'BCA-HC-1016',
+        title: 'Introduction to C Programming',
+        asTitle: 'চি প্ৰগ্ৰামিংৰ পৰিচয়',
+        type: 'Core Discipline',
+        credits: '6 Credits',
+        examScheme: 'End-Sem: 80 Marks | Sessional: 20 Marks',
+        modules: [
+          {
+            unit: 'Unit 1: Logic Development & Flowcharts',
+            asUnit: 'ইউনিট ১: লজিক আৰু ফ্লোচাৰ্ট',
+            hours: '8 Hours',
+            topics: ['Algorithm design, pseudocode, flowchart symbols, compilation steps']
+          },
+          {
+            unit: 'Unit 2: Control Structures & Arrays',
+            asUnit: 'ইউনিট ২: কন্ট্ৰল ষ্ট্ৰাকচাৰ আৰু এৰে',
+            hours: '12 Hours',
+            topics: ['Loops, branching, multidimensional arrays, string handling functions']
+          }
+        ],
+        books: ['E. Balagurusamy — Programming in ANSI C']
+      }
+    ]
+  };
+
+  const activeSubjects = syllabusCatalog[selectedSemester] || [];
+  const filteredSubjects = activeSubjects.filter((sub) => {
+    const q = searchQuery.toLowerCase();
+    return sub.code.toLowerCase().includes(q) || sub.title.toLowerCase().includes(q);
+  });
+
+  return (
+    <div className="space-y-6">
+      
+      {/* 3D Header Section */}
+      <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-elevated-cerulean card-3d">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-xs font-black tracking-wider uppercase text-[#118AB2] dark:text-[#FFD166]">
+              <AcademicCapIcon className="w-4 h-4" />
+              <span>{studentInfo.university} • {studentInfo.course}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#073B4C] dark:text-white">
+              {currentLang === 'as' ? 'অফিচিয়েল পাঠ্যক্ৰম পৰিদৰ্শন' : 'Official Syllabus & Curriculum'}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+              {currentLang === 'as'
+                ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক পৰিষদে অনুমোদন জনোৱা প্ৰতিটো বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু পাঠ্যপুথি পৰীক্ষা কৰক।'
+                : 'Browse verified semester units, credit allocation, recommended textbooks, and question blueprint approved by the university academic board.'}
+            </p>
+          </div>
+
+          {/* Quick Ask AI button */}
+          <div className="shrink-0">
+            <button
+              onClick={() => onNavigateTab('assistant', { prefillQuery: 'Summarize the entire 3rd semester syllabus and highlight the highest credit topics.' })}
+              className="flex items-center space-x-2 px-5 py-3 rounded-2xl font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral text-xs sm:text-sm"
+            >
+              <SparklesIcon className="w-4 h-4 text-[#FFD166]" />
+              <span>{currentLang === 'as' ? 'সিলেবাছৰ পৰা প্ৰশ্ন সোধক' : 'Ask AI About Syllabus'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Semester Selection Ribbon */}
+        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider shrink-0">
+              {currentLang === 'as' ? 'ষাণ্মাসিক:' : 'Semester:'}
+            </span>
+            {semesters.map((sem) => (
+              <button
+                key={sem}
+                onClick={() => setSelectedSemester(sem)}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedSemester === sem
+                    ? 'bg-[#118AB2] text-white shadow-elevated-cerulean'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                {currentLang === 'as' ? `ষাণ্মাসিক ${sem}` : `Semester ${sem}`}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full sm:w-72">
+            <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={currentLang === 'as' ? 'বিষয় বা কোড বিচাৰক...' : 'Filter subject or code...'}
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#118AB2] transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Subject List with 3D Accordion Cards */}
+      <div className="space-y-4">
+        {filteredSubjects.length === 0 ? (
+          <div className="p-12 text-center bg-white dark:bg-[#111C2E] border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl">
+            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">
+              {currentLang === 'as' ? 'কোনো বিষয় পোৱা নগ’ল।' : 'No subjects found matching your search in this semester.'}
+            </p>
+          </div>
+        ) : (
+          filteredSubjects.map((subject) => {
+            const isExpanded = expandedSubject === subject.code;
+            return (
+              <div 
+                key={subject.code}
+                className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm card-3d transition-all"
+              >
+                {/* Header Row */}
+                <div 
+                  onClick={() => setExpandedSubject(isExpanded ? null : subject.code)}
+                  className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors"
+                >
+                  <div className="flex items-start space-x-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-[#E7F3F7] dark:bg-slate-800 border border-[#118AB2]/30 text-[#118AB2] dark:text-[#FFD166] flex items-center justify-center shrink-0 mt-0.5">
+                      <BookOpenIcon className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#118AB2]/10 dark:bg-[#118AB2]/30 text-[#118AB2] dark:text-sky-300">
+                          {subject.code}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                          {subject.type}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#06D6A0]/10 text-[#06D6A0]">
+                          {subject.credits}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                        {currentLang === 'as' && subject.asTitle ? subject.asTitle : subject.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {subject.examScheme}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3 self-end md:self-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNavigateTab('assistant', { prefillQuery: `Explain the key concepts of ${subject.title} (${subject.code}) from our syllabus.` });
+                      }}
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7F50] hover:bg-[#E86B3D] transition-all cursor-pointer shadow-elevated-coral shrink-0 flex items-center space-x-1"
+                    >
+                      <SparklesIcon className="w-3.5 h-3.5 text-[#FFD166]" />
+                      <span>{currentLang === 'as' ? 'প্ৰশ্ন সোধক' : 'Ask AI'}</span>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewPdfModal(subject);
+                      }}
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#118AB2] dark:text-[#FFD166] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer border border-slate-200 dark:border-slate-700 flex items-center space-x-1 shrink-0"
+                    >
+                      <DocumentTextIcon className="w-3.5 h-3.5" />
+                      <span>{currentLang === 'as' ? 'পিডিএফ নথি' : 'View PDF'}</span>
+                    </button>
+
+                    <div className="p-1 text-slate-400">
+                      <ChevronDownIcon className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#118AB2]' : ''}`} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded Content View */}
+                {isExpanded && (
+                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+                    
+                    {/* Units & Detailed Topics */}
+                    <div className="space-y-4 my-4">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        {currentLang === 'as' ? 'পাঠ্যক্ৰমৰ ভাগসমূহ (ইউনিট)' : 'Prescribed Syllabus Units'}
+                      </h4>
+
+                      <div className="grid grid-cols-1 gap-3">
+                        {subject.modules.map((mod, idx) => (
+                          <div 
+                            key={idx}
+                            className="p-4 bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 rounded-xl space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166]">
+                                {currentLang === 'as' && mod.asUnit ? mod.asUnit : mod.unit}
+                              </span>
+                              <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                {mod.hours}
+                              </span>
+                            </div>
+                            <ul className="space-y-1 pl-4 list-disc text-xs text-slate-600 dark:text-slate-300">
+                              {mod.topics.map((topic, tidx) => (
+                                <li key={tidx} className="leading-relaxed">
+                                  {topic}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Prescribed Textbooks */}
+                    <div className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-amber-700 dark:text-amber-400 mb-2">
+                        <CheckCircleIcon className="w-4 h-4 text-amber-600" />
+                        <span>{currentLang === 'as' ? 'অনুমোদিত পাঠ্যপুথি আৰু প্ৰসংগ পুথি' : 'Prescribed Textbooks & Reference Readings'}</span>
+                      </div>
+                      <ul className="space-y-1 pl-4 list-disc text-xs text-slate-700 dark:text-slate-200 font-medium">
+                        {subject.books.map((book, bidx) => (
+                          <li key={bidx}>{book}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Official Syllabus PDF Document Modal */}
+      {previewPdfModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#111C2E] border-2 border-slate-200 dark:border-slate-700 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative card-3d">
+            <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-700 pb-4 mb-4">
+              <div>
+                <span className="text-xs font-bold text-[#118AB2] dark:text-[#FFD166] uppercase">
+                  {studentInfo.university} Document Repository
+                </span>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  {previewPdfModal.title} ({previewPdfModal.code})
+                </h3>
+              </div>
+              <button 
+                onClick={() => setPreviewPdfModal(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 py-2">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-black text-xs shrink-0">
+                  PDF
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    GU_{previewPdfModal.code}_Official_Syllabus_Notification.pdf
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Verified Digital Seal • Academic Board Approved
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-800 dark:text-emerald-300">
+                ✓ Full text and units are ingested into the UniMitra assistant with zero hallucinations. Every question is answered directly from this document.
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setPreviewPdfModal(null)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  alert(`Downloading official syllabus document for ${previewPdfModal.code}`);
+                  setPreviewPdfModal(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#118AB2] hover:bg-[#0E7292] transition-colors cursor-pointer shadow-elevated-cerulean"
+              >
+                Download Document
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+

@@ -9,11 +9,31 @@ import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { AuthModal } from './components/auth/AuthModal';
 
+// Student Dashboard Components & Sub-pages
+import { DashboardLayout } from './components/dashboard/DashboardLayout';
+import { DashboardHome } from './pages/dashboard/DashboardHome';
+import { DashboardAiAssistant } from './pages/dashboard/DashboardAiAssistant';
+import { DashboardSyllabus } from './pages/dashboard/DashboardSyllabus';
+import { DashboardSaved } from './pages/dashboard/DashboardSaved';
+import { DashboardProfile } from './pages/dashboard/DashboardProfile';
+
 export function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'universities' | 'faq' | 'about' | 'contact' | 'dashboard'
+  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'assistant' | 'syllabus' | 'saved' | 'profile'
+  const [assistantPrefill, setAssistantPrefill] = useState('');
+  
   const [lang, setLang] = useState('en'); // 'en' or 'as'
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
+
+  const [studentInfo, setStudentInfo] = useState({
+    name: 'Priyanku Sarma',
+    email: 'priyanku.sarma@gauhati.ac.in',
+    university: 'Gauhati University',
+    course: 'BCA (Semester 3)',
+    semester: 'Semester 3',
+    college: 'Cotton University affiliated campus, Jalukbari'
+  });
   
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -39,7 +59,7 @@ export function App() {
   // Scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
+  }, [currentPage, dashboardTab]);
 
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'as' : 'en'));
@@ -54,9 +74,81 @@ export function App() {
     setAuthModalOpen(true);
   };
 
+  const handleLoginSuccess = (user) => {
+    if (user?.name) {
+      setStudentInfo((prev) => ({
+        ...prev,
+        name: user.name,
+        email: user.email || prev.email,
+      }));
+    }
+    setCurrentPage('dashboard');
+    setDashboardTab('overview');
+  };
+
+  const handleNavigateDashboardTab = (tab, payload) => {
+    setDashboardTab(tab);
+    if (payload?.prefillQuery) {
+      setAssistantPrefill(payload.prefillQuery);
+    }
+  };
+
+  // If in Student Dashboard mode, render 3D Dashboard Layout with sidebar and dashboard navbar
+  if (currentPage === 'dashboard') {
+    return (
+      <DashboardLayout
+        activeTab={dashboardTab}
+        onSelectTab={setDashboardTab}
+        onExitDashboard={() => setCurrentPage('home')}
+        currentLang={lang}
+        onToggleLang={toggleLanguage}
+        isDark={theme === 'dark'}
+        onToggleTheme={toggleTheme}
+        studentInfo={studentInfo}
+      >
+        {dashboardTab === 'overview' && (
+          <DashboardHome
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+            studentInfo={studentInfo}
+          />
+        )}
+        {dashboardTab === 'assistant' && (
+          <DashboardAiAssistant
+            currentLang={lang}
+            prefillQuery={assistantPrefill}
+            studentInfo={studentInfo}
+          />
+        )}
+        {dashboardTab === 'syllabus' && (
+          <DashboardSyllabus
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+            studentInfo={studentInfo}
+          />
+        )}
+        {dashboardTab === 'saved' && (
+          <DashboardSaved
+            onNavigateTab={handleNavigateDashboardTab}
+            currentLang={lang}
+            studentInfo={studentInfo}
+          />
+        )}
+        {dashboardTab === 'profile' && (
+          <DashboardProfile
+            currentLang={lang}
+            studentInfo={studentInfo}
+            onUpdateStudentInfo={(updated) => setStudentInfo((prev) => ({ ...prev, ...updated }))}
+          />
+        )}
+      </DashboardLayout>
+    );
+  }
+
+  // Otherwise, render Public University Platform Layout
   return (
     <div className={`min-h-screen flex flex-col bg-[#FAFAFC] dark:bg-[#0B1320] text-[#073B4C] dark:text-slate-100 selection:bg-[#FFD166] selection:text-[#073B4C] transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
-      {/* Top Navigation */}
+      {/* Top Public Navigation */}
       <Navbar 
         activePage={currentPage} 
         onNavigate={setCurrentPage} 
@@ -102,6 +194,7 @@ export function App() {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authModalMode}
         currentLang={lang}
+        onSuccessLogin={handleLoginSuccess}
       />
     </div>
   );

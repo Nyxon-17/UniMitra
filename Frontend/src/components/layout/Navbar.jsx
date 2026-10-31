@@ -23,6 +23,7 @@ export const Navbar = ({
     { id: 'home', label: 'Home', asLabel: 'মূল পৃষ্ঠা' },
     { id: 'features', label: 'Features', asLabel: 'সুবিধাসমূহ' },
     { id: 'universities', label: 'Universities', asLabel: 'বিশ্ববিদ্যালয়সমূহ' },
+    { id: 'dashboard', label: 'Dashboard', asLabel: 'ডেচব’ৰ্ড', isHighlight: true },
     { id: 'faq', label: 'FAQ', asLabel: 'প্ৰশ্নোত্তৰ' },
     { id: 'about', label: 'About Us', asLabel: 'আমাৰ বিষয়ে' },
     { id: 'contact', label: 'Contact', asLabel: 'যোগাযোগ' },
