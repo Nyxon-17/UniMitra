@@ -1,6 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import { BuildingLibraryIcon, ShieldCheckIcon, ClipboardDocumentCheckIcon, BanknotesIcon, BuildingOfficeIcon } from '../common/Icons';
 
 export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
+  const navigate = useNavigate();
+
+  const handleNav = (page) => {
+    if (onNavigate) {
+      onNavigate(page);
+    }
+    if (page === 'home') navigate('/');
+    else if (page === 'dashboard') navigate('/dashboard/overview');
+    else if (page === 'admin') navigate('/admin');
+    else if (page === 'auth') navigate('/auth');
+    else navigate(`/${page}`);
+  };
+
   return (
     <footer className="bg-[#15370D] text-[#FEFAF3] border-t-4 border-[#84A282] transition-colors duration-200">
       {/* Upper Footer */}
@@ -11,7 +25,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
           <div className="lg:col-span-2 space-y-4">
             <div 
               className="flex items-center space-x-3 cursor-pointer" 
-              onClick={() => onNavigate && onNavigate('home')}
+              onClick={() => handleNav('home')}
             >
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#84A282] to-[#B8CFB3] flex items-center justify-center text-white shadow-md border-2 border-[#84A282]/40">
                 <BuildingLibraryIcon className="w-6 h-6 text-[#FEFAF3]" />
@@ -46,22 +60,22 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               {currentLang === 'as' ? 'শৈক্ষিক আৰু প্ৰশাসনিক সেৱা' : 'Information Domains'}
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-[#E5CD82]/90">
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 University Regulations & Ordinances
               </li>
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 Examination Guidelines & Evaluation Rules
               </li>
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 Academic Programs & Eligibility
               </li>
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 Scholarships & Financial Grants
               </li>
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 Admission Procedures & Cut-offs
               </li>
-              <li onClick={() => onNavigate && onNavigate('features')} className="hover:text-white transition-colors cursor-pointer">
+              <li onClick={() => handleNav('features')} className="hover:text-white transition-colors cursor-pointer">
                 Campus Facilities, Hostels & Health Centers
               </li>
             </ul>
@@ -74,37 +88,37 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-[#FEFAF3]">
               <li>
-                <button onClick={() => onNavigate && onNavigate('home')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('home')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   Public Home Portal
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('features')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('features')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   Services & Capabilities
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('how-it-works')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('how-it-works')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   RAG Architecture & How It Works
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('faq')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('faq')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   FAQ & Knowledge Search
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('about')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('about')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   About UniMitra
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('contact')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('contact')} className="hover:text-[#FFF2B4] transition-colors cursor-pointer text-left">
                   Helpdesk & Contact Support
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate && onNavigate('admin')} className="text-[#F6E2E9] font-bold hover:underline transition-colors cursor-pointer text-left">
+                <button onClick={() => handleNav('admin')} className="text-[#F6E2E9] font-bold hover:underline transition-colors cursor-pointer text-left">
                   Document Ingestion Admin ⚙️
                 </button>
               </li>
@@ -118,20 +132,18 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </h4>
             
             <div className="p-4 bg-[#1C4412] border border-[#728E6D] rounded-2xl space-y-2">
-              <div className="flex items-center space-x-2 text-[#FFF2B4] text-xs font-black">
+              <div className="flex items-center space-x-2 text-[#FFF2B4]">
                 <ShieldCheckIcon className="w-4 h-4 text-[#84A282]" />
-                <span>Grounded Citations</span>
+                <span className="text-xs font-black">Zero Hallucination Policy</span>
               </div>
-              <p className="text-xs text-[#E5CD82] leading-relaxed">
-                Zero hallucinated rules. Every answer is grounded directly in official university circulars, ordinances, and gazettes with page citations.
+              <p className="text-[11px] text-[#E5CD82] leading-tight">
+                All answers are grounded strictly in official university gazettes, statutes, and notices. No fabricated responses or unverified citations.
               </p>
             </div>
 
-            <div className="pt-1">
-              <span className="text-xs text-[#728E6D] block">Supported Languages:</span>
-              <p className="text-xs font-bold text-[#FFF2B4] mt-0.5">
-                অসমীয়া (Assamese) • English
-              </p>
+            <div className="text-[11px] text-[#E5CD82]/70 space-y-1">
+              <p>Supported Universities across Assam:</p>
+              <p className="font-semibold text-[#FEFAF3]">GU • DU • TU • AU • BU • ASTU • KBVSASU</p>
             </div>
           </div>
 
@@ -139,14 +151,16 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#728E6D]/50 bg-black/30">
-        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#E5CD82]">
+      <div className="border-t border-[#728E6D]/50 bg-[#15370D] py-5">
+        <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#E5CD82]">
           <p>
-            © {new Date().getFullYear()} UniMitra. Smart University Assistant for Higher Education in Assam.
+            © {new Date().getFullYear()} <span className="font-bold text-[#FFF2B4]">UniMitra</span>. Higher Education Institutional Assistant Platform.
           </p>
-          <p className="text-[11px] text-[#B8CFB3]">
-            For Students, Faculty Members & Administrative Staff
-          </p>
+          <div className="flex items-center space-x-5 text-[11px]">
+            <span className="text-[#B8CFB3]">Assamese (অসমীয়া) & English</span>
+            <span>•</span>
+            <span>State University Knowledge Base</span>
+          </div>
         </div>
       </div>
     </footer>

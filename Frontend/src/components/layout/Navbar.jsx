@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BuildingLibraryIcon, MenuIcon, XMarkIcon, SunIcon, MoonIcon, LanguageIcon, ArrowRightOnRectangleIcon, UserIcon } from '../common/Icons';
 
 export const Navbar = ({ 
@@ -14,15 +15,41 @@ export const Navbar = ({
   onSignOut
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Derive active link ID from current URL pathname
+  const getActiveId = () => {
+    const p = location.pathname;
+    if (p === '/' || p === '/home') return 'home';
+    if (p.startsWith('/features')) return 'features';
+    if (p.startsWith('/how-it-works')) return 'how-it-works';
+    if (p.startsWith('/faq')) return 'faq';
+    if (p.startsWith('/about')) return 'about';
+    if (p.startsWith('/contact')) return 'contact';
+    if (p.startsWith('/auth')) return 'auth';
+    if (p.startsWith('/admin')) return 'admin';
+    if (p.startsWith('/dashboard')) return 'dashboard';
+    return activePage || 'home';
+  };
+
+  const currentActive = getActiveId();
 
   const handleNav = (page) => {
     if (page === 'dashboard' && !isLoggedIn) {
-      if (onOpenAuth) onOpenAuth('login');
+      if (onOpenAuth) onOpenAuth('login', 'student');
+      else navigate('/auth');
       return;
     }
     if (onNavigate) {
       onNavigate(page);
     }
+    if (page === 'home') navigate('/');
+    else if (page === 'dashboard') navigate('/dashboard/overview');
+    else if (page === 'admin') navigate('/admin');
+    else if (page === 'auth') navigate('/auth');
+    else navigate(`/${page}`);
+    
     setMobileMenuOpen(false);
   };
 
@@ -67,7 +94,7 @@ export const Navbar = ({
                 key={link.id}
                 onClick={() => handleNav(link.id)}
                 className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                  activePage === link.id
+                  currentActive === link.id
                     ? 'bg-[#84A282]/20 dark:bg-[#728E6D]/30 text-[#15370D] dark:text-[#FFF2B4] border border-[#84A282] dark:border-[#E5CD82]/40'
                     : 'text-[#15370D] dark:text-[#FFF2B4]/80 hover:text-[#15370D] dark:hover:text-[#FFF2B4] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#1C4412]'
                 }`}
@@ -121,6 +148,8 @@ export const Navbar = ({
                   handleNav('admin');
                 } else if (onOpenAuth) {
                   onOpenAuth('login', 'admin');
+                } else {
+                  navigate('/auth?role=admin');
                 }
               }}
               className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#728E6D]/40 hover:bg-[#F6E2E9]/80 dark:hover:bg-[#728E6D] border border-[#B8CFB3] dark:border-[#E5CD82]/40 transition-all cursor-pointer"
@@ -132,7 +161,7 @@ export const Navbar = ({
             {/* Auth Controls */}
             {!isLoggedIn ? (
               <button 
-                onClick={() => onOpenAuth && onOpenAuth('login', 'student')}
+                onClick={() => onOpenAuth ? onOpenAuth('login', 'student') : navigate('/auth')}
                 className="px-4 py-2 rounded-xl text-xs sm:text-sm font-black text-[#15370D] dark:text-[#15370D] bg-[#84A282] dark:bg-[#FFF2B4] hover:bg-[#84A282]/80 dark:hover:bg-[#E5CD82] transition-all cursor-pointer shadow-xs border border-[#15370D]/20"
               >
                 {currentLang === 'as' ? 'লগ-ইন / প্ৰৱেশ' : 'Sign In'}
@@ -168,7 +197,7 @@ export const Navbar = ({
               onClick={onToggleTheme}
               className="p-2 rounded-xl border border-[#B8CFB3] dark:border-[#728E6D] bg-[#FEFAF3] dark:bg-[#1C4412] text-[#15370D] dark:text-[#FFF2B4] cursor-pointer"
             >
-              {isDark ? <SunIcon className="w-5 h-5 text-[#FFF2B4]" /> : <MoonIcon className="w-5 h-5" />}
+              {isDark ? <SunIcon className="w-5 h-5 text-[#FFF2B4]" /> : <MoonIcon className="w-5 h-5 text-[#15370D]" />}
             </button>
 
             <button
@@ -219,7 +248,7 @@ export const Navbar = ({
                 key={link.id}
                 onClick={() => handleNav(link.id)}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold ${
-                  activePage === link.id
+                  currentActive === link.id
                     ? 'bg-[#84A282]/20 dark:bg-[#728E6D]/40 text-[#15370D] dark:text-[#FFF2B4] border border-[#84A282]'
                     : 'text-[#15370D] dark:text-[#FFF2B4] hover:bg-[#B8CFB3]/30 dark:hover:bg-[#1C4412]'
                 }`}
@@ -235,7 +264,8 @@ export const Navbar = ({
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  if (onOpenAuth) onOpenAuth('login');
+                  if (onOpenAuth) onOpenAuth('login', 'student');
+                  else navigate('/auth');
                 }}
                 className="w-full py-3 rounded-xl text-sm font-black bg-[#84A282] text-white text-center shadow-md cursor-pointer"
               >
@@ -268,6 +298,8 @@ export const Navbar = ({
                   handleNav('admin');
                 } else if (onOpenAuth) {
                   onOpenAuth('login', 'admin');
+                } else {
+                  navigate('/auth?role=admin');
                 }
               }}
               className="w-full py-2.5 rounded-xl text-xs font-bold text-[#15370D] dark:text-[#FFF2B4] bg-[#F6E2E9] dark:bg-[#728E6D]/50 text-center border border-[#B8CFB3] dark:border-[#728E6D] cursor-pointer"

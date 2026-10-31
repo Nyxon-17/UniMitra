@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardNavbar } from './DashboardNavbar';
 
@@ -41,14 +42,14 @@ export const DashboardLayout = ({
           onToggleLang={onToggleLang}
           isDark={isDark}
           onToggleTheme={onToggleTheme}
-          onNavigateAi={() => onSelectTab('assistant')}
+          onNavigateAi={() => onSelectTab && onSelectTab('assistant')}
           studentInfo={studentInfo}
         />
 
         {/* Dynamic Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="w-full">
-            {children}
+            {children || <Outlet />}
           </div>
         </main>
       </div>
