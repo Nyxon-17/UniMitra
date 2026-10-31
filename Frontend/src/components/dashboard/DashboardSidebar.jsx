@@ -13,6 +13,7 @@ export const DashboardSidebar = ({
   activeTab = 'overview', 
   onSelectTab, 
   onExitDashboard, 
+  onOpenAdmin,
   onSignOut,
   isOpen = false,
   onCloseMobile,
@@ -97,6 +98,18 @@ export const DashboardSidebar = ({
 
         {/* Lower Sidebar Actions */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+          {/* Admin Ingestion Console Access */}
+          <button
+            onClick={() => {
+              if (onOpenAdmin) onOpenAdmin();
+              if (onCloseMobile) onCloseMobile();
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#FF7F50] bg-[#FF7F50]/10 hover:bg-[#FF7F50] hover:text-white transition-all cursor-pointer border border-[#FF7F50]/30"
+          >
+            <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
+            <span className="text-[10px] uppercase font-mono font-black">RAG Ingest ⚙️</span>
+          </button>
+
           {/* Back to Public Site */}
           <button
             onClick={onExitDashboard}

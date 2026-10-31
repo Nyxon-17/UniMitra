@@ -16,6 +16,7 @@ import { DashboardAiAssistant } from './pages/dashboard/DashboardAiAssistant';
 import { DashboardSyllabus } from './pages/dashboard/DashboardSyllabus';
 import { DashboardCompare } from './pages/dashboard/DashboardCompare';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
+import { AdminConsole } from './pages/admin/AdminConsole';
 
 export function App() {
   const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'features' | 'faq' | 'about' | 'contact' | 'dashboard'
@@ -144,6 +145,7 @@ export function App() {
         activeTab={dashboardTab}
         onSelectTab={setDashboardTab}
         onExitDashboard={() => setCurrentPage('home')}
+        onOpenAdmin={() => setCurrentPage('admin')}
         onSignOut={handleSignOut}
         currentLang={lang}
         onToggleLang={toggleLanguage}
@@ -186,6 +188,19 @@ export function App() {
           />
         )}
       </DashboardLayout>
+    );
+  }
+
+  // Admin Knowledge Base & Document Ingestion Console
+  if (currentPage === 'admin') {
+    return (
+      <AdminConsole
+        onExit={() => setCurrentPage('home')}
+        currentLang={lang}
+        onToggleLang={toggleLanguage}
+        isDark={theme === 'dark'}
+        onToggleTheme={toggleTheme}
+      />
     );
   }
 

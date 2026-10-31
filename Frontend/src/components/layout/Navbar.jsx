@@ -107,6 +107,15 @@ export const Navbar = ({
               {isDark ? <SunIcon className="w-5 h-5 text-[#FFD166]" /> : <MoonIcon className="w-5 h-5 text-slate-700" />}
             </button>
 
+            {/* Admin Console Entry */}
+            <button
+              onClick={() => handleNav('admin')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#FF7F50] hover:text-white bg-[#FF7F50]/10 hover:bg-[#FF7F50] border border-[#FF7F50]/30 transition-all cursor-pointer"
+              title="Knowledge Base Admin Console"
+            >
+              {currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}
+            </button>
+
             {/* Auth Controls */}
             {!isLoggedIn ? (
               <button 
@@ -198,6 +207,16 @@ export const Navbar = ({
           </div>
 
           <div className="pt-2 flex flex-col space-y-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleNav('admin');
+              }}
+              className="w-full py-2.5 rounded-xl text-sm font-bold text-[#FF7F50] border-2 border-[#FF7F50]/40 bg-[#FF7F50]/10 text-center cursor-pointer"
+            >
+              {currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ (Admin Console)' : 'Admin Knowledge Console'}
+            </button>
+
             {!isLoggedIn ? (
               <button 
                 onClick={() => {

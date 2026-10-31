@@ -108,6 +108,11 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
                   Contact Campus Team
                 </button>
               </li>
+              <li>
+                <button onClick={() => onNavigate && onNavigate('admin')} className="text-[#FF7F50] font-bold hover:underline transition-colors cursor-pointer text-left">
+                  Knowledge Base Admin ⚙️
+                </button>
+              </li>
             </ul>
           </div>
 
