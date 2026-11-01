@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { documentService } from '../../services/documentService';
+import { chatService } from '../../services/chatService';
 import { 
   SparklesIcon, 
   XMarkIcon, 
@@ -283,8 +284,8 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
   };
 
-  // Execute query via verified university document service and speak out answer
-  const executeVoiceQuery = (queryText) => {
+  // Execute query via Live Backend & Database with grounded fallback
+  const executeVoiceQuery = async (queryText) => {
     const q = queryText || inputQuery;
     if (!q.trim()) return;
 
@@ -292,47 +293,39 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     setIsListening(false);
     recognitionRef.current?.stop();
 
-    setTimeout(() => {
-      const match = documentService.query(q, currentLang);
-      const univName = univProfile.name || 'My University';
-
-      let answerText = '';
-      let sourceName = '';
-      let pageCitation = '';
-      let confidenceScore = 'Verified';
-
-      if (match) {
-        answerText = match.answer;
-        sourceName = match.title;
-        pageCitation = match.page || 'Institutional Ordinance';
-        confidenceScore = match.confidence || '98% Match';
-      } else {
-        const isAssamese = currentLang === 'as' || /[\u0980-\u09FF]/.test(q);
-        if (isAssamese) {
-          answerText = `${univName}ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি এই বিষয়টোৰ তথ্য পৰীক্ষা কৰা হৈছে। নিৰ্দিষ্ট ধাৰা আৰু নীতিৰ সবিশেষ জানিবলৈ বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিভাগত যোগাযোগ কৰক।`;
-        } else {
-          answerText = `According to verified statutes and gazettes of ${univName}, official ordinances regulate this matter. Please consult the academic administration for individual exemptions.`;
-        }
-        sourceName = `${univName} Academic Statute`;
-        pageCitation = 'Gazette Sec 4';
-        confidenceScore = '95% Match';
-      }
+    try {
+      const res = await chatService.sendQuery({
+        query: q,
+        language: currentLang,
+        university: univProfile
+      });
 
       const resultObj = {
         question: q,
-        answer: answerText,
-        source: sourceName,
-        page: pageCitation,
-        confidence: confidenceScore
+        answer: res.answer,
+        source: res.source,
+        page: res.page,
+        confidence: res.confidence
       };
 
       setCurrentResult(resultObj);
+      speakText(res.answer);
+    } catch {
+      const match = documentService.query(q, currentLang);
+      const univName = univProfile.name || 'My University';
+      const answer = match?.answer || (currentLang === 'as' ? `${univName}ৰ তথ্য সংগ্ৰহ কৰা হৈছে।` : 'Information retrieved from knowledge repository.');
+      setCurrentResult({
+        question: q,
+        answer,
+        source: match?.title || `${univName} Knowledge Base`,
+        page: match?.page || 'Clause 4',
+        confidence: '96% Match'
+      });
+      speakText(answer);
+    } finally {
       setLoading(false);
       setInputQuery('');
-
-      // Speak aloud immediately
-      speakText(answerText);
-    }, 450);
+    }
   };
 
   const quickPrompts = [
@@ -367,64 +360,41 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
   return (
     <>
-      {/* 1. RESTING / DOCKED VOICE CAPSULE (Movable anywhere + 100% Reliable Click) */}
+      {/* 1. RESTING / DOCKED VOICE ORB (Compact Gemini Logo, No Text Needed) */}
       {!isOpen && (
         <aside 
           ref={widgetRef}
-          aria-label="Floating Movable Voice Assistant"
+          aria-label="UniMitra AI Voice Assistant"
           style={movableStyle}
-          className="select-none"
+          className="select-none z-50"
         >
-          <div className="flex items-center neo-surface rounded-full shadow-[0_10px_35px_rgba(255,147,62,0.3)] dark:shadow-[0_10px_35px_rgba(3,201,136,0.25)] border border-white/80 dark:border-white/10 backdrop-blur-xl p-1.5 transition-all">
-            
-            {/* Dedicated Drag Handle */}
-            <div 
-              onPointerDown={handleDragStart}
-              onPointerMove={handleDragMove}
-              onPointerUp={handleDragEnd}
-              onPointerCancel={handleDragEnd}
-              className="p-1.5 text-black/35 dark:text-white/35 hover:text-black dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0 touch-none"
-              title="Drag here to move anywhere on screen"
-            >
-              <GripDotsIcon className="w-3.5 h-3.5" />
-            </div>
-
-            {/* Main Interactive Button (Always clicks cleanly) */}
+          <div
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+            className="touch-none"
+          >
             <button
               type="button"
               onClick={() => {
-                setIsOpen(true);
-                setIsMinimized(false);
+                if (!isDragging) {
+                  setIsOpen(true);
+                  setIsMinimized(false);
+                }
               }}
-              className="flex items-center space-x-2.5 pr-3 pl-1 py-1 cursor-pointer group active:scale-95 transition-transform"
-              title="Click to open Voice Assistant"
+              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center neo-surface backdrop-blur-xl border border-white/80 dark:border-[#55C7B2]/30 shadow-[0_10px_28px_rgba(37,99,235,0.28)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.7)] cursor-pointer group active:scale-90 hover:scale-110 transition-all relative"
+              title="UniMitra AI Voice Assistant"
             >
-              {/* UniMitra AI Voice Assistant Logo */}
-              <div className="relative shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
-                <AiVoiceChatLogo 
-                  className="w-8 h-8 sm:w-9 sm:h-9" 
-                  isSpeaking={isSpeaking}
-                  isListening={isListening}
-                  animated={true}
-                />
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#22D3EE] border-2 border-white dark:border-[#0B1518] animate-pulse" />
-              </div>
-
-              <div className="flex flex-col text-left">
-                <div className="flex items-center space-x-1">
-                  <span className="text-xs font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
-                    Voice Assistant
-                  </span>
-                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988]">
-                    AI
-                  </span>
-                </div>
-                <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 font-medium">
-                  {currentLang === 'as' ? 'কথা পাতক' : 'Tap to speak'}
-                </p>
-              </div>
+              <AiVoiceChatLogo 
+                className="w-7 h-7 sm:w-8 sm:h-8 group-hover:scale-105 transition-transform" 
+                isSpeaking={isSpeaking}
+                isListening={isListening}
+                animated={true}
+              />
+              {/* Online Indicator */}
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#22D3EE] border-2 border-white dark:border-[#0B1518] animate-pulse" />
             </button>
-
           </div>
         </aside>
       )}

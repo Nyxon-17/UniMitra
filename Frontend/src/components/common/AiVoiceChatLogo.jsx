@@ -1,17 +1,15 @@
 import React, { useId } from 'react';
 
 /**
- * UniMitra AI Voice Assistant Logo
+ * UniMitra Gemini-Inspired AI Assistant Logo
  * 
- * Clean, minimal, modern AI voice assistant icon inspired by ChatGPT's 
- * recognizable visual identity with an original UniMitra design.
- * 
- * Theme adaptation:
- * - Light Mode: Central microphone is crisp Black (#000000)
- * - Dark Mode: Central microphone is pure White (#FFFFFF)
- * - Gradient Outer Ring: Purple (#8B5CF6) to Cyan (#22D3EE)
- * - Waveform Audio Bars: Balanced Cyan & Purple
- * - Transparent background
+ * Styled after Google Gemini's iconic four-pointed organic starburst / sparkle.
+ * Features:
+ * - Fluid four-pointed primary sparkle star with authentic concave hyperbolic curves
+ * - Signature secondary companion sparkle in the top-right quadrant
+ * - Multi-stop Google Gemini gradient (Royal Blue #1A73E8 -> Indigo #4F46E5 -> Purple #9333EA -> Pink #EC4899 -> Cyan #22D3EE)
+ * - Dynamic light/dark theme adaptation with subtle neon glow in dark mode
+ * - Hardware-accelerated animations for idle shimmer, isSpeaking, and isListening states
  */
 export const AiVoiceChatLogo = ({
   className = "w-6 h-6",
@@ -19,20 +17,15 @@ export const AiVoiceChatLogo = ({
   isSpeaking = false,
   isListening = false,
   animated = true,
-  micColor = "auto", // 'auto' (black in light, white in dark), or explicit hex/color
-  title = "UniMitra AI Voice Assistant",
+  title = "UniMitra AI Assistant",
   ...props
 }) => {
   const uniqueId = useId().replace(/:/g, '_');
-  const ringGradId = `ring-grad-${uniqueId}`;
-  const barGradLeftId = `bar-grad-left-${uniqueId}`;
-  const barGradRightId = `bar-grad-right-${uniqueId}`;
-  const glowFilterId = `subtle-glow-${uniqueId}`;
+  const geminiGradId = `gemini-grad-${uniqueId}`;
+  const companionGradId = `companion-grad-${uniqueId}`;
+  const glowFilterId = `gemini-glow-${uniqueId}`;
 
   const styleObj = size ? { width: size, height: size } : {};
-
-  // Custom explicit override if passed
-  const isCustomColor = micColor && micColor !== 'auto';
 
   return (
     <svg
@@ -47,285 +40,130 @@ export const AiVoiceChatLogo = ({
     >
       <title>{title}</title>
       <defs>
-        {/* Main Purple to Cyan Gradient */}
-        <linearGradient id={ringGradId} x1="10%" y1="10%" x2="90%" y2="90%">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="50%" stopColor="#6366F1" />
+        {/* Authentic Multi-tone Google Gemini Gradient */}
+        <linearGradient id={geminiGradId} x1="10%" y1="0%" x2="90%" y2="100%">
+          <stop offset="0%" stopColor="#1E40AF" />
+          <stop offset="22%" stopColor="#2563EB" />
+          <stop offset="48%" stopColor="#7C3AED" />
+          <stop offset="74%" stopColor="#C026D3" />
+          <stop offset="92%" stopColor="#EC4899" />
+          <stop offset="100%" stopColor="#06B6D4" />
+        </linearGradient>
+
+        {/* Top-Right Companion Sparkle Gradient */}
+        <linearGradient id={companionGradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#60A5FA" />
+          <stop offset="60%" stopColor="#A855F7" />
           <stop offset="100%" stopColor="#22D3EE" />
         </linearGradient>
 
-        {/* Waveform Left Gradient */}
-        <linearGradient id={barGradLeftId} x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#22D3EE" />
-        </linearGradient>
-
-        {/* Waveform Right Gradient */}
-        <linearGradient id={barGradRightId} x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#22D3EE" />
-          <stop offset="100%" stopColor="#8B5CF6" />
-        </linearGradient>
-
-        {/* Subtle Glow Filter */}
-        <filter id={glowFilterId} x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation={isListening ? "4" : "2"} result="blur" />
+        {/* Ambient Glow Filter */}
+        <filter id={glowFilterId} x="-35%" y="-35%" width="170%" height="170%">
+          <feGaussianBlur stdDeviation={isListening ? "5" : "2.5"} result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
 
-        {/* Smooth Hardware-Accelerated Scoped Animations & Dynamic Theme Styles */}
+        {/* Scoped CSS Keyframe Animations */}
         <style>{`
-          @keyframes unimitra-ring-rotate-${uniqueId} {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+          @keyframes gemini-pulse-${uniqueId} {
+            0%, 100% { transform: scale(1); opacity: 0.96; }
+            50% { transform: scale(1.05); opacity: 1; }
           }
-          @keyframes unimitra-ring-pulse-${uniqueId} {
-            0%, 100% { transform: scale(1); opacity: 0.92; }
-            50% { transform: scale(1.03); opacity: 1; }
+          @keyframes gemini-speaking-${uniqueId} {
+            0%, 100% { transform: scale(0.96) rotate(-2deg); filter: brightness(1); }
+            50% { transform: scale(1.08) rotate(3deg); filter: brightness(1.25); }
           }
-          @keyframes unimitra-glow-listening-${uniqueId} {
-            0%, 100% { opacity: 0.45; transform: scale(1); }
-            50% { opacity: 0.95; transform: scale(1.08); }
+          @keyframes gemini-listening-halo-${uniqueId} {
+            0% { transform: scale(0.85); opacity: 0.8; }
+            50% { transform: scale(1.22); opacity: 0.2; }
+            100% { transform: scale(0.85); opacity: 0.8; }
           }
-          @keyframes unimitra-wave-talk-1-${uniqueId} {
-            0%, 100% { transform: scaleY(0.4); }
-            50% { transform: scaleY(1.35); }
-          }
-          @keyframes unimitra-wave-talk-2-${uniqueId} {
-            0%, 100% { transform: scaleY(1.3); }
-            50% { transform: scaleY(0.35); }
-          }
-          @keyframes unimitra-wave-talk-3-${uniqueId} {
-            0%, 100% { transform: scaleY(0.6); }
-            50% { transform: scaleY(1.45); }
+          @keyframes gemini-twinkle-${uniqueId} {
+            0%, 100% { opacity: 0.7; transform: scale(0.85); }
+            50% { opacity: 1; transform: scale(1.15); }
           }
 
-          .unimitra-ring-group-${uniqueId} {
+          .gemini-main-star-${uniqueId} {
+            transform-origin: 48px 52px;
+            ${isSpeaking 
+              ? `animation: gemini-speaking-${uniqueId} 0.8s ease-in-out infinite alternate;` 
+              : animated 
+              ? `animation: gemini-pulse-${uniqueId} 3.5s ease-in-out infinite;` 
+              : ''}
+          }
+          .gemini-companion-star-${uniqueId} {
+            transform-origin: 78px 22px;
+            ${animated ? `animation: gemini-twinkle-${uniqueId} 2.2s ease-in-out infinite;` : ''}
+          }
+          .gemini-listening-ring-${uniqueId} {
             transform-origin: 50px 50px;
-            ${animated ? `animation: unimitra-ring-pulse-${uniqueId} 4s ease-in-out infinite;` : ''}
+            animation: gemini-listening-halo-${uniqueId} 1.6s ease-out infinite;
           }
-          .unimitra-outer-circle-${uniqueId} {
-            transform-origin: 50px 50px;
-            ${animated ? `animation: unimitra-ring-rotate-${uniqueId} 16s linear infinite;` : ''}
-          }
-          .unimitra-listening-halo-${uniqueId} {
-            transform-origin: 50px 50px;
-            animation: unimitra-glow-listening-${uniqueId} 1.8s ease-in-out infinite;
-          }
-          .unimitra-wave-bar-${uniqueId} {
-            transform-box: fill-box;
-            transform-origin: center;
-            transition: transform 0.25s ease;
-          }
-          .unimitra-wave-speaking-1-${uniqueId} {
-            animation: unimitra-wave-talk-1-${uniqueId} 0.65s ease-in-out infinite alternate;
-          }
-          .unimitra-wave-speaking-2-${uniqueId} {
-            animation: unimitra-wave-talk-2-${uniqueId} 0.5s ease-in-out infinite alternate;
-          }
-          .unimitra-wave-speaking-3-${uniqueId} {
-            animation: unimitra-wave-talk-3-${uniqueId} 0.75s ease-in-out infinite alternate;
-          }
-
-          /* Microphone Color: Black in Light Mode, White in Dark Mode */
-          .unimitra-mic-fill-${uniqueId} {
-            fill: ${isCustomColor ? micColor : '#000000'};
-            transition: fill 0.25s ease;
-          }
-          .unimitra-mic-stroke-${uniqueId} {
-            stroke: ${isCustomColor ? micColor : '#000000'};
-            transition: stroke 0.25s ease;
-          }
-          .unimitra-mic-grille-${uniqueId} {
-            stroke: ${isCustomColor ? micColor : '#8B5CF6'};
-            opacity: 0.8;
-            transition: stroke 0.25s ease;
-          }
-
-          ${!isCustomColor ? `
-          :root.dark .unimitra-mic-fill-${uniqueId},
-          .dark .unimitra-mic-fill-${uniqueId},
-          [data-theme="dark"] .unimitra-mic-fill-${uniqueId} {
-            fill: #FFFFFF !important;
-          }
-
-          :root.dark .unimitra-mic-stroke-${uniqueId},
-          .dark .unimitra-mic-stroke-${uniqueId},
-          [data-theme="dark"] .unimitra-mic-stroke-${uniqueId} {
-            stroke: #FFFFFF !important;
-          }
-
-          :root.dark .unimitra-mic-grille-${uniqueId},
-          .dark .unimitra-mic-grille-${uniqueId},
-          [data-theme="dark"] .unimitra-mic-grille-${uniqueId} {
-            stroke: #22D3EE !important;
-            opacity: 0.9;
-          }
-          ` : ''}
         `}</style>
       </defs>
 
-      {/* Transparent Background - No opaque backdrop */}
-
-      {/* 1. SOFT GLOW WHEN LISTENING */}
+      {/* 1. LISTENING HALO RIPPLE */}
       {isListening && (
         <circle
           cx="50"
           cy="50"
-          r="46"
-          stroke="url(#22D3EE)"
-          strokeWidth="3.5"
+          r="42"
+          stroke="url(#companionGradId)"
+          strokeWidth="3"
           fill="none"
-          opacity="0.8"
-          className={`unimitra-listening-halo-${uniqueId}`}
+          className={`gemini-listening-ring-${uniqueId}`}
           filter={`url(#${glowFilterId})`}
         />
       )}
 
-      {/* 2. CIRCULAR GRADIENT RING */}
-      <g className={`unimitra-ring-group-${uniqueId}`}>
-        {/* Soft Ambient Shadow Aura behind the ring */}
+      {/* 2. ATMOSPHERIC BACKLIGHT GLOW */}
+      <path
+        d="M 48 8 C 48 30, 68 50, 90 50 C 68 50, 48 70, 48 92 C 48 70, 28 50, 6 50 C 28 50, 48 30, 48 8 Z"
+        fill={`url(#${geminiGradId})`}
+        opacity="0.35"
+        filter={`url(#${glowFilterId})`}
+      />
+
+      {/* 3. PRIMARY GOOGLE GEMINI 4-POINT STARBURST */}
+      <g className={`gemini-main-star-${uniqueId}`}>
+        <path
+          d="M 48 8 C 48 30, 68 50, 90 50 C 68 50, 48 70, 48 92 C 48 70, 28 50, 6 50 C 28 50, 48 30, 48 8 Z"
+          fill={`url(#${geminiGradId})`}
+        />
+
+        {/* Inner Luminous Core Flare */}
         <circle
-          cx="50"
+          cx="48"
           cy="50"
-          r="43"
-          stroke={`url(#${ringGradId})`}
-          strokeWidth="2.5"
-          strokeOpacity="0.4"
+          r="9"
+          fill="#FFFFFF"
+          opacity="0.82"
+          className="dark:opacity-95"
           filter={`url(#${glowFilterId})`}
         />
-
-        {/* Primary Gradient Ring */}
         <circle
-          cx="50"
+          cx="48"
           cy="50"
-          r="43"
-          stroke={`url(#${ringGradId})`}
-          strokeWidth="2.75"
-          strokeLinecap="round"
-          strokeDasharray="210 60"
-          className={`unimitra-outer-circle-${uniqueId}`}
-        />
-
-        {/* Subtle Secondary Inner Accent Dots on Ring Orbit */}
-        <circle cx="50" cy="7" r="1.75" fill="#22D3EE" opacity="0.9" />
-        <circle cx="50" cy="93" r="1.75" fill="#8B5CF6" opacity="0.9" />
-      </g>
-
-      {/* 3. SYMMETRICAL AUDIO WAVEFORM BARS */}
-      {/* Left Audio Waveform Bars (Cyan to Purple) */}
-      <g>
-        {/* Bar L3 (Outer Left) */}
-        <rect
-          x="19"
-          y="44"
-          width="2.75"
-          height="12"
-          rx="1.375"
-          fill="#8B5CF6"
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-3-${uniqueId}` : ''}`}
-        />
-        {/* Bar L2 (Middle Left) */}
-        <rect
-          x="25.5"
-          y="38"
-          width="2.75"
-          height="24"
-          rx="1.375"
-          fill={`url(#${barGradLeftId})`}
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-2-${uniqueId}` : ''}`}
-        />
-        {/* Bar L1 (Inner Left) */}
-        <rect
-          x="32"
-          y="42"
-          width="2.75"
-          height="16"
-          rx="1.375"
-          fill="#22D3EE"
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-1-${uniqueId}` : ''}`}
+          r="4.5"
+          fill="#FFFFFF"
         />
       </g>
 
-      {/* Right Audio Waveform Bars (Purple to Cyan - Perfectly Symmetrical) */}
-      <g>
-        {/* Bar R1 (Inner Right) */}
-        <rect
-          x="65.25"
-          y="42"
-          width="2.75"
-          height="16"
-          rx="1.375"
-          fill="#22D3EE"
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-1-${uniqueId}` : ''}`}
-        />
-        {/* Bar R2 (Middle Right) */}
-        <rect
-          x="71.75"
-          y="38"
-          width="2.75"
-          height="24"
-          rx="1.375"
-          fill={`url(#${barGradRightId})`}
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-2-${uniqueId}` : ''}`}
-        />
-        {/* Bar R3 (Outer Right) */}
-        <rect
-          x="78.25"
-          y="44"
-          width="2.75"
-          height="12"
-          rx="1.375"
-          fill="#8B5CF6"
-          className={`unimitra-wave-bar-${uniqueId} ${isSpeaking ? `unimitra-wave-speaking-3-${uniqueId}` : ''}`}
-        />
-      </g>
-
-      {/* 4. CENTER MINIMAL MICROPHONE SYMBOL (Black in Light Mode, White in Dark Mode) */}
-      <g>
-        {/* Microphone Capsule */}
-        <rect
-          x="44.25"
-          y="28"
-          width="11.5"
-          height="22"
-          rx="5.75"
-          className={`unimitra-mic-fill-${uniqueId} fill-black dark:fill-white`}
-        />
-
-        {/* Minimal Microphone Sound Grille Line */}
+      {/* 4. COMPANION TOP-RIGHT TWINKLE STAR */}
+      <g className={`gemini-companion-star-${uniqueId}`}>
         <path
-          d="M 46 36.5 L 54 36.5"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          className={`unimitra-mic-grille-${uniqueId}`}
+          d="M 78 12 C 78 17.5, 82.5 22, 88 22 C 82.5 22, 78 26.5, 78 32 C 78 26.5, 73.5 22, 68 22 C 73.5 22, 78 17.5, 78 12 Z"
+          fill={`url(#${companionGradId})`}
         />
-
-        {/* Microphone Cradle (Arc) */}
-        <path
-          d="M 38.5 44 C 38.5 54.5, 61.5 54.5, 61.5 44"
-          strokeWidth="2.75"
-          strokeLinecap="round"
-          fill="none"
-          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
-        />
-
-        {/* Microphone Vertical Stem */}
-        <path
-          d="M 50 54 L 50 64"
-          strokeWidth="2.75"
-          strokeLinecap="round"
-          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
-        />
-
-        {/* Microphone Base */}
-        <path
-          d="M 42 64 L 58 64"
-          strokeWidth="2.75"
-          strokeLinecap="round"
-          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
+        <circle
+          cx="78"
+          cy="22"
+          r="2"
+          fill="#FFFFFF"
+          opacity="0.9"
         />
       </g>
     </svg>

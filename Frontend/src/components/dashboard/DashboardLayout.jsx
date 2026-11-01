@@ -24,7 +24,7 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className={`relative min-h-screen bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] flex flex-col transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
+    <div className={`relative ${activeTab === 'assistant' ? 'h-screen max-h-screen md:h-[100dvh] md:max-h-[100dvh] overflow-hidden' : 'min-h-screen'} bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] flex flex-col transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
       {/* Editorial + Aurora Atmospheric Ambient Background */}
       <AuroraBackground />
 
@@ -41,7 +41,7 @@ export const DashboardLayout = ({
       />
 
       {/* Main Content Area (offset by sidebar on desktop) */}
-      <div className={`lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10 ${activeTab === 'assistant' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : ''}`}>
+      <div className={`lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10 ${activeTab === 'assistant' ? 'h-full max-h-full overflow-hidden' : ''}`}>
         
         {/* Top Dashboard Navbar */}
         <DashboardNavbar

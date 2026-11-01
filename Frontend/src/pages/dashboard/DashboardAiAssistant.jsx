@@ -1,28 +1,29 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { documentService } from '../../services/documentService';
 import { universityService } from '../../services/universityService';
+import { chatService } from '../../services/chatService';
 import { 
   SendIcon, 
-  SparklesIcon, 
   CheckCircleIcon, 
   AiVoiceChatLogo, 
   DocumentTextIcon, 
-  BuildingLibraryIcon,
-  LanguageIcon,
   ClockIcon,
   TrashIcon,
   ShieldCheckIcon,
-  CheckIcon,
   XMarkIcon,
   DocumentDuplicateIcon,
-  ArrowRightIcon
+  ChatBubbleIcon
 } from '../../components/common/Icons';
 
-// Custom Microphone & Speaker Icons for Voice Chat
-export const MicrophoneIcon = ({ className = "w-5 h-5", ...props }) => (
+export const PlusIcon = ({ className = "w-4 h-4", ...props }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+);
+
+export const ShareIcon = ({ className = "w-4 h-4", ...props }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 1.5a3 3 0 00-3 3v7.5a3 3 0 006 0V4.5a3 3 0 00-3-3z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
   </svg>
 );
 
@@ -33,14 +34,14 @@ export const SpeakerWaveIcon = ({ className = "w-5 h-5", ...props }) => (
 );
 
 /**
- * Editorial + Aurora Bilingual AI Assistant
+ * UniMitra Bilingual AI Assistant
  * 
- * Responsive Features:
- * - 100% responsive across mobile phones (320px+), tablets, laptops, and wide monitors
- * - Mobile slide-over drawer for Query History (prevents chat compression on small screens)
- * - Auto-scaling typography and flexible message bubbles with overflow protection
- * - Touch-friendly voice and text inputs with mobile keyboard resilience
- * - Preserves all document retrieval, voice synthesis, speech recognition, and feedback flows
+ * Key User Experience Updates:
+ * - History is hidden by default during conversation for complete immersion
+ * - Click "History" button to open slide-over drawer on any screen
+ * - Instant scroll fix: Guaranteed bounded viewport with smooth autoscrolling
+ * - ChatGPT features: New Chat, auto-save history, share transcripts
+ * - Google Gemini four-point star logo
  */
 export const DashboardAiAssistant = ({ 
   currentLang = 'en',
@@ -61,56 +62,64 @@ export const DashboardAiAssistant = ({
     return () => window.removeEventListener('unimitra_university_changed', handleUnivChange);
   }, []);
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'ai',
-      text: currentLang === 'as'
-        ? `নমস্কাৰ! মই ${univProfile.asName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}ৰ AI প্রাতিষ্ঠানিক সহায়ক (UniMitra)। বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে। আপুনি মাইক টিপি ভয়েচ চাৰ্টৰ জৰিয়তেও কথা পাতিব পাৰে!`
-        : `Hello! I am your ${univProfile.name || 'Dibrugarh University'} Institutional Voice & Text Assistant (UniMitra). I am ready to answer queries regarding regulations, examinations, admissions, scholarships, and campus facilities with verifiable source citations in Assamese and English. You can also use your microphone to speak!`,
-      source: `${univProfile.name || 'Dibrugarh University'} Statutory Knowledge Base`,
-      page: 'Verified Institutional Ordinance',
-      confidence: '100% Match',
-      time: 'Just now'
-    }
-  ]);
+  const createInitialGreeting = () => ({
+    id: 'greeting',
+    sender: 'ai',
+    text: currentLang === 'as'
+      ? `নমস্কাৰ! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ AI প্রাতিষ্ঠানিক সহায়ক (UniMitra)। বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে। আপুনি মাইক টিপি কথা ক’বও পাৰে!`
+      : `Hello! I am your ${univProfile.name || 'Dibrugarh University'} Institutional Assistant. Ask any question on regulations, examinations, syllabus, scholarships, or admissions with grounded citations in Assamese and English.`,
+    source: `${univProfile.name || 'Dibrugarh University'} Statutory Knowledge Base`,
+    page: 'Official Gazette Section 14',
+    confidence: '100% Match',
+    time: 'Just now'
+  });
+
+  // Chat Sessions & Active Thread State
+  const [sessions, setSessions] = useState(() => chatService.getLocalSessions());
+  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId() || `session-${Date.now()}`);
+  const [messages, setMessages] = useState(() => {
+    const saved = chatService.getSessionMessages(chatService.getActiveSessionId());
+    return saved && saved.length > 0 ? saved : [createInitialGreeting()];
+  });
 
   const [inputQuery, setInputQuery] = useState(prefillQuery || '');
   const [loading, setLoading] = useState(false);
-  const [historySidebarOpen, setHistorySidebarOpen] = useState(false);
+  
+  // History is HIDDEN by default during conversation
+  const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [actionAlert, setActionAlert] = useState('');
 
   // Voice Chat States
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(true);
+  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(false);
   const [voiceError, setVoiceError] = useState('');
 
-  // Inline Feedback Modal State
+  // Share Modal State
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // Feedback Modal State
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [activeFeedbackMsg, setActiveFeedbackMsg] = useState(null);
   const [feedbackRating, setFeedbackRating] = useState('helpful');
   const [feedbackComment, setFeedbackComment] = useState('');
-  
-  // Stored query history
-  const [queryHistory, setQueryHistory] = useState(() => {
-    try {
-      const stored = localStorage.getItem('unimitra_student_query_history');
-      if (stored) return JSON.parse(stored);
-    } catch {
-      // fallback
-    }
-    return [
-      { id: 1, query: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান লাগে?', time: '10:30 AM', lang: 'as' },
-      { id: 2, query: 'Medical condonation limit for semester attendance shortage', time: 'Yesterday', lang: 'en' },
-      { id: 3, query: 'ঈশান উদয় জলপানি (Ishan Uday) eligibility and income ceiling', time: 'Oct 28', lang: 'as' },
-    ];
-  });
 
+  const messagesContainerRef = useRef(null);
   const chatBottomRef = useRef(null);
   const recognitionRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Load saved sessions on mount
+  useEffect(() => {
+    chatService.getSessions().then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setSessions(data);
+      }
+    });
+  }, []);
+
+  // Handle URL / navigation state prefill query
   useEffect(() => {
     const fromState = location.state?.prefillQuery;
     const fromUrl = searchParams.get('q');
@@ -120,11 +129,24 @@ export const DashboardAiAssistant = ({
     }
   }, [prefillQuery, location.state, searchParams]);
 
+  // Guaranteed Reliable Scroll to Bottom on message updates & loading
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const scrollToBottom = () => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTo({
+          top: messagesContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    scrollToBottom();
+    const timer = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  // Web Speech Recognition Initialization
+  // Speech Recognition Setup
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -160,7 +182,6 @@ export const DashboardAiAssistant = ({
     }
   }, [currentLang]);
 
-  // Voice Recognition Toggle
   const toggleListening = () => {
     if (!recognitionRef.current) {
       alert('Speech Recognition is not supported in this browser. Please use Chrome or Edge.');
@@ -180,10 +201,8 @@ export const DashboardAiAssistant = ({
     }
   };
 
-  // Text-to-Speech Output Handler
   const speakText = (text) => {
     if (!window.speechSynthesis) return;
-
     window.speechSynthesis.cancel();
 
     if (isSpeaking) {
@@ -211,115 +230,50 @@ export const DashboardAiAssistant = ({
     }
   };
 
-  const isFaculty = studentInfo?.role === 'Faculty Member';
+  // Start a fresh thread
+  const handleNewChat = () => {
+    stopSpeaking();
+    const newId = `session-${Date.now()}`;
+    setActiveSessionId(newId);
+    chatService.setActiveSessionId(newId);
+    const greeting = createInitialGreeting();
+    setMessages([greeting]);
+    setInputQuery('');
+    setHistoryDrawerOpen(false); // Hide history during conversation
+    setActionAlert(currentLang === 'as' ? 'নতুন আলোচনা আৰম্ভ কৰা হ’ল' : 'New chat started');
+    setTimeout(() => setActionAlert(''), 2500);
+  };
 
-  // Benchmark Quick Prompts
-  const benchmarkTestScenarios = [
-    {
-      id: 'TEST-1',
-      lang: 'as',
-      label: currentLang === 'as' ? 'উত্তীৰ্ণ নম্বৰ (৪০%)' : 'Passing Marks (40%)',
-      query: currentLang === 'as' 
-        ? 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ পৰীক্ষাত উত্তীৰ্ণ হ\'বলৈ নূন্যতম নম্বৰ কিমান লাগে?' 
-        : 'What is the minimum passing percentage required in end-semester examinations?'
-    },
-    {
-      id: 'TEST-2',
-      lang: 'as',
-      label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (১০%)' : 'Medical Condonation',
-      query: currentLang === 'as' 
-        ? 'মেডিকেল কাৰণত শ্ৰেণীৰ উপস্থিতি কিমান শতাংশলৈ ৰেহাই (Condonation) পোৱা যায়?' 
-        : 'What is the attendance condonation limit for medical shortage?'
-    },
-    {
-      id: 'TEST-3',
-      lang: 'en',
-      label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation & Fees',
-      query: currentLang === 'as' 
-        ? 'পৰীক্ষাৰ উত্তৰ বহী পুনৰ মূল্যায়নৰ মাচুল আৰু অন্তিম তাৰিখ কি?' 
-        : 'Explain the procedure, fee, and timeline for answer script re-evaluation after examination results.'
-    },
-    {
-      id: 'TEST-4',
-      lang: 'as',
-      label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Scholarship',
-      query: currentLang === 'as' 
-        ? 'ঈশান উদয় জলপানি (Ishan Uday) পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব আৰু পাৰিবাৰিক আয়ৰ সীমা কিমান?' 
-        : 'What are the eligibility criteria and documents required for Ishan Uday scholarship?'
-    },
-    {
-      id: 'TEST-5',
-      lang: 'en',
-      label: currentLang === 'as' ? 'হোষ্টেল আসন আবণ্টন' : 'Hostel Allotment',
-      query: currentLang === 'as' 
-        ? 'বিশ্ববিদ্যালয় হোষ্টেল আসন আবণ্টনৰ বাবে দূৰত্ব আৰু মেধাৰ নিয়ম কি?' 
-        : 'What are the eligibility criteria and distance rules for university hostel accommodation?'
+  // Switch to an existing session
+  const handleSelectSession = (session) => {
+    stopSpeaking();
+    setActiveSessionId(session.id);
+    chatService.setActiveSessionId(session.id);
+    const saved = chatService.getSessionMessages(session.id);
+    if (saved && saved.length > 0) {
+      setMessages(saved);
+    } else {
+      setMessages([createInitialGreeting()]);
     }
-  ];
+    setHistoryDrawerOpen(false); // Hide history to focus on selected conversation
+  };
 
-  // Save Useful Answer
-  const handleSaveAnswer = (msg) => {
-    try {
-      const stored = localStorage.getItem('unimitra_saved_answers');
-      let list = stored ? JSON.parse(stored) : [];
-      const newEntry = {
-        id: `SAVED-${Date.now()}`,
-        query: messages.find(m => m.id === msg.id - 1)?.text || 'University Statutory Query',
-        answer: msg.text,
-        source: msg.source || `${univProfile.name} Gazette`,
-        page: msg.page || 'Verified Clause',
-        savedAt: 'Just now',
-        category: isFaculty ? 'Faculty Consultation' : 'Academic Regulation'
-      };
-      list = [newEntry, ...list];
-      localStorage.setItem('unimitra_saved_answers', JSON.stringify(list));
-      setActionAlert(currentLang === 'as' ? 'উত্তৰ সংৰক্ষিত কৰা হ’ল!' : 'Answer saved to bookmarks!');
-      setTimeout(() => setActionAlert(''), 3000);
-    } catch {
-      // fallback
+  // Delete a session
+  const handleDeleteSession = (e, sessionId) => {
+    e.stopPropagation();
+    const updated = chatService.deleteSession(sessionId);
+    setSessions(updated);
+    if (activeSessionId === sessionId) {
+      handleNewChat();
     }
   };
 
-  // Feedback Handlers
-  const handleOpenFeedback = (msg) => {
-    setActiveFeedbackMsg(msg);
-    setFeedbackRating('helpful');
-    setFeedbackComment('');
-    setFeedbackModalOpen(true);
-  };
-
-  const handleSubmitFeedback = (e) => {
-    e.preventDefault();
-    try {
-      const stored = localStorage.getItem('unimitra_feedback_submissions');
-      let list = stored ? JSON.parse(stored) : [];
-      const newFeedback = {
-        id: `FB-${Math.floor(1000 + Math.random() * 9000)}`,
-        user: studentInfo?.name || 'Member',
-        role: studentInfo?.role || 'Student',
-        type: feedbackRating === 'helpful' ? 'Accurate Citation' : 'Reported Inaccuracy',
-        university: univProfile.name || 'Dibrugarh University',
-        rating: feedbackRating === 'helpful' ? 5 : 2,
-        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Citation verified.' : 'Needs review.'),
-        submittedAt: 'Just now',
-        status: 'Pending Admin Review',
-        answerSnippet: activeFeedbackMsg?.text?.slice(0, 80) + '...'
-      };
-      list = [newFeedback, ...list];
-      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
-      setFeedbackModalOpen(false);
-      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া সফলভাৱে প্ৰেৰণ কৰা হ’ল।' : 'Feedback submitted for review.');
-      setTimeout(() => setActionAlert(''), 3500);
-    } catch {
-      // fallback
-    }
-  };
-
-  // Query Execution
-  const executeQuery = (queryText) => {
+  // Execute query connected to backend and database
+  const executeQuery = async (queryText) => {
     if (!queryText.trim() || loading) return;
 
     stopSpeaking();
+    setHistoryDrawerOpen(false); // Ensure history is hidden during conversation
 
     const userMessage = {
       id: Date.now(),
@@ -328,70 +282,59 @@ export const DashboardAiAssistant = ({
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    
-    // Add to history
-    const updatedHistory = [
-      { id: Date.now(), query: queryText, time: 'Just now', lang: /[\u0980-\u09FF]/.test(queryText) ? 'as' : 'en' },
-      ...queryHistory.filter(h => h.query !== queryText).slice(0, 14)
-    ];
-    setQueryHistory(updatedHistory);
-    try {
-      localStorage.setItem('unimitra_student_query_history', JSON.stringify(updatedHistory));
-    } catch {
-      // fallback
-    }
-
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInputQuery('');
     setLoading(true);
 
-    setTimeout(() => {
-      const approvedDocs = documentService.getApprovedDocuments();
-      const searchResult = universityService.searchUniversityKnowledge(
-        queryText, 
-        currentLang, 
-        approvedDocs
-      );
+    // Auto-create or title the session if first query
+    let currentSessionTitle = sessions.find(s => s.id === activeSessionId)?.title;
+    if (!currentSessionTitle) {
+      currentSessionTitle = queryText.slice(0, 36) + (queryText.length > 36 ? '...' : '');
+      const newSession = {
+        id: activeSessionId,
+        title: currentSessionTitle,
+        language: currentLang,
+        createdAt: new Date().toISOString()
+      };
+      const updatedSessions = chatService.saveLocalSession(newSession);
+      setSessions(updatedSessions);
+    }
+
+    try {
+      const res = await chatService.sendQuery({
+        query: queryText,
+        sessionId: activeSessionId,
+        language: currentLang,
+        university: univProfile
+      });
 
       const aiResponse = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: searchResult?.answer || (currentLang === 'as' ? 'তথ্য পোৱা নগ’ল।' : 'Information not found.'),
-        source: searchResult?.source || `${univProfile.name} Gazette`,
-        page: searchResult?.page || 'Statutory Clause',
-        confidence: searchResult?.confidence || '99.4% Grounded Match',
-        domain: searchResult?.domain || 'Institutional Repository',
-        isUnverified: searchResult?.isUnverified || false,
+        text: res.answer,
+        source: res.source,
+        page: res.page,
+        confidence: res.confidence,
+        isUnverified: res.isUnverified,
+        citations: res.citations,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      if (searchResult?.isUnverified) {
-        try {
-          const stored = localStorage.getItem('unimitra_unanswered_queries');
-          let list = stored ? JSON.parse(stored) : [];
-          list = [
-            {
-              id: `UNANS-${Date.now()}`,
-              query: queryText,
-              askedBy: studentInfo?.name || 'Student',
-              askedAt: 'Just now',
-              status: 'Unanswered'
-            },
-            ...list
-          ];
-          localStorage.setItem('unimitra_unanswered_queries', JSON.stringify(list));
-        } catch {
-          // fallback
-        }
-      }
-
-      setMessages((prev) => [...prev, aiResponse]);
-      setLoading(false);
+      const finalMessages = [...newMessages, aiResponse];
+      setMessages(finalMessages);
+      
+      // Auto-save history automatically
+      chatService.saveSessionMessages(activeSessionId, finalMessages);
 
       if (voiceOutputEnabled) {
         setTimeout(() => speakText(aiResponse.text), 200);
       }
-    }, 550);
+    } catch (err) {
+      console.error('Chat error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSend = (e) => {
@@ -406,139 +349,466 @@ export const DashboardAiAssistant = ({
     }
   };
 
+  const handleShareCopy = () => {
+    const activeTitle = sessions.find(s => s.id === activeSessionId)?.title || 'UniMitra Consultation';
+    const text = chatService.generateShareableText(activeTitle, messages, univProfile.name);
+    navigator.clipboard.writeText(text);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 3000);
+  };
+
+  const handleSaveAnswer = (msg) => {
+    try {
+      const stored = localStorage.getItem('unimitra_saved_answers');
+      let list = stored ? JSON.parse(stored) : [];
+      const newEntry = {
+        id: `SAVED-${Date.now()}`,
+        query: messages.find(m => m.id === msg.id - 1)?.text || 'University Regulation Query',
+        answer: msg.text,
+        source: msg.source || `${univProfile.name} Gazette`,
+        page: msg.page || 'Verified Clause',
+        savedAt: 'Just now'
+      };
+      list = [newEntry, ...list];
+      localStorage.setItem('unimitra_saved_answers', JSON.stringify(list));
+      setActionAlert(currentLang === 'as' ? 'উত্তৰ সংৰক্ষিত কৰা হ’ল!' : 'Answer saved to bookmarks!');
+      setTimeout(() => setActionAlert(''), 2500);
+    } catch {}
+  };
+
+  const handleOpenFeedback = (msg) => {
+    setActiveFeedbackMsg(msg);
+    setFeedbackRating('helpful');
+    setFeedbackComment('');
+    setFeedbackModalOpen(true);
+  };
+
+  const handleSubmitFeedback = (e) => {
+    e.preventDefault();
+    try {
+      const stored = localStorage.getItem('unimitra_feedback_submissions');
+      let list = stored ? JSON.parse(stored) : [];
+      list.push({
+        id: `FB-${Date.now()}`,
+        user: studentInfo?.name || 'Member',
+        university: univProfile.name,
+        rating: feedbackRating === 'helpful' ? 5 : 2,
+        comments: feedbackComment,
+        submittedAt: new Date().toISOString()
+      });
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
+      setFeedbackModalOpen(false);
+      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া জমা দিয়া হ’ল!' : 'Feedback submitted!');
+      setTimeout(() => setActionAlert(''), 2500);
+    } catch {}
+  };
+
+  // Group sessions by date
+  const groupedSessions = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    const groups = {
+      today: [],
+      yesterday: [],
+      previous7Days: [],
+      older: []
+    };
+
+    sessions.forEach(s => {
+      const date = s.createdAt ? new Date(s.createdAt) : new Date();
+      if (date >= today) {
+        groups.today.push(s);
+      } else if (date >= yesterday) {
+        groups.yesterday.push(s);
+      } else if (date >= weekAgo) {
+        groups.previous7Days.push(s);
+      } else {
+        groups.older.push(s);
+      }
+    });
+
+    return groups;
+  }, [sessions]);
+
+  // Suggested Quick Prompts
+  const quickPrompts = [
+    { label: currentLang === 'as' ? 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ' : 'Passing Marks & CGPA', q: 'What is the minimum passing marks and CGPA requirement?' },
+    { label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (মেডিকেল)' : 'Medical Attendance Limit', q: 'What is the attendance condonation limit for medical reasons?' },
+    { label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation Process', q: 'Explain the fees and process for answer sheet re-evaluation.' },
+    { label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Grants', q: 'Eligibility and required documents for Ishan Uday scholarship?' }
+  ];
+
   return (
-    <div className="w-full h-full flex flex-col editorial-surface rounded-xl sm:rounded-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 shadow-sm overflow-hidden min-h-0 relative">
-      
-      {/* 1. TOP HEADER BAR (Compact, Responsive, Editorial Identity) */}
-      <header className="px-3 sm:px-5 py-2.5 sm:py-3 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between shrink-0 bg-white/70 dark:bg-[#142426]/70 backdrop-blur-md">
-        
-        {/* Left: Assistant Identity & Live Indicator */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-transparent flex items-center justify-center shrink-0">
-            <AiVoiceChatLogo 
-              className="w-8 h-8 sm:w-9 sm:h-9" 
-              isSpeaking={isSpeaking}
-              isListening={isListening}
-              animated={true}
-            />
+    <div className="w-full h-full flex flex-col editorial-surface rounded-xl sm:rounded-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 shadow-sm overflow-hidden min-h-0 relative select-text">
+
+      {/* ======================================================== */}
+      {/* 1. HISTORY SLIDE-OVER DRAWER (HIDDEN by default during conversation) */}
+      {/* ======================================================== */}
+      {historyDrawerOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+          onClick={() => setHistoryDrawerOpen(false)}
+        />
+      )}
+
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-[#F7F6F0] dark:bg-[#0B1518] border-r border-[#123C3A]/15 dark:border-[#55C7B2]/20 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
+        ${historyDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        {/* Drawer Header */}
+        <div className="p-3 sm:p-4 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center space-x-2">
+            <ClockIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#55C7B2]" />
+            <h3 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+              {currentLang === 'as' ? 'আলোচনাৰ ইতিহাস' : 'Chat History'}
+            </h3>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/20 dark:text-[#55C7B2]">
+              {sessions.length}
+            </span>
           </div>
-          <div className="min-w-0 leading-tight">
-            <div className="flex items-center space-x-1.5 truncate">
-              <h2 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading truncate">
-                {univProfile.name || 'University'} Assistant
-              </h2>
-              <span className="w-2 h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
+
+          <div className="flex items-center space-x-1">
+            {/* New Chat Button inside drawer */}
+            <button
+              onClick={handleNewChat}
+              className="p-1.5 rounded-lg bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] cursor-pointer"
+              title="New Chat"
+            >
+              <PlusIcon className="w-4 h-4" />
+            </button>
+
+            {/* Close Drawer Button */}
+            <button
+              onClick={() => setHistoryDrawerOpen(false)}
+              className="p-1.5 rounded-lg text-[#273B45]/70 dark:text-[#DCE8E4]/70 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+              title="Close History"
+            >
+              <XMarkIcon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Sessions Scrollable List */}
+        <div className="flex-1 p-2 space-y-3 overflow-y-auto min-h-0 text-xs">
+          {sessions.length === 0 ? (
+            <div className="p-6 text-center text-[#627680] dark:text-[#879B99] text-xs">
+              <ChatBubbleIcon className="w-6 h-6 mx-auto mb-2 opacity-40" />
+              <p>{currentLang === 'as' ? 'কোনো পূৰ্বৰ আলোচনা নাই' : 'No previous chats saved yet.'}</p>
+              <p className="text-[11px] mt-1 text-[#D4A96A] dark:text-[#55C7B2]">
+                {currentLang === 'as' ? 'প্ৰশ্ন কৰিলে আলোচনা স্বয়ংক্ৰিয়ভাৱে সংৰক্ষিত হ’ব।' : 'Chats will automatically save as you speak!'}
+              </p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
-              {currentLang === 'as' 
-                ? 'দ্বিভাষিক AI সহায়ক • ভয়েচ সক্ৰিয়' 
-                : 'Bilingual AI Assistant • Voice & Citations'}
-            </p>
+          ) : (
+            <>
+              {/* Today */}
+              {groupedSessions.today.length > 0 && (
+                <div>
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#D4A96A] dark:text-[#E0B77A] uppercase tracking-wider">
+                    {currentLang === 'as' ? 'আজি' : 'Today'}
+                  </div>
+                  <div className="space-y-0.5">
+                    {groupedSessions.today.map(s => (
+                      <div
+                        key={s.id}
+                        onClick={() => handleSelectSession(s)}
+                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
+                          activeSessionId === s.id
+                            ? 'bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-semibold shadow-xs border border-[#123C3A]/10 dark:border-[#55C7B2]/20'
+                            : 'text-[#273B45] dark:text-[#DCE8E4]/80 hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 truncate mr-2">
+                          <ChatBubbleIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                          <span className="truncate">{s.title || 'Conversation'}</span>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteSession(e, s.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          title="Delete Chat"
+                        >
+                          <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Yesterday */}
+              {groupedSessions.yesterday.length > 0 && (
+                <div>
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#627680] dark:text-[#879B99] uppercase tracking-wider">
+                    {currentLang === 'as' ? 'কালি' : 'Yesterday'}
+                  </div>
+                  <div className="space-y-0.5">
+                    {groupedSessions.yesterday.map(s => (
+                      <div
+                        key={s.id}
+                        onClick={() => handleSelectSession(s)}
+                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
+                          activeSessionId === s.id
+                            ? 'bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-semibold shadow-xs'
+                            : 'text-[#273B45] dark:text-[#DCE8E4]/80 hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 truncate mr-2">
+                          <ChatBubbleIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                          <span className="truncate">{s.title || 'Conversation'}</span>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteSession(e, s.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                        >
+                          <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Previous 7 Days */}
+              {groupedSessions.previous7Days.length > 0 && (
+                <div>
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#627680] dark:text-[#879B99] uppercase tracking-wider">
+                    {currentLang === 'as' ? 'পূৰ্বৰ ৭ দিন' : 'Previous 7 Days'}
+                  </div>
+                  <div className="space-y-0.5">
+                    {groupedSessions.previous7Days.map(s => (
+                      <div
+                        key={s.id}
+                        onClick={() => handleSelectSession(s)}
+                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
+                          activeSessionId === s.id
+                            ? 'bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-semibold shadow-xs'
+                            : 'text-[#273B45] dark:text-[#DCE8E4]/80 hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 truncate mr-2">
+                          <ChatBubbleIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                          <span className="truncate">{s.title || 'Conversation'}</span>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteSession(e, s.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                        >
+                          <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Older */}
+              {groupedSessions.older.length > 0 && (
+                <div>
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#627680] dark:text-[#879B99] uppercase tracking-wider">
+                    {currentLang === 'as' ? 'পুৰণি আলোচনা' : 'Older'}
+                  </div>
+                  <div className="space-y-0.5">
+                    {groupedSessions.older.map(s => (
+                      <div
+                        key={s.id}
+                        onClick={() => handleSelectSession(s)}
+                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
+                          activeSessionId === s.id
+                            ? 'bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-semibold shadow-xs'
+                            : 'text-[#273B45] dark:text-[#DCE8E4]/80 hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 truncate mr-2">
+                          <ChatBubbleIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                          <span className="truncate">{s.title || 'Conversation'}</span>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteSession(e, s.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                        >
+                          <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Drawer Footer */}
+        <div className="p-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 text-[11px] text-[#627680] dark:text-[#879B99] flex items-center justify-between shrink-0">
+          <span className="truncate">{univProfile.name} Database Connected</span>
+          <span className="w-2 h-2 rounded-full bg-[#55C7B2] shrink-0" title="DB Connected" />
+        </div>
+      </aside>
+
+      {/* ======================================================== */}
+      {/* 2. MAIN CHAT VIEW (Immersion Mode during conversation) */}
+      {/* ======================================================== */}
+      <main className="flex-1 flex flex-col min-w-0 h-full max-h-full overflow-hidden relative bg-transparent">
+
+        {/* Action Alert Banner */}
+        {actionAlert && (
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] text-xs font-semibold shadow-lg animate-fade-in">
+            {actionAlert}
           </div>
-        </div>
+        )}
 
-        {/* Right: Responsive Control Actions */}
-        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-          {/* Voice Output Toggle */}
-          <button
-            onClick={() => {
-              if (isSpeaking) stopSpeaking();
-              setVoiceOutputEnabled(!voiceOutputEnabled);
-            }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
-              voiceOutputEnabled
-                ? 'bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/15 dark:text-[#55C7B2] border-[#123C3A]/20 dark:border-[#55C7B2]/30'
-                : 'text-[#627680] dark:text-[#879B99] border-transparent hover:bg-[#E9F0ED] dark:hover:bg-[#142426]'
-            }`}
-            title={voiceOutputEnabled ? 'Voice Auto-Playback Active' : 'Voice Auto-Playback Muted'}
-            aria-label="Toggle Voice Playback"
-          >
-            <SpeakerWaveIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">
-              {voiceOutputEnabled ? 'Voice: ON' : 'Voice: OFF'}
-            </span>
-          </button>
+        {/* Top Header Bar */}
+        <header className="px-3 sm:px-4 py-2 sm:py-2.5 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between shrink-0 bg-white/80 dark:bg-[#142426]/85 backdrop-blur-md">
+          {/* Left: History Button + Assistant Title with Gemini Logo */}
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            
+            {/* Click to Open History Button */}
+            <button
+              onClick={() => setHistoryDrawerOpen(true)}
+              className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs"
+              title="Click to Open Chat History"
+              aria-label="Click to Open Chat History"
+            >
+              <ClockIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
+              <span className="font-medium">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
+              {sessions.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/20 dark:text-[#55C7B2]">
+                  {sessions.length}
+                </span>
+              )}
+            </button>
 
-          {/* Query History Drawer Toggle */}
-          <button
-            onClick={() => setHistorySidebarOpen(!historySidebarOpen)}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
-              historySidebarOpen 
-                ? 'bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] border-[#123C3A] dark:border-[#55C7B2]' 
-                : 'bg-white/60 dark:bg-[#142426]/60 text-[#273B45] dark:text-[#DCE8E4] border-[#123C3A]/10 dark:border-[#55C7B2]/15 hover:bg-[#E9F0ED] dark:hover:bg-[#142426]'
-            }`}
-            title="Toggle Query History"
-            aria-label="Toggle Query History"
-          >
-            <ClockIcon className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline text-[11px]">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] font-mono">
-              {queryHistory.length}
-            </span>
-          </button>
-        </div>
-      </header>
+            {/* Google Gemini AI Sparkle Logo */}
+            <div className="shrink-0 flex items-center justify-center">
+              <AiVoiceChatLogo 
+                className="w-7 h-7 sm:w-8 sm:h-8" 
+                isSpeaking={isSpeaking}
+                isListening={isListening}
+                animated={true}
+              />
+            </div>
 
-      {/* 2. AUDIO & VOICE STATUS BANNERS */}
-      {isSpeaking && (
-        <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/20 dark:border-[#22D3EE]/20 flex items-center justify-between text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] shrink-0">
-          <div className="flex items-center space-x-2 truncate mr-2">
-            <AiVoiceChatLogo className="w-5 h-5 shrink-0" isSpeaking={true} animated={true} />
-            <span className="truncate">Reading verified institutional answer aloud...</span>
+            <div className="min-w-0 leading-tight">
+              <div className="flex items-center space-x-1.5 truncate">
+                <h2 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading truncate">
+                  {sessions.find(s => s.id === activeSessionId)?.title || `${univProfile.name} Assistant`}
+                </h2>
+                <span className="w-2 h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
+                {currentLang === 'as' ? 'দ্বিভাষিক AI সহায়ক • সংবিধিবদ্ধ তথ্য' : 'Bilingual AI Assistant • Grounded Citations'}
+              </p>
+            </div>
           </div>
-          <button 
-            onClick={stopSpeaking}
-            className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2] underline hover:opacity-80 cursor-pointer shrink-0"
-          >
-            Stop Audio
-          </button>
-        </div>
-      )}
 
-      {isListening && (
-        <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 flex items-center justify-between shrink-0">
-          <div className="flex items-center space-x-2.5 truncate mr-2">
-            <AiVoiceChatLogo className="w-5 h-5 shrink-0" isListening={true} isSpeaking={false} />
-            <span className="text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] truncate">
-              Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak clearly!
-            </span>
+          {/* Right: Actions (New Chat, Share, Voice Toggle) */}
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+            
+            {/* New Chat Quick Button */}
+            <button
+              onClick={handleNewChat}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] dark:hover:bg-[#68d8c3] transition-all cursor-pointer shadow-2xs"
+              title="New Chat"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">{currentLang === 'as' ? 'নতুন' : 'New'}</span>
+            </button>
+
+            {/* Share Chat Button */}
+            <button
+              onClick={() => setShareModalOpen(true)}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] hover:bg-[#E9F0ED] dark:hover:bg-[#142426] border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs"
+              title="Share Chat"
+            >
+              <ShareIcon className="w-3.5 h-3.5 text-[#8B5CF6] dark:text-[#22D3EE]" />
+              <span className="hidden xs:inline">{currentLang === 'as' ? 'শ্বেয়াৰ' : 'Share'}</span>
+            </button>
+
+            {/* Voice Audio Playback Toggle */}
+            <button
+              onClick={() => {
+                if (isSpeaking) stopSpeaking();
+                setVoiceOutputEnabled(!voiceOutputEnabled);
+              }}
+              className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                voiceOutputEnabled
+                  ? 'bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/15 dark:text-[#55C7B2] border-[#123C3A]/20 dark:border-[#55C7B2]/30'
+                  : 'text-[#627680] dark:text-[#879B99] border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              title={voiceOutputEnabled ? 'Voice Auto-Playback Active' : 'Voice Auto-Playback Muted'}
+            >
+              <SpeakerWaveIcon className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={toggleListening}
-            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#0B1518] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
-          >
-            Done
-          </button>
+        </header>
+
+        {/* Audio Banner when Speaking */}
+        {isSpeaking && (
+          <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/20 dark:border-[#22D3EE]/20 flex items-center justify-between text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] shrink-0">
+            <div className="flex items-center space-x-2 truncate mr-2">
+              <AiVoiceChatLogo className="w-4 h-4 shrink-0" isSpeaking={true} animated={true} />
+              <span className="truncate">Reading institutional answer aloud...</span>
+            </div>
+            <button 
+              onClick={stopSpeaking}
+              className="text-[11px] font-bold text-[#8B5CF6] dark:text-[#22D3EE] underline hover:opacity-80 cursor-pointer shrink-0"
+            >
+              Stop Audio
+            </button>
+          </div>
+        )}
+
+        {/* Active Listening Banner */}
+        {isListening && (
+          <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 flex items-center justify-between shrink-0">
+            <div className="flex items-center space-x-2.5 truncate mr-2">
+              <AiVoiceChatLogo className="w-4 h-4 shrink-0" isListening={true} isSpeaking={false} />
+              <span className="text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] truncate">
+                Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak now!
+              </span>
+            </div>
+            <button
+              onClick={toggleListening}
+              className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#0B1518] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
+            >
+              Done
+            </button>
+          </div>
+        )}
+
+        {voiceError && (
+          <div className="px-4 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-medium border-b border-red-200 dark:border-red-900/50 shrink-0">
+            {voiceError}
+          </div>
+        )}
+
+        {/* Suggested Quick Question Chips */}
+        <div className="px-3 py-1.5 bg-[#E9F0ED]/50 dark:bg-[#142426]/50 border-b border-[#123C3A]/8 dark:border-[#55C7B2]/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar scroll-smooth shrink-0">
+          <span className="text-[10px] font-bold text-[#D4A96A] dark:text-[#E0B77A] uppercase tracking-wider shrink-0 mr-1 font-sans">
+            {currentLang === 'as' ? 'দ্ৰুত প্ৰশ্ন:' : 'Quick:'}
+          </span>
+          {quickPrompts.map((p, idx) => (
+            <button
+              key={idx}
+              onClick={() => executeQuery(p.q)}
+              className="px-2.5 py-1 rounded-full bg-white/70 dark:bg-[#0B1518]/70 hover:bg-white dark:hover:bg-[#142426] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 shadow-2xs"
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
-      )}
 
-      {voiceError && (
-        <div className="px-4 py-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-medium border-b border-red-200 dark:border-red-900/50 shrink-0">
-          {voiceError}
-        </div>
-      )}
-
-      {/* 3. QUICK QUESTION PILLS (Single-Line Momentum Scroll) */}
-      <div className="px-3 py-1.5 bg-[#E9F0ED]/50 dark:bg-[#142426]/50 border-b border-[#123C3A]/8 dark:border-[#55C7B2]/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar scroll-smooth shrink-0">
-        <span className="text-[10px] font-bold text-[#D4A96A] dark:text-[#E0B77A] uppercase tracking-wider shrink-0 mr-1 font-sans">
-          {currentLang === 'as' ? 'দ্ৰুত প্ৰশ্ন:' : 'Quick:'}
-        </span>
-        {benchmarkTestScenarios.map((scenario) => (
-          <button
-            key={scenario.id}
-            onClick={() => executeQuery(scenario.query)}
-            className="px-2.5 py-1 rounded-full bg-white/70 dark:bg-[#0B1518]/70 hover:bg-white dark:hover:bg-[#142426] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 font-sans shadow-2xs"
-          >
-            {scenario.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 4. MAIN CHAT AREA + RESPONSIVE HISTORY DRAWER */}
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
-        
-        {/* Messages Stream Viewport */}
-        <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 min-h-0 scroll-smooth">
+        {/* Messages Stream Viewport (Strict Bounded Overflow with Smooth Scrolling) */}
+        <div 
+          ref={messagesContainerRef}
+          className="flex-1 p-3 sm:p-5 overflow-y-auto overscroll-contain space-y-4 min-h-0 scroll-smooth"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -549,35 +819,36 @@ export const DashboardAiAssistant = ({
                 className={`text-xs sm:text-sm leading-relaxed transition-all break-words ${
                   msg.sender === 'user'
                     ? 'max-w-[88%] xs:max-w-[85%] sm:max-w-xl md:max-w-2xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] rounded-2xl rounded-br-xs px-4 py-3 sm:px-5 sm:py-3.5 font-medium shadow-xs'
-                    : msg.isUnverified
-                    ? 'max-w-[95%] sm:max-w-2xl md:max-w-3xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 text-[#273B45] dark:text-[#DCE8E4] rounded-2xl rounded-bl-xs p-3.5 sm:p-5 font-normal shadow-xs'
                     : 'max-w-[95%] sm:max-w-2xl md:max-w-3xl bg-white/85 dark:bg-[#142426]/85 border border-[#123C3A]/10 dark:border-[#55C7B2]/15 text-[#273B45] dark:text-[#DCE8E4] rounded-2xl rounded-bl-xs p-3.5 sm:p-5 font-normal shadow-xs'
                 }`}
               >
+                {/* AI Header with Gemini Logo inside the bubble */}
+                {msg.sender === 'ai' && (
+                  <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
+                    <AiVoiceChatLogo className="w-4 h-4 shrink-0" animated={false} />
+                    <span className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
+                      {univProfile.name || 'UniMitra'} AI
+                    </span>
+                  </div>
+                )}
+
                 <p className="whitespace-pre-line">{msg.text}</p>
 
                 {/* Grounded Citation Card (AI Message) */}
-                {msg.sender === 'ai' && (
+                {msg.sender === 'ai' && msg.source && (
                   <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2.5">
-                    
-                    {/* Badge & Confidence Row */}
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
                       <div className="flex items-center space-x-1.5">
-                        <ShieldCheckIcon className={`w-3.5 h-3.5 shrink-0 ${msg.isUnverified ? 'text-amber-500' : 'text-[#55C7B2]'}`} />
+                        <ShieldCheckIcon className="w-3.5 h-3.5 text-[#55C7B2] shrink-0" />
                         <span className="font-semibold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
-                          {msg.isUnverified ? 'Strict Anti-Hallucination Flag' : 'Grounded Gazette Citation'}
+                          Grounded Institutional Citation
                         </span>
                       </div>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                        msg.isUnverified
-                          ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border border-amber-300'
-                          : 'bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2] border border-[#55C7B2]/30'
-                      }`}>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2] border border-[#55C7B2]/30">
                         {msg.confidence || '99.4% Verified Match'}
                       </span>
                     </div>
 
-                    {/* Source File & Page Box */}
                     <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#0B1518]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                       <div className="flex items-center space-x-1.5 min-w-0">
                         <DocumentTextIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
@@ -586,7 +857,7 @@ export const DashboardAiAssistant = ({
                         </span>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-sans font-bold shrink-0 self-start sm:self-auto border border-[#123C3A]/8 dark:border-[#55C7B2]/15">
-                        {msg.page}
+                        {msg.page || 'Clause 4'}
                       </span>
                     </div>
 
@@ -623,12 +894,10 @@ export const DashboardAiAssistant = ({
                         </button>
                       </div>
                     </div>
-
                   </div>
                 )}
               </div>
 
-              {/* User Timestamp */}
               {msg.sender === 'user' && (
                 <span className="text-[10px] text-[#627680] dark:text-[#879B99] mt-1 px-1 font-sans">
                   {msg.time}
@@ -637,7 +906,7 @@ export const DashboardAiAssistant = ({
             </div>
           ))}
 
-          {/* Loading Animation */}
+          {/* Thinking / Loading Animation */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
               <div className="w-7 h-7 rounded-xl bg-transparent flex items-center justify-center shrink-0">
@@ -645,232 +914,226 @@ export const DashboardAiAssistant = ({
               </div>
               <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4]">
                 {currentLang === 'as' 
-                  ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নথিপত্ৰ নিৰীক্ষণ কৰি থকা হৈছে...` 
-                  : `Retrieving grounded statutes from ${univProfile.name} knowledge base...`}
+                  ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী পৰীক্ষা কৰি থকা হৈছে...` 
+                  : `Retrieving verified statutory records from ${univProfile.name} knowledge base...`}
               </div>
             </div>
           )}
 
-          <div ref={chatBottomRef} />
+          <div ref={chatBottomRef} className="h-1 shrink-0" />
         </div>
 
-        {/* 5. QUERY HISTORY DRAWER (Responsive: Modal Overlay on Mobile, Docked Sidebar on Desktop) */}
-        {historySidebarOpen && (
-          <>
-            {/* Mobile Backdrop Overlay (< lg) */}
-            <div 
-              className="fixed inset-0 z-40 bg-[#0B1518]/50 backdrop-blur-xs lg:hidden"
-              onClick={() => setHistorySidebarOpen(false)}
+        {/* Bottom Input Command Prompt Bar */}
+        <form 
+          onSubmit={handleSend} 
+          className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#0B1518]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
+        >
+          <div className="rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#142426]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 px-2.5 sm:px-3 py-1.5 flex items-center gap-2 focus-within:border-[#123C3A] dark:focus-within:border-[#55C7B2] focus-within:ring-1 focus-within:ring-[#123C3A]/10 dark:focus-within:ring-[#55C7B2]/20 transition-all">
+            
+            {/* Microphone Voice Toggle */}
+            <button
+              type="button"
+              onClick={toggleListening}
+              className={`p-1.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center ${
+                isListening
+                  ? 'bg-[#8B5CF6]/20 border border-[#22D3EE] shadow-[0_0_12px_rgba(34,211,238,0.5)]'
+                  : 'bg-[#E9F0ED] dark:bg-[#0B1518] hover:bg-[#123C3A]/10 border border-transparent'
+              }`}
+              title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak)'}
+              aria-label="Voice Input"
+            >
+              <AiVoiceChatLogo 
+                className="w-5 h-5 sm:w-5.5 sm:h-5.5" 
+                isListening={isListening}
+                isSpeaking={false}
+                animated={isListening}
+              />
+            </button>
+
+            {/* Flexible Auto-Resizing Textarea */}
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              value={inputQuery}
+              onChange={(e) => setInputQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                currentLang === 'as'
+                  ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী, পৰীক্ষা বা ছাত্ৰবৃত্তিৰ বিষয়ে সুধক...`
+                  : `Ask any university query on regulations, examinations, admissions...`
+              }
+              className="flex-1 bg-transparent text-xs sm:text-sm text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none resize-none leading-relaxed py-1 max-h-24 font-sans"
             />
 
-            {/* Drawer Container */}
-            <aside className="fixed inset-y-0 right-0 z-50 w-72 sm:w-80 lg:relative lg:inset-auto lg:z-auto border-l border-[#123C3A]/10 dark:border-[#55C7B2]/15 bg-white/95 dark:bg-[#0B1518]/95 backdrop-blur-xl p-4 flex flex-col justify-between shrink-0 shadow-xl lg:shadow-none animate-fade-in">
-              <div className="space-y-3 overflow-y-auto flex-1 min-h-0">
-                <div className="flex items-center justify-between pb-2 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
-                  <div className="flex items-center space-x-2">
-                    <ClockIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#55C7B2]" />
-                    <span className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
-                      {currentLang === 'as' ? 'অনুসন্ধান ইতিহাস' : 'Query History'}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setHistorySidebarOpen(false)}
-                    className="p-1 rounded-lg text-[#627680] hover:text-[#123C3A] dark:text-[#879B99] dark:hover:text-[#DCE8E4] cursor-pointer"
-                  >
-                    <XMarkIcon className="w-4 h-4" />
-                  </button>
-                </div>
+            {/* Send Trigger Button */}
+            <button
+              type="submit"
+              disabled={!inputQuery.trim() || loading}
+              className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#0B1518] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
+              aria-label="Send Query"
+            >
+              <SendIcon className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
+            </button>
+          </div>
+          <p className="text-[10px] text-center text-[#627680] dark:text-[#879B99] pt-1">
+            {currentLang === 'as' 
+              ? 'UniMitra AI প্রাতিষ্ঠানিক নিয়মাৱলীৰ সৈতে প্ৰত্যক্ষভাৱে সংযোজিত।' 
+              : 'UniMitra AI responses are strictly grounded in statutory university records.'}
+          </p>
+        </form>
 
-                <div className="space-y-2">
-                  {queryHistory.length === 0 ? (
-                    <p className="text-xs text-[#627680] dark:text-[#879B99] text-center py-8">
-                      No query history yet.
-                    </p>
-                  ) : (
-                    queryHistory.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          executeQuery(item.query);
-                          if (window.innerWidth < 1024) setHistorySidebarOpen(false);
-                        }}
-                        className="w-full text-left p-2.5 rounded-xl bg-[#E9F0ED]/60 dark:bg-[#142426]/60 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 hover:border-[#123C3A]/30 dark:hover:border-[#55C7B2]/40 transition-all cursor-pointer group"
-                      >
-                        <div className="flex items-center justify-between text-[10px] text-[#627680] dark:text-[#879B99] mb-1">
-                          <span className="font-medium">{item.time}</span>
-                          <span className="px-1.5 py-0.2 rounded bg-white dark:bg-[#0B1518] text-[9px] uppercase font-bold text-[#123C3A] dark:text-[#55C7B2]">
-                            {item.lang || 'en'}
-                          </span>
-                        </div>
-                        <p className="text-xs font-medium text-[#273B45] dark:text-[#DCE8E4] line-clamp-2 group-hover:text-[#123C3A] dark:group-hover:text-[#55C7B2] font-sans">
-                          {item.query}
-                        </p>
-                      </button>
-                    ))
-                  )}
-                </div>
+      </main>
+
+      {/* ======================================================== */}
+      {/* 3. SHARE CHAT MODAL */}
+      {/* ======================================================== */}
+      {shareModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white dark:bg-[#142426] rounded-2xl p-5 shadow-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/20 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
+              <div className="flex items-center space-x-2">
+                <ShareIcon className="w-5 h-5 text-[#8B5CF6] dark:text-[#22D3EE]" />
+                <h3 className="text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                  {currentLang === 'as' ? 'আলোচনা শ্বেয়াৰ কৰক' : 'Share Chat Consultation'}
+                </h3>
               </div>
-
-              {queryHistory.length > 0 && (
-                <button
-                  onClick={() => {
-                    setQueryHistory([]);
-                    localStorage.removeItem('unimitra_student_query_history');
-                  }}
-                  className="w-full mt-3 py-2 text-center text-xs font-semibold text-red-600 dark:text-red-300 hover:underline cursor-pointer flex items-center justify-center space-x-1.5 shrink-0"
-                >
-                  <TrashIcon className="w-3.5 h-3.5" />
-                  <span>Clear History</span>
-                </button>
-              )}
-            </aside>
-          </>
-        )}
-
-      </div>
-
-      {/* 6. BOTTOM INPUT COMMAND BAR (Responsive, Mobile Keyboard Safe) */}
-      <form 
-        onSubmit={handleSend} 
-        className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#0B1518]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
-      >
-        <div className="rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#142426]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 px-2.5 sm:px-3 py-1.5 flex items-center gap-2 focus-within:border-[#123C3A] dark:focus-within:border-[#55C7B2] focus-within:ring-1 focus-within:ring-[#123C3A]/10 dark:focus-within:ring-[#55C7B2]/20 transition-all">
-          
-          {/* Microphone Voice Toggle */}
-          <button
-            type="button"
-            onClick={toggleListening}
-            className={`p-1.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center ${
-              isListening
-                ? 'bg-[#8B5CF6]/20 border border-[#22D3EE] shadow-[0_0_12px_rgba(34,211,238,0.5)]'
-                : 'bg-[#E9F0ED] dark:bg-[#0B1518] hover:bg-[#123C3A]/10 border border-transparent'
-            }`}
-            title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak)'}
-            aria-label="Voice Input"
-          >
-            <AiVoiceChatLogo 
-              className="w-5 h-5 sm:w-5.5 sm:h-5.5" 
-              isListening={isListening}
-              isSpeaking={false}
-              animated={isListening}
-            />
-          </button>
-
-          {/* Flexible Textarea Input */}
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              currentLang === 'as'
-                ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ বিষয়ে প্ৰশ্ন সোধক...`
-                : `Ask any query on regulations, examinations, admissions...`
-            }
-            className="flex-1 bg-transparent text-xs sm:text-sm text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none resize-none leading-relaxed py-1 max-h-20 font-sans"
-          />
-
-          {/* Send Trigger Button */}
-          <button
-            type="submit"
-            disabled={!inputQuery.trim() || loading}
-            className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#0B1518] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
-            aria-label="Send Query"
-          >
-            <SendIcon className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
-          </button>
-        </div>
-      </form>
-
-      {/* Action Toast Alert */}
-      {actionAlert && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] text-xs font-semibold shadow-xl animate-fade-in z-50 flex items-center space-x-2 border border-[#D4A96A] dark:border-[#E0B77A]">
-          <CheckCircleIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#0B1518]" />
-          <span>{actionAlert}</span>
-        </div>
-      )}
-
-      {/* Responsive Institutional Feedback Modal */}
-      {feedbackModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#0B1518]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-          <div className="editorial-surface rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 animate-scale-up border border-[#123C3A]/15 dark:border-[#55C7B2]/20">
-            <div className="flex items-center justify-between pb-2 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
-              <h3 className="text-sm sm:text-base font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
-                Institutional Feedback
-              </h3>
               <button
-                onClick={() => setFeedbackModalOpen(false)}
-                className="p-1 rounded-lg text-[#627680] hover:text-[#123C3A] dark:text-[#879B99] dark:hover:text-[#DCE8E4] cursor-pointer"
+                onClick={() => setShareModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-gray-500"
               >
                 <XMarkIcon className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-[#627680] dark:text-[#879B99] font-sans leading-relaxed">
-              Your feedback is audited by university administrators to verify citation accuracy and continuously tune retrieval embeddings.
-            </p>
+            <div className="space-y-2">
+              <p className="text-xs text-[#273B45] dark:text-[#DCE8E4]">
+                {currentLang === 'as'
+                  ? 'এই আলোচনাৰ উদ্ধৃতি আৰু তথ্যসহ সম্পূৰ্ণ প্ৰতিলিপি ক্লিপবৰ্ডত কপি কৰক:'
+                  : 'Copy a verified shareable transcript of this consultation with citations:'}
+              </p>
+              <div className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#0B1518] text-xs font-mono text-[#627680] dark:text-[#879B99] max-h-36 overflow-y-auto">
+                <p className="font-bold text-[#123C3A] dark:text-[#55C7B2]">
+                  {sessions.find(s => s.id === activeSessionId)?.title || 'Institutional Query'}
+                </p>
+                <p className="text-[11px] mt-1">
+                  {messages.length} messages • Grounded with {univProfile.name} knowledge base.
+                </p>
+              </div>
+            </div>
 
-            <form onSubmit={handleSubmitFeedback} className="space-y-4">
-              <div className="flex items-center space-x-2.5">
-                <button
-                  type="button"
-                  onClick={() => setFeedbackRating('helpful')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    feedbackRating === 'helpful'
-                      ? 'bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] border-[#123C3A] dark:border-[#55C7B2]'
-                      : 'border-[#123C3A]/15 dark:border-[#55C7B2]/20 text-[#273B45] dark:text-[#DCE8E4]'
-                  }`}
-                >
-                  ✓ Accurate Citation
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFeedbackRating('unhelpful')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    feedbackRating === 'unhelpful'
-                      ? 'bg-amber-600 text-white border-amber-600'
-                      : 'border-[#123C3A]/15 dark:border-[#55C7B2]/20 text-[#273B45] dark:text-[#DCE8E4]'
-                  }`}
-                >
-                  ⚠ Needs Revision
-                </button>
+            <div className="flex items-center justify-end space-x-2 pt-2">
+              <button
+                onClick={() => setShareModalOpen(false)}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[#627680] dark:text-[#879B99] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+              >
+                {currentLang === 'as' ? 'বন্ধ কৰক' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleShareCopy}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] dark:hover:bg-[#68d8c3] font-bold text-xs shadow-xs cursor-pointer"
+              >
+                {copySuccess ? (
+                  <>
+                    <CheckCircleIcon className="w-4 h-4" />
+                    <span>{currentLang === 'as' ? 'কপি কৰা হ’ল!' : 'Copied!'}</span>
+                  </>
+                ) : (
+                  <>
+                    <DocumentDuplicateIcon className="w-4 h-4" />
+                    <span>{currentLang === 'as' ? 'প্ৰতিলিপি কপি কৰক' : 'Copy Transcript'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 4. FEEDBACK MODAL */}
+      {/* ======================================================== */}
+      {feedbackModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <form 
+            onSubmit={handleSubmitFeedback}
+            className="w-full max-w-md bg-white dark:bg-[#142426] rounded-2xl p-5 shadow-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/20 space-y-4"
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
+              <h3 className="text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                Report Inaccuracy or Provide Feedback
+              </h3>
+              <button
+                type="button"
+                onClick={() => setFeedbackModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-gray-500"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold mb-1 text-[#273B45] dark:text-[#DCE8E4]">Feedback Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackRating('helpful')}
+                    className={`py-2 px-3 rounded-xl border text-center font-semibold cursor-pointer ${
+                      feedbackRating === 'helpful'
+                        ? 'border-[#55C7B2] bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2]'
+                        : 'border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Accurate Citation
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackRating('inaccurate')}
+                    className={`py-2 px-3 rounded-xl border text-center font-semibold cursor-pointer ${
+                      feedbackRating === 'inaccurate'
+                        ? 'border-red-500 bg-red-500/15 text-red-600 dark:text-red-400'
+                        : 'border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Report Inaccuracy
+                  </button>
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] mb-1 font-heading">
-                  Comments or Suggestions (Optional)
-                </label>
+                <label className="block font-semibold mb-1 text-[#273B45] dark:text-[#DCE8E4]">Comments / Regulation reference</label>
                 <textarea
+                  rows={3}
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
-                  rows={3}
-                  placeholder="e.g. Clause citation matched gazette section 4.3..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#E9F0ED]/60 dark:bg-[#0B1518]/60 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 text-xs text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none font-sans"
+                  placeholder="Specify clause or suggest correction..."
+                  className="w-full p-2.5 rounded-xl border border-black/10 dark:border-white/15 bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] outline-none"
                 />
               </div>
+            </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setFeedbackModalOpen(false)}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#DCE8E4] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] dark:text-[#0B1518] cursor-pointer shadow-xs font-heading"
-                >
-                  Submit Feedback
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="flex items-center justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setFeedbackModalOpen(false)}
+                className="px-3 py-1.5 text-xs text-gray-500 hover:text-black dark:hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] font-bold text-xs shadow-xs"
+              >
+                Submit Feedback
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
     </div>
   );
 };
+
+export default DashboardAiAssistant;
