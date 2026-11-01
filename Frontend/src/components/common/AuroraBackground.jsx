@@ -21,25 +21,28 @@ export const AuroraBackground = ({ className = '' }) => {
 
       {/* 2. Abstract Flowing Teal & Mint Aurora Gradient Orb (Top-Right) */}
       <div 
-        className="absolute -top-[15%] right-[5%] w-[650px] sm:w-[900px] h-[500px] sm:h-[650px] rounded-full blur-[110px] opacity-65 dark:opacity-40 transition-opacity duration-700 pointer-events-none"
+        className="absolute -top-[15%] right-[5%] w-[420px] sm:w-[650px] lg:w-[900px] h-[360px] sm:h-[500px] lg:h-[650px] rounded-full blur-[45px] sm:blur-[80px] lg:blur-[110px] opacity-65 dark:opacity-40 transition-opacity duration-700 pointer-events-none transform-gpu"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(85, 199, 178, 0.28) 0%, rgba(18, 60, 58, 0.16) 45%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(85, 199, 178, 0.28) 0%, rgba(18, 60, 58, 0.16) 45%, transparent 70%)',
+          willChange: 'transform'
         }}
       />
 
       {/* 3. Soft Champagne Glow (Center-Left) */}
       <div 
-        className="absolute top-[28%] -left-[10%] w-[550px] sm:w-[800px] h-[450px] sm:h-[600px] rounded-full blur-[120px] opacity-55 dark:opacity-25 transition-opacity duration-700 pointer-events-none"
+        className="absolute top-[28%] -left-[10%] w-[380px] sm:w-[550px] lg:w-[800px] h-[320px] sm:h-[450px] lg:h-[600px] rounded-full blur-[50px] sm:blur-[90px] lg:blur-[120px] opacity-55 dark:opacity-25 transition-opacity duration-700 pointer-events-none transform-gpu"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(212, 169, 106, 0.24) 0%, rgba(224, 183, 122, 0.08) 50%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 169, 106, 0.24) 0%, rgba(224, 183, 122, 0.08) 50%, transparent 70%)',
+          willChange: 'transform'
         }}
       />
 
       {/* 4. Deep Secondary Aurora Horizon Flow (Bottom) */}
       <div 
-        className="absolute -bottom-[20%] left-[20%] w-[700px] sm:w-[1000px] h-[500px] sm:h-[650px] rounded-full blur-[130px] opacity-45 dark:opacity-35 transition-opacity duration-700 pointer-events-none"
+        className="absolute -bottom-[20%] left-[20%] w-[480px] sm:w-[700px] lg:w-[1000px] h-[360px] sm:h-[500px] lg:h-[650px] rounded-full blur-[55px] sm:blur-[95px] lg:blur-[130px] opacity-45 dark:opacity-35 transition-opacity duration-700 pointer-events-none transform-gpu"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(18, 60, 58, 0.20) 0%, rgba(85, 199, 178, 0.12) 40%, transparent 75%)'
+          background: 'radial-gradient(ellipse at center, rgba(18, 60, 58, 0.20) 0%, rgba(85, 199, 178, 0.12) 40%, transparent 75%)',
+          willChange: 'transform'
         }}
       />
 

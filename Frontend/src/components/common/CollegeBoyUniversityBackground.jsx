@@ -89,25 +89,25 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
         <style>
           {`
             @keyframes realisticBreath {
-              0%, 100% { transform: translateY(0px); }
-              50% { transform: translateY(-3.5px) scale(1.003); }
+              0%, 100% { transform: translate3d(0, 0, 0); }
+              50% { transform: translate3d(0, -3.5px, 0) scale(1.003); }
             }
             @keyframes hairWind {
               0%, 100% { transform: rotate(0deg); }
               50% { transform: rotate(-2.5deg); }
             }
             @keyframes floatPaperPlane {
-              0% { transform: translate(160px, 120px) rotate(-10deg); }
-              50% { transform: translate(340px, 75px) rotate(3deg); }
-              100% { transform: translate(160px, 120px) rotate(-10deg); }
+              0% { transform: translate3d(160px, 120px, 0) rotate(-10deg); }
+              50% { transform: translate3d(340px, 75px, 0) rotate(3deg); }
+              100% { transform: translate3d(160px, 120px, 0) rotate(-10deg); }
             }
             @keyframes floatCapBob {
               0%, 100% { transform: translateY(0px) rotate(4deg); }
-              50% { transform: translateY(-14px) rotate(-3deg); }
+              50% { transform: translate3d(0, -10px, 0) rotate(-3deg); }
             }
             @keyframes floatBookBob {
               0%, 100% { transform: translateY(0px) rotate(-2deg); }
-              50% { transform: translateY(-12px) rotate(3deg); }
+              50% { transform: translate3d(0, -8px, 0) rotate(3deg); }
             }
             @keyframes starBlink {
               0%, 100% { opacity: 0.25; transform: scale(0.85); }
@@ -121,17 +121,14 @@ export const CollegeBoyUniversityBackground = ({ className = '', showOverlay = t
               0%, 100% { opacity: 0.35; }
               50% { opacity: 0.75; }
             }
-            .anim-boy-realistic {
-              animation: realisticBreath 5s ease-in-out infinite;
-              transform-origin: 480px 580px;
-            }
+            .anim-boy-realistic { animation: realisticBreath 5s ease-in-out infinite; transform-origin: 480px 580px; will-change: transform; }
             .anim-hair {
               animation: hairWind 4s ease-in-out infinite;
               transform-origin: 480px 345px;
             }
-            .anim-plane-path { animation: floatPaperPlane 18s ease-in-out infinite; }
-            .anim-cap-float { animation: floatCapBob 7.5s ease-in-out infinite; transform-origin: center; }
-            .anim-book-float { animation: floatBookBob 6.5s ease-in-out infinite 1.2s; transform-origin: center; }
+            .anim-plane-path { animation: floatPaperPlane 18s ease-in-out infinite; will-change: transform; }
+            .anim-cap-float { animation: floatCapBob 7.5s ease-in-out infinite; transform-origin: center; will-change: transform; }
+            .anim-book-float { animation: floatBookBob 6.5s ease-in-out infinite 1.2s; transform-origin: center; will-change: transform; }
             .anim-star-a { animation: starBlink 3.2s ease-in-out infinite; }
             .anim-star-b { animation: starBlink 4.5s ease-in-out infinite 1.5s; }
             .anim-star-c { animation: starBlink 3.8s ease-in-out infinite 0.8s; }

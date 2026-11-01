@@ -127,24 +127,25 @@ body {
 }
 
 /* ========================================================= */
-/* INSTITUTIONAL INTELLIGENCE CORE ANIMATIONS                */
+/* INSTITUTIONAL INTELLIGENCE CORE ANIMATIONS (LOW TO HIGH)  */
+/* Hardware-accelerated with translate3d and responsive scale*/
 /* ========================================================= */
 
 @keyframes float-slow {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) rotate(0.6deg);
+    transform: translate3d(0, -7px, 0) rotate(0.5deg);
   }
 }
 
 @keyframes float-delayed {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
   50% {
-    transform: translateY(8px) rotate(-0.6deg);
+    transform: translate3d(0, 7px, 0) rotate(-0.5deg);
   }
 }
 
@@ -169,17 +170,17 @@ body {
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 0.45;
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
   50% {
     opacity: 0.85;
-    transform: scale(1.05);
+    transform: scale3d(1.04, 1.04, 1);
   }
 }
 
 @keyframes scan-beam {
   0% {
-    transform: translateY(-120%);
+    transform: translate3d(0, -120%, 0);
     opacity: 0;
   }
   30% {
@@ -189,7 +190,7 @@ body {
     opacity: 0.7;
   }
   100% {
-    transform: translateY(220%);
+    transform: translate3d(0, 220%, 0);
     opacity: 0;
   }
 }
@@ -208,33 +209,94 @@ body {
   }
 }
 
+/* GPU-Accelerated Utility Classes */
 .animate-float-slow {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: float-slow 4.5s ease-in-out infinite;
 }
 
 .animate-float-delayed {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: float-delayed 5s ease-in-out infinite 0.75s;
 }
 
 .animate-spin-slow {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: spin-slow 22s linear infinite;
 }
 
 .animate-spin-reverse {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: spin-reverse 28s linear infinite;
 }
 
 .animate-pulse-glow {
+  will-change: opacity, transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: pulse-glow 3.5s ease-in-out infinite;
 }
 
 .animate-scan-beam {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   animation: scan-beam 3.2s ease-in-out infinite;
 }
 
 .animate-laser-flow {
   stroke-dasharray: 8 6;
   animation: laser-flow 3s linear infinite;
+}
+
+/* Mobile & Low-Power Screen Adaptation (Reduced Amplitude & GPU Strain) */
+@media (max-width: 640px) {
+  @keyframes float-slow {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -3.5px, 0); }
+  }
+  @keyframes float-delayed {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, 3.5px, 0); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.45; transform: scale3d(1, 1, 1); }
+    50% { opacity: 0.75; transform: scale3d(1.02, 1.02, 1); }
+  }
+  .animate-spin-slow {
+    animation-duration: 32s; /* Slower, battery-friendly rotation on mobile */
+  }
+  .animate-spin-reverse {
+    animation-duration: 38s;
+  }
+}
+
+/* Adaptive Glass Blur: 8px on mobile/tablets for instant fill-rate performance */
+@media (max-width: 768px) {
+  :root,
+  .dark {
+    --glass-blur: 8px;
+  }
+}
+
+/* Accessible Reduced Motion (Respects battery saver, low-power mode, OS preferences) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 
@@ -328,7 +390,7 @@ html.dark .neon-voice-minimized,
   box-shadow: 0 0 22px rgba(34, 211, 238, 0.65) !important;
 }
 
-/* Smooth Neon Breathing Pulse */
+/* Smooth Neon Breathing Pulse (Desktop Full-Fidelity) */
 @keyframes neon-pulse-light {
   0%, 100% {
     box-shadow: 0 0 14px rgba(139, 92, 246, 0.5),
@@ -356,6 +418,31 @@ html.dark .neon-voice-minimized,
                 0 0 58px rgba(34, 211, 238, 0.55),
                 inset 0 0 20px rgba(34, 211, 238, 0.32);
     border-color: #00F5D4;
+  }
+}
+
+/* Mobile & Low-Power Screen Neon Optimization (Single-Pass GPU compositing) */
+@media (max-width: 640px) {
+  @keyframes neon-pulse-light {
+    0%, 100% {
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.45);
+      border-color: rgba(139, 92, 246, 0.85);
+    }
+    50% {
+      box-shadow: 0 0 18px rgba(139, 92, 246, 0.75);
+      border-color: #8B5CF6;
+    }
+  }
+
+  @keyframes neon-pulse-dark {
+    0%, 100% {
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.6);
+      border-color: #22D3EE;
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(34, 211, 238, 0.9);
+      border-color: #00F5D4;
+    }
   }
 }
 

@@ -70,14 +70,14 @@ export const VoiceAssistantLogo = ({
             stroke: #FFFFFF !important;
           }
 
-          /* Subtle Breathing Scale Animation */
+          /* Responsive Hardware-Accelerated Breathing Animation */
           @keyframes va-hd-breathe-${uniqueId} {
             0%, 100% {
-              transform: scale(1) translateY(0);
+              transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
               opacity: 0.95;
             }
             50% {
-              transform: scale(1.06) translateY(-1px);
+              transform: scale3d(1.05, 1.05, 1) translate3d(0, -1px, 0);
               opacity: 1;
             }
           }
@@ -120,11 +120,15 @@ export const VoiceAssistantLogo = ({
 
           .va-hd-group-${uniqueId} {
             transform-origin: 50px 40px;
+            will-change: transform;
+            backface-visibility: hidden;
             ${animated ? `animation: va-hd-breathe-${uniqueId} 3.2s ease-in-out infinite;` : ''}
           }
           .va-hd-bar-${uniqueId} {
             transform-box: fill-box;
             transform-origin: center;
+            will-change: transform;
+            backface-visibility: hidden;
           }
           .va-hd-bar-1-${uniqueId} {
             animation: ${isSpeaking ? `va-hd-active-1-${uniqueId} 0.65s ease-in-out infinite alternate` : animated ? `va-hd-idle-1-${uniqueId} 2.2s ease-in-out infinite alternate` : 'none'};
