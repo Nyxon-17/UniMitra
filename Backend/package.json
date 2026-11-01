@@ -1,17 +1,50 @@
 {
-  "dependencies": {
-    "express": "^5.3.0"
-  },
-  "name": "backend",
+  "name": "unimitra-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "devDependencies": {},
+  "description": "UniMitra Bilingual AI Assistant - Node.js Backend Gateway",
+  "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio",
+    "seed": "node src/scripts/seed.js",
+    "test": "node --test"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "unimitra",
+    "assamese",
+    "bilingual",
+    "ai",
+    "university",
+    "supabase",
+    "postgresql",
+    "express"
+  ],
+  "author": "UniMitra Engineering Team",
   "license": "ISC",
-  "type": "commonjs"
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "@supabase/supabase-js": "^2.49.1",
+    "axios": "^1.8.1",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pino": "^9.6.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "pino-pretty": "^13.0.0",
+    "prisma": "^6.4.1"
+  }
 }

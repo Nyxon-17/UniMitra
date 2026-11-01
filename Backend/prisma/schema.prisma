@@ -1,0 +1,339 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  student
+  faculty
+  admin
+  super_admin
+}
+
+enum DocStatus {
+  Indexed
+  Pending_Admin_Approval @map("Pending Admin Approval")
+  Archived
+  Rejected
+}
+
+enum ApprovalStatus {
+  approved
+  pending
+  rejected
+}
+
+model Profile {
+  id                      String          @id @default(uuid()) @db.Uuid
+  email                   String          @unique @db.VarChar(255)
+  passwordHash            String?         @map("password_hash") @db.VarChar(255)
+  fullName                String          @map("full_name") @db.VarChar(255)
+  role                    UserRole        @default(student)
+  department              String?         @db.VarChar(255)
+  designation             String?         @db.VarChar(255)
+  memberId                String?         @unique @map("member_id") @db.VarChar(64)
+  facultyId               String?         @map("faculty_id") @db.VarChar(64)
+  phone                   String?         @db.VarChar(32)
+  preferredLang           String          @default("en") @map("preferred_lang") @db.VarChar(10)
+  isActive                Boolean         @default(true) @map("is_active")
+  isVerified              Boolean         @default(false) @map("is_verified")
+  notificationPreferences Json            @default("{\"regulations\": true, \"exams\": true, \"scholarships\": true, \"admissions\": false}") @map("notification_preferences")
+  createdAt               DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  uploadedDocuments       Document[]      @relation("UploaderDocuments")
+  chatSessions            ChatSession[]
+  savedAnswers            SavedAnswer[]
+  feedbacks               FeedbackSubmission[]
+  notifications           Notification[]
+  unansweredQueries       UnansweredQuery[] @relation("AskedQueries")
+  resolvedQueries         UnansweredQuery[] @relation("ResolvedQueries")
+  createdNotices          Notice[]        @relation("NoticeAuthor")
+  auditLogs               AuditLog[]
+
+  @@map("profiles")
+}
+
+model University {
+  id                String       @id @default(uuid()) @db.Uuid
+  code              String       @unique @db.VarChar(32) // e.g. 'DU', 'GU', 'TU', 'ALL'
+  name              String       @db.VarChar(255)
+  asName            String       @map("as_name") @db.VarChar(255)
+  abbreviation      String       @db.VarChar(16)
+  motto             String?      @db.Text
+  asMotto           String?      @map("as_motto") @db.Text
+  establishedYear   Int?         @map("established_year")
+  campusType        String?      @map("campus_type") @db.VarChar(255)
+  asCampusType      String?      @map("as_campus_type") @db.VarChar(255)
+  campusArea        String?      @map("campus_area") @db.VarChar(255)
+  location          String?      @db.VarChar(255)
+  asLocation        String?      @map("as_location") @db.VarChar(255)
+  chancellor        String?      @db.VarChar(255)
+  viceChancellor    String?      @map("vice_chancellor") @db.VarChar(255)
+  registrar         String?      @db.VarChar(255)
+  helpline          String?      @db.VarChar(255)
+  email             String?      @db.VarChar(255)
+  website           String?      @db.VarChar(255)
+  naacAccreditation String?      @map("naac_accreditation") @db.VarChar(64)
+  nirfRank          String?      @map("nirf_rank") @db.VarChar(64)
+  isActive          Boolean      @default(true) @map("is_active")
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  documents         Document[]
+  notices           Notice[]
+
+  @@map("universities")
+}
+
+model DocumentCategory {
+  id          String       @id @default(uuid()) @db.Uuid
+  code        String       @unique @db.VarChar(64)
+  name        String       @db.VarChar(255)
+  asName      String       @map("as_name") @db.VarChar(255)
+  description String?      @db.Text
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  documents   Document[]
+
+  @@map("document_categories")
+}
+
+model Document {
+  id                 String           @id @default(uuid()) @db.Uuid
+  customId           String?          @unique @map("custom_id") @db.VarChar(64)
+  title              String           @db.VarChar(512)
+  asTitle            String?          @map("as_title") @db.VarChar(512)
+  universityId       String?          @map("university_id") @db.Uuid
+  universityName     String           @map("university_name") @db.VarChar(255)
+  categoryId         String?          @map("category_id") @db.Uuid
+  categoryName       String           @map("category_name") @db.VarChar(255)
+  department         String?          @db.VarChar(255)
+  academicYear       String?          @map("academic_year") @db.VarChar(32)
+  publicationDate    DateTime?        @map("publication_date") @db.Date
+  pages              Int              @default(1)
+  fileSize           String?          @map("file_size") @db.VarChar(32)
+  fileType           String           @default("PDF") @map("file_type") @db.VarChar(16)
+  fileName           String           @map("file_name") @db.VarChar(255)
+  storagePath        String           @map("storage_path") @db.Text
+  sourceUrl          String?          @map("source_url") @db.Text
+  sha256             String           @db.VarChar(64)
+  chunksCount        Int              @default(0) @map("chunks_count")
+  uploaderId         String?          @map("uploader_id") @db.Uuid
+  uploaderRole       String           @map("uploader_role") @db.VarChar(32)
+  uploaderName       String           @map("uploader_name") @db.VarChar(255)
+  uploaderEmail      String           @map("uploader_email") @db.VarChar(255)
+  status             DocStatus        @default(Pending_Admin_Approval)
+  approvalStatus     ApprovalStatus   @default(pending) @map("approval_status")
+  availableToChatbot Boolean          @default(false) @map("available_to_chatbot")
+  processingStage    String?          @default("Awaiting Processing") @map("processing_stage") @db.VarChar(128)
+  ocrApplied         Boolean          @default(false) @map("ocr_applied")
+  summary            String?          @db.Text
+  citation           String?          @db.Text
+  adminFeedback      String?          @map("admin_feedback") @db.Text
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  university         University?      @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  category           DocumentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  uploader           Profile?         @relation("UploaderDocuments", fields: [uploaderId], references: [id], onDelete: SetNull)
+  chunks             DocumentChunk[]
+
+  @@index([availableToChatbot, approvalStatus])
+  @@index([universityId])
+  @@map("documents")
+}
+
+model DocumentChunk {
+  id              String       @id @default(uuid()) @db.Uuid
+  documentId      String       @map("document_id") @db.Uuid
+  chunkIndex      Int          @map("chunk_index")
+  pageNumber      Int?         @map("page_number")
+  clauseReference String?      @map("clause_reference") @db.VarChar(255)
+  content         String       @db.Text
+  tokenCount      Int?         @map("token_count")
+  metadata        Json         @default("{}")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  document        Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("document_chunks")
+}
+
+model ChatSession {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  title       String        @default("New Consultation") @db.VarChar(255)
+  language    String        @default("en") @db.VarChar(10)
+  isSaved     Boolean       @default(false) @map("is_saved")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  user        Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+
+  @@index([userId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id               String       @id @default(uuid()) @db.Uuid
+  sessionId        String       @map("session_id") @db.Uuid
+  sender           String       @db.VarChar(16) // 'user' or 'ai'
+  text             String       @db.Text
+  sourceName       String?      @map("source_name") @db.VarChar(255)
+  pageReference    String?      @map("page_reference") @db.VarChar(128)
+  citation         String?      @db.Text
+  confidence       String?      @db.VarChar(64)
+  domain           String?      @db.VarChar(128)
+  isUnverified     Boolean      @default(false) @map("is_unverified")
+  isVoice          Boolean      @default(false) @map("is_voice")
+  audioUrl         String?      @map("audio_url") @db.Text
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  session          ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
+}
+
+model SavedAnswer {
+  id         String       @id @default(uuid()) @db.Uuid
+  userId     String       @map("user_id") @db.Uuid
+  query      String       @db.Text
+  answer     String       @db.Text
+  source     String?      @db.VarChar(255)
+  page       String?      @db.VarChar(128)
+  category   String?      @db.VarChar(128)
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user       Profile      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_answers")
+}
+
+model UnansweredQuery {
+  id               String       @id @default(uuid()) @db.Uuid
+  userId           String?      @map("user_id") @db.Uuid
+  userName         String?      @map("user_name") @db.VarChar(255)
+  query            String       @db.Text
+  language         String       @default("en") @db.VarChar(10)
+  status           String       @default("Unanswered") @db.VarChar(32)
+  resolutionAnswer String?      @map("resolution_answer") @db.Text
+  resolvedById     String?      @map("resolved_by") @db.Uuid
+  resolvedAt       DateTime?    @map("resolved_at") @db.Timestamptz(6)
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user             Profile?     @relation("AskedQueries", fields: [userId], references: [id], onDelete: SetNull)
+  resolvedBy       Profile?     @relation("ResolvedQueries", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@map("unanswered_queries")
+}
+
+model FeedbackSubmission {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String?      @map("user_id") @db.Uuid
+  userName       String?      @map("user_name") @db.VarChar(255)
+  userRole       String?      @map("user_role") @db.VarChar(32)
+  type           String       @db.VarChar(128)
+  universityName String?      @map("university_name") @db.VarChar(255)
+  rating         Int?
+  comments       String?      @db.Text
+  answerSnippet  String?      @map("answer_snippet") @db.Text
+  status         String       @default("Pending Admin Review") @db.VarChar(64)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user           Profile?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("feedback_submissions")
+}
+
+model Notice {
+  id             String         @id @default(uuid()) @db.Uuid
+  universityId   String?        @map("university_id") @db.Uuid
+  universityName String         @map("university_name") @db.VarChar(255)
+  title          String         @db.VarChar(512)
+  asTitle        String?        @map("as_title") @db.VarChar(512)
+  description    String?        @db.Text
+  asDescription  String?        @map("as_description") @db.Text
+  category       String?        @db.VarChar(128)
+  publicationDate DateTime      @default(now()) @map("publication_date") @db.Date
+  deadline       DateTime?      @db.Date
+  importance     String         @default("Normal") @db.VarChar(32)
+  targetAudience Json           @map("target_audience")
+  attachmentUrl  String?        @map("attachment_url") @db.Text
+  fileName       String?        @map("file_name") @db.VarChar(255)
+  isActive       Boolean        @default(true) @map("is_active")
+  createdById    String?        @map("created_by") @db.Uuid
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  university     University?    @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  author         Profile?       @relation("NoticeAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  notifications  Notification[]
+
+  @@index([universityId, isActive])
+  @@map("notices")
+}
+
+model Notification {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @map("user_id") @db.Uuid
+  noticeId  String       @map("notice_id") @db.Uuid
+  title     String       @db.VarChar(512)
+  message   String       @db.Text
+  type      String       @default("circular") @db.VarChar(64)
+  isRead    Boolean      @default(false) @map("is_read")
+  readAt    DateTime?    @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user      Profile      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notice    Notice       @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model SystemSetting {
+  key         String       @id @db.VarChar(128)
+  value       Json
+  description String?      @db.Text
+  updatedAt   DateTime     @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_settings")
+}
+
+model AuditLog {
+  id         String       @id @default(uuid()) @db.Uuid
+  actorId    String?      @map("actor_id") @db.Uuid
+  actorRole  String?      @map("actor_role") @db.VarChar(32)
+  action     String       @db.VarChar(128)
+  entityType String?      @map("entity_type") @db.VarChar(64)
+  entityId   String?      @map("entity_id") @db.VarChar(64)
+  details    Json?
+  ipAddress  String?      @map("ip_address") @db.VarChar(45)
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  actor      Profile?     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
