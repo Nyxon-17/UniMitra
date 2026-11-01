@@ -6,16 +6,12 @@ import React, { useId } from 'react';
  * Clean, minimal, modern AI voice assistant icon inspired by ChatGPT's 
  * recognizable visual identity with an original UniMitra design.
  * 
- * Specifications:
- * - Simple white microphone symbol at the center (#FFFFFF)
- * - Circular gradient ring (Purple #8B5CF6 to Cyan #22D3EE)
- * - Symmetrical audio waveform bars on both sides
+ * Theme adaptation:
+ * - Light Mode: Central microphone is crisp Black (#000000)
+ * - Dark Mode: Central microphone is pure White (#FFFFFF)
+ * - Gradient Outer Ring: Purple (#8B5CF6) to Cyan (#22D3EE)
+ * - Waveform Audio Bars: Balanced Cyan & Purple
  * - Transparent background
- * - Animations:
- *   - Slowly rotates and pulses outer ring
- *   - Animates waveform bars when AI is speaking (isSpeaking)
- *   - Soft radiant glow when listening (isListening)
- * - Lightweight, responsive vector SVG
  */
 export const AiVoiceChatLogo = ({
   className = "w-6 h-6",
@@ -23,6 +19,7 @@ export const AiVoiceChatLogo = ({
   isSpeaking = false,
   isListening = false,
   animated = true,
+  micColor = "auto", // 'auto' (black in light, white in dark), or explicit hex/color
   title = "UniMitra AI Voice Assistant",
   ...props
 }) => {
@@ -33,6 +30,9 @@ export const AiVoiceChatLogo = ({
   const glowFilterId = `subtle-glow-${uniqueId}`;
 
   const styleObj = size ? { width: size, height: size } : {};
+
+  // Custom explicit override if passed
+  const isCustomColor = micColor && micColor !== 'auto';
 
   return (
     <svg
@@ -75,7 +75,7 @@ export const AiVoiceChatLogo = ({
           </feMerge>
         </filter>
 
-        {/* Smooth Hardware-Accelerated Scoped Animations */}
+        {/* Smooth Hardware-Accelerated Scoped Animations & Dynamic Theme Styles */}
         <style>{`
           @keyframes unimitra-ring-rotate-${uniqueId} {
             0% { transform: rotate(0deg); }
@@ -128,6 +128,42 @@ export const AiVoiceChatLogo = ({
           .unimitra-wave-speaking-3-${uniqueId} {
             animation: unimitra-wave-talk-3-${uniqueId} 0.75s ease-in-out infinite alternate;
           }
+
+          /* Microphone Color: Black in Light Mode, White in Dark Mode */
+          .unimitra-mic-fill-${uniqueId} {
+            fill: ${isCustomColor ? micColor : '#000000'};
+            transition: fill 0.25s ease;
+          }
+          .unimitra-mic-stroke-${uniqueId} {
+            stroke: ${isCustomColor ? micColor : '#000000'};
+            transition: stroke 0.25s ease;
+          }
+          .unimitra-mic-grille-${uniqueId} {
+            stroke: ${isCustomColor ? micColor : '#8B5CF6'};
+            opacity: 0.8;
+            transition: stroke 0.25s ease;
+          }
+
+          ${!isCustomColor ? `
+          :root.dark .unimitra-mic-fill-${uniqueId},
+          .dark .unimitra-mic-fill-${uniqueId},
+          [data-theme="dark"] .unimitra-mic-fill-${uniqueId} {
+            fill: #FFFFFF !important;
+          }
+
+          :root.dark .unimitra-mic-stroke-${uniqueId},
+          .dark .unimitra-mic-stroke-${uniqueId},
+          [data-theme="dark"] .unimitra-mic-stroke-${uniqueId} {
+            stroke: #FFFFFF !important;
+          }
+
+          :root.dark .unimitra-mic-grille-${uniqueId},
+          .dark .unimitra-mic-grille-${uniqueId},
+          [data-theme="dark"] .unimitra-mic-grille-${uniqueId} {
+            stroke: #22D3EE !important;
+            opacity: 0.9;
+          }
+          ` : ''}
         `}</style>
       </defs>
 
@@ -247,7 +283,7 @@ export const AiVoiceChatLogo = ({
         />
       </g>
 
-      {/* 4. CENTER MINIMAL WHITE MICROPHONE SYMBOL (#FFFFFF) */}
+      {/* 4. CENTER MINIMAL MICROPHONE SYMBOL (Black in Light Mode, White in Dark Mode) */}
       <g>
         {/* Microphone Capsule */}
         <rect
@@ -256,41 +292,40 @@ export const AiVoiceChatLogo = ({
           width="11.5"
           height="22"
           rx="5.75"
-          fill="#FFFFFF"
+          className={`unimitra-mic-fill-${uniqueId} fill-black dark:fill-white`}
         />
 
         {/* Minimal Microphone Sound Grille Line */}
         <path
           d="M 46 36.5 L 54 36.5"
-          stroke="#8B5CF6"
           strokeWidth="1.25"
           strokeLinecap="round"
-          strokeOpacity="0.4"
+          className={`unimitra-mic-grille-${uniqueId}`}
         />
 
         {/* Microphone Cradle (Arc) */}
         <path
           d="M 38.5 44 C 38.5 54.5, 61.5 54.5, 61.5 44"
-          stroke="#FFFFFF"
           strokeWidth="2.75"
           strokeLinecap="round"
           fill="none"
+          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
         />
 
         {/* Microphone Vertical Stem */}
         <path
           d="M 50 54 L 50 64"
-          stroke="#FFFFFF"
           strokeWidth="2.75"
           strokeLinecap="round"
+          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
         />
 
         {/* Microphone Base */}
         <path
           d="M 42 64 L 58 64"
-          stroke="#FFFFFF"
           strokeWidth="2.75"
           strokeLinecap="round"
+          className={`unimitra-mic-stroke-${uniqueId} stroke-black dark:stroke-white`}
         />
       </g>
     </svg>
@@ -298,4 +333,3 @@ export const AiVoiceChatLogo = ({
 };
 
 export default AiVoiceChatLogo;
-
