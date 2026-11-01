@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { universityService } from '../../services/universityService';
 import { 
   SparklesIcon, 
-  AiVoiceChatLogo, 
+  VoiceAssistantLogo, 
   BuildingLibraryIcon, 
   ClipboardDocumentCheckIcon, 
   BanknotesIcon, 
@@ -144,9 +144,9 @@ export const DashboardHome = ({
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => onNavigateTab('assistant')}
-              className="flex items-center space-x-2 px-5 py-3 rounded-xl font-semibold text-white bg-[#123C3A] hover:bg-[#1a514e] dark:bg-[#55C7B2] dark:hover:bg-[#6be0cb] dark:text-[#0B1518] transition-all cursor-pointer shadow-xs font-heading text-xs sm:text-sm"
+              className="flex items-center space-x-2 px-5 py-3 rounded-xl font-semibold text-white bg-[#123C3A] hover:bg-[#1a514e] dark:bg-[#55C7B2] dark:hover:bg-[#6be0cb] dark:text-[#16181A] transition-all cursor-pointer shadow-xs font-heading text-xs sm:text-sm"
             >
-              <AiVoiceChatLogo className="w-4.5 h-4.5" animated={true} />
+              <VoiceAssistantLogo className="w-6 h-6" animated={true} />
               <span>{currentLang === 'as' ? 'AI সহায়কক সোধক' : 'Ask AI Assistant'}</span>
             </button>
 
@@ -192,7 +192,7 @@ export const DashboardHome = ({
 
           <button
             type="submit"
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white bg-[#123C3A] hover:bg-[#1a514e] dark:bg-[#55C7B2] dark:hover:bg-[#6be0cb] dark:text-[#0B1518] transition-all cursor-pointer shadow-xs text-xs sm:text-sm shrink-0 font-heading"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white bg-[#123C3A] hover:bg-[#1a514e] dark:bg-[#55C7B2] dark:hover:bg-[#6be0cb] dark:text-[#16181A] transition-all cursor-pointer shadow-xs text-xs sm:text-sm shrink-0 font-heading"
           >
             <span>{currentLang === 'as' ? 'উত্তৰ অন্বেষণ কৰক' : 'Query Knowledge Base'}</span>
             <ArrowRightIcon className="w-4 h-4" />
@@ -423,7 +423,7 @@ export const DashboardHome = ({
               className="p-4 rounded-xl bg-white/70 dark:bg-[#142426]/70 border border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2.5"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2]">
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-[#E9F0ED] dark:bg-[#16181A] text-[#123C3A] dark:text-[#55C7B2]">
                   {item.domain}
                 </span>
                 <span className="text-[11px] text-[#627680] dark:text-[#879B99]">

@@ -10,8 +10,8 @@
   --color-editorial-accent-light: #D4A96A;
   --color-editorial-text-light: #273B45;
 
-  --color-editorial-bg-dark: #0B1518;
-  --color-editorial-bg-dark-sec: #142426;
+  --color-editorial-bg-dark: #16181A;
+  --color-editorial-bg-dark-sec: #1E2226;
   --color-editorial-accent-primary-dark: #55C7B2;
   --color-editorial-accent-sec-dark: #E0B77A;
   --color-editorial-text-dark: #DCE8E4;
@@ -43,10 +43,10 @@
 
 .dark {
   /* Dark Theme Tokens */
-  --bg-primary: #0B1518;
-  --bg-secondary: #142426;
-  --bg-surface: #142426;
-  --bg-surface-elevated: rgba(20, 36, 38, 0.78);
+  --bg-primary: #16181A;
+  --bg-secondary: #1E2226;
+  --bg-surface: #1E2226;
+  --bg-surface-elevated: rgba(30, 34, 38, 0.85);
   --color-primary: #55C7B2;
   --color-accent: #E0B77A;
   --text-primary: #DCE8E4;
@@ -277,4 +277,98 @@ textarea {
               border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================================= */
+/* DUAL NEON OUTLINE & GLOW FOR AI VOICE ASSISTANT           */
+/* ========================================================= */
+
+/* Light Mode: Electric Neon Violet (#8B5CF6 / #7C3AED) */
+.neon-voice-orb {
+  border: 2px solid rgba(139, 92, 246, 0.9) !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.55),
+              0 0 32px rgba(139, 92, 246, 0.25),
+              inset 0 0 10px rgba(139, 92, 246, 0.15) !important;
+  animation: neon-pulse-light 2.8s ease-in-out infinite;
+}
+
+/* Dark Mode: Cyber Neon Cyan / Electric Aqua (#22D3EE / #00F5D4) */
+html.dark .neon-voice-orb,
+.dark .neon-voice-orb {
+  border: 2px solid #22D3EE !important;
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.8),
+              0 0 45px rgba(34, 211, 238, 0.4),
+              inset 0 0 14px rgba(34, 211, 238, 0.2) !important;
+  animation: neon-pulse-dark 2.8s ease-in-out infinite;
+}
+
+/* Neon Outline for Opened Card */
+.neon-voice-card {
+  border: 2px solid rgba(139, 92, 246, 0.65) !important;
+  box-shadow: 0 0 22px rgba(139, 92, 246, 0.3),
+              0 24px 60px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark .neon-voice-card,
+.dark .neon-voice-card {
+  border: 2px solid rgba(34, 211, 238, 0.85) !important;
+  box-shadow: 0 0 32px rgba(34, 211, 238, 0.5),
+              0 24px 60px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Neon Outline for Minimized Audio Bar */
+.neon-voice-minimized {
+  border: 2px solid rgba(139, 92, 246, 0.75) !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.4) !important;
+}
+
+html.dark .neon-voice-minimized,
+.dark .neon-voice-minimized {
+  border: 2px solid #22D3EE !important;
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.65) !important;
+}
+
+/* Smooth Neon Breathing Pulse */
+@keyframes neon-pulse-light {
+  0%, 100% {
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.5),
+                0 0 28px rgba(139, 92, 246, 0.2),
+                inset 0 0 8px rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.85),
+                0 0 46px rgba(139, 92, 246, 0.42),
+                inset 0 0 16px rgba(139, 92, 246, 0.25);
+    border-color: #8B5CF6;
+  }
+}
+
+@keyframes neon-pulse-dark {
+  0%, 100% {
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.7),
+                0 0 36px rgba(34, 211, 238, 0.35),
+                inset 0 0 10px rgba(34, 211, 238, 0.18);
+    border-color: #22D3EE;
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(34, 211, 238, 1),
+                0 0 58px rgba(34, 211, 238, 0.55),
+                inset 0 0 20px rgba(34, 211, 238, 0.32);
+    border-color: #00F5D4;
+  }
+}
+
+/* ========================================================= */
+/* ACADEMIC CONSTELLATION & BLUEPRINT PATTERN (90% BLACK)   */
+/* ========================================================= */
+
+.dark body,
+html.dark body {
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(85, 199, 178, 0.14) 1px, transparent 0),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 36px 36px, 36px 36px, 36px 36px;
 }

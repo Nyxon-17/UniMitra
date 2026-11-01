@@ -17,7 +17,7 @@ export const AuroraBackground = ({ className = '' }) => {
       aria-hidden="true"
     >
       {/* 1. Base Canvas - Natural light beige in light mode, deep oceanic obsidian in dark mode */}
-      <div className="absolute inset-0 bg-[#F7F6F0] dark:bg-[#0B1518] transition-colors duration-500" />
+      <div className="absolute inset-0 bg-[#F7F6F0] dark:bg-[#16181A] transition-colors duration-500" />
 
       {/* 2. Abstract Flowing Teal & Mint Aurora Gradient Orb (Top-Right) */}
       <div 
@@ -43,23 +43,33 @@ export const AuroraBackground = ({ className = '' }) => {
         }}
       />
 
-      {/* 5. Delicate Abstract Architectural Lines (Low Opacity SVG Vector Overlay) */}
+      {/* 5. Academic Blueprint & Constellation Grid Pattern (Suits University Site) */}
       <svg 
-        className="absolute inset-0 w-full h-full opacity-[0.035] dark:opacity-[0.045] stroke-[#123C3A] dark:stroke-[#55C7B2]"
+        className="absolute inset-0 w-full h-full opacity-[0.06] dark:opacity-[0.18] stroke-[#123C3A] dark:stroke-[#55C7B2] transition-opacity duration-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
         <defs>
-          <pattern id="editorial-grid" width="72" height="72" patternUnits="userSpaceOnUse">
-            <path d="M 72 0 L 0 0 0 72" fill="none" strokeWidth="0.8" />
-            <circle cx="72" cy="72" r="1.2" fill="currentColor" />
+          <pattern id="academic-grid-pattern" width="48" height="48" patternUnits="userSpaceOnUse">
+            {/* Precision Grid Cell */}
+            <path d="M 48 0 L 0 0 0 48" fill="none" strokeWidth="0.75" />
+            
+            {/* Coordinate Crosshairs at Intersections */}
+            <path d="M 0 3 L 0 -3 M -3 0 L 3 0" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 48 3 L 48 -3 M 45 0 L 51 0" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 0 51 L 0 45 M -3 48 L 3 48" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 48 51 L 48 45 M 45 48 L 51 48" strokeWidth="0.8" strokeLinecap="round" />
+
+            {/* Celestial & Academic Knowledge Micro-Nodes */}
+            <circle cx="24" cy="24" r="0.8" fill="currentColor" opacity="0.65" />
+            <circle cx="48" cy="48" r="1.2" fill="currentColor" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#editorial-grid)" />
+        <rect width="100%" height="100%" fill="url(#academic-grid-pattern)" />
       </svg>
 
       {/* 6. Subtle Edge Vignette for Crystal Clear Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#F7F6F0]/60 via-transparent to-[#F7F6F0]/30 dark:from-[#0B1518]/70 dark:via-transparent dark:to-[#0B1518]/40 transition-colors duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#F7F6F0]/60 via-transparent to-[#F7F6F0]/30 dark:from-[#16181A]/70 dark:via-transparent dark:to-[#16181A]/40 transition-colors duration-500" />
     </div>
   );
 };
