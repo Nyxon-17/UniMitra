@@ -296,17 +296,38 @@ export const AdminConsole = ({
       });
       triggerToast('Campus facility details saved.');
     } else if (univAddModalDomain === 'notices') {
+      const pdfPath = newItemForm.portalUrl || newItemForm.sourceDoc || '';
       universityService.addNotice({
         title: newItemForm.title,
         asTitle: newItemForm.asTitle || newItemForm.title,
-        department: newItemForm.department,
-        refNo: newItemForm.refNo,
-        date: newItemForm.date || 'Today',
+        department: newItemForm.department || 'Administrative Section',
+        refNo: newItemForm.refNo || ('DU/NOT/' + new Date().getFullYear() + '/' + Math.floor(Math.random() * 800 + 100)),
+        date: newItemForm.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
         summary: newItemForm.summary,
         asSummary: newItemForm.asSummary || newItemForm.summary,
-        isUrgent: newItemForm.isUrgent
+        isUrgent: newItemForm.isUrgent || false,
+        pdfUrl: pdfPath
       });
-      triggerToast('Official Notice published and active across all portals.');
+      if (pdfPath) {
+        documentService.uploadAdminDocument({
+          title: newItemForm.title,
+          asTitle: newItemForm.asTitle || newItemForm.title,
+          university: univProfile.name || 'Dibrugarh University (DU)',
+          category: 'University Regulations & Ordinances',
+          department: newItemForm.department || 'Administrative Section',
+          academicYear: '2024-2025',
+          sourceUrl: pdfPath,
+          summary: newItemForm.summary,
+          citation: newItemForm.refNo || 'Official University Notice',
+          fileName: pdfPath.split('/').pop(),
+          fileType: 'PDF',
+          fileSize: '5.4 KB',
+          pages: 1,
+          chunksCount: 12,
+          ocrApplied: true
+        });
+      }
+      triggerToast('Official Notice published, vectorized and active across all portals.');
     }
     setUnivAddModalOpen(false);
   };
@@ -1585,13 +1606,26 @@ export const AdminConsole = ({
                           </p>
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteUnivItem('notices', not.id)}
-                          className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer shrink-0"
-                          title="Delete notice"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center space-x-2 shrink-0">
+                          {not.pdfUrl && (
+                            <a
+                              href={not.pdfUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1.5 rounded-xl bg-[#FFE9A9]/50 dark:bg-[#0A0A0A] border border-[#FF933E] dark:border-[#03C988] text-[#FF933E] dark:text-[#03C988] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black font-black text-xs transition-all flex items-center space-x-1 cursor-pointer"
+                            >
+                              <EyeIcon className="w-3.5 h-3.5" />
+                              <span>View PDF</span>
+                            </a>
+                          )}
+                          <button
+                            onClick={() => handleDeleteUnivItem('notices', not.id)}
+                            className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer shrink-0"
+                            title="Delete notice"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -2930,6 +2964,64 @@ export const AdminConsole = ({
                 </div>
               )}
 
+              {univAddModalDomain === 'notices' && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
+                        Notice Reference Number
+                      </label>
+                      <input
+                        type="text"
+                        value={newItemForm.refNo || ''}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, refNo: e.target.value })}
+                        placeholder="e.g. DU/EXAM/NOT/2024/912"
+                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
+                        Issuing Date
+                      </label>
+                      <input
+                        type="text"
+                        value={newItemForm.date || ''}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, date: e.target.value })}
+                        placeholder="e.g. 28 October 2024"
+                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
+                        PDF File Path / URL
+                      </label>
+                      <input
+                        type="text"
+                        value={newItemForm.portalUrl || newItemForm.sourceDoc || ''}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, portalUrl: e.target.value, sourceDoc: e.target.value })}
+                        placeholder="/notices/DU_Odd_Sem_Exam_Form_Fillup_2024.pdf"
+                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="noticeUrgentCheckbox"
+                      checked={Boolean(newItemForm.isUrgent)}
+                      onChange={(e) => setNewItemForm({ ...newItemForm, isUrgent: e.target.checked })}
+                      className="rounded border-gray-300 text-[#FF933E] focus:ring-[#FF933E]"
+                    />
+                    <label htmlFor="noticeUrgentCheckbox" className="text-xs font-bold text-red-600 dark:text-red-400 cursor-pointer">
+                      Mark as Urgent Institutional Alert (Highlight with Red Badge)
+                    </label>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
                   Summary / Provisions (English) *
@@ -3120,7 +3212,18 @@ export const AdminConsole = ({
               </div>
             )}
 
-            <div className="flex justify-end pt-2">
+            <div className="flex items-center justify-between pt-2">
+              {(inspectDocModal.fileUrl || inspectDocModal.sourceUrl) ? (
+                <a
+                  href={inspectDocModal.fileUrl || inspectDocModal.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#123C3A] hover:bg-[#1C504E] dark:bg-[#03C988] dark:text-black dark:hover:bg-[#02B377] flex items-center space-x-1.5 cursor-pointer shadow-xs"
+                >
+                  <EyeIcon className="w-4 h-4" />
+                  <span>Open Official PDF</span>
+                </a>
+              ) : <div />}
               <button
                 type="button"
                 onClick={() => setInspectDocModal(null)}

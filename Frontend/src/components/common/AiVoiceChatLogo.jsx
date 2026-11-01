@@ -66,49 +66,48 @@ export const AiVoiceChatLogo = ({
           </feMerge>
         </filter>
 
-        {/* Scoped Zoom In & Zoom Out Keyframe Animations */}
+        {/* Scoped Responsive Zoom In & Zoom Out Animations (Hardware-Accelerated for Low to High Devices) */}
         <style>{`
           @keyframes gemini-zoom-in-out-${uniqueId} {
             0%, 100% {
-              transform: scale(0.90);
-              filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.45));
+              transform: scale3d(0.92, 0.92, 1);
             }
             50% {
-              transform: scale(1.15);
-              filter: drop-shadow(0 0 14px rgba(124, 58, 237, 0.75));
+              transform: scale3d(1.12, 1.12, 1);
             }
           }
 
           @keyframes gemini-speaking-zoom-${uniqueId} {
             0%, 100% {
-              transform: scale(0.88) rotate(-3deg);
-              filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+              transform: scale3d(0.88, 0.88, 1) rotate(-3deg);
             }
             50% {
-              transform: scale(1.22) rotate(4deg);
-              filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.9));
+              transform: scale3d(1.20, 1.20, 1) rotate(4deg);
             }
           }
 
           @keyframes gemini-companion-twinkle-${uniqueId} {
             0%, 100% {
-              transform: scale(0.8);
-              opacity: 0.65;
+              transform: scale3d(0.82, 0.82, 1);
+              opacity: 0.7;
             }
             50% {
-              transform: scale(1.25);
+              transform: scale3d(1.22, 1.22, 1);
               opacity: 1;
             }
           }
 
           @keyframes gemini-listening-halo-${uniqueId} {
-            0% { transform: scale(0.85); opacity: 0.85; }
-            50% { transform: scale(1.26); opacity: 0.2; }
-            100% { transform: scale(0.85); opacity: 0.85; }
+            0% { transform: scale3d(0.85, 0.85, 1); opacity: 0.85; }
+            50% { transform: scale3d(1.25, 1.25, 1); opacity: 0.2; }
+            100% { transform: scale3d(0.85, 0.85, 1); opacity: 0.85; }
           }
 
           .gemini-main-star-${uniqueId} {
             transform-origin: 48px 50px;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
             ${isSpeaking 
               ? `animation: gemini-speaking-zoom-${uniqueId} 0.75s ease-in-out infinite alternate;` 
               : animated 
@@ -118,11 +117,16 @@ export const AiVoiceChatLogo = ({
 
           .gemini-companion-star-${uniqueId} {
             transform-origin: 78px 22px;
+            will-change: transform, opacity;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
             ${animated ? `animation: gemini-companion-twinkle-${uniqueId} 1.8s ease-in-out infinite;` : ''}
           }
 
           .gemini-listening-ring-${uniqueId} {
             transform-origin: 50px 50px;
+            will-change: transform, opacity;
+            transform: translate3d(0, 0, 0);
             animation: gemini-listening-halo-${uniqueId} 1.5s ease-out infinite;
           }
         `}</style>

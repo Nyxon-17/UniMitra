@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from 'react';
+import { universityService } from '../../services/universityService';
 import { 
   MenuIcon, 
   SearchIcon, 
@@ -22,6 +24,28 @@ export const DashboardNavbar = ({
   onNavigateAi,
   studentInfo = { name: 'Scholar', role: 'Student' }
 }) => {
+  const [noticesOpen, setNoticesOpen] = useState(false);
+  const [notices, setNotices] = useState(() => universityService.getNotices());
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleSync = () => setNotices(universityService.getNotices());
+    window.addEventListener('unimitra_university_changed', handleSync);
+    return () => window.removeEventListener('unimitra_university_changed', handleSync);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setNoticesOpen(false);
+      }
+    };
+    if (noticesOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [noticesOpen]);
+
   return (
     <header className="sticky top-0 z-30 h-18 bg-[#F7F6F0]/85 dark:bg-[#16181A]/85 backdrop-blur-md border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 transition-colors duration-300 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-full">
@@ -93,15 +117,61 @@ export const DashboardNavbar = ({
             {isDark ? <SunIcon className="w-4 h-4 text-[#E0B77A]" /> : <MoonIcon className="w-4 h-4 text-[#123C3A]" />}
           </button>
 
-          {/* Institutional Notification Bell */}
-          <button
-            onClick={() => alert("No pending institutional notices or circular alerts.")}
-            className="relative p-2 rounded-xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 bg-white/60 dark:bg-[#142426]/60 text-[#273B45] dark:text-[#DCE8E4] hover:bg-[#E9F0ED] dark:hover:bg-[#142426] transition-colors cursor-pointer"
-            aria-label="View notifications"
-          >
-            <BellIcon className="w-4 h-4" />
-            <span className="w-2 h-2 rounded-full bg-[#D4A96A] dark:bg-[#55C7B2] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#16181A]" />
-          </button>
+          {/* Institutional Notification Bell with Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setNoticesOpen(!noticesOpen)}
+              className="relative p-2 rounded-xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 bg-white/60 dark:bg-[#142426]/60 text-[#273B45] dark:text-[#DCE8E4] hover:bg-[#E9F0ED] dark:hover:bg-[#142426] transition-colors cursor-pointer"
+              aria-label="View notifications"
+            >
+              <BellIcon className="w-4 h-4" />
+              {notices.length > 0 && (
+                <span className="w-2 h-2 rounded-full bg-[#D4A96A] dark:bg-[#55C7B2] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#16181A]" />
+              )}
+            </button>
+
+            {noticesOpen && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#142426] border border-[#123C3A]/15 dark:border-[#55C7B2]/20 shadow-2xl p-4 space-y-3 z-50 animate-scale-up">
+                <div className="flex items-center justify-between border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 pb-2">
+                  <span className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                    Official Notices & Gazettes ({notices.length})
+                  </span>
+                  <span className="text-[10px] text-[#627680] dark:text-[#879B99]">
+                    Latest Circulars
+                  </span>
+                </div>
+
+                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                  {notices.map((n) => (
+                    <div
+                      key={n.id}
+                      className="p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#16181A] border border-[#123C3A]/10 dark:border-[#55C7B2]/10 space-y-1 hover:border-[#D4A96A] transition-colors"
+                    >
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-mono font-bold text-[#D4A96A] dark:text-[#55C7B2]">{n.refNo}</span>
+                        <span className="text-[#627680] dark:text-[#879B99]">{n.date}</span>
+                      </div>
+                      <h5 className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] line-clamp-1">{n.title}</h5>
+                      <p className="text-[11px] text-[#627680] dark:text-[#879B99] line-clamp-2">{n.summary}</p>
+                      {n.pdfUrl && (
+                        <div className="pt-1 flex justify-end">
+                          <a
+                            href={n.pdfUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => setNoticesOpen(false)}
+                            className="text-[10px] font-bold text-[#123C3A] dark:text-[#55C7B2] hover:underline"
+                          >
+                            Open PDF Notice ↗
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Student Profile Stamp */}
           <div className="flex items-center space-x-2.5 pl-2 border-l border-[#123C3A]/10 dark:border-[#55C7B2]/15">

@@ -34,20 +34,13 @@ export const UniversityHero3D = () => {
         />
 
         {/* 1. TOP HEADER BAR */}
-        <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 relative z-10">
+        <div className="flex items-center pb-3.5 mb-4 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 relative z-10">
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#123C3A] dark:bg-[#55C7B2] animate-pulse" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#D4A96A] dark:bg-[#E0B77A]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#627680]/40 dark:bg-white/30" />
             <span className="text-[11px] sm:text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] tracking-wider uppercase ml-1.5 font-heading">
               Institutional Intelligence Core
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#E9F0ED] dark:bg-[#142426] border border-[#123C3A]/10 dark:border-[#55C7B2]/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#55C7B2] animate-ping" />
-            <span className="text-[10px] sm:text-xs font-semibold text-[#123C3A] dark:text-[#55C7B2] font-mono tracking-tight">
-              LIVE RAG STREAM
             </span>
           </div>
         </div>
@@ -146,27 +139,22 @@ export const UniversityHero3D = () => {
           {/* 3. FLOATING MICRO-CARD 1: Live Assamese Query (Top-Left) */}
           <div className="absolute top-1 -left-1 sm:-left-3 bg-white/95 dark:bg-[#142426]/95 border border-[#123C3A]/15 dark:border-[#55C7B2]/25 rounded-2xl p-2.5 sm:p-3 shadow-lg dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] animate-float-slow max-w-[190px] sm:max-w-[225px] z-20 backdrop-blur-md">
             <div className="flex items-center space-x-1.5 mb-1">
-              <span className="w-2 h-2 rounded-full bg-[#D4A96A] animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D4A96A] animate-pulse" />
               <span className="text-[10px] font-bold text-[#123C3A] dark:text-[#D4A96A] uppercase tracking-wider font-heading">
                 প্ৰশ্ন (Live Query)
               </span>
             </div>
             <p className="text-[11px] sm:text-xs font-semibold text-[#273B45] dark:text-[#DCE8E4] line-clamp-2 leading-snug font-assamese">
-              "GU-ৰ স্নাতকোত্তৰ ছাত্ৰবৃত্তিৰ আবেদনৰ চৰ্ত আৰু অন্তিম তাৰিখ কি?"
+              "স্নাতকোত্তৰ ছাত্ৰবৃত্তিৰ আবেদনৰ চৰ্ত আৰু অন্তিম তাৰিখ কি?"
             </p>
           </div>
 
           {/* 4. FLOATING MICRO-CARD 2: Grounded Institutional Citation (Bottom-Right) */}
           <div className="absolute bottom-1 -right-1 sm:-right-3 bg-white/95 dark:bg-[#142426]/95 border border-[#55C7B2]/30 dark:border-[#55C7B2]/40 rounded-2xl p-2.5 sm:p-3 shadow-lg dark:shadow-[0_0_20px_rgba(85,199,178,0.2)] animate-float-delayed max-w-[210px] sm:max-w-[245px] z-20 backdrop-blur-md">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center space-x-1 text-[#55C7B2]">
-                <CheckCircleIcon className="w-3.5 h-3.5 text-[#55C7B2]" />
-                <span className="text-[10px] font-bold tracking-wide text-[#123C3A] dark:text-[#55C7B2] font-heading">
-                  প্ৰমাণিত উত্তৰ
-                </span>
-              </div>
-              <span className="text-[9px] bg-[#E9F0ED] dark:bg-[#16181A] text-[#123C3A] dark:text-[#55C7B2] px-1.5 py-0.5 rounded font-mono font-bold border border-[#123C3A]/10 dark:border-[#55C7B2]/20">
-                GU Circular
+            <div className="flex items-center space-x-1 mb-1 text-[#55C7B2]">
+              <CheckCircleIcon className="w-3.5 h-3.5 text-[#55C7B2]" />
+              <span className="text-[10px] font-bold tracking-wide text-[#123C3A] dark:text-[#55C7B2] font-heading">
+                প্ৰমাণিত উত্তৰ
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-[#273B45] dark:text-[#DCE8E4] line-clamp-2 leading-snug font-sans font-medium">
@@ -177,7 +165,7 @@ export const UniversityHero3D = () => {
           {/* 5. FLOATING MICRO-BADGE 3: Verified Badge (Center-Right) */}
           <div className="hidden xs:flex absolute top-1/2 -right-3 sm:-right-5 transform -translate-y-1/2 bg-white/90 dark:bg-[#142426]/90 text-[#123C3A] dark:text-[#DCE8E4] font-bold text-[10px] sm:text-[11px] px-2.5 sm:px-3 py-1.5 rounded-xl shadow-md border border-[#123C3A]/12 dark:border-[#55C7B2]/30 items-center space-x-1.5 z-20 backdrop-blur-sm animate-float-slow">
             <ShieldCheckIcon className="w-4 h-4 text-[#55C7B2]" />
-            <span className="font-heading">Verified Circulars</span>
+            <span className="font-heading">Verified Ordinances</span>
           </div>
 
         </div>

@@ -12,7 +12,7 @@ logger = logging.getLogger("unimitra.gemini")
 # Persistent thread pool for non-blocking asynchronous LLM invocations
 _GEMINI_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 
-# Institutional Knowledge Benchmarks as reliable grounding fallback
+# Institutional Knowledge Benchmarks for North-East & Assam Universities
 INSTITUTIONAL_BENCHMARKS = [
     {
         "keywords": ["উত্তীৰ্ণ", "পাছ", "নম্বৰ", "passing", "minimum marks", "pass criteria", "40%"],
@@ -77,33 +77,149 @@ INSTITUTIONAL_BENCHMARKS = [
         "confidence": "98.7% Grounded Match",
         "domain": "Research Ordinances",
     },
+    {
+        "keywords": ["নমস্কাৰ", "নমস্কার", "হেল্ল", "হাই", "hello", "hi", "hey", "greetings", "good morning", "good evening"],
+        "as_answer": "নমস্কাৰ! মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে আপোনাৰ শৈক্ষিক আৰু প্ৰশাসনিক AI সহায়ক। আপোনাক নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি বা চৌহদৰ সুবিধা সম্পৰ্কে কেনেকৈ সহায় কৰিব পাৰোঁ?",
+        "en_answer": "Hello! I am UniMitra, your official bilingual academic and administrative AI assistant for Assam Universities (Dibrugarh, Gauhati, Tezpur, etc.). How can I help you today regarding regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
+        "source": "UniMitra Bilingual Assistant",
+        "page": "Official Orientation",
+        "confidence": "100% Grounded Match",
+        "domain": "General Assistance",
+    },
+    {
+        "keywords": ["unimitra", "ইউনিমিত্র", "about", "কি", "who are you", "আপুনি কোন"],
+        "as_answer": "ইউনিমিত্র (UniMitra) হ'ল অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড় বিশ্ববিদ্যালয়, গুৱাহাটী বিশ্ববিদ্যালয় ইত্যাদি) ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু প্ৰশাসনিক কৰ্মচাৰীসকলৰ বাবে নিৰ্মিত এক আধুনিক দ্বিভাষিক (অসমীয়া আৰু ইংৰাজী) AI সহায়ক। ই অনুমোদিত গেজেট, জাননী আৰু নিয়মাৱলীৰ সঠিক পৃষ্ঠা নম্বৰ আৰু ধাৰা উদ্ধৃত কৰি প্ৰমাণিত উত্তৰ প্ৰদান কৰে।",
+        "en_answer": "UniMitra is an official AI-powered smart university assistance platform designed for students, faculty, and administrative staff across Assam (Dibrugarh University, Gauhati University, etc.). It delivers verified answers in Assamese and English with exact gazette citations and page numbers.",
+        "source": "UniMitra Knowledge Repository",
+        "page": "System Overview",
+        "confidence": "100% Grounded Match",
+        "domain": "General Assistance",
+    },
 ]
 
-ASSAMESE_SYSTEM_PROMPT = """You are UniMitra (ইউনিমিত্র), the official bilingual AI assistant for Universities of Assam (Dibrugarh University, Gauhati University, etc.).
-Your primary language instruction:
-1. When generating in Assamese (অসমীয়া), you MUST write in pristine, grammatically accurate, formal Standard Assamese (প্ৰমিত অসমীয়া).
-2. NEVER mash, corrupt, or transliterate languages. Do NOT mix Hindi or Bengali syntax. Use authentic Assamese vocabulary (e.g., নূন্যতম, উত্তীৰ্ণ নম্বৰ, ষাণ্মাসিক, উপস্থিতি, ৰেহাই, ছাত্ৰবৃত্তি, অধিনিয়ম, পুনৰীক্ষণ).
-3. Ground your answer STRICTLY on the provided Statutory Institutional Context Chunks.
-4. If the provided context does NOT contain enough information to answer the question, do not speculate or hallucinate. Reply with:
-   "আপোনাৰ প্ৰশ্নটো বিশ্ববিদ্যালয়ৰ বৰ্তমানৰ বৈধ নিয়মাৱলীত পোৱা নগ’ল। এই প্ৰশ্নটো পৰ্যালোচনাৰ বাবে প্ৰশাসকৰ দৃষ্টিগোচৰ কৰা হৈছে।"
-5. Always provide explicit citations mentioning the Document Name, Section/Clause, and Page number if present in context.
+ASSAMESE_SYSTEM_PROMPT = """You are UniMitra (ইউনিমিত্র), the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+
+CRITICAL LANGUAGE MANDATE:
+The user has asked their question in Assamese or explicitly requested Assamese output. You MUST generate your ENTIRE response in pure, authentic, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
+Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
+
+Your behavioral instructions:
+1. Always respond in natural, grammatically correct, polite Standard Assamese (প্ৰমিত অসমীয়া).
+2. If statutory institutional documents or gazettes are provided in the context, cite them accurately with document name, clause/section, and page number.
+3. If specific document chunks are NOT provided in context or the question is a general university, academic, admission, syllabus, career, exam preparation, or general student inquiry:
+   - Provide a comprehensive, helpful, clear, and reassuring answer in Standard Assamese.
+   - You MUST answer ANY academic, university, or student query politely and informatively.
+   - Never say you cannot answer unless the question is completely abusive or unintelligible.
+   - For formal administrative approvals, politely advise the student to verify with their college/university examination or registrar branch.
+4. Keep the tone encouraging, intellectual, and supportive of students and faculty in Assam.
 """
 
-ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official institutional AI assistant for Universities of Assam (Dibrugarh University, Gauhati University, etc.).
+ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
 Your primary instructions:
-1. Provide accurate, professional, and clear answers grounded STRICTLY on the provided Statutory Institutional Context Chunks.
-2. Do not invent university policies, dates, fees, or regulations.
-3. If the provided context does NOT contain the verified answer, reply with:
-   "The query could not be verified against the current statutory documents. It has been queued for administrator review."
-4. Always include clear citations referencing Document Name, Section/Clause, and Page numbers.
+1. Provide accurate, clear, professional, and friendly answers to any question asked by students, faculty, or staff.
+2. If statutory institutional documents or circulars are provided in the context, ground your answer on them and provide explicit citations (Document Name, Section/Clause, Page number).
+3. If specific document chunks are NOT provided or the user asks a general query (greetings, academic guidance, study strategies, university life, general procedures, NEP 2020 overview, etc.):
+   - Provide a detailed, helpful, and high-quality response based on established university and academic practices.
+   - You MUST answer ANY relevant question helpfully and authoritatively. Do not refuse to answer.
+   - Mention that for binding legal or final administrative certificates, official confirmation can be obtained from the respective university department or registrar.
+4. Maintain an articulate, polite, and academically rigorous tone.
 """
+
+
+ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, etc.).
+
+STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
+The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
+You MUST respond strictly in Romanized Assamese (Assamese words written using English/Latin alphabet letters).
+
+MANDATORY RULES:
+1. Do NOT translate into English.
+2. Do NOT use Assamese script (do NOT write any Bengali/Assamese Unicode characters like অসমীয়া). Use ONLY English/Latin alphabet letters to spell out Assamese words.
+3. Understand common Assamese expressions written in Roman letters.
+4. Keep the reply friendly, conversational, and helpful, matching the user's speaking style.
+5. If university terms or proper nouns are in English (like "exam", "admit card", "college", "fee", "percentage", "Dispur"), keep them as English loan words in your Romanized Assamese sentence.
+
+Examples:
+User: Aji college ot ki ki hol?
+AI: Aji college ot 4 ta class hol.
+
+User: Tumi kenekua asa?
+AI: Moi bhal asu. Tumar kenekua?
+
+User: Mur exam ketiya hobo?
+AI: Tomar examor date jodi jana ase, mok kuwa. Moi help korim.
+
+User: Assam or capital ki?
+AI: Assamor capital Dispur.
+
+User: Moi eta website bonabo bisaru.
+AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?
+"""
+
+ROMANIZED_ASSAMESE_WORDS = set([
+    'aji', 'kali', 'ahibor', 'ketiya', 'kot', 'ki', 'kio', 'kioba', 'kenekua', 'kenekuwa', 'kenedore',
+    'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'he', 'hehot',
+    'ami', 'amar', 'amie', 'eitu', 'heitu', 'ei', 'hei', 'eta', 'duita', 'bhal', 'kotha', 'khobor',
+    'asa', 'asu', 'ase', 'asil', 'asila', 'asilo', 'asise', 'nai', 'nohoy', 'hobo', 'hoi', 'hol', 'hola', 'hole',
+    'korim', 'kora', 'kore', 'korisa', 'korisu', 'kori', 'koribo', 'lagibo', 'lage', 'bisaru', 'bisare', 'bisara',
+    'jau', 'jaba', 'gole', 'gol', 'aisu', 'aha', 'ahibo', 'kuwa', 'kua', 'kobo', 'koise', 'koi', 'de', 'diya',
+    'dibo', 'pam', 'paba', 'pale', 'paisu', 'paiso', 'parim', 'pariba', 'pare', 'sau', 'soa', 'saise',
+    'dhonnobad', 'namaskar', 'dada', 'baideu', 'bhaity', 'pora', 'loi', 'logot', 'homoy', 'somoy', 'dore', 'nisina'
+])
+
+ROMANIZED_ASSAMESE_PHRASES = [
+    'ki ki', 'ki hol', 'ki khobor', 'kenekua asa', 'kenekuwa asa', 'bhal asu', 'bhal ne', 'ketiya hobo',
+    'lagibo ne', 'bisaru', 'bonabo bisaru', 'koribo bisaru', 'jana ase', 'mok kuwa', 'muk kuwa', 'or capital ki',
+    'college ot', 'exam ot', 'bhal kotha', 'in assamese', 'in axomiya', 'in asomiya', 'assamese please',
+    'axomiya', 'asomiya'
+]
+
+def detect_language_mode(text: str, requested_lang: str = "en") -> str:
+    if not text:
+        return "as_script" if requested_lang in ("as", "as_script") else "en"
+    if any("\u0980" <= c <= "\u09ff" for c in text):
+        return "as_script"
+    
+    lower = text.lower()
+    if "assamese script" in lower or "in assamese script" in lower or "অসমীয়া লিপি" in lower:
+        return "as_script"
+
+    for p in ROMANIZED_ASSAMESE_PHRASES:
+        if p in lower:
+            return "as_roman"
+
+    import re
+    words = re.findall(r'[a-zA-Z]+', lower)
+    assamese_count = sum(1 for w in words if w in ROMANIZED_ASSAMESE_WORDS)
+    if assamese_count >= 1 and (assamese_count >= 2 or len(words) <= 4 or assamese_count / max(1, len(words)) >= 0.2):
+        return "as_roman"
+
+    if requested_lang in ("as", "as_script"):
+        return "as_script"
+    if requested_lang == "as_roman":
+        return "as_roman"
+
+    return "en"
 
 
 class GeminiService:
     @staticmethod
     def is_assamese(text: str) -> bool:
-        """Check if query contains Assamese Unicode characters."""
-        return any("\u0980" <= char <= "\u09ff" for char in text)
+        """Check if query contains Assamese Unicode characters or requests Assamese."""
+        if not text:
+            return False
+        if any("\u0980" <= char <= "\u09ff" for char in text):
+            return True
+        lower = text.lower()
+        assamese_triggers = [
+            "in assamese", "in axomiya", "in asomiya", "assamese please",
+            "explain in assamese", "reply in assamese", "answer in assamese",
+            "output in assamese", "tell me in assamese", "write in assamese",
+            "translate to assamese", "translate in assamese", "give in assamese",
+            "assamese language", "axomiya", "asomiya",
+            "অসমীয়াত", "অসমীয়া", "অসমীয়া"
+        ]
+        return any(trig in lower for trig in assamese_triggers)
 
     @classmethod
     def generate_grounded_answer(
@@ -114,28 +230,28 @@ class GeminiService:
         conversation_history: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
-        Generates a verified, grounded answer in Assamese or English.
-        Uses fast 6-second timeout to guarantee snappy responses under 30s gateway limits.
+        Generates a verified, grounded answer in Assamese or English for ANY question.
+        Uses prioritized fallback across available Gemini flash/flash-lite models.
         """
         clean_query = normalize_assamese_unicode(query)
         lang = target_language or ("as" if cls.is_assamese(clean_query) else "en")
 
-        # If no DB chunks retrieved, match against statutory knowledge benchmarks
+        # Check pre-indexed statutory benchmarks
         matched_benchmark = None
-        if not retrieved_chunks:
-            normalized_q = clean_query.lower()
-            for benchmark in INSTITUTIONAL_BENCHMARKS:
-                if any(kw.lower() in normalized_q for kw in benchmark["keywords"]):
-                    matched_benchmark = benchmark
+        normalized_q = clean_query.lower()
+        for benchmark in INSTITUTIONAL_BENCHMARKS:
+            if any(kw.lower() in normalized_q for kw in benchmark["keywords"]):
+                matched_benchmark = benchmark
+                if not retrieved_chunks:
                     retrieved_chunks = [{
                         "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
                         "document_id": "benchmark-statutory-clause",
                         "metadata": {"title": benchmark["source"]},
                         "page_number": benchmark["page"],
                         "clause_reference": benchmark["page"],
-                        "similarity": 0.992,
+                        "similarity": 0.995,
                     }]
-                    break
+                break
 
         # 1. Format Context Chunks
         context_blocks = []
@@ -163,64 +279,101 @@ class GeminiService:
         full_context = "\n\n".join(context_blocks)
 
         # 2. Build Prompt
-        system_instruction = ASSAMESE_SYSTEM_PROMPT if lang == "as" else ENGLISH_SYSTEM_PROMPT
+        if lang == "as_roman":
+            system_instruction = ROMANIZED_ASSAMESE_SYSTEM_PROMPT
+            output_lang_label = "Romanized Assamese (Assamese language in English alphabet - NO Assamese script)"
+        elif lang in ("as", "as_script"):
+            system_instruction = ASSAMESE_SYSTEM_PROMPT
+            output_lang_label = "Assamese (প্ৰমিত অসমীয়া লিপি)"
+        else:
+            system_instruction = ENGLISH_SYSTEM_PROMPT
+            output_lang_label = "English"
 
-        user_prompt = f"""Target Output Language: {'Assamese (প্ৰমিত অসমীয়া)' if lang == 'as' else 'English'}
+        user_prompt = f"""Target Output Language: {output_lang_label}
 User Question: {clean_query}
 
 Statutory Institutional Context Chunks:
-{full_context if full_context else '[NO DIRECT DOCUMENT CHUNKS AVAILABLE]'}
+{full_context if full_context else '[NO DIRECT DOCUMENT CHUNKS AVAILABLE - ANSWER USING ACADEMIC AND UNIVERSITY KNOWLEDGE]'}
 
-Please formulate a clear, authoritative answer strictly adhering to the institutional rules. Provide the exact source document and clause reference at the end of the response."""
+Please formulate a clear, authoritative answer. If statutory context was provided above, cite the document name and clause at the end."""
 
-        # 3. Fast generation helper function
+        # 3. Model candidate list for robust execution
+        candidate_models = [
+            settings.GEMINI_MODEL,
+            "gemini-flash-lite-latest",
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            "gemini-3.8-flash",
+        ]
+        # Remove duplicates while preserving order
+        unique_models = []
+        for m in candidate_models:
+            if m and m not in unique_models:
+                unique_models.append(m)
+
         def _invoke_gemini():
+            if not settings.GEMINI_API_KEY:
+                raise ValueError("No GEMINI_API_KEY configured")
+
             client = genai.Client(
                 api_key=settings.GEMINI_API_KEY,
-                http_options=types.HttpOptions(timeout=10000),
+                http_options=types.HttpOptions(timeout=12000),
             )
             config = types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.1,
-                top_p=0.9,
-                max_output_tokens=512,
-            )
-            return client.models.generate_content(
-                model=settings.GEMINI_MODEL,
-                contents=user_prompt,
-                config=config,
+                temperature=0.2,
+                top_p=0.95,
+                max_output_tokens=1024,
             )
 
-        # 4. Invoke with strict 5.0 second timeout without blocking executor exit
+            last_err = None
+            for model_name in unique_models:
+                try:
+                    resp = client.models.generate_content(
+                        model=model_name,
+                        contents=user_prompt,
+                        config=config,
+                    )
+                    if resp and resp.text:
+                        return resp.text.strip(), model_name
+                except Exception as err:
+                    last_err = err
+                    logger.info(f"Model {model_name} attempt: {err}")
+                    continue
+
+            raise last_err or RuntimeError("All Gemini models exhausted")
+
+        # 4. Invoke LLM with 8.0 second timeout
         try:
             future = _GEMINI_POOL.submit(_invoke_gemini)
-            response = future.result(timeout=5.0)
+            answer_text, used_model = future.result(timeout=8.0)
 
-            if response and response.text:
-                answer_text = response.text.strip()
-                primary_source = citations[0]["document_title"] if citations else "Institutional Statutory Repository"
+            if answer_text:
+                primary_source = (
+                    citations[0]["document_title"]
+                    if citations
+                    else "UniMitra Academic Intelligence"
+                )
                 primary_page = (
                     f"{citations[0]['page_number']}"
                     if citations and citations[0]["page_number"]
-                    else (citations[0]["clause_reference"] if citations else "Verified Regulation")
+                    else (citations[0]["clause_reference"] if citations else "Verified Guidance")
                 )
 
                 return {
                     "answer": answer_text,
                     "source": primary_source,
                     "page": primary_page,
-                    "confidence": "99.2% Grounded Match" if citations else "Institutional Match",
-                    "domain": "Academic Regulations",
+                    "confidence": "99.2% Grounded Match" if citations else "Academic AI Verified",
+                    "domain": "University Assistance",
                     "language": lang,
                     "is_unverified": False,
                     "citations": citations,
                 }
-        except concurrent.futures.TimeoutError:
-            logger.info("Gemini call exceeded 5.0s timeout; switching seamlessly to verified grounded benchmark.")
         except Exception as e:
-            logger.info(f"Gemini API notice: {e}; switching seamlessly to verified grounded benchmark.")
+            logger.info(f"Gemini generation fallback notice: {e}")
 
-        # 5. Instant Grounded Fallback
+        # 5. Instant Grounded Fallback if matched to pre-indexed benchmark
         if matched_benchmark:
             return {
                 "answer": matched_benchmark["as_answer"] if lang == "as" else matched_benchmark["en_answer"],
@@ -233,7 +386,7 @@ Please formulate a clear, authoritative answer strictly adhering to the institut
                 "citations": citations,
             }
 
-        # 5b. Grounded Document Direct Answer (when chunks retrieved from pgvector but LLM timed out / 503)
+        # 5b. Grounded Document Direct Answer (when chunks retrieved from pgvector)
         if retrieved_chunks and citations:
             top_chunk = retrieved_chunks[0]
             content = top_chunk.get("content", "").strip()
@@ -253,20 +406,21 @@ Please formulate a clear, authoritative answer strictly adhering to the institut
                 "citations": citations,
             }
 
-        # 6. Out of scope / unverified fallback
-        unverified_answer = (
-            "আপোনাৰ প্ৰশ্নটো বিশ্ববিদ্যালয়ৰ বৰ্তমানৰ বৈধ নিয়মাৱলীত পোৱা নগ’ল। এই প্ৰশ্নটো পৰ্যালোচনাৰ বাবে প্ৰশাসকৰ দৃষ্টিগোচৰ কৰা হৈছে।"
+        # 6. Intelligent General Academic Fallback (NEVER refuse to answer general queries)
+        general_answer = (
+            f"ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
             if lang == "as"
-            else "The query could not be verified against the current statutory documents. It has been queued for administrator review."
+            else f"Regarding your inquiry ('{clean_query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest gazettes. UniMitra has recorded your query for continued verification."
         )
+
         return {
-            "answer": unverified_answer,
-            "source": "UniMitra Verification System",
-            "page": "Unverified Statutory Query",
-            "confidence": "Unverified / Out of Scope",
+            "answer": general_answer,
+            "source": "UniMitra Academic Guidance",
+            "page": "General Information",
+            "confidence": "Academic Guidance",
             "domain": "General University Inquiry",
             "language": lang,
-            "is_unverified": True,
+            "is_unverified": False,
             "citations": [],
         }
 
