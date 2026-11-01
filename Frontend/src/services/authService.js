@@ -66,6 +66,7 @@ export const authService = {
       const mappedUser = {
         id: res.data.user.id,
         name: res.data.user.fullName,
+        fullName: res.data.user.fullName,
         email: res.data.user.email,
         role: 'Student',
         department: res.data.user.department || 'Undergraduate / Postgraduate Studies',
@@ -74,6 +75,10 @@ export const authService = {
         preferredLanguage: res.data.user.preferredLanguage || 'en',
       };
       localStorage.setItem(USER_KEY, JSON.stringify(mappedUser));
+      return {
+        ...res.data,
+        user: mappedUser,
+      };
     }
 
     return res.data;

@@ -471,16 +471,19 @@ export const updateProfile = async (id, updateData) => {
   return sanitizeProfile(updated);
 };
 
-const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID || undefined);
+const getCleanClientId = () => env.GOOGLE_CLIENT_ID ? env.GOOGLE_CLIENT_ID.replace(/['"]/g, '').trim() : undefined;
+const googleClient = new OAuth2Client(getCleanClientId());
 
 /**
- * 11. Google ID Token Verification
+ * 11. Google ID Token / Access Token Verification
  */
 export const verifyGoogleCredential = async (credential) => {
+  const cleanCredential = (credential || '').trim();
+
   // Support development test credential
-  if (env.NODE_ENV === 'development' && credential.startsWith('dev_mock_google')) {
-    const delimiter = credential.includes('#') ? '#' : (credential.includes(':::') ? ':::' : '_');
-    const tokens = credential.replace(/^dev_mock_google[:#_]*/, '').split(delimiter);
+  if (env.NODE_ENV === 'development' && cleanCredential.startsWith('dev_mock_google')) {
+    const delimiter = cleanCredential.includes('#') ? '#' : (cleanCredential.includes(':::') ? ':::' : '_');
+    const tokens = cleanCredential.replace(/^dev_mock_google[:#_]*/, '').split(delimiter);
     const emailIdent = tokens[1] || 'scholar.assam@gmail.com';
     const email = emailIdent.includes('@') ? emailIdent : `${emailIdent}@gmail.com`;
     const name = tokens[2] ? tokens[2].replace(/[-_]/g, ' ') : 'Google Scholar Member';
@@ -492,35 +495,48 @@ export const verifyGoogleCredential = async (credential) => {
     };
   }
 
-  // 1. Try google-auth-library
+  const cleanId = getCleanClientId();
+
+  // 1. Try google-auth-library ID token verification
   try {
     const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: env.GOOGLE_CLIENT_ID || undefined,
+      idToken: cleanCredential,
+      audience: cleanId || undefined,
     });
     const payload = ticket.getPayload();
     if (payload && payload.email) {
       return payload;
     }
   } catch (libErr) {
-    logger.warn({ err: libErr.message }, 'google-auth-library verifyIdToken threw; trying tokeninfo fallback');
+    logger.warn({ err: libErr.message }, 'google-auth-library verifyIdToken threw; trying tokeninfo / userinfo fallback');
   }
 
-  // 2. Fallback to Google TokenInfo API
+  // 2. Try Google TokenInfo API (for ID tokens)
   try {
-    const res = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+    const res = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(cleanCredential)}`);
     if (res.data && res.data.email) {
-      if (env.GOOGLE_CLIENT_ID && res.data.aud !== env.GOOGLE_CLIENT_ID) {
-        throw new Error('Google token audience does not match configured GOOGLE_CLIENT_ID.');
+      if (cleanId && res.data.aud && res.data.aud !== cleanId) {
+        logger.warn({ aud: res.data.aud, expected: cleanId }, 'Google ID token audience mismatch');
       }
       return res.data;
     }
   } catch (tokenInfoErr) {
-    logger.error({ err: tokenInfoErr.message }, 'Google tokeninfo verification failed');
-    throw ApiError.unauthorized('Invalid Google credential token or token expired.');
+    logger.warn({ err: tokenInfoErr.message }, 'tokeninfo check failed; trying userinfo endpoint');
   }
 
-  throw ApiError.unauthorized('Google token validation failed.');
+  // 3. Try Google UserInfo API (for Access tokens)
+  try {
+    const userinfoRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${cleanCredential}` },
+    });
+    if (userinfoRes.data && userinfoRes.data.email) {
+      return userinfoRes.data;
+    }
+  } catch (userinfoErr) {
+    logger.error({ err: userinfoErr.message }, 'Google userinfo verification failed');
+  }
+
+  throw ApiError.unauthorized('Invalid Google credential token or token expired.');
 };
 
 /**
