@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict
 from app.services.embedding_service import embedding_service, normalize_assamese_unicode
-from app.services.gemini_service import gemini_service
+from app.services.gemini_service import gemini_service, detect_language_mode
 from app.services.vector_store import vector_store
 from app.workflows.states import RagGraphState
 
@@ -24,10 +24,8 @@ class RagWorkflow:
         # Node 1: Validate & Normalize
         clean_text = normalize_assamese_unicode(query)
 
-        # Node 2: Detect Language
-        detected_lang = language
-        if not detected_lang or detected_lang == "auto":
-            detected_lang = "as" if gemini_service.is_assamese(clean_text) else "en"
+        # Node 2: Detect Language Mode (Strict Language Matching: as_script | as_roman | en)
+        detected_lang = detect_language_mode(clean_text, language)
 
         # Node 3: Embed Query (Multilingual E5 Base with 'query: ' prefix)
         query_vector = embedding_service.embed_query(clean_text)

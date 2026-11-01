@@ -7,7 +7,7 @@ import { logger } from '../../config/logger.js';
  * Handle AI Query execution
  */
 export const handleQuery = async (user, { query, sessionId = null, language = null, university = null, category = null }) => {
-  const queryLang = language || detectLanguage(query);
+  const queryLang = detectLanguage(query, language);
 
   let session = null;
   if (user?.id) {

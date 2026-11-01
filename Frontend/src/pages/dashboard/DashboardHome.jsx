@@ -37,6 +37,7 @@ export const DashboardHome = ({
   const [programmes, setProgrammes] = useState(() => universityService.getProgrammes());
   const [scholarships, setScholarships] = useState(() => universityService.getScholarships());
   const [facilities, setFacilities] = useState(() => universityService.getFacilities());
+  const [notices, setNotices] = useState(() => universityService.getNotices());
 
   useEffect(() => {
     const handleSync = () => {
@@ -46,6 +47,7 @@ export const DashboardHome = ({
       setProgrammes(universityService.getProgrammes());
       setScholarships(universityService.getScholarships());
       setFacilities(universityService.getFacilities());
+      setNotices(universityService.getNotices());
     };
     window.addEventListener('unimitra_university_changed', handleSync);
     return () => window.removeEventListener('unimitra_university_changed', handleSync);
@@ -388,6 +390,84 @@ export const DashboardHome = ({
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* 3.5 OFFICIAL UNIVERSITY CIRCULARS & PDF NOTICES */}
+      <section className="space-y-4">
+        <div className="flex items-end justify-between border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 pb-3">
+          <div>
+            <span className="text-[11px] font-semibold tracking-widest text-[#D4A96A] dark:text-[#E0B77A] uppercase font-sans">
+              Gazette & Circular Desk
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading mt-0.5">
+              {currentLang === 'as' ? 'চৰকাৰী জাননী আৰু অধিসূচনা' : 'Official University Notices & Circulars'}
+            </h2>
+          </div>
+          <span className="text-xs font-semibold text-[#123C3A] dark:text-[#55C7B2]">
+            {notices.length} Active Circulars
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {notices.map((not) => (
+            <div
+              key={not.id}
+              className="editorial-surface rounded-2xl p-5 space-y-3 flex flex-col justify-between hover:border-[#123C3A]/25 dark:hover:border-[#55C7B2]/40 transition-all shadow-xs"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    {not.isUrgent && (
+                      <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-red-500 text-white animate-pulse">
+                        Urgent
+                      </span>
+                    )}
+                    <span className="text-[10px] font-mono font-bold text-[#D4A96A] dark:text-[#55C7B2]">
+                      {not.refNo}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#627680] dark:text-[#879B99]">
+                    {not.date}
+                  </span>
+                </div>
+
+                <h3 className="text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                  {currentLang === 'as' ? not.asTitle || not.title : not.title}
+                </h3>
+
+                <p className="text-xs text-[#627680] dark:text-[#879B99] leading-relaxed">
+                  {currentLang === 'as' ? not.asSummary || not.summary : not.summary}
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between gap-2">
+                {not.pdfUrl ? (
+                  <a
+                    href={not.pdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#123C3A] hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+                  >
+                    <DocumentTextIcon className="w-3.5 h-3.5" />
+                    <span>{currentLang === 'as' ? 'পিডিএফ জাননী চাওক ↗' : 'View PDF Notice ↗'}</span>
+                  </a>
+                ) : (
+                  <span className="text-[11px] text-[#627680] dark:text-[#879B99] italic">
+                    {not.department}
+                  </span>
+                )}
+
+                <button
+                  onClick={() => onNavigateTab('assistant', { prefillQuery: 'Explain the details of notice ' + not.refNo + ': ' + not.title })}
+                  className="text-xs font-semibold text-[#D4A96A] dark:text-[#55C7B2] hover:underline cursor-pointer flex items-center space-x-1"
+                >
+                  <SparklesIcon className="w-3.5 h-3.5" />
+                  <span>{currentLang === 'as' ? 'এ.আই. সোধক' : 'Ask AI'}</span>
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
