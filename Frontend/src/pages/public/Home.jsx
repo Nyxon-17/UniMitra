@@ -4,6 +4,7 @@ import { universityService } from '../../services/universityService';
 import { UniversityHero3D } from '../../components/common/Graphic3D';
 import {
   SearchIcon,
+  AiVoiceChatLogo,
   BuildingLibraryIcon,
   BrainIcon,
   ShieldCheckIcon,
@@ -195,10 +196,8 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
             {/* Card Header */}
             <div className="bg-gradient-to-r from-[#FF933E] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white dark:text-black">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-white/40"></div>
-                <div className="w-3 h-3 rounded-full bg-white/60"></div>
-                <div className="w-3 h-3 rounded-full bg-white"></div>
-                <span className="text-xs sm:text-sm font-black ml-2 text-white dark:text-black">
+                <AiVoiceChatLogo className="w-5 h-5 shrink-0" animated={true} />
+                <span className="text-xs sm:text-sm font-black ml-1 text-white dark:text-black">
                   UniMitra Live Grounded Assistant
                 </span>
               </div>
