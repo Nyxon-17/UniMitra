@@ -165,7 +165,7 @@ export const UniversityHero3D = () => {
                   প্ৰমাণিত উত্তৰ
                 </span>
               </div>
-              <span className="text-[9px] bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] px-1.5 py-0.5 rounded font-mono font-bold border border-[#123C3A]/10 dark:border-[#55C7B2]/20">
+              <span className="text-[9px] bg-[#E9F0ED] dark:bg-[#16181A] text-[#123C3A] dark:text-[#55C7B2] px-1.5 py-0.5 rounded font-mono font-bold border border-[#123C3A]/10 dark:border-[#55C7B2]/20">
                 GU Circular
               </span>
             </div>
@@ -193,7 +193,7 @@ export const UniversityHero3D = () => {
             </div>
           </div>
 
-          <div className="bg-white/80 dark:bg-[#0B1518]/80 p-2 sm:p-2.5 rounded-xl border border-[#D4A96A]/30 dark:border-[#E0B77A]/30 hover:shadow-xs transition-shadow">
+          <div className="bg-white/80 dark:bg-[#16181A]/80 p-2 sm:p-2.5 rounded-xl border border-[#D4A96A]/30 dark:border-[#E0B77A]/30 hover:shadow-xs transition-shadow">
             <div className="text-xs sm:text-sm font-bold text-[#D4A96A] dark:text-[#E0B77A] font-heading">
               অসমীয়া + EN
             </div>

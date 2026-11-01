@@ -296,3 +296,4 @@ export const EyeSlashIcon = ({ className = "w-5 h-5", ...props }) => (
 
 
 export { AiVoiceChatLogo } from './AiVoiceChatLogo';
+export { VoiceAssistantLogo } from './VoiceAssistantLogo';

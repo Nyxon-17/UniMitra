@@ -96,14 +96,14 @@ export const DashboardSidebar = ({
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#0B1518]/60 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-[#16181A]/60 z-40 lg:hidden backdrop-blur-sm"
           onClick={onCloseMobile}
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#F7F6F0]/95 dark:bg-[#0B1518]/95 backdrop-blur-md border-r border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#F7F6F0]/95 dark:bg-[#16181A]/95 backdrop-blur-md border-r border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -112,8 +112,8 @@ export const DashboardSidebar = ({
           {/* Editorial Masthead / Logo Bar */}
           <div className="flex items-center justify-between h-18 px-6 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
             <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={handleLogoClick}>
-              <div className="w-9 h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-white dark:text-[#0B1518] shadow-xs">
-                <BuildingLibraryIcon className="w-5 h-5 text-[#D4A96A] dark:text-[#0B1518]" />
+              <div className="w-9 h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-white dark:text-[#16181A] shadow-xs">
+                <BuildingLibraryIcon className="w-5 h-5 text-[#D4A96A] dark:text-[#16181A]" />
               </div>
               <div>
                 <span className="text-lg font-bold tracking-tight text-[#123C3A] dark:text-[#DCE8E4] font-heading block leading-none">

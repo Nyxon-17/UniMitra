@@ -24,7 +24,7 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className={`relative ${activeTab === 'assistant' ? 'h-screen max-h-screen md:h-[100dvh] md:max-h-[100dvh] overflow-hidden' : 'min-h-screen'} bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] flex flex-col transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
+    <div className={`relative ${activeTab === 'assistant' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'} bg-[#F7F6F0] dark:bg-[#16181A] text-[#273B45] dark:text-[#DCE8E4] flex flex-col transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
       {/* Editorial + Aurora Atmospheric Ambient Background */}
       <AuroraBackground />
 
@@ -55,7 +55,7 @@ export const DashboardLayout = ({
         />
 
         {/* Dynamic Viewport with Responsive Padding & Whitespace */}
-        <main className={`flex-1 min-h-0 ${activeTab === 'assistant' ? 'p-1.5 sm:p-3 md:p-4 overflow-hidden flex flex-col' : 'p-5 sm:p-8 lg:p-10 overflow-y-auto'}`}>
+        <main className={`flex-1 min-h-0 ${activeTab === 'assistant' ? 'p-1 sm:p-2 md:p-3 overflow-hidden flex flex-col' : 'p-5 sm:p-8 lg:p-10 overflow-y-auto'}`}>
           <div className="w-full max-w-7xl mx-auto h-full flex flex-col min-h-0">
             {children || <Outlet />}
           </div>

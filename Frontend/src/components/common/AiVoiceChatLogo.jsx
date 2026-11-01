@@ -1,15 +1,15 @@
 import React, { useId } from 'react';
 
 /**
- * UniMitra Gemini-Inspired AI Assistant Logo
+ * UniMitra Gemini-Inspired AI Voice Assistant Logo
  * 
  * Styled after Google Gemini's iconic four-pointed organic starburst / sparkle.
  * Features:
  * - Fluid four-pointed primary sparkle star with authentic concave hyperbolic curves
  * - Signature secondary companion sparkle in the top-right quadrant
- * - Multi-stop Google Gemini gradient (Royal Blue #1A73E8 -> Indigo #4F46E5 -> Purple #9333EA -> Pink #EC4899 -> Cyan #22D3EE)
- * - Dynamic light/dark theme adaptation with subtle neon glow in dark mode
- * - Hardware-accelerated animations for idle shimmer, isSpeaking, and isListening states
+ * - Multi-stop Google Gemini gradient (Royal Blue #1E40AF -> Indigo #2563EB -> Purple #7C3AED -> Magenta #C026D3 -> Pink #EC4899 -> Cyan #06B6D4)
+ * - Dynamic zoom in / zoom out breathing animation
+ * - Hardware-accelerated animations for idle zoom pulse, isSpeaking, and isListening states
  */
 export const AiVoiceChatLogo = ({
   className = "w-6 h-6",
@@ -17,7 +17,7 @@ export const AiVoiceChatLogo = ({
   isSpeaking = false,
   isListening = false,
   animated = true,
-  title = "UniMitra AI Assistant",
+  title = "UniMitra AI Voice Assistant",
   ...props
 }) => {
   const uniqueId = useId().replace(/:/g, '_');
@@ -40,7 +40,7 @@ export const AiVoiceChatLogo = ({
     >
       <title>{title}</title>
       <defs>
-        {/* Authentic Multi-tone Google Gemini Gradient */}
+        {/* Authentic Multi-tone Google Gemini Gradient (Restored Original Colors) */}
         <linearGradient id={geminiGradId} x1="10%" y1="0%" x2="90%" y2="100%">
           <stop offset="0%" stopColor="#1E40AF" />
           <stop offset="22%" stopColor="#2563EB" />
@@ -66,41 +66,64 @@ export const AiVoiceChatLogo = ({
           </feMerge>
         </filter>
 
-        {/* Scoped CSS Keyframe Animations */}
+        {/* Scoped Zoom In & Zoom Out Keyframe Animations */}
         <style>{`
-          @keyframes gemini-pulse-${uniqueId} {
-            0%, 100% { transform: scale(1); opacity: 0.96; }
-            50% { transform: scale(1.05); opacity: 1; }
+          @keyframes gemini-zoom-in-out-${uniqueId} {
+            0%, 100% {
+              transform: scale(0.90);
+              filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.45));
+            }
+            50% {
+              transform: scale(1.15);
+              filter: drop-shadow(0 0 14px rgba(124, 58, 237, 0.75));
+            }
           }
-          @keyframes gemini-speaking-${uniqueId} {
-            0%, 100% { transform: scale(0.96) rotate(-2deg); filter: brightness(1); }
-            50% { transform: scale(1.08) rotate(3deg); filter: brightness(1.25); }
+
+          @keyframes gemini-speaking-zoom-${uniqueId} {
+            0%, 100% {
+              transform: scale(0.88) rotate(-3deg);
+              filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+            }
+            50% {
+              transform: scale(1.22) rotate(4deg);
+              filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.9));
+            }
           }
+
+          @keyframes gemini-companion-twinkle-${uniqueId} {
+            0%, 100% {
+              transform: scale(0.8);
+              opacity: 0.65;
+            }
+            50% {
+              transform: scale(1.25);
+              opacity: 1;
+            }
+          }
+
           @keyframes gemini-listening-halo-${uniqueId} {
-            0% { transform: scale(0.85); opacity: 0.8; }
-            50% { transform: scale(1.22); opacity: 0.2; }
-            100% { transform: scale(0.85); opacity: 0.8; }
-          }
-          @keyframes gemini-twinkle-${uniqueId} {
-            0%, 100% { opacity: 0.7; transform: scale(0.85); }
-            50% { opacity: 1; transform: scale(1.15); }
+            0% { transform: scale(0.85); opacity: 0.85; }
+            50% { transform: scale(1.26); opacity: 0.2; }
+            100% { transform: scale(0.85); opacity: 0.85; }
           }
 
           .gemini-main-star-${uniqueId} {
-            transform-origin: 48px 52px;
+            transform-origin: 48px 50px;
             ${isSpeaking 
-              ? `animation: gemini-speaking-${uniqueId} 0.8s ease-in-out infinite alternate;` 
+              ? `animation: gemini-speaking-zoom-${uniqueId} 0.75s ease-in-out infinite alternate;` 
               : animated 
-              ? `animation: gemini-pulse-${uniqueId} 3.5s ease-in-out infinite;` 
+              ? `animation: gemini-zoom-in-out-${uniqueId} 2.2s ease-in-out infinite;` 
               : ''}
           }
+
           .gemini-companion-star-${uniqueId} {
             transform-origin: 78px 22px;
-            ${animated ? `animation: gemini-twinkle-${uniqueId} 2.2s ease-in-out infinite;` : ''}
+            ${animated ? `animation: gemini-companion-twinkle-${uniqueId} 1.8s ease-in-out infinite;` : ''}
           }
+
           .gemini-listening-ring-${uniqueId} {
             transform-origin: 50px 50px;
-            animation: gemini-listening-halo-${uniqueId} 1.6s ease-out infinite;
+            animation: gemini-listening-halo-${uniqueId} 1.5s ease-out infinite;
           }
         `}</style>
       </defs>
@@ -111,7 +134,7 @@ export const AiVoiceChatLogo = ({
           cx="50"
           cy="50"
           r="42"
-          stroke="url(#companionGradId)"
+          stroke={`url(#${companionGradId})`}
           strokeWidth="3"
           fill="none"
           className={`gemini-listening-ring-${uniqueId}`}
@@ -123,11 +146,11 @@ export const AiVoiceChatLogo = ({
       <path
         d="M 48 8 C 48 30, 68 50, 90 50 C 68 50, 48 70, 48 92 C 48 70, 28 50, 6 50 C 28 50, 48 30, 48 8 Z"
         fill={`url(#${geminiGradId})`}
-        opacity="0.35"
+        opacity="0.38"
         filter={`url(#${glowFilterId})`}
       />
 
-      {/* 3. PRIMARY GOOGLE GEMINI 4-POINT STARBURST */}
+      {/* 3. PRIMARY GOOGLE GEMINI 4-POINT STARBURST WITH ZOOM IN / ZOOM OUT */}
       <g className={`gemini-main-star-${uniqueId}`}>
         <path
           d="M 48 8 C 48 30, 68 50, 90 50 C 68 50, 48 70, 48 92 C 48 70, 28 50, 6 50 C 28 50, 48 30, 48 8 Z"
@@ -140,8 +163,7 @@ export const AiVoiceChatLogo = ({
           cy="50"
           r="9"
           fill="#FFFFFF"
-          opacity="0.82"
-          className="dark:opacity-95"
+          opacity="0.85"
           filter={`url(#${glowFilterId})`}
         />
         <circle
@@ -161,9 +183,9 @@ export const AiVoiceChatLogo = ({
         <circle
           cx="78"
           cy="22"
-          r="2"
+          r="2.2"
           fill="#FFFFFF"
-          opacity="0.9"
+          opacity="0.95"
         />
       </g>
     </svg>

@@ -58,6 +58,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
   // Movable Position State (null = default bottom-right)
   const [position, setPosition] = useState(null);
+  const [openCardPos, setOpenCardPos] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const isPointerDownRef = useRef(false);
@@ -75,22 +76,38 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   // Window resize handler: Keep position inside viewport if dragged
   useEffect(() => {
     const handleResize = () => {
-      if (!position || !widgetRef.current) return;
-      const rect = widgetRef.current.getBoundingClientRect();
-      const maxX = window.innerWidth - rect.width - 12;
-      const maxY = window.innerHeight - rect.height - 12;
+      const margin = 12;
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
 
-      setPosition(prev => {
-        if (!prev) return null;
-        return {
-          x: Math.max(12, Math.min(maxX, prev.x)),
-          y: Math.max(12, Math.min(maxY, prev.y))
-        };
-      });
+      if (position) {
+        const maxX = Math.max(margin, winW - 64);
+        const maxY = Math.max(margin, winH - 64);
+        setPosition(prev => {
+          if (!prev) return null;
+          return {
+            x: Math.max(margin, Math.min(maxX, prev.x)),
+            y: Math.max(margin, Math.min(maxY, prev.y))
+          };
+        });
+      }
+
+      if (openCardPos && widgetRef.current) {
+        const rect = widgetRef.current.getBoundingClientRect();
+        const maxX = Math.max(margin, winW - rect.width - margin);
+        const maxY = Math.max(margin, winH - rect.height - margin);
+        setOpenCardPos(prev => {
+          if (!prev) return null;
+          return {
+            x: Math.max(margin, Math.min(maxX, prev.x)),
+            y: Math.max(margin, Math.min(maxY, prev.y))
+          };
+        });
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [position]);
+  }, [position, openCardPos]);
 
   // Reliable Pointer Drag Handlers (Checks > 6px threshold to never block clicks)
   const handleDragStart = (e) => {
@@ -128,7 +145,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
       const widget = widgetRef.current;
       const width = widget ? widget.offsetWidth : 350;
-      const height = widget ? widget.offsetHeight : 180;
+      const height = widget ? widget.offsetHeight : 450;
 
       const rawX = originPosRef.current.x + dx;
       const rawY = originPosRef.current.y + dy;
@@ -136,7 +153,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       const clampedX = Math.max(8, Math.min(window.innerWidth - width - 8, rawX));
       const clampedY = Math.max(8, Math.min(window.innerHeight - height - 8, rawY));
 
-      setPosition({ x: clampedX, y: clampedY });
+      setOpenCardPos({ x: clampedX, y: clampedY });
     }
   };
 
@@ -153,6 +170,76 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
   };
 
+
+  // Dedicated Resting Floating Orb Drag & Tap Handlers (100% Draggable Anywhere)
+  const isOrbDraggingRef = useRef(false);
+  const orbMovedRef = useRef(false);
+
+  const handleOrbPointerDown = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    const widget = widgetRef.current;
+    if (!widget) return;
+
+    const rect = widget.getBoundingClientRect();
+    originPosRef.current = { x: rect.left, y: rect.top };
+    startPointRef.current = { x: e.clientX, y: e.clientY };
+    isOrbDraggingRef.current = true;
+    orbMovedRef.current = false;
+
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    } catch {}
+  };
+
+  const handleOrbPointerMove = (e) => {
+    if (!isOrbDraggingRef.current) return;
+
+    const dx = e.clientX - startPointRef.current.x;
+    const dy = e.clientY - startPointRef.current.y;
+    const distance = Math.hypot(dx, dy);
+
+    if (distance > 5) {
+      if (!orbMovedRef.current) {
+        orbMovedRef.current = true;
+        setIsDragging(true);
+      }
+
+      const widget = widgetRef.current;
+      const width = widget ? widget.offsetWidth : 56;
+      const height = widget ? widget.offsetHeight : 56;
+
+      const rawX = originPosRef.current.x + dx;
+      const rawY = originPosRef.current.y + dy;
+
+      const clampedX = Math.max(8, Math.min(window.innerWidth - width - 8, rawX));
+      const clampedY = Math.max(8, Math.min(window.innerHeight - height - 8, rawY));
+
+      setPosition({ x: clampedX, y: clampedY });
+    }
+  };
+
+  const handleOrbPointerUp = (e) => {
+    if (!isOrbDraggingRef.current) return;
+    isOrbDraggingRef.current = false;
+
+    try {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    } catch {}
+
+    const didMove = orbMovedRef.current;
+    orbMovedRef.current = false;
+
+    if (didMove) {
+      // Placed at new position
+      setTimeout(() => setIsDragging(false), 50);
+    } else {
+      // Normal click/tap -> open assistant
+      setIsDragging(false);
+      setIsOpen(true);
+      setIsMinimized(false);
+    }
+  };
+
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -162,6 +249,40 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   const [currentResult, setCurrentResult] = useState(null);
 
   const recognitionRef = useRef(null);
+
+  // Viewport Boundary Guard: Ensure open card NEVER overflows outside viewport when opened or contents change
+  useEffect(() => {
+    if (isOpen && !isMinimized && widgetRef.current) {
+      const rect = widgetRef.current.getBoundingClientRect();
+      const margin = 12;
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+      let newX = rect.left;
+      let newY = rect.top;
+      let needsAdjustment = false;
+
+      if (rect.bottom > winH - margin) {
+        newY = Math.max(margin, winH - rect.height - margin);
+        needsAdjustment = true;
+      }
+      if (rect.right > winW - margin) {
+        newX = Math.max(margin, winW - rect.width - margin);
+        needsAdjustment = true;
+      }
+      if (rect.left < margin) {
+        newX = margin;
+        needsAdjustment = true;
+      }
+      if (rect.top < margin) {
+        newY = margin;
+        needsAdjustment = true;
+      }
+
+      if (needsAdjustment) {
+        setOpenCardPos({ x: newX, y: newY });
+      }
+    }
+  }, [isOpen, isMinimized, currentResult, isListening, loading]);
 
   // Initialize Web Speech Recognition
   useEffect(() => {
@@ -343,11 +464,12 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
   ];
 
-  // Movable style helper
-  const movableStyle = position ? {
+    // Smart Onscreen Position Helpers
+  // 1. Resting Orb: preserves exact position chosen by user
+  const restingOrbStyle = position ? {
     position: 'fixed',
-    left: `${position.x}px`,
-    top: `${position.y}px`,
+    left: `${Math.max(8, Math.min(window.innerWidth - 64, position.x))}px`,
+    top: `${Math.max(8, Math.min(window.innerHeight - 64, position.y))}px`,
     right: 'auto',
     bottom: 'auto',
     zIndex: 50
@@ -358,43 +480,111 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     zIndex: 50
   };
 
+  // 2. Minimized Floating Audio Player
+  const minimizedPlayerStyle = () => {
+    const active = openCardPos || position;
+    if (!active) {
+      return {
+        position: 'fixed',
+        bottom: '1.25rem',
+        right: '1.25rem',
+        zIndex: 50
+      };
+    }
+    const winW = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const winH = typeof window !== 'undefined' ? window.innerHeight : 768;
+    return {
+      position: 'fixed',
+      left: `${Math.max(12, Math.min(winW - 240, active.x))}px`,
+      top: `${Math.max(12, Math.min(winH - 60, active.y))}px`,
+      right: 'auto',
+      bottom: 'auto',
+      zIndex: 50
+    };
+  };
+
+  // 3. Opened Voice Assistant Card: Guaranteed to open 100% inside page even if orb was at complete bottom or left
+  const getCardStyle = () => {
+    if (!position && !openCardPos) {
+      return {
+        position: 'fixed',
+        bottom: '1.25rem',
+        right: '1.25rem',
+        zIndex: 50
+      };
+    }
+
+    const margin = 12;
+    const winW = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const winH = typeof window !== 'undefined' ? window.innerHeight : 768;
+
+    const cardWidth = Math.min(350, winW - (margin * 2));
+    const measuredHeight = widgetRef.current ? widgetRef.current.offsetHeight : 0;
+    const cardHeight = measuredHeight > 100 ? measuredHeight : 460;
+
+    const maxX = Math.max(margin, winW - cardWidth - margin);
+    const maxY = Math.max(margin, winH - cardHeight - margin);
+
+    // If user explicitly dragged the opened card, respect openCardPos
+    if (openCardPos) {
+      return {
+        position: 'fixed',
+        left: `${Math.max(margin, Math.min(maxX, openCardPos.x))}px`,
+        top: `${Math.max(margin, Math.min(maxY, openCardPos.y))}px`,
+        right: 'auto',
+        bottom: 'auto',
+        zIndex: 50
+      };
+    }
+
+    // Position safely relative to resting orb:
+    // If the resting orb is near/at bottom, anchor card to sit ABOVE bottom edge!
+    // If near/at left edge, clamp card so it never clips left edge!
+    const targetY = (position.y + cardHeight > winH - margin)
+      ? Math.max(margin, winH - cardHeight - margin)
+      : Math.max(margin, position.y);
+
+    const safeX = Math.max(margin, Math.min(maxX, position.x));
+    const safeY = Math.max(margin, Math.min(maxY, targetY));
+
+    return {
+      position: 'fixed',
+      left: `${safeX}px`,
+      top: `${safeY}px`,
+      right: 'auto',
+      bottom: 'auto',
+      zIndex: 50
+    };
+  };
+
   return (
     <>
-      {/* 1. RESTING / DOCKED VOICE ORB (Compact Gemini Logo, No Text Needed) */}
+      {/* 1. RESTING / DOCKED VOICE ORB (100% Float & Draggable Anywhere + Tap to Open) */}
       {!isOpen && (
         <aside 
           ref={widgetRef}
           aria-label="UniMitra AI Voice Assistant"
-          style={movableStyle}
-          className="select-none z-50"
+          style={restingOrbStyle}
+          className="select-none z-50 touch-none fixed"
         >
           <div
-            onPointerDown={handleDragStart}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
-            className="touch-none"
+            onPointerDown={handleOrbPointerDown}
+            onPointerMove={handleOrbPointerMove}
+            onPointerUp={handleOrbPointerUp}
+            onPointerCancel={handleOrbPointerUp}
+            className="w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center neo-surface backdrop-blur-xl neon-voice-orb cursor-grab active:cursor-grabbing group active:scale-95 hover:scale-110 transition-transform relative select-none"
+            title="Drag to place anywhere • Tap to open Voice Assistant"
+            role="button"
+            tabIndex={0}
           >
-            <button
-              type="button"
-              onClick={() => {
-                if (!isDragging) {
-                  setIsOpen(true);
-                  setIsMinimized(false);
-                }
-              }}
-              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center neo-surface backdrop-blur-xl border border-white/80 dark:border-[#55C7B2]/30 shadow-[0_10px_28px_rgba(37,99,235,0.28)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.7)] cursor-pointer group active:scale-90 hover:scale-110 transition-all relative"
-              title="UniMitra AI Voice Assistant"
-            >
-              <AiVoiceChatLogo 
-                className="w-7 h-7 sm:w-8 sm:h-8 group-hover:scale-105 transition-transform" 
-                isSpeaking={isSpeaking}
-                isListening={isListening}
-                animated={true}
-              />
-              {/* Online Indicator */}
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#22D3EE] border-2 border-white dark:border-[#0B1518] animate-pulse" />
-            </button>
+            <AiVoiceChatLogo 
+              className="w-8 h-8 sm:w-9 sm:h-9 group-hover:scale-105 transition-transform" 
+              isSpeaking={isSpeaking}
+              isListening={isListening}
+              animated={true}
+            />
+            {/* Live Green Online Indicator */}
+            <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#03C988] border-2 border-white dark:border-[#16181A] animate-pulse pointer-events-none" />
           </div>
         </aside>
       )}
@@ -404,10 +594,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         <aside
           ref={widgetRef}
           aria-label="Minimized Movable Voice Player"
-          style={movableStyle}
+          style={minimizedPlayerStyle()}
           className="select-none"
         >
-          <div className="flex items-center space-x-2 px-3 py-2 rounded-full neo-surface shadow-xl border border-white/80 dark:border-white/10 backdrop-blur-xl">
+          <div className="flex items-center space-x-2 px-3 py-2 rounded-full neo-surface backdrop-blur-xl neon-voice-minimized">
             {/* Drag Handle */}
             <div 
               onPointerDown={handleDragStart}
@@ -489,8 +679,8 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         <aside
           ref={widgetRef}
           aria-label="UniMitra Movable Voice Assistant"
-          style={movableStyle}
-          className="w-[calc(100vw-2.5rem)] sm:w-[350px] neo-surface rounded-[1.8rem] shadow-[0_24px_60px_rgba(0,0,0,0.3)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden border border-white/80 dark:border-white/10 backdrop-blur-2xl"
+          style={getCardStyle()}
+          className="w-[calc(100vw-1.5rem)] sm:w-[350px] max-w-[calc(100vw-1.5rem)] max-h-[min(540px,calc(100dvh-1.5rem))] neo-surface rounded-[1.8rem] neon-voice-card flex flex-col overflow-hidden backdrop-blur-2xl"
         >
           {/* Header Bar - Draggable Region on Header */}
           <div 
@@ -527,10 +717,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
             <div className="flex items-center space-x-1" onPointerDown={(e) => e.stopPropagation()}>
               {/* Reset position button if moved */}
-              {position && (
+              {(position || openCardPos) && (
                 <button
                   type="button"
-                  onClick={() => setPosition(null)}
+                  onClick={() => { setPosition(null); setOpenCardPos(null); }}
                   className="px-1.5 py-0.5 rounded text-[9px] font-bold text-[#000000]/50 dark:text-[#FFFFFF]/50 hover:text-black dark:hover:text-white cursor-pointer"
                   title="Reset to default bottom-right position"
                 >
@@ -557,6 +747,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                   stopSpeaking();
                   if (isListening) recognitionRef.current?.stop();
                   setIsOpen(false);
+                  setOpenCardPos(null);
                 }}
                 className="p-1 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                 title="Close"
@@ -679,6 +870,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                     onClick={() => {
                       stopSpeaking();
                       setIsOpen(false);
+                      setOpenCardPos(null);
                       navigate('/dashboard/assistant');
                     }}
                     className="text-[10px] font-bold text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-[#FF933E] dark:hover:text-[#03C988] cursor-pointer"
@@ -693,7 +885,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 <button
                   type="button"
                   onClick={toggleListening}
-                  className="w-16 h-16 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group relative bg-black/5 dark:bg-white/5 border border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 p-1"
+                  className="w-16 h-16 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group relative bg-black/5 dark:bg-white/5 border-2 border-[#8B5CF6]/80 dark:border-[#22D3EE] shadow-[0_0_16px_rgba(139,92,246,0.45)] dark:shadow-[0_0_20px_rgba(34,211,238,0.7)] p-1"
                   title="Tap to speak"
                 >
                   <AiVoiceChatLogo 

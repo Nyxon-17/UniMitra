@@ -5,7 +5,7 @@ import { chatService } from '../../services/chatService';
 import { 
   SendIcon, 
   CheckCircleIcon, 
-  AiVoiceChatLogo, 
+  VoiceAssistantLogo, 
   DocumentTextIcon, 
   ClockIcon,
   TrashIcon,
@@ -459,7 +459,7 @@ export const DashboardAiAssistant = ({
       )}
 
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-[#F7F6F0] dark:bg-[#0B1518] border-r border-[#123C3A]/15 dark:border-[#55C7B2]/20 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-72 sm:w-80 max-w-[85vw] bg-[#F7F6F0] dark:bg-[#16181A] border-r border-[#123C3A]/15 dark:border-[#55C7B2]/20 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
         ${historyDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Drawer Header */}
@@ -478,7 +478,7 @@ export const DashboardAiAssistant = ({
             {/* New Chat Button inside drawer */}
             <button
               onClick={handleNewChat}
-              className="p-1.5 rounded-lg bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] cursor-pointer"
+              className="p-1.5 rounded-lg bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#16181A] cursor-pointer"
               title="New Chat"
             >
               <PlusIcon className="w-4 h-4" />
@@ -657,36 +657,36 @@ export const DashboardAiAssistant = ({
 
         {/* Action Alert Banner */}
         {actionAlert && (
-          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] text-xs font-semibold shadow-lg animate-fade-in">
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#16181A] text-xs font-semibold shadow-lg animate-fade-in">
             {actionAlert}
           </div>
         )}
 
         {/* Top Header Bar */}
-        <header className="px-3 sm:px-4 py-2 sm:py-2.5 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between shrink-0 bg-white/80 dark:bg-[#142426]/85 backdrop-blur-md">
-          {/* Left: History Button + Assistant Title with Gemini Logo */}
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <header className="px-2.5 sm:px-4 py-2 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between shrink-0 bg-white/80 dark:bg-[#142426]/85 backdrop-blur-md gap-1.5 sm:gap-2">
+          {/* Left: History Button + Assistant Title with Logo */}
+          <div className="flex items-center space-x-1.5 sm:space-x-2.5 min-w-0">
             
             {/* Click to Open History Button */}
             <button
               onClick={() => setHistoryDrawerOpen(true)}
-              className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs shrink-0"
               title="Click to Open Chat History"
               aria-label="Click to Open Chat History"
             >
-              <ClockIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
-              <span className="font-medium">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
+              <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
+              <span className="font-medium hidden xxs:inline text-[11px] sm:text-xs">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
               {sessions.length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/20 dark:text-[#55C7B2]">
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/20 dark:text-[#55C7B2]">
                   {sessions.length}
                 </span>
               )}
             </button>
 
-            {/* Google Gemini AI Sparkle Logo */}
+            {/* AI Assistant Logo */}
             <div className="shrink-0 flex items-center justify-center">
-              <AiVoiceChatLogo 
-                className="w-7 h-7 sm:w-8 sm:h-8" 
+              <VoiceAssistantLogo 
+                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10" 
                 isSpeaking={isSpeaking}
                 isListening={isListening}
                 animated={true}
@@ -695,38 +695,38 @@ export const DashboardAiAssistant = ({
 
             <div className="min-w-0 leading-tight">
               <div className="flex items-center space-x-1.5 truncate">
-                <h2 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading truncate">
+                <h2 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading truncate max-w-[120px] xs:max-w-[180px] sm:max-w-xs md:max-w-md">
                   {sessions.find(s => s.id === activeSessionId)?.title || `${univProfile.name} Assistant`}
                 </h2>
-                <span className="w-2 h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
               </div>
-              <p className="text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
+              <p className="hidden xs:block text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
                 {currentLang === 'as' ? 'দ্বিভাষিক AI সহায়ক • সংবিধিবদ্ধ তথ্য' : 'Bilingual AI Assistant • Grounded Citations'}
               </p>
             </div>
           </div>
 
           {/* Right: Actions (New Chat, Share, Voice Toggle) */}
-          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+          <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
             
             {/* New Chat Quick Button */}
             <button
               onClick={handleNewChat}
-              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] dark:hover:bg-[#68d8c3] transition-all cursor-pointer shadow-2xs"
+              className="flex items-center space-x-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#16181A] dark:hover:bg-[#68d8c3] transition-all cursor-pointer shadow-2xs shrink-0"
               title="New Chat"
             >
-              <PlusIcon className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">{currentLang === 'as' ? 'নতুন' : 'New'}</span>
+              <PlusIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">{currentLang === 'as' ? 'নতুন' : 'New'}</span>
             </button>
 
             {/* Share Chat Button */}
             <button
               onClick={() => setShareModalOpen(true)}
-              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] hover:bg-[#E9F0ED] dark:hover:bg-[#142426] border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs"
+              className="flex items-center space-x-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] hover:bg-[#E9F0ED] dark:hover:bg-[#142426] border border-[#123C3A]/10 dark:border-[#55C7B2]/20 transition-all cursor-pointer shadow-2xs shrink-0"
               title="Share Chat"
             >
-              <ShareIcon className="w-3.5 h-3.5 text-[#8B5CF6] dark:text-[#22D3EE]" />
-              <span className="hidden xs:inline">{currentLang === 'as' ? 'শ্বেয়াৰ' : 'Share'}</span>
+              <ShareIcon className="w-3.5 h-3.5 text-[#8B5CF6] dark:text-[#22D3EE] shrink-0" />
+              <span className="hidden sm:inline">{currentLang === 'as' ? 'শ্বেয়াৰ' : 'Share'}</span>
             </button>
 
             {/* Voice Audio Playback Toggle */}
@@ -735,7 +735,7 @@ export const DashboardAiAssistant = ({
                 if (isSpeaking) stopSpeaking();
                 setVoiceOutputEnabled(!voiceOutputEnabled);
               }}
-              className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+              className={`p-1.5 sm:p-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border shrink-0 ${
                 voiceOutputEnabled
                   ? 'bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/15 dark:text-[#55C7B2] border-[#123C3A]/20 dark:border-[#55C7B2]/30'
                   : 'text-[#627680] dark:text-[#879B99] border-transparent hover:bg-black/5 dark:hover:bg-white/5'
@@ -751,7 +751,7 @@ export const DashboardAiAssistant = ({
         {isSpeaking && (
           <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/20 dark:border-[#22D3EE]/20 flex items-center justify-between text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] shrink-0">
             <div className="flex items-center space-x-2 truncate mr-2">
-              <AiVoiceChatLogo className="w-4 h-4 shrink-0" isSpeaking={true} animated={true} />
+              <VoiceAssistantLogo className="w-5 h-5 shrink-0" isSpeaking={true} animated={true} />
               <span className="truncate">Reading institutional answer aloud...</span>
             </div>
             <button 
@@ -767,14 +767,14 @@ export const DashboardAiAssistant = ({
         {isListening && (
           <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-2.5 truncate mr-2">
-              <AiVoiceChatLogo className="w-4 h-4 shrink-0" isListening={true} isSpeaking={false} />
+              <VoiceAssistantLogo className="w-5 h-5 shrink-0" isListening={true} isSpeaking={false} />
               <span className="text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] truncate">
                 Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak now!
               </span>
             </div>
             <button
               onClick={toggleListening}
-              className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#0B1518] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
+              className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#16181A] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
             >
               Done
             </button>
@@ -796,7 +796,7 @@ export const DashboardAiAssistant = ({
             <button
               key={idx}
               onClick={() => executeQuery(p.q)}
-              className="px-2.5 py-1 rounded-full bg-white/70 dark:bg-[#0B1518]/70 hover:bg-white dark:hover:bg-[#142426] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 shadow-2xs"
+              className="px-2.5 py-1 rounded-full bg-white/70 dark:bg-[#16181A]/70 hover:bg-white dark:hover:bg-[#142426] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 shadow-2xs"
             >
               {p.label}
             </button>
@@ -818,14 +818,14 @@ export const DashboardAiAssistant = ({
               <div
                 className={`text-xs sm:text-sm leading-relaxed transition-all break-words ${
                   msg.sender === 'user'
-                    ? 'max-w-[88%] xs:max-w-[85%] sm:max-w-xl md:max-w-2xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] rounded-2xl rounded-br-xs px-4 py-3 sm:px-5 sm:py-3.5 font-medium shadow-xs'
+                    ? 'max-w-[88%] xs:max-w-[85%] sm:max-w-xl md:max-w-2xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#16181A] rounded-2xl rounded-br-xs px-4 py-3 sm:px-5 sm:py-3.5 font-medium shadow-xs'
                     : 'max-w-[95%] sm:max-w-2xl md:max-w-3xl bg-white/85 dark:bg-[#142426]/85 border border-[#123C3A]/10 dark:border-[#55C7B2]/15 text-[#273B45] dark:text-[#DCE8E4] rounded-2xl rounded-bl-xs p-3.5 sm:p-5 font-normal shadow-xs'
                 }`}
               >
-                {/* AI Header with Gemini Logo inside the bubble */}
+                {/* AI Header with Logo inside the bubble */}
                 {msg.sender === 'ai' && (
                   <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
-                    <AiVoiceChatLogo className="w-4 h-4 shrink-0" animated={false} />
+                    <VoiceAssistantLogo className="w-5 h-5 shrink-0" animated={false} />
                     <span className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
                       {univProfile.name || 'UniMitra'} AI
                     </span>
@@ -849,7 +849,7 @@ export const DashboardAiAssistant = ({
                       </span>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#0B1518]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#16181A]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                       <div className="flex items-center space-x-1.5 min-w-0">
                         <DocumentTextIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
                         <span className="font-semibold text-[#273B45] dark:text-[#DCE8E4] truncate">
@@ -870,7 +870,7 @@ export const DashboardAiAssistant = ({
                       <div className="flex items-center space-x-1.5">
                         <button
                           onClick={() => speakText(msg.text)}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#123C3A] dark:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#123C3A] dark:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                           title="Listen with Text-to-Speech"
                         >
                           <SpeakerWaveIcon className="w-3 h-3" />
@@ -879,7 +879,7 @@ export const DashboardAiAssistant = ({
 
                         <button
                           onClick={() => handleSaveAnswer(msg)}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                         >
                           <DocumentDuplicateIcon className="w-3 h-3 text-[#D4A96A]" />
                           <span>Bookmark</span>
@@ -887,7 +887,7 @@ export const DashboardAiAssistant = ({
 
                         <button
                           onClick={() => handleOpenFeedback(msg)}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                         >
                           <CheckCircleIcon className="w-3 h-3 text-[#55C7B2]" />
                           <span>Feedback</span>
@@ -909,8 +909,8 @@ export const DashboardAiAssistant = ({
           {/* Thinking / Loading Animation */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
-              <div className="w-7 h-7 rounded-xl bg-transparent flex items-center justify-center shrink-0">
-                <AiVoiceChatLogo className="w-6 h-6" isSpeaking={true} animated={true} />
+              <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center shrink-0">
+                <VoiceAssistantLogo className="w-7 h-7 sm:w-8 sm:h-8" isSpeaking={true} animated={true} />
               </div>
               <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4]">
                 {currentLang === 'as' 
@@ -926,7 +926,7 @@ export const DashboardAiAssistant = ({
         {/* Bottom Input Command Prompt Bar */}
         <form 
           onSubmit={handleSend} 
-          className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#0B1518]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
+          className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#16181A]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
         >
           <div className="rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#142426]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 px-2.5 sm:px-3 py-1.5 flex items-center gap-2 focus-within:border-[#123C3A] dark:focus-within:border-[#55C7B2] focus-within:ring-1 focus-within:ring-[#123C3A]/10 dark:focus-within:ring-[#55C7B2]/20 transition-all">
             
@@ -937,13 +937,13 @@ export const DashboardAiAssistant = ({
               className={`p-1.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center ${
                 isListening
                   ? 'bg-[#8B5CF6]/20 border border-[#22D3EE] shadow-[0_0_12px_rgba(34,211,238,0.5)]'
-                  : 'bg-[#E9F0ED] dark:bg-[#0B1518] hover:bg-[#123C3A]/10 border border-transparent'
+                  : 'bg-[#E9F0ED] dark:bg-[#16181A] hover:bg-[#123C3A]/10 border border-transparent'
               }`}
               title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak)'}
               aria-label="Voice Input"
             >
-              <AiVoiceChatLogo 
-                className="w-5 h-5 sm:w-5.5 sm:h-5.5" 
+              <VoiceAssistantLogo 
+                className="w-6 h-6 sm:w-6.5 sm:h-6.5" 
                 isListening={isListening}
                 isSpeaking={false}
                 animated={isListening}
@@ -969,7 +969,7 @@ export const DashboardAiAssistant = ({
             <button
               type="submit"
               disabled={!inputQuery.trim() || loading}
-              className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#0B1518] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
+              className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
               aria-label="Send Query"
             >
               <SendIcon className="w-3.5 h-3.5" />
@@ -1012,7 +1012,7 @@ export const DashboardAiAssistant = ({
                   ? 'এই আলোচনাৰ উদ্ধৃতি আৰু তথ্যসহ সম্পূৰ্ণ প্ৰতিলিপি ক্লিপবৰ্ডত কপি কৰক:'
                   : 'Copy a verified shareable transcript of this consultation with citations:'}
               </p>
-              <div className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#0B1518] text-xs font-mono text-[#627680] dark:text-[#879B99] max-h-36 overflow-y-auto">
+              <div className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#16181A] text-xs font-mono text-[#627680] dark:text-[#879B99] max-h-36 overflow-y-auto">
                 <p className="font-bold text-[#123C3A] dark:text-[#55C7B2]">
                   {sessions.find(s => s.id === activeSessionId)?.title || 'Institutional Query'}
                 </p>
@@ -1031,7 +1031,7 @@ export const DashboardAiAssistant = ({
               </button>
               <button
                 onClick={handleShareCopy}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#0B1518] dark:hover:bg-[#68d8c3] font-bold text-xs shadow-xs cursor-pointer"
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#123C3A] text-white hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:text-[#16181A] dark:hover:bg-[#68d8c3] font-bold text-xs shadow-xs cursor-pointer"
               >
                 {copySuccess ? (
                   <>
@@ -1108,7 +1108,7 @@ export const DashboardAiAssistant = ({
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
                   placeholder="Specify clause or suggest correction..."
-                  className="w-full p-2.5 rounded-xl border border-black/10 dark:border-white/15 bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] outline-none"
+                  className="w-full p-2.5 rounded-xl border border-black/10 dark:border-white/15 bg-[#F7F6F0] dark:bg-[#16181A] text-[#273B45] dark:text-[#DCE8E4] outline-none"
                 />
               </div>
             </div>
@@ -1123,7 +1123,7 @@ export const DashboardAiAssistant = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] font-bold text-xs shadow-xs"
+                className="px-4 py-2 rounded-xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#16181A] font-bold text-xs shadow-xs"
               >
                 Submit Feedback
               </button>

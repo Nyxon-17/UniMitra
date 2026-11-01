@@ -5,7 +5,7 @@ import {
   SunIcon, 
   MoonIcon,
   SparklesIcon,
-  AiVoiceChatLogo,
+  VoiceAssistantLogo,
   BuildingLibraryIcon
 } from '../common/Icons';
 
@@ -23,7 +23,7 @@ export const DashboardNavbar = ({
   studentInfo = { name: 'Scholar', role: 'Student' }
 }) => {
   return (
-    <header className="sticky top-0 z-30 h-18 bg-[#F7F6F0]/85 dark:bg-[#0B1518]/85 backdrop-blur-md border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 transition-colors duration-300 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 h-18 bg-[#F7F6F0]/85 dark:bg-[#16181A]/85 backdrop-blur-md border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 transition-colors duration-300 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-full">
         
         {/* Left: Mobile Drawer Trigger + Minimal Editorial Search */}
@@ -53,9 +53,9 @@ export const DashboardNavbar = ({
           {/* Quick Ask AI Assistant - Editorial Primary Button with Champagne highlight */}
           <button
             onClick={onNavigateAi}
-            className="hidden md:flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] dark:text-[#0B1518] transition-all cursor-pointer shadow-xs shrink-0 font-heading"
+            className="hidden md:flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] dark:text-[#16181A] transition-all cursor-pointer shadow-xs shrink-0 font-heading"
           >
-            <AiVoiceChatLogo className="w-4 h-4" animated={true} />
+            <VoiceAssistantLogo className="w-5.5 h-5.5" animated={true} />
             <span>{currentLang === 'as' ? 'AI সহায়কক সোধক' : 'Ask AI Assistant'}</span>
           </button>
 
@@ -65,7 +65,7 @@ export const DashboardNavbar = ({
               onClick={() => currentLang !== 'as' && onToggleLang()}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer font-assamese ${
                 currentLang === 'as'
-                  ? 'bg-white dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] shadow-xs'
+                  ? 'bg-white dark:bg-[#16181A] text-[#123C3A] dark:text-[#55C7B2] shadow-xs'
                   : 'text-[#627680] dark:text-[#879B99] hover:text-[#273B45] dark:hover:text-[#DCE8E4]'
               }`}
             >
@@ -75,7 +75,7 @@ export const DashboardNavbar = ({
               onClick={() => currentLang !== 'en' && onToggleLang()}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer font-sans ${
                 currentLang === 'en'
-                  ? 'bg-white dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] shadow-xs'
+                  ? 'bg-white dark:bg-[#16181A] text-[#123C3A] dark:text-[#55C7B2] shadow-xs'
                   : 'text-[#627680] dark:text-[#879B99] hover:text-[#273B45] dark:hover:text-[#DCE8E4]'
               }`}
             >
@@ -83,7 +83,7 @@ export const DashboardNavbar = ({
             </button>
           </div>
 
-          {/* Theme Toggle - Light (#F7F6F0) / Dark (#0B1518) */}
+          {/* Theme Toggle - Light (#F7F6F0) / Dark (#16181A) */}
           <button
             onClick={onToggleTheme}
             aria-label="Toggle theme"
@@ -100,12 +100,12 @@ export const DashboardNavbar = ({
             aria-label="View notifications"
           >
             <BellIcon className="w-4 h-4" />
-            <span className="w-2 h-2 rounded-full bg-[#D4A96A] dark:bg-[#55C7B2] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#0B1518]" />
+            <span className="w-2 h-2 rounded-full bg-[#D4A96A] dark:bg-[#55C7B2] absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-[#16181A]" />
           </button>
 
           {/* Student Profile Stamp */}
           <div className="flex items-center space-x-2.5 pl-2 border-l border-[#123C3A]/10 dark:border-[#55C7B2]/15">
-            <div className="w-8 h-8 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] text-[#D4A96A] dark:text-[#0B1518] flex items-center justify-center font-bold text-xs font-heading">
+            <div className="w-8 h-8 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] text-[#D4A96A] dark:text-[#16181A] flex items-center justify-center font-bold text-xs font-heading">
               {studentInfo?.name?.charAt(0) || 'U'}
             </div>
             <div className="hidden xl:block text-left leading-tight">

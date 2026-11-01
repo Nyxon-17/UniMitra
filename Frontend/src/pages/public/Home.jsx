@@ -4,7 +4,7 @@ import { universityService } from '../../services/universityService';
 import { UniversityHero3D } from '../../components/common/Graphic3D';
 import {
   SearchIcon,
-  AiVoiceChatLogo,
+  VoiceAssistantLogo,
   BuildingLibraryIcon,
   BrainIcon,
   ShieldCheckIcon,
@@ -105,7 +105,11 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                   </>
                 ) : (
                   <>
-                    Your University. Your Language. <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]/80">Your AI Assistant.</span>
+                    Your University.
+                    <br />
+                    Your Language.
+                    <br />
+                    <span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]/80">Your AI Assistant.</span>
                   </>
                 )}
               </h1>
@@ -196,7 +200,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
             {/* Card Header */}
             <div className="bg-gradient-to-r from-[#FF933E] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-white dark:text-black">
               <div className="flex items-center space-x-2">
-                <AiVoiceChatLogo className="w-5 h-5 shrink-0" animated={true} />
+                <VoiceAssistantLogo className="w-6.5 h-6.5 shrink-0" animated={true} />
                 <span className="text-xs sm:text-sm font-black ml-1 text-white dark:text-black">
                   UniMitra Live Grounded Assistant
                 </span>
@@ -451,7 +455,15 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#000000] dark:text-white">
             {currentLang === 'as'
               ? 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক আৰু প্ৰশাসনিক তথ্য এতিয়া আঙুলিৰ মূৰত'
-              : 'Your University. Your Language. Your AI Assistant.'}
+              : (
+                <>
+                  Your University.
+                  <br />
+                  Your Language.
+                  <br />
+                  Your AI Assistant.
+                </>
+              )}
           </h2>
 
           <p className="text-sm sm:text-lg text-[#000000]/70 dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
