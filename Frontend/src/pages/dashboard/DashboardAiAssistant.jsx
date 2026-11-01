@@ -31,6 +31,16 @@ export const SpeakerWaveIcon = ({ className = "w-5 h-5", ...props }) => (
   </svg>
 );
 
+/**
+ * Editorial + Aurora Bilingual AI Assistant
+ * 
+ * Responsive Features:
+ * - 100% responsive across mobile phones (320px+), tablets, laptops, and wide monitors
+ * - Mobile slide-over drawer for Query History (prevents chat compression on small screens)
+ * - Auto-scaling typography and flexible message bubbles with overflow protection
+ * - Touch-friendly voice and text inputs with mobile keyboard resilience
+ * - Preserves all document retrieval, voice synthesis, speech recognition, and feedback flows
+ */
 export const DashboardAiAssistant = ({ 
   currentLang = 'en',
   prefillQuery = '',
@@ -68,7 +78,6 @@ export const DashboardAiAssistant = ({
   const [loading, setLoading] = useState(false);
   const [historySidebarOpen, setHistorySidebarOpen] = useState(false);
   const [actionAlert, setActionAlert] = useState('');
-  const [activeTestCategory, setActiveTestCategory] = useState('as'); // 'as' | 'en'
 
   // Voice Chat States
   const [isListening, setIsListening] = useState(false);
@@ -138,7 +147,7 @@ export const DashboardAiAssistant = ({
       recognition.onerror = (event) => {
         console.warn('Speech recognition error:', event.error);
         setIsListening(false);
-        setVoiceError('Microphone not recognized or access denied.');
+        setVoiceError('Microphone not recognized or permission denied.');
         setTimeout(() => setVoiceError(''), 4000);
       };
 
@@ -153,7 +162,7 @@ export const DashboardAiAssistant = ({
   // Voice Recognition Toggle
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Edge.');
+      alert('Speech Recognition is not supported in this browser. Please use Chrome or Edge.');
       return;
     }
 
@@ -203,84 +212,49 @@ export const DashboardAiAssistant = ({
 
   const isFaculty = studentInfo?.role === 'Faculty Member';
 
-  // Benchmark Test Scenarios
+  // Benchmark Quick Prompts
   const benchmarkTestScenarios = [
     {
-      id: 'TEST-AS-1',
+      id: 'TEST-1',
       lang: 'as',
-      tag: 'AS 1 • Regulations',
-      label: 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ (৪০%)',
-      query: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ পৰীক্ষাত উত্তীৰ্ণ হ\'বলৈ নূন্যতম নম্বৰ কিমান লাগে?',
-      desc: 'Assamese query testing CBCS/FYUGP separate internal & end-semester 40% passing thresholds.'
+      label: currentLang === 'as' ? 'উত্তীৰ্ণ নম্বৰ (৪০%)' : 'Passing Marks (40%)',
+      query: currentLang === 'as' 
+        ? 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ পৰীক্ষাত উত্তীৰ্ণ হ\'বলৈ নূন্যতম নম্বৰ কিমান লাগে?' 
+        : 'What is the minimum passing percentage required in end-semester examinations?'
     },
     {
-      id: 'TEST-AS-2',
+      id: 'TEST-2',
       lang: 'as',
-      tag: 'AS 2 • Condonation',
-      label: 'মেডিকেল উপস্থিতি ৰেহাই (১০%)',
-      query: 'মেডিকেল কাৰণত শ্ৰেণীৰ উপস্থিতি কিমান শতাংশলৈ ৰেহাই (Condonation) পোৱা যায়?',
-      desc: 'Assamese query testing statutory 75% attendance rule and 10% medical condonation exception.'
+      label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (১০%)' : 'Medical Condonation',
+      query: currentLang === 'as' 
+        ? 'মেডিকেল কাৰণত শ্ৰেণীৰ উপস্থিতি কিমান শতাংশলৈ ৰেহাই (Condonation) পোৱা যায়?' 
+        : 'What is the attendance condonation limit for medical shortage?'
     },
     {
-      id: 'TEST-AS-3',
+      id: 'TEST-3',
+      lang: 'en',
+      label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation & Fees',
+      query: currentLang === 'as' 
+        ? 'পৰীক্ষাৰ উত্তৰ বহী পুনৰ মূল্যায়নৰ মাচুল আৰু অন্তিম তাৰিখ কি?' 
+        : 'Explain the procedure, fee, and timeline for answer script re-evaluation after examination results.'
+    },
+    {
+      id: 'TEST-4',
       lang: 'as',
-      tag: 'AS 3 • Language Specific',
-      label: 'ঈশান উদয় জলপানি আৰু আয়',
-      query: 'ঈশান উদয় জলপানি (Ishan Uday Scholarship) পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব আৰু পাৰিবাৰিক আয়ৰ সীমা কিমান?',
-      desc: 'Language-specific Assamese colloquial terms ("জলপানি", "পাৰিবাৰিক আয়") and NER scholarship rules.'
+      label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Scholarship',
+      query: currentLang === 'as' 
+        ? 'ঈশান উদয় জলপানি (Ishan Uday) পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব আৰু পাৰিবাৰিক আয়ৰ সীমা কিমান?' 
+        : 'What are the eligibility criteria and documents required for Ishan Uday scholarship?'
     },
     {
-      id: 'TEST-EN-1',
+      id: 'TEST-5',
       lang: 'en',
-      tag: 'EN 1 • Attendance',
-      label: 'Attendance & Medical Condonation',
-      query: 'What is the minimum attendance required to appear in the end-semester examinations, and what is the medical condonation limit?',
-      desc: 'English query testing 75% baseline attendance and HoD medical condonation limit down to 65%.'
-    },
-    {
-      id: 'TEST-EN-2',
-      lang: 'en',
-      tag: 'EN 2 • Re-evaluation',
-      label: 'Re-evaluation & Fees (₹350)',
-      query: 'Explain the procedure, fee, and timeline for answer script re-evaluation after examination results.',
-      desc: 'English query testing 20-day online application timeline, INR 350 fee, and 3-paper limit.'
-    },
-    {
-      id: 'TEST-EN-3',
-      lang: 'en',
-      tag: 'EN 3 • Hostels',
-      label: 'Hostel Distance (>35km) & Rules',
-      query: 'What are the eligibility criteria, reservation quotas, and documents required for university hostel accommodation?',
-      desc: 'English query testing entrance merit rank, >35 km geographical distance, and anti-ragging bylaws.'
+      label: currentLang === 'as' ? 'হোষ্টেল আসন আবণ্টন' : 'Hostel Allotment',
+      query: currentLang === 'as' 
+        ? 'বিশ্ববিদ্যালয় হোষ্টেল আসন আবণ্টনৰ বাবে দূৰত্ব আৰু মেধাৰ নিয়ম কি?' 
+        : 'What are the eligibility criteria and distance rules for university hostel accommodation?'
     }
   ];
-
-  // Prompt Chips
-  const promptChips = isFaculty ? (
-    currentLang === 'as' ? [
-      'ইউজিচি ২০১৮ ৰ অধিসূচনা অনুসৰি সহযোগী অধ্যাপকৰ CAS পদোন্নতিৰ চৰ্ত কি?',
-      'এগৰাকী অধ্যাপকে সৰ্বাধিক কিমানজন পিএইচ.ডি. গৱেষকক নিৰ্দেশনা দিব পাৰে?',
-      'প্ৰশ্নকাকত মডাৰেচন ব’ৰ্ডৰ (BOM) নিৰ্দেশনা আৰু সৰ্বাধিক সালসলনিৰ পৰিসৰ',
-      'অধ্যাপকৰ ছাবাটিকল আৰু কৰ্তব্য ছুটীৰ চৰকাৰী নিয়মসমূহ কি কি?'
-    ] : [
-      'UGC 2018 CAS criteria from Assistant Professor to Associate Professor',
-      'Maximum permissible PhD scholar supervision quota for Associate Professor',
-      'Confidential question paper setting norms and Board of Moderators guidelines',
-      'Official sabbatical leave and study leave statutes for university teachers'
-    ]
-  ) : (
-    currentLang === 'as' ? [
-      'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?',
-      'মেডিকেল কাৰণত উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
-      'ঈশান উদয় আৰু ডিএইচই মেধা ছাত্ৰবৃত্তিৰ বাবে কি নথিপত্ৰ লাগে?',
-      'হোষ্টেল আসন আবণ্টনৰ বাবে মেধা আৰু দূৰত্বৰ নিয়ম কি?'
-    ] : [
-      'What are Dibrugarh University passing criteria and re-evaluation fees?',
-      'What is the attendance condonation limit for medical absence?',
-      'Assam DHE and Ishan Uday scholarship eligibility and document checklist',
-      'University hostel allotment criteria and residential distance rules'
-    ]
-  );
 
   // Save Useful Answer
   const handleSaveAnswer = (msg) => {
@@ -298,7 +272,7 @@ export const DashboardAiAssistant = ({
       };
       list = [newEntry, ...list];
       localStorage.setItem('unimitra_saved_answers', JSON.stringify(list));
-      setActionAlert('Answer saved to your Bookmarks!');
+      setActionAlert(currentLang === 'as' ? 'উত্তৰ সংৰক্ষিত কৰা হ’ল!' : 'Answer saved to bookmarks!');
       setTimeout(() => setActionAlert(''), 3000);
     } catch {
       // fallback
@@ -325,7 +299,7 @@ export const DashboardAiAssistant = ({
         type: feedbackRating === 'helpful' ? 'Accurate Citation' : 'Reported Inaccuracy',
         university: univProfile.name || 'Dibrugarh University',
         rating: feedbackRating === 'helpful' ? 5 : 2,
-        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Citation was verified.' : 'Needs review.'),
+        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Citation verified.' : 'Needs review.'),
         submittedAt: 'Just now',
         status: 'Pending Admin Review',
         answerSnippet: activeFeedbackMsg?.text?.slice(0, 80) + '...'
@@ -333,7 +307,7 @@ export const DashboardAiAssistant = ({
       list = [newFeedback, ...list];
       localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
       setFeedbackModalOpen(false);
-      setActionAlert('Feedback queued for administrator review.');
+      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া সফলভাৱে প্ৰেৰণ কৰা হ’ল।' : 'Feedback submitted for review.');
       setTimeout(() => setActionAlert(''), 3500);
     } catch {
       // fallback
@@ -416,7 +390,7 @@ export const DashboardAiAssistant = ({
       if (voiceOutputEnabled) {
         setTimeout(() => speakText(aiResponse.text), 200);
       }
-    }, 600);
+    }, 550);
   };
 
   const handleSend = (e) => {
@@ -432,46 +406,49 @@ export const DashboardAiAssistant = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col neo-surface rounded-3xl overflow-hidden transition-all duration-300 min-h-0">
+    <div className="w-full h-full flex flex-col editorial-surface rounded-xl sm:rounded-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 shadow-sm overflow-hidden min-h-0 relative">
       
-      {/* Top Header Bar (Compact & Clean) */}
-      <div className="px-4 py-2 bg-gradient-to-r from-[#FFE9A9]/30 via-white/50 to-transparent dark:from-white/5 dark:via-transparent dark:to-transparent border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] flex items-center justify-center font-black shadow-xs">
-            <BuildingLibraryIcon className="w-4 h-4" />
+      {/* 1. TOP HEADER BAR (Compact, Responsive, Editorial Identity) */}
+      <header className="px-3 sm:px-5 py-2.5 sm:py-3 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex items-center justify-between shrink-0 bg-white/70 dark:bg-[#142426]/70 backdrop-blur-md">
+        
+        {/* Left: Assistant Identity & Live Indicator */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] text-[#D4A96A] dark:text-[#0B1518] flex items-center justify-center font-bold shadow-xs shrink-0">
+            <SparklesIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
           </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <h2 className="text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] leading-tight">
-                {univProfile.name || 'My University'} Assistant
+          <div className="min-w-0 leading-tight">
+            <div className="flex items-center space-x-1.5 truncate">
+              <h2 className="text-xs sm:text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading truncate">
+                {univProfile.name || 'University'} Assistant
               </h2>
-              <span className="w-2 h-2 rounded-full bg-[#03C988] animate-pulse" title="Online" />
+              <span className="w-2 h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
             </div>
-            <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 leading-tight">
+            <p className="text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
               {currentLang === 'as' 
-                ? 'বিশ্ববিদ্যালয় সহায়ক • ভয়েচ সক্ৰিয়' 
-                : 'University Assistant • Voice Enabled'}
+                ? 'দ্বিভাষিক AI সহায়ক • ভয়েচ সক্ৰিয়' 
+                : 'Bilingual AI Assistant • Voice & Citations'}
             </p>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center space-x-1.5">
-          {/* Voice Output Speaker Toggle */}
+        {/* Right: Responsive Control Actions */}
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          {/* Voice Output Toggle */}
           <button
             onClick={() => {
               if (isSpeaking) stopSpeaking();
               setVoiceOutputEnabled(!voiceOutputEnabled);
             }}
-            className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer border ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
               voiceOutputEnabled
-                ? 'bg-[#FF933E]/20 text-[#FF933E] dark:bg-[#03C988]/20 dark:text-[#03C988] border-[#FF933E]/40 dark:border-[#03C988]/40'
-                : 'text-[#000000]/40 dark:text-[#FFFFFF]/40 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/15 dark:text-[#55C7B2] border-[#123C3A]/20 dark:border-[#55C7B2]/30'
+                : 'text-[#627680] dark:text-[#879B99] border-transparent hover:bg-[#E9F0ED] dark:hover:bg-[#142426]'
             }`}
             title={voiceOutputEnabled ? 'Voice Auto-Playback Active' : 'Voice Auto-Playback Muted'}
+            aria-label="Toggle Voice Playback"
           >
             <SpeakerWaveIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[10px]">
+            <span className="hidden sm:inline text-[11px]">
               {voiceOutputEnabled ? 'Voice: ON' : 'Voice: OFF'}
             </span>
           </button>
@@ -479,32 +456,33 @@ export const DashboardAiAssistant = ({
           {/* Query History Drawer Toggle */}
           <button
             onClick={() => setHistorySidebarOpen(!historySidebarOpen)}
-            className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer border border-black/10 dark:border-white/10 ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
               historySidebarOpen 
-                ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000]' 
-                : 'bg-white/80 dark:bg-white/5 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40'
+                ? 'bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] border-[#123C3A] dark:border-[#55C7B2]' 
+                : 'bg-white/60 dark:bg-[#142426]/60 text-[#273B45] dark:text-[#DCE8E4] border-[#123C3A]/10 dark:border-[#55C7B2]/15 hover:bg-[#E9F0ED] dark:hover:bg-[#142426]'
             }`}
             title="Toggle Query History"
+            aria-label="Toggle Query History"
           >
             <ClockIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[10px]">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-[#FFE9A9] dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF]">
+            <span className="hidden xs:inline text-[11px]">{currentLang === 'as' ? 'ইতিহাস' : 'History'}</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] font-mono">
               {queryHistory.length}
             </span>
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Voice Status Banners */}
+      {/* 2. AUDIO & VOICE STATUS BANNERS */}
       {isSpeaking && (
-        <div className="px-5 py-2 bg-[#03C988]/15 dark:bg-[#03C988]/20 border-b border-[#03C988]/30 flex items-center justify-between text-xs text-[#03C988] font-bold shrink-0 animate-fade-in">
-          <div className="flex items-center space-x-2">
-            <SpeakerWaveIcon className="w-4 h-4 animate-pulse" />
-            <span>Speaking official verified answer aloud...</span>
+        <div className="px-4 py-2 bg-[#55C7B2]/12 dark:bg-[#55C7B2]/15 border-b border-[#55C7B2]/25 flex items-center justify-between text-xs text-[#123C3A] dark:text-[#55C7B2] font-semibold shrink-0">
+          <div className="flex items-center space-x-2 truncate mr-2">
+            <SpeakerWaveIcon className="w-4 h-4 animate-pulse shrink-0" />
+            <span className="truncate">Reading verified institutional answer aloud...</span>
           </div>
           <button 
             onClick={stopSpeaking}
-            className="text-[11px] font-black underline hover:text-black cursor-pointer"
+            className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2] underline hover:opacity-80 cursor-pointer shrink-0"
           >
             Stop Audio
           </button>
@@ -512,134 +490,133 @@ export const DashboardAiAssistant = ({
       )}
 
       {isListening && (
-        <div className="px-5 py-2.5 bg-[#FF933E]/15 dark:bg-[#03C988]/20 border-b border-[#FF933E]/40 flex items-center justify-between shrink-0 animate-fade-in">
-          <div className="flex items-center space-x-2.5">
-            <div className="flex items-end space-x-1 h-5">
-              <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-1" />
-              <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-2" />
-              <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-3" />
-              <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-4" />
-              <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-5" />
+        <div className="px-4 py-2 bg-[#D4A96A]/15 dark:bg-[#E0B77A]/15 border-b border-[#D4A96A]/30 flex items-center justify-between shrink-0">
+          <div className="flex items-center space-x-2.5 truncate mr-2">
+            <div className="flex items-end space-x-0.5 h-4 shrink-0">
+              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-2 animate-bounce" />
+              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-4 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-3 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
-            <span className="text-xs sm:text-sm font-black text-[#FF933E] dark:text-[#03C988]">
-              Listening to your voice in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak now!
+            <span className="text-xs font-semibold text-[#123C3A] dark:text-[#E0B77A] truncate">
+              Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak clearly!
             </span>
           </div>
           <button
             onClick={toggleListening}
-            className="px-3 py-1 rounded-full text-xs font-black bg-[#FF933E] text-white dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs"
+            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] cursor-pointer shadow-xs shrink-0"
           >
-            Done Speaking
+            Done
           </button>
         </div>
       )}
 
       {voiceError && (
-        <div className="px-5 py-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 text-xs font-bold border-b border-red-200 shrink-0">
+        <div className="px-4 py-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-medium border-b border-red-200 dark:border-red-900/50 shrink-0">
           {voiceError}
         </div>
       )}
 
-      {/* Quick Questions (Compact Single-Line Bar) */}
-      <div className="px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/5 dark:border-white/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar shrink-0">
-        <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] uppercase shrink-0">
+      {/* 3. QUICK QUESTION PILLS (Single-Line Momentum Scroll) */}
+      <div className="px-3 py-1.5 bg-[#E9F0ED]/50 dark:bg-[#142426]/50 border-b border-[#123C3A]/8 dark:border-[#55C7B2]/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar scroll-smooth shrink-0">
+        <span className="text-[10px] font-bold text-[#D4A96A] dark:text-[#E0B77A] uppercase tracking-wider shrink-0 mr-1 font-sans">
           {currentLang === 'as' ? 'দ্ৰুত প্ৰশ্ন:' : 'Quick:'}
         </span>
         {benchmarkTestScenarios.map((scenario) => (
           <button
             key={scenario.id}
             onClick={() => executeQuery(scenario.query)}
-            className="px-2.5 py-1 rounded-full bg-white dark:bg-white/5 hover:bg-[#FFE9A9]/40 dark:hover:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-black/5 dark:border-white/10 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 shadow-2xs"
-            title={scenario.desc}
+            className="px-2.5 py-1 rounded-full bg-white/70 dark:bg-[#0B1518]/70 hover:bg-white dark:hover:bg-[#142426] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 whitespace-nowrap text-[11px] font-medium transition-colors cursor-pointer shrink-0 font-sans shadow-2xs"
           >
             {scenario.label}
           </button>
         ))}
       </div>
 
-      {/* Main Chat Messages Stream + History Drawer */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      {/* 4. MAIN CHAT AREA + RESPONSIVE HISTORY DRAWER */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
         
-        {/* Messages Stream */}
-        <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 min-h-0">
+        {/* Messages Stream Viewport */}
+        <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 min-h-0 scroll-smooth">
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
             >
+              {/* Message Bubble */}
               <div
-                className={`max-w-3xl rounded-[2rem] p-4 sm:p-5 text-xs sm:text-sm leading-relaxed transition-all ${
+                className={`text-xs sm:text-sm leading-relaxed transition-all break-words ${
                   msg.sender === 'user'
-                    ? 'bg-gradient-to-r from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black rounded-br-xs font-bold shadow-md'
+                    ? 'max-w-[88%] xs:max-w-[85%] sm:max-w-xl md:max-w-2xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] rounded-2xl rounded-br-xs px-4 py-3 sm:px-5 sm:py-3.5 font-medium shadow-xs'
                     : msg.isUnverified
-                    ? 'bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 dark:border-amber-600 text-[#000000] dark:text-[#FFFFFF] rounded-bl-xs font-medium shadow-xs'
-                    : 'neo-surface border border-white/80 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] rounded-bl-xs font-medium shadow-sm'
+                    ? 'max-w-[95%] sm:max-w-2xl md:max-w-3xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 text-[#273B45] dark:text-[#DCE8E4] rounded-2xl rounded-bl-xs p-3.5 sm:p-5 font-normal shadow-xs'
+                    : 'max-w-[95%] sm:max-w-2xl md:max-w-3xl bg-white/85 dark:bg-[#142426]/85 border border-[#123C3A]/10 dark:border-[#55C7B2]/15 text-[#273B45] dark:text-[#DCE8E4] rounded-2xl rounded-bl-xs p-3.5 sm:p-5 font-normal shadow-xs'
                 }`}
               >
                 <p className="whitespace-pre-line">{msg.text}</p>
 
-                {/* Grounded Citation & Audio Controls for AI Message */}
+                {/* Grounded Citation Card (AI Message) */}
                 {msg.sender === 'ai' && (
-                  <div className="mt-4 pt-3 border-t border-[#73A5CA]/25 dark:border-[#1C82AD]/30 flex flex-col gap-2.5">
+                  <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2.5">
                     
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                      <div className="flex items-center space-x-2">
-                        <ShieldCheckIcon className={`w-4 h-4 shrink-0 ${msg.isUnverified ? 'text-amber-500' : 'text-[#03C988]'}`} />
-                        <span className="font-bold text-[#000000]/80 dark:text-[#FFFFFF]/80">
-                          {msg.isUnverified ? 'Strict Anti-Hallucination Guard:' : 'Grounded Institutional Citation:'}
+                    {/* Badge & Confidence Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+                      <div className="flex items-center space-x-1.5">
+                        <ShieldCheckIcon className={`w-3.5 h-3.5 shrink-0 ${msg.isUnverified ? 'text-amber-500' : 'text-[#55C7B2]'}`} />
+                        <span className="font-semibold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                          {msg.isUnverified ? 'Strict Anti-Hallucination Flag' : 'Grounded Gazette Citation'}
                         </span>
                       </div>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                         msg.isUnverified
-                          ? 'bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100'
-                          : 'bg-[#03C988]/20 text-[#03C988] dark:bg-[#03C988]/30 dark:text-[#03C988]'
+                          ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border border-amber-300'
+                          : 'bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2] border border-[#55C7B2]/30'
                       }`}>
                         {msg.confidence || '99.4% Verified Match'}
                       </span>
                     </div>
 
-                    <div className="p-3 rounded-2xl neo-inset text-[11px] font-mono flex items-center justify-between">
-                      <div className="flex items-center space-x-2 truncate">
-                        <DocumentTextIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
-                        <span className="font-bold truncate text-[#000000] dark:text-[#FFFFFF]">
+                    {/* Source File & Page Box */}
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#0B1518]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                      <div className="flex items-center space-x-1.5 min-w-0">
+                        <DocumentTextIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
+                        <span className="font-semibold text-[#273B45] dark:text-[#DCE8E4] truncate">
                           {msg.source}
                         </span>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] font-sans font-bold shrink-0 ml-2">
+                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-sans font-bold shrink-0 self-start sm:self-auto border border-[#123C3A]/8 dark:border-[#55C7B2]/15">
                         {msg.page}
                       </span>
                     </div>
 
-                    {/* Action Bar */}
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[10px] text-[#000000]/50 dark:text-[#FFFFFF]/50 font-semibold">
+                    {/* Action Bar (Audio, Bookmark, Feedback) */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                      <span className="text-[10px] text-[#627680] dark:text-[#879B99] font-medium">
                         {msg.time}
                       </span>
 
-                      <div className="flex items-center space-x-2">
-                        {/* Voice Listen Button */}
+                      <div className="flex items-center space-x-1.5">
                         <button
                           onClick={() => speakText(msg.text)}
-                          className="px-3 py-1 rounded-full bg-[#FFE9A9]/50 dark:bg-[#141414] hover:bg-[#FFE9A9] text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] cursor-pointer flex items-center space-x-1"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#123C3A] dark:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                           title="Listen with Text-to-Speech"
                         >
-                          <SpeakerWaveIcon className="w-3.5 h-3.5" />
+                          <SpeakerWaveIcon className="w-3 h-3" />
                           <span>Listen</span>
                         </button>
 
                         <button
                           onClick={() => handleSaveAnswer(msg)}
-                          className="px-3 py-1 rounded-full bg-white dark:bg-[#141414] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                         >
-                          <DocumentDuplicateIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
+                          <DocumentDuplicateIcon className="w-3 h-3 text-[#D4A96A]" />
                           <span>Bookmark</span>
                         </button>
 
                         <button
                           onClick={() => handleOpenFeedback(msg)}
-                          className="px-3 py-1 rounded-full bg-white dark:bg-[#141414] hover:bg-[#FFE9A9]/40 border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[10px] font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#0B1518]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                         >
-                          <CheckCircleIcon className="w-3.5 h-3.5 text-[#03C988]" />
+                          <CheckCircleIcon className="w-3 h-3 text-[#55C7B2]" />
                           <span>Feedback</span>
                         </button>
                       </div>
@@ -648,20 +625,26 @@ export const DashboardAiAssistant = ({
                   </div>
                 )}
               </div>
+
+              {/* User Timestamp */}
+              {msg.sender === 'user' && (
+                <span className="text-[10px] text-[#627680] dark:text-[#879B99] mt-1 px-1 font-sans">
+                  {msg.time}
+                </span>
+              )}
             </div>
           ))}
 
+          {/* Loading Animation */}
           {loading && (
-            <div className="flex items-start space-x-3 animate-pulse">
-              <div className="w-8 h-8 rounded-full bg-[#FF933E] dark:bg-[#03C988] flex items-center justify-center text-white dark:text-black">
-                <SparklesIcon className="w-4 h-4 animate-spin" />
+            <div className="flex items-start space-x-2.5 animate-fade-in">
+              <div className="w-7 h-7 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-[#D4A96A] dark:text-[#0B1518] shrink-0">
+                <SparklesIcon className="w-3.5 h-3.5 animate-spin" />
               </div>
-              <div className="neo-surface rounded-[2rem] p-4 text-xs font-semibold text-[#000000]/70 dark:text-[#FFFFFF]/70 flex items-center space-x-2">
-                <span>
-                  {currentLang === 'as' 
-                    ? `ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ নথিপত্ৰ নিৰীক্ষণ কৰি থকা হৈছে...` 
-                    : `Performing multilingual semantic retrieval against ${univProfile.name} knowledge base...`}
-                </span>
+              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4]">
+                {currentLang === 'as' 
+                  ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নথিপত্ৰ নিৰীক্ষণ কৰি থকা হৈছে...` 
+                  : `Retrieving grounded statutes from ${univProfile.name} knowledge base...`}
               </div>
             </div>
           )}
@@ -669,90 +652,104 @@ export const DashboardAiAssistant = ({
           <div ref={chatBottomRef} />
         </div>
 
-        {/* History Drawer */}
+        {/* 5. QUERY HISTORY DRAWER (Responsive: Modal Overlay on Mobile, Docked Sidebar on Desktop) */}
         {historySidebarOpen && (
-          <aside className="w-72 sm:w-80 border-l border-[#73A5CA]/30 dark:border-[#1C82AD]/30 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-xl p-4 flex flex-col justify-between shrink-0 animate-fade-in">
-            <div className="space-y-3 overflow-y-auto">
-              <div className="flex items-center justify-between pb-2 border-b border-[#73A5CA]/20">
-                <div className="flex items-center space-x-2">
-                  <ClockIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
-                  <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">
-                    {currentLang === 'as' ? 'অনুসন্ধান ইতিহাস' : 'Your Query History'}
-                  </span>
+          <>
+            {/* Mobile Backdrop Overlay (< lg) */}
+            <div 
+              className="fixed inset-0 z-40 bg-[#0B1518]/50 backdrop-blur-xs lg:hidden"
+              onClick={() => setHistorySidebarOpen(false)}
+            />
+
+            {/* Drawer Container */}
+            <aside className="fixed inset-y-0 right-0 z-50 w-72 sm:w-80 lg:relative lg:inset-auto lg:z-auto border-l border-[#123C3A]/10 dark:border-[#55C7B2]/15 bg-white/95 dark:bg-[#0B1518]/95 backdrop-blur-xl p-4 flex flex-col justify-between shrink-0 shadow-xl lg:shadow-none animate-fade-in">
+              <div className="space-y-3 overflow-y-auto flex-1 min-h-0">
+                <div className="flex items-center justify-between pb-2 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
+                  <div className="flex items-center space-x-2">
+                    <ClockIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#55C7B2]" />
+                    <span className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                      {currentLang === 'as' ? 'অনুসন্ধান ইতিহাস' : 'Query History'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setHistorySidebarOpen(false)}
+                    className="p-1 rounded-lg text-[#627680] hover:text-[#123C3A] dark:text-[#879B99] dark:hover:text-[#DCE8E4] cursor-pointer"
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
                 </div>
+
+                <div className="space-y-2">
+                  {queryHistory.length === 0 ? (
+                    <p className="text-xs text-[#627680] dark:text-[#879B99] text-center py-8">
+                      No query history yet.
+                    </p>
+                  ) : (
+                    queryHistory.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          executeQuery(item.query);
+                          if (window.innerWidth < 1024) setHistorySidebarOpen(false);
+                        }}
+                        className="w-full text-left p-2.5 rounded-xl bg-[#E9F0ED]/60 dark:bg-[#142426]/60 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 hover:border-[#123C3A]/30 dark:hover:border-[#55C7B2]/40 transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center justify-between text-[10px] text-[#627680] dark:text-[#879B99] mb-1">
+                          <span className="font-medium">{item.time}</span>
+                          <span className="px-1.5 py-0.2 rounded bg-white dark:bg-[#0B1518] text-[9px] uppercase font-bold text-[#123C3A] dark:text-[#55C7B2]">
+                            {item.lang || 'en'}
+                          </span>
+                        </div>
+                        <p className="text-xs font-medium text-[#273B45] dark:text-[#DCE8E4] line-clamp-2 group-hover:text-[#123C3A] dark:group-hover:text-[#55C7B2] font-sans">
+                          {item.query}
+                        </p>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {queryHistory.length > 0 && (
                 <button
-                  onClick={() => setHistorySidebarOpen(false)}
-                  className="p-1 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black cursor-pointer"
+                  onClick={() => {
+                    setQueryHistory([]);
+                    localStorage.removeItem('unimitra_student_query_history');
+                  }}
+                  className="w-full mt-3 py-2 text-center text-xs font-semibold text-red-600 dark:text-red-300 hover:underline cursor-pointer flex items-center justify-center space-x-1.5 shrink-0"
                 >
-                  <XMarkIcon className="w-4 h-4" />
+                  <TrashIcon className="w-3.5 h-3.5" />
+                  <span>Clear History</span>
                 </button>
-              </div>
-
-              <div className="space-y-2">
-                {queryHistory.length === 0 ? (
-                  <p className="text-xs text-[#000000]/60 dark:text-[#FFFFFF]/60 text-center py-6">
-                    No recent queries yet.
-                  </p>
-                ) : (
-                  queryHistory.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => executeQuery(item.query)}
-                      className="w-full text-left p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#141414]/60 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer group"
-                    >
-                      <div className="flex items-center justify-between text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 mb-1">
-                        <span className="font-bold">{item.time}</span>
-                        <span className="px-1.5 py-0.2 rounded bg-white dark:bg-[#0A0A0A] text-[9px] uppercase font-bold">
-                          {item.lang || 'en'}
-                        </span>
-                      </div>
-                      <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] line-clamp-2 group-hover:text-[#FF933E] dark:group-hover:text-[#03C988]">
-                        {item.query}
-                      </p>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {queryHistory.length > 0 && (
-              <button
-                onClick={() => {
-                  setQueryHistory([]);
-                  localStorage.removeItem('unimitra_student_query_history');
-                }}
-                className="w-full mt-3 py-2 text-center text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70 hover:text-red-500 cursor-pointer flex items-center justify-center space-x-1"
-              >
-                <TrashIcon className="w-3.5 h-3.5" />
-                <span>Clear History</span>
-              </button>
-            )}
-          </aside>
+              )}
+            </aside>
+          </>
         )}
 
       </div>
 
-      {/* COMPACT INPUT AREA (Maximizes chat space, fits 100% on screen) */}
+      {/* 6. BOTTOM INPUT COMMAND BAR (Responsive, Mobile Keyboard Safe) */}
       <form 
         onSubmit={handleSend} 
-        className="p-2 sm:p-2.5 bg-white/70 dark:bg-black/80 backdrop-blur-md border-t border-black/5 dark:border-white/10 shrink-0"
+        className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#0B1518]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
       >
-        <div className="rounded-2xl neo-inset px-3 py-1.5 flex items-center gap-2">
-          {/* Voice Input Microphone Button */}
+        <div className="rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#142426]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 px-2.5 sm:px-3 py-1.5 flex items-center gap-2 focus-within:border-[#123C3A] dark:focus-within:border-[#55C7B2] focus-within:ring-1 focus-within:ring-[#123C3A]/10 dark:focus-within:ring-[#55C7B2]/20 transition-all">
+          
+          {/* Microphone Voice Toggle */}
           <button
             type="button"
             onClick={toggleListening}
-            className={`p-2 rounded-full transition-all cursor-pointer shrink-0 ${
+            className={`p-2 rounded-xl transition-all cursor-pointer shrink-0 ${
               isListening
-                ? 'bg-red-500 text-white animate-pulse shadow-md'
-                : 'bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988] hover:scale-105'
+                ? 'bg-red-600 text-white animate-pulse shadow-md'
+                : 'bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] hover:bg-[#123C3A]/10'
             }`}
-            title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak query)'}
+            title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak)'}
+            aria-label="Voice Input"
           >
             <MicrophoneIcon className="w-4 h-4" />
           </button>
 
-          {/* Compact multi-line textarea */}
+          {/* Flexible Textarea Input */}
           <textarea
             ref={textareaRef}
             rows={1}
@@ -761,61 +758,62 @@ export const DashboardAiAssistant = ({
             onKeyDown={handleKeyDown}
             placeholder={
               currentLang === 'as'
-                ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ বিষয়ে প্ৰশ্ন সোধক (মাইক্ৰ’ফোন টিপিও কথা পাতিব পাৰে)...`
-                : `Ask any question on ${univProfile.name || 'university'} regulations, exams...`
+                ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ বিষয়ে প্ৰশ্ন সোধক...`
+                : `Ask any query on regulations, examinations, admissions...`
             }
-            className="flex-1 bg-transparent text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/50 outline-none resize-none leading-relaxed py-1 max-h-20"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none resize-none leading-relaxed py-1 max-h-20 font-sans"
           />
 
-          {/* Send Button */}
+          {/* Send Trigger Button */}
           <button
             type="submit"
             disabled={!inputQuery.trim() || loading}
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-[#FF933E] to-[#FFCB56] hover:from-[#E87A24] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-[#000000] text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0"
+            className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#0B1518] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
+            aria-label="Send Query"
           >
             <SendIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
+            <span className="hidden xs:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
           </button>
         </div>
       </form>
 
-      {/* Action Toast */}
+      {/* Action Toast Alert */}
       {actionAlert && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full neo-surface text-xs font-black text-[#000000] dark:text-[#FFFFFF] shadow-2xl animate-fade-in z-50 flex items-center space-x-2 border border-[#FF933E] dark:border-[#03C988]">
-          <CheckCircleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] text-xs font-semibold shadow-xl animate-fade-in z-50 flex items-center space-x-2 border border-[#D4A96A] dark:border-[#E0B77A]">
+          <CheckCircleIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#0B1518]" />
           <span>{actionAlert}</span>
         </div>
       )}
 
-      {/* Feedback Modal */}
+      {/* Responsive Institutional Feedback Modal */}
       {feedbackModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="neo-surface rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-scale-up">
-            <div className="flex items-center justify-between pb-2 border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
-              <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+        <div className="fixed inset-0 z-50 bg-[#0B1518]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="editorial-surface rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 animate-scale-up border border-[#123C3A]/15 dark:border-[#55C7B2]/20">
+            <div className="flex items-center justify-between pb-2 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
+              <h3 className="text-sm sm:text-base font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
                 Institutional Feedback
               </h3>
               <button
                 onClick={() => setFeedbackModalOpen(false)}
-                className="p-1 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black cursor-pointer"
+                className="p-1 rounded-lg text-[#627680] hover:text-[#123C3A] dark:text-[#879B99] dark:hover:text-[#DCE8E4] cursor-pointer"
               >
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
+            <p className="text-xs text-[#627680] dark:text-[#879B99] font-sans leading-relaxed">
               Your feedback is audited by university administrators to verify citation accuracy and continuously tune retrieval embeddings.
             </p>
 
             <form onSubmit={handleSubmitFeedback} className="space-y-4">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2.5">
                 <button
                   type="button"
                   onClick={() => setFeedbackRating('helpful')}
-                  className={`flex-1 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                     feedbackRating === 'helpful'
-                      ? 'bg-[#03C988] text-black border-[#03C988] font-black'
-                      : 'border-[#73A5CA]/40 text-[#000000] dark:text-[#FFFFFF]'
+                      ? 'bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] border-[#123C3A] dark:border-[#55C7B2]'
+                      : 'border-[#123C3A]/15 dark:border-[#55C7B2]/20 text-[#273B45] dark:text-[#DCE8E4]'
                   }`}
                 >
                   ✓ Accurate Citation
@@ -823,10 +821,10 @@ export const DashboardAiAssistant = ({
                 <button
                   type="button"
                   onClick={() => setFeedbackRating('unhelpful')}
-                  className={`flex-1 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                     feedbackRating === 'unhelpful'
-                      ? 'bg-amber-500 text-white border-amber-500 font-black'
-                      : 'border-[#73A5CA]/40 text-[#000000] dark:text-[#FFFFFF]'
+                      ? 'bg-amber-600 text-white border-amber-600'
+                      : 'border-[#123C3A]/15 dark:border-[#55C7B2]/20 text-[#273B45] dark:text-[#DCE8E4]'
                   }`}
                 >
                   ⚠ Needs Revision
@@ -834,15 +832,15 @@ export const DashboardAiAssistant = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
+                <label className="block text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] mb-1 font-heading">
                   Comments or Suggestions (Optional)
                 </label>
                 <textarea
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
                   rows={3}
-                  placeholder="e.g. Clause citation matched gazette page 9 directly..."
-                  className="w-full px-3.5 py-2.5 rounded-2xl neo-inset text-xs text-[#000000] dark:text-[#FFFFFF] outline-none"
+                  placeholder="e.g. Clause citation matched gazette section 4.3..."
+                  className="w-full px-3 py-2 rounded-xl bg-[#E9F0ED]/60 dark:bg-[#0B1518]/60 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 text-xs text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none font-sans"
                 />
               </div>
 
@@ -850,15 +848,15 @@ export const DashboardAiAssistant = ({
                 <button
                   type="button"
                   onClick={() => setFeedbackModalOpen(false)}
-                  className="px-4 py-2 rounded-full text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#DCE8E4] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] dark:text-[#0B1518] cursor-pointer shadow-xs font-heading"
                 >
-                  Submit to Admin
+                  Submit Feedback
                 </button>
               </div>
             </form>

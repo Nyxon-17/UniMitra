@@ -17,6 +17,11 @@ import {
   SparklesIcon
 } from '../common/Icons';
 
+/**
+ * Editorial + Aurora Dashboard Sidebar
+ * Elegant editorial layout, generous vertical whitespace, hairline dividers, 
+ * subtle aurora active indicators, and typography hierarchy.
+ */
 export const DashboardSidebar = ({
   activeTab = 'overview',
   onSelectTab,
@@ -30,7 +35,6 @@ export const DashboardSidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const isFaculty = studentInfo?.role === 'Faculty Member';
-  const isAdmin = studentInfo?.role === 'Admin';
 
   // Active tab derived from URL or activeTab prop
   const pathSegment = location.pathname.startsWith('/dashboard/')
@@ -44,7 +48,7 @@ export const DashboardSidebar = ({
     { id: 'assistant', label: 'Ask UniMitra AI', asLabel: 'দ্বিভাষিক AI সহায়ক', icon: ChatBubbleIcon },
     { id: 'regulations', label: 'University Regulations', asLabel: 'বিশ্ববিদ্যালয়ৰ নিয়মাৱলী', icon: BuildingLibraryIcon },
     { id: 'examinations', label: 'Examinations & Grading', asLabel: 'পৰীক্ষা আৰু মূল্যায়ন', icon: ClipboardDocumentCheckIcon },
-    { id: 'admissions', label: 'Programs & Admissions', asLabel: 'পাঠ্যক্ৰম আৰু ভৰ্তি', icon: IdentificationIcon },
+    { id: 'admissions', label: 'Programmes & Admissions', asLabel: 'পাঠ্যক্ৰম আৰু ভৰ্তি', icon: IdentificationIcon },
     { id: 'scholarships', label: 'Scholarships & Grants', asLabel: 'ছাত্ৰবৃত্তি আৰু অনুদান', icon: BanknotesIcon },
     { id: 'facilities', label: 'Campus Facilities', asLabel: 'চৌহদৰ সুবিধাসমূহ', icon: BuildingOfficeIcon },
     { id: 'history', label: 'Previous Queries', asLabel: 'পূৰ্বৰ বাৰ্তালাপ', icon: ClockIcon },
@@ -62,21 +66,12 @@ export const DashboardSidebar = ({
     { id: 'faculty-saved', label: 'Saved Reference Circulars', asLabel: 'সংৰক্ষিত জাননীসমূহ', icon: DocumentTextIcon },
   ];
 
-  const adminMenuItems = [
-    { id: 'overview', label: 'Administrator Overview', asLabel: 'প্ৰশাসন সাৰাংশ', icon: HomeIcon },
-    { id: 'admin-console', label: 'Document & Approval Console', asLabel: 'নথিপত্ৰ আৰু অনুমোদন কেন্দ্ৰ', icon: BuildingLibraryIcon, isDirectAdmin: true },
-    { id: 'assistant', label: 'Institutional AI Assistant', asLabel: 'দ্বিভাষিক AI সহায়ক', icon: ChatBubbleIcon },
-    { id: 'regulations', label: 'University Regulations', asLabel: 'বিশ্ববিদ্যালয়ৰ নিয়মাৱলী', icon: BuildingLibraryIcon },
-    { id: 'faculty-documents', label: 'Faculty Submissions Review', asLabel: 'অধ্যাপকৰ নথিপত্ৰ নিৰীক্ষণ', icon: DocumentTextIcon },
-    { id: 'feedback', label: 'Review Feedback', asLabel: 'প্ৰতিক্ৰিয়া পৰিদৰ্শন', icon: CheckCircleIcon },
-  ];
-
-  const menuItems = isAdmin ? adminMenuItems : (isFaculty ? facultyMenuItems : studentMenuItems);
+  const menuItems = isFaculty ? facultyMenuItems : studentMenuItems;
 
   const handleItemClick = (id) => {
-    if (id === 'admin-console' || id === 'admin') {
-      if (onOpenAdmin) onOpenAdmin();
-      else navigate('/admin');
+    if (id === 'assistant') {
+      navigate('/dashboard/assistant');
+      if (onSelectTab) onSelectTab('assistant');
       if (onCloseMobile) onCloseMobile();
       return;
     }
@@ -101,30 +96,31 @@ export const DashboardSidebar = ({
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs"
+          className="fixed inset-0 bg-[#0B1518]/60 z-40 lg:hidden backdrop-blur-sm"
           onClick={onCloseMobile}
-        ></div>
+        />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xs border-r border-[#73A5CA]/35 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#F7F6F0]/95 dark:bg-[#0B1518]/95 backdrop-blur-md border-r border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         {/* Upper Sidebar Section */}
-        <div className="overflow-y-auto">
-          {/* Logo Bar */}
-          <div className="flex items-center justify-between h-20 px-6 border-b border-[#73A5CA]/35 dark:border-[#1C82AD]/40">
-            <div className="flex items-center space-x-3 cursor-pointer" onClick={handleLogoClick}>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#73A5CA] via-[#FFCB56] to-[#FF933E] dark:from-[#13005A] dark:to-[#00337C] flex items-center justify-center text-white shadow-md border-2 border-[#73A5CA]/40 dark:border-[#03C988]/50 dark:shadow-[0_0_12px_rgba(176,38,255,0.4)]">
-                <BuildingLibraryIcon className="w-6 h-6 text-[#FAF8FF]" />
+        <div className="overflow-y-auto flex-1">
+          {/* Editorial Masthead / Logo Bar */}
+          <div className="flex items-center justify-between h-18 px-6 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
+            <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={handleLogoClick}>
+              <div className="w-9 h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-white dark:text-[#0B1518] shadow-xs">
+                <BuildingLibraryIcon className="w-5 h-5 text-[#D4A96A] dark:text-[#0B1518]" />
               </div>
               <div>
-                <span className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
-                  Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
+                <span className="text-lg font-bold tracking-tight text-[#123C3A] dark:text-[#DCE8E4] font-heading block leading-none">
+                  Uni<span className="text-[#D4A96A] dark:text-[#55C7B2]">Mitra</span>
                 </span>
-                <span className="text-[10px] font-black text-[#FF933E] dark:text-[#03C988] block -mt-0.5 uppercase tracking-wider">
-                  University Portal
+                <span className="text-[10px] font-medium tracking-widest text-[#627680] dark:text-[#879B99] block mt-1 uppercase font-sans">
+                  Academic Portal
                 </span>
               </div>
             </div>
@@ -132,14 +128,14 @@ export const DashboardSidebar = ({
             {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-[#555375] hover:text-[#1E1035] dark:text-[#C4B5FD] dark:hover:text-[#FAF8FF] cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg text-[#627680] hover:text-[#123C3A] dark:text-[#879B99] dark:hover:text-[#DCE8E4] transition-colors cursor-pointer"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Navigation Menu */}
-          <nav className="p-4 space-y-1.5">
+          {/* Navigation Items with Editorial Aurora Polish */}
+          <nav className="p-3.5 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = effectiveTab === item.id;
@@ -147,12 +143,19 @@ export const DashboardSidebar = ({
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.id)}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${isActive
-                      ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                      : 'text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FFE9A9]/40 dark:hover:bg-[#00337C]/60 hover:text-[#FF933E] dark:hover:text-[#03C988]'
-                    }`}
+                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer font-sans ${
+                    isActive
+                      ? 'bg-[#123C3A] text-white dark:bg-[#142426] dark:text-[#55C7B2] dark:border dark:border-[#55C7B2]/25 shadow-xs'
+                      : 'text-[#273B45] dark:text-[#DCE8E4]/80 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] hover:text-[#123C3A] dark:hover:text-[#55C7B2]'
+                  }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#FAF8FF]' : 'text-[#73A5CA] dark:text-[#03C988]'}`} />
+                  <Icon 
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      isActive 
+                        ? 'text-[#D4A96A] dark:text-[#55C7B2]' 
+                        : 'text-[#123C3A]/60 dark:text-[#879B99]'
+                    }`} 
+                  />
                   <span className="truncate">{currentLang === 'as' ? item.asLabel : item.label}</span>
                 </button>
               );
@@ -160,8 +163,17 @@ export const DashboardSidebar = ({
           </nav>
         </div>
 
-        {/* Lower Sidebar Actions */}
-        <div className="p-4 border-t border-[#73A5CA]/35 dark:border-white/10 space-y-2">
+        {/* Lower Sidebar Actions with Hairline Divider */}
+        <div className="p-3.5 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-1.5">
+          {/* Admin Ingestion Console Access */}
+          <button
+            onClick={handleAdminClick}
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-[#E9F0ED]/70 dark:bg-[#142426]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] transition-all cursor-pointer border border-[#123C3A]/10 dark:border-[#55C7B2]/15"
+          >
+            <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
+            <span className="text-[10px] uppercase font-mono tracking-wider text-[#D4A96A] dark:text-[#55C7B2]">RAG ⚙️</span>
+          </button>
+
           {/* Secure Sign Out Action */}
           <button
             onClick={() => {
@@ -169,7 +181,7 @@ export const DashboardSidebar = ({
                 if (onSignOut) onSignOut();
               }
             }}
-            className="w-full flex items-center space-x-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-black text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/40 transition-colors cursor-pointer border border-red-200 dark:border-red-900/50"
+            className="w-full flex items-center space-x-2.5 px-3.5 py-2 rounded-xl text-xs font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/25 transition-colors cursor-pointer border border-red-200/60 dark:border-red-900/40"
           >
             <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0" />
             <span>{currentLang === 'as' ? 'প’ৰ্টেলৰ পৰা লগ-আউট' : 'Sign Out of Portal'}</span>

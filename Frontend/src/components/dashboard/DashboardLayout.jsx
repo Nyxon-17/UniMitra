@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardNavbar } from './DashboardNavbar';
-import { HomeScreenBackground } from '../common/HomeScreenBackground';
+import { AuroraBackground } from '../common/AuroraBackground';
 
+/**
+ * Editorial + Aurora Dashboard Layout
+ * High-end spatial canvas, soft flowing aurora effects, thin hairline boundaries,
+ * and generous whitespace.
+ */
 export const DashboardLayout = ({ 
   children, 
   activeTab = 'overview', 
@@ -19,9 +24,9 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
-      {/* Universal Home Screen Background with Animated College Boy Looking to University */}
-      <HomeScreenBackground />
+    <div className={`relative min-h-screen bg-[#F7F6F0] dark:bg-[#0B1518] text-[#273B45] dark:text-[#DCE8E4] flex flex-col transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
+      {/* Editorial + Aurora Atmospheric Ambient Background */}
+      <AuroraBackground />
 
       {/* Fixed Sidebar */}
       <DashboardSidebar
@@ -36,7 +41,7 @@ export const DashboardLayout = ({
       />
 
       {/* Main Content Area (offset by sidebar on desktop) */}
-      <div className={`lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10 ${activeTab === 'assistant' ? 'h-screen max-h-screen overflow-hidden' : ''}`}>
+      <div className={`lg:pl-72 flex-1 flex flex-col min-w-0 relative z-10 ${activeTab === 'assistant' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : ''}`}>
         
         {/* Top Dashboard Navbar */}
         <DashboardNavbar
@@ -49,9 +54,9 @@ export const DashboardLayout = ({
           studentInfo={studentInfo}
         />
 
-        {/* Dynamic Viewport (Zero wasted margins on AI chat for maximum breathing room) */}
-        <main className={`flex-1 min-h-0 ${activeTab === 'assistant' ? 'p-2 sm:p-3 overflow-hidden flex flex-col' : 'p-4 sm:p-6 lg:p-8 overflow-y-auto'}`}>
-          <div className="w-full h-full flex flex-col min-h-0 overflow-hidden">
+        {/* Dynamic Viewport with Responsive Padding & Whitespace */}
+        <main className={`flex-1 min-h-0 ${activeTab === 'assistant' ? 'p-1.5 sm:p-3 md:p-4 overflow-hidden flex flex-col' : 'p-5 sm:p-8 lg:p-10 overflow-y-auto'}`}>
+          <div className="w-full max-w-7xl mx-auto h-full flex flex-col min-h-0">
             {children || <Outlet />}
           </div>
         </main>
