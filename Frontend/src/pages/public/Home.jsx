@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { UniversityHero3D } from '../../components/common/Graphic3D';
 import {
@@ -17,6 +18,7 @@ import {
 } from '../../components/common/Icons';
 
 export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const navigate = useNavigate();
   const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
 
   useEffect(() => {
@@ -65,8 +67,9 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
   const handlePortalAccess = () => {
     if (isLoggedIn) {
       if (onNavigate) onNavigate('dashboard');
+      else navigate('/dashboard/overview');
     } else {
-      if (onOpenAuth) onOpenAuth('login');
+      if (onOpenAuth) onOpenAuth('login', 'student');
     }
   };
 
@@ -458,14 +461,17 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
             <button
-              onClick={() => onOpenAuth && onOpenAuth('login')}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-elevated-sage text-sm"
+              onClick={handlePortalAccess}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-[#000000] transition-all cursor-pointer shadow-elevated-sage text-sm"
             >
               Sign In to Access Portal
             </button>
             <button
-              onClick={() => onNavigate && onNavigate('features')}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-[#FAF8FF] bg-transparent border-2 border-[#3B2868] hover:border-[#FAF8FF] transition-all cursor-pointer text-sm"
+              onClick={() => {
+                if (onNavigate) onNavigate('features');
+                navigate('/features');
+              }}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-[#000000] dark:text-[#FFFFFF] bg-transparent border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all cursor-pointer text-sm"
             >
               Explore Assistance Services
             </button>

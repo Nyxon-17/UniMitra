@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, SearchIcon, EnvelopeIcon, BuildingLibraryIcon } from '../../components/common/Icons';
 
 export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [openIndex, setOpenIndex] = useState(0);
@@ -176,7 +178,10 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
           </p>
           <div className="pt-2">
             <button
-              onClick={() => onNavigate && onNavigate('contact')}
+              onClick={() => {
+                if (onNavigate) onNavigate('contact');
+                navigate('/contact');
+              }}
               className="px-6 py-2.5 rounded-xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] text-xs transition-all cursor-pointer shadow-xs"
             >
               Contact University Desk ➔

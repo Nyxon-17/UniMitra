@@ -1,18 +1,47 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BuildingLibraryIcon, ShieldCheckIcon, ClipboardDocumentCheckIcon, BanknotesIcon, BuildingOfficeIcon } from '../common/Icons';
+import { universityService } from '../../services/universityService';
 
-export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
+export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false, studentInfo }) => {
   const navigate = useNavigate();
+  const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+
+  useEffect(() => {
+    const handleUpdate = () => setUnivProfile(universityService.getProfile());
+    window.addEventListener('unimitra_university_changed', handleUpdate);
+    return () => window.removeEventListener('unimitra_university_changed', handleUpdate);
+  }, []);
 
   const handleNav = (page) => {
     if (onNavigate) {
       onNavigate(page);
     }
-    if (page === 'home') navigate('/');
-    else if (page === 'dashboard') navigate('/dashboard/overview');
-    else if (page === 'admin') navigate('/admin');
-    else if (page === 'auth') navigate('/auth');
-    else navigate(`/${page}`);
+    if (page === 'home') {
+      navigate('/');
+      return;
+    }
+    if (page === 'dashboard') {
+      if (!isLoggedIn) {
+        if (onOpenAuth) onOpenAuth('login', 'student');
+        return;
+      }
+      navigate('/dashboard/overview');
+      return;
+    }
+    if (page === 'admin') {
+      if (!isLoggedIn || (studentInfo?.role !== 'Admin' && studentInfo?.role !== 'Super Admin')) {
+        if (onOpenAuth) onOpenAuth('login', 'admin');
+        return;
+      }
+      navigate('/admin');
+      return;
+    }
+    if (page === 'auth' || page === 'login') {
+      if (onOpenAuth) onOpenAuth('login', 'student');
+      return;
+    }
+    navigate(`/${page}`);
   };
 
   return (
@@ -99,7 +128,7 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
               </li>
               <li>
                 <button onClick={() => handleNav('how-it-works')} className="hover:text-[#000000] dark:text-[#FFFFFF] transition-colors cursor-pointer text-left">
-                  RAG Architecture & How It Works
+                  How the Assistant Works
                 </button>
               </li>
               <li>
@@ -142,8 +171,8 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en' }) => {
             </div>
 
             <div className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 space-y-1">
-              <p>Supported Universities across Assam:</p>
-              <p className="font-semibold text-[#000000] dark:text-[#FFFFFF]">GU • DU • TU • AU • BU • ASTU • KBVSASU</p>
+              <p>Official Institutional Assistant for:</p>
+              <p className="font-semibold text-[#000000] dark:text-[#FFFFFF]">{univProfile.name || 'My University'}</p>
             </div>
           </div>
 

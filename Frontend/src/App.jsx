@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation, useSearchParams, Outlet } from 'react-router-dom';
 
 // Public Layout Components
 import { Navbar } from './components/layout/Navbar';
@@ -14,7 +14,6 @@ import { Faq } from './pages/public/Faq';
 import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { AuthModal } from './components/auth/AuthModal';
-import { AuthPortal } from './pages/public/AuthPortal';
 
 // Institutional University Assistance Dashboard Components & Pages
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
@@ -46,6 +45,60 @@ function ScrollToTop() {
   return null;
 }
 
+// Helper to trigger the Auth Modal popup without a separate page
+function AuthPopupTrigger({ onOpenAuth }) {
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get('role') || 'student';
+  const mode = searchParams.get('mode') || 'login';
+
+  useEffect(() => {
+    onOpenAuth(mode, role);
+  }, [mode, role, onOpenAuth]);
+
+  return <Navigate to="/" replace />;
+}
+
+// Protected Admin Console Wrapper: triggers login popup if unauthenticated
+function AdminProtectedWrapper({
+  isLoggedIn,
+  studentInfo,
+  onOpenAuth,
+  currentLang,
+  onToggleLang,
+  isDark,
+  onToggleTheme
+}) {
+  const navigate = useNavigate();
+  const isAdmin = isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin');
+
+  useEffect(() => {
+    if (!isAdmin) {
+      onOpenAuth('login', 'admin');
+    }
+  }, [isAdmin, onOpenAuth]);
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return (
+    <AdminConsole
+      onExit={() => {
+        if (isLoggedIn) {
+          navigate('/dashboard/overview');
+        } else {
+          navigate('/');
+        }
+      }}
+      currentLang={currentLang}
+      onToggleLang={onToggleLang}
+      isDark={isDark}
+      onToggleTheme={onToggleTheme}
+      studentInfo={studentInfo}
+    />
+  );
+}
+
 // Public Layout with Persistent Header and Footer
 function PublicLayoutWrapper({
   currentLang,
@@ -58,14 +111,6 @@ function PublicLayoutWrapper({
   onOpenAuth,
   onNavigate
 }) {
-  const location = useLocation();
-  const isAuthPage = location.pathname.startsWith('/auth');
-
-  // If any unauthenticated user attempts to access public pages, immediately redirect to login page
-  if (!isLoggedIn && !isAuthPage) {
-    return <Navigate to="/auth" replace />;
-  }
-
   return (
     <div className={`relative min-h-screen flex flex-col bg-transparent text-[#000000] dark:text-[#FFFFFF] selection:bg-[#FF933E] selection:text-white dark:selection:bg-[#03C988] dark:selection:text-black transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
       {/* Realistic Animated College Boy Looking to University Background on All Public Pages */}
@@ -88,14 +133,14 @@ function PublicLayoutWrapper({
         <Outlet />
       </main>
 
-      {/* Institutional Academic Portal Footer (hidden on dedicated auth page) */}
-      {!isAuthPage && (
-        <Footer
-          onNavigate={onNavigate}
-          onOpenAuth={onOpenAuth}
-          currentLang={currentLang}
-        />
-      )}
+      {/* Institutional Academic Portal Footer */}
+      <Footer
+        onNavigate={onNavigate}
+        onOpenAuth={onOpenAuth}
+        currentLang={currentLang}
+        isLoggedIn={isLoggedIn}
+        studentInfo={studentInfo}
+      />
     </div>
   );
 }
@@ -103,6 +148,7 @@ function PublicLayoutWrapper({
 // Protected Dashboard Layout Wrapper
 function DashboardLayoutWrapper({
   isLoggedIn,
+  onOpenAuth,
   onSignOut,
   currentLang,
   onToggleLang,
@@ -113,9 +159,15 @@ function DashboardLayoutWrapper({
   const location = useLocation();
   const navigate = useNavigate();
 
-  // If user is not logged in, gate access and redirect to /auth
+  useEffect(() => {
+    if (!isLoggedIn) {
+      if (onOpenAuth) onOpenAuth('login', 'student');
+    }
+  }, [isLoggedIn, onOpenAuth]);
+
+  // If user is not logged in, gate access and redirect to home with auth popup open
   if (!isLoggedIn) {
-    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/" replace />;
   }
 
   // Derive active tab from URL path (e.g. /dashboard/regulations -> 'regulations')
@@ -383,66 +435,38 @@ export function App() {
               />
             }
           />
-          <Route
-            path="auth"
-            element={
-              <AuthPortal
-                initialRole={authModalRole}
-                initialMode={authModalMode}
-                currentLang={lang}
-                onSuccessLogin={handleLoginSuccess}
-                onCancel={() => navigate('/')}
-              />
-            }
-          />
-          <Route path="login" element={<Navigate to="/auth" replace />} />
+          {/* Auth Route: Triggers the Auth Popup Modal and returns cleanly to home */}
+          <Route path="auth" element={<AuthPopupTrigger onOpenAuth={handleOpenAuth} />} />
+          <Route path="login" element={<AuthPopupTrigger onOpenAuth={handleOpenAuth} />} />
         </Route>
 
         {/* Administrator Knowledge Base & Ingestion Console - Accessible via Login Only */}
         <Route
           path="admin/*"
           element={
-            isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin') ? (
-              <AdminConsole
-                onExit={() => {
-                  if (isLoggedIn) {
-                    navigate('/dashboard/overview');
-                  } else {
-                    navigate('/');
-                  }
-                }}
-                currentLang={lang}
-                onToggleLang={toggleLanguage}
-                isDark={theme === 'dark'}
-                onToggleTheme={toggleTheme}
-                studentInfo={studentInfo}
-              />
-            ) : (
-              <Navigate to="/auth?role=admin" replace />
-            )
+            <AdminProtectedWrapper
+              isLoggedIn={isLoggedIn}
+              studentInfo={studentInfo}
+              onOpenAuth={handleOpenAuth}
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+            />
           }
         />
         <Route
           path="admin"
           element={
-            isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin') ? (
-              <AdminConsole
-                onExit={() => {
-                  if (isLoggedIn) {
-                    navigate('/dashboard/overview');
-                  } else {
-                    navigate('/');
-                  }
-                }}
-                currentLang={lang}
-                onToggleLang={toggleLanguage}
-                isDark={theme === 'dark'}
-                onToggleTheme={toggleTheme}
-                studentInfo={studentInfo}
-              />
-            ) : (
-              <Navigate to="/auth?role=admin" replace />
-            )
+            <AdminProtectedWrapper
+              isLoggedIn={isLoggedIn}
+              studentInfo={studentInfo}
+              onOpenAuth={handleOpenAuth}
+              currentLang={lang}
+              onToggleLang={toggleLanguage}
+              isDark={theme === 'dark'}
+              onToggleTheme={toggleTheme}
+            />
           }
         />
 
@@ -452,6 +476,7 @@ export function App() {
           element={
             <DashboardLayoutWrapper
               isLoggedIn={isLoggedIn}
+              onOpenAuth={handleOpenAuth}
               onSignOut={handleSignOut}
               currentLang={lang}
               onToggleLang={toggleLanguage}

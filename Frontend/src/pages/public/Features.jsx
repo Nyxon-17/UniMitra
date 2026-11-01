@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { 
   BuildingLibraryIcon, 
   BrainIcon, 
@@ -15,6 +16,17 @@ import {
 } from '../../components/common/Icons';
 
 export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const navigate = useNavigate();
+
+  const handlePortalAccess = () => {
+    if (isLoggedIn) {
+      if (onNavigate) onNavigate('dashboard');
+      else navigate('/dashboard/overview');
+    } else {
+      if (onOpenAuth) onOpenAuth('login', 'student');
+    }
+  };
+
   const mainFeatures = [
     {
       icon: LanguageIcon,
@@ -102,14 +114,6 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
     }
   ];
 
-  const handlePortalAccess = () => {
-    if (isLoggedIn) {
-      if (onNavigate) onNavigate('dashboard');
-    } else {
-      if (onOpenAuth) onOpenAuth('login');
-    }
-  };
-
   return (
     <div className="bg-transparent relative z-10 min-h-screen text-[#000000] dark:text-[#FFFFFF] py-16 transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12">
@@ -135,7 +139,8 @@ export const Features = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedI
             return (
               <div 
                 key={index}
-                className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 flex flex-col justify-between"
+                onClick={handlePortalAccess}
+                className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 flex flex-col justify-between cursor-pointer hover:scale-[1.01]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">

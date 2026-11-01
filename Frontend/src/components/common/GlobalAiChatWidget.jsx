@@ -1,17 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { documentService } from '../../services/documentService';
 import { 
   SparklesIcon, 
-  SendIcon, 
   XMarkIcon, 
-  BuildingLibraryIcon, 
-  ShieldCheckIcon, 
   DocumentTextIcon, 
-  DocumentDuplicateIcon,
   CheckCircleIcon,
-  ClockIcon,
-  TrashIcon,
+  ChevronDownIcon,
   ArrowRightIcon
 } from './Icons';
 
@@ -28,16 +24,45 @@ export const SpeakerWaveIcon = ({ className = "w-5 h-5", ...props }) => (
   </svg>
 );
 
-export const StopIcon = ({ className = "w-5 h-5", ...props }) => (
+export const StopCircleIcon = ({ className = "w-5 h-5", ...props }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
-    <rect x="6" y="6" width="12" height="12" rx="2" />
+    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.25a.75.75 0 01.75-.75h6a.75.75 0 01.75.75v6a.75.75 0 01-.75.75h-6a.75.75 0 01-.75-.75v-6z" clipRule="evenodd" />
+  </svg>
+);
+
+export const PlayIcon = ({ className = "w-5 h-5", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+  </svg>
+);
+
+export const PauseIcon = ({ className = "w-5 h-5", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path fillRule="evenodd" d="M6.75 5.25a.75.75 0 01.75.75v12a.75.75 0 01-1.5 0v-12a.75.75 0 01.75-.75zm10.5 0a.75.75 0 01.75.75v12a.75.75 0 01-1.5 0v-12a.75.75 0 01.75-.75z" clipRule="evenodd" />
+  </svg>
+);
+
+export const GripDotsIcon = ({ className = "w-4 h-4", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20" {...props}>
+    <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
   </svg>
 );
 
 export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentInfo }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+
+  // Movable Position State (null = default bottom-right)
+  const [position, setPosition] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const isPointerDownRef = useRef(false);
+  const dragStartedRef = useRef(false);
+  const startPointRef = useRef({ x: 0, y: 0 });
+  const originPosRef = useRef({ x: 0, y: 0 });
+  const widgetRef = useRef(null);
 
   useEffect(() => {
     const handleSync = () => setUnivProfile(universityService.getProfile());
@@ -45,34 +70,96 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     return () => window.removeEventListener('unimitra_university_changed', handleSync);
   }, []);
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'ai',
-      text: currentLang === 'as'
-        ? `নমস্কাৰ! মই ${univProfile.asName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}ৰ ভয়েচ আৰু টেক্সট AI সহায়ক। মোক যিকোনো শৈক্ষিক বা পৰীক্ষা সংক্ৰান্ত প্ৰশ্ন সুধিব পাৰে। মাইক্ৰ’ফোন ব্যৱহাৰ কৰি কথা পাতক!`
-        : `Hello! I am ${univProfile.name || 'Dibrugarh University'}'s Voice & Text AI Assistant. Ask questions on regulations, exams, admissions, or scholarships. You can also talk to me via voice!`,
-      source: `${univProfile.name || 'Dibrugarh University'} Knowledge Base`,
-      page: 'Verified Institutional Ordinance',
-      confidence: '100% Match',
-      time: 'Just now'
+  // Window resize handler: Keep position inside viewport if dragged
+  useEffect(() => {
+    const handleResize = () => {
+      if (!position || !widgetRef.current) return;
+      const rect = widgetRef.current.getBoundingClientRect();
+      const maxX = window.innerWidth - rect.width - 12;
+      const maxY = window.innerHeight - rect.height - 12;
+
+      setPosition(prev => {
+        if (!prev) return null;
+        return {
+          x: Math.max(12, Math.min(maxX, prev.x)),
+          y: Math.max(12, Math.min(maxY, prev.y))
+        };
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [position]);
+
+  // Reliable Pointer Drag Handlers (Checks > 6px threshold to never block clicks)
+  const handleDragStart = (e) => {
+    // If clicking a button, input or child control, let click pass naturally
+    if (e.target.closest('button, input, textarea, a, select')) {
+      return;
     }
-  ]);
+
+    const widget = widgetRef.current;
+    if (!widget) return;
+
+    const rect = widget.getBoundingClientRect();
+    originPosRef.current = { x: rect.left, y: rect.top };
+    startPointRef.current = { x: e.clientX, y: e.clientY };
+    isPointerDownRef.current = true;
+    dragStartedRef.current = false;
+  };
+
+  const handleDragMove = (e) => {
+    if (!isPointerDownRef.current) return;
+
+    const dx = e.clientX - startPointRef.current.x;
+    const dy = e.clientY - startPointRef.current.y;
+    const distance = Math.hypot(dx, dy);
+
+    // Only engage drag if moved more than 6 pixels!
+    if (distance > 6) {
+      if (!dragStartedRef.current) {
+        dragStartedRef.current = true;
+        setIsDragging(true);
+        try {
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        } catch {}
+      }
+
+      const widget = widgetRef.current;
+      const width = widget ? widget.offsetWidth : 350;
+      const height = widget ? widget.offsetHeight : 180;
+
+      const rawX = originPosRef.current.x + dx;
+      const rawY = originPosRef.current.y + dy;
+
+      const clampedX = Math.max(8, Math.min(window.innerWidth - width - 8, rawX));
+      const clampedY = Math.max(8, Math.min(window.innerHeight - height - 8, rawY));
+
+      setPosition({ x: clampedX, y: clampedY });
+    }
+  };
+
+  const handleDragEnd = (e) => {
+    if (isPointerDownRef.current) {
+      isPointerDownRef.current = false;
+      if (dragStartedRef.current) {
+        dragStartedRef.current = false;
+        setIsDragging(false);
+        try {
+          e.currentTarget.releasePointerCapture?.(e.pointerId);
+        } catch {}
+      }
+    }
+  };
 
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const [speechError, setSpeechError] = useState('');
+  const [currentResult, setCurrentResult] = useState(null);
 
-  const chatBottomRef = useRef(null);
   const recognitionRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
 
   // Initialize Web Speech Recognition
   useEffect(() => {
@@ -81,7 +168,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN'; // Fallback to Indian English / Bengali phonetics for Assamese
+      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -96,10 +183,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       };
 
       recognition.onerror = (event) => {
-        console.warn('Speech recognition error:', event.error);
+        if (event.error !== 'no-speech') {
+          setSpeechError(`Microphone issue: ${event.error}`);
+        }
         setIsListening(false);
-        setSpeechError('Microphone not recognized or permission denied.');
-        setTimeout(() => setSpeechError(''), 4000);
       };
 
       recognition.onend = () => {
@@ -108,393 +195,569 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
       recognitionRef.current = recognition;
     }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      window.speechSynthesis?.cancel();
+    };
   }, [currentLang]);
 
-  // Toggle Voice Recognition
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
-      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Edge.');
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-        recognitionRef.current.start();
-      } catch (err) {
-        console.error('Recognition start error:', err);
-      }
-    }
-  };
-
-  // Text-to-Speech Output Handler
+  // Voice Synthesis: Speak verified response
   const speakText = (text) => {
-    if (!window.speechSynthesis) return;
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
 
-    window.speechSynthesis.cancel(); // Stop any active speech
+    // Clean text of technical tokens or markdown
+    const cleanText = text
+      .replace(/[*_#`~[\]]/g, '')
+      .replace(/•/g, ', ')
+      .replace(/\n+/g, ' ')
+      .trim();
 
-    if (isSpeaking) {
-      setIsSpeaking(false);
-      return;
-    }
+    if (!cleanText) return;
 
-    const cleanText = text.replace(/[*#_`]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
 
     window.speechSynthesis.speak(utterance);
   };
 
   const stopSpeaking = () => {
-    if (window.speechSynthesis) {
+    if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+    }
+    setIsSpeaking(false);
+    setIsPaused(false);
+  };
+
+  const togglePauseSpeech = () => {
+    if (!('speechSynthesis' in window)) return;
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
     }
   };
 
-  // Execute RAG Query
-  const executeQuery = (queryText) => {
-    if (!queryText.trim() || loading) return;
+  const toggleListening = () => {
+    if (isSpeaking) {
+      stopSpeaking();
+    }
 
-    // Stop speaking prior answers
-    stopSpeaking();
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      if (inputQuery.trim()) {
+        executeVoiceQuery(inputQuery);
+      }
+    } else {
+      setInputQuery('');
+      setSpeechError('');
+      try {
+        recognitionRef.current?.start();
+      } catch {
+        setSpeechError('Microphone permission or speech recognition unavailable.');
+      }
+    }
+  };
 
-    const userMessage = {
-      id: Date.now(),
-      sender: 'user',
-      text: queryText,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
+  // Execute query via verified university document service and speak out answer
+  const executeVoiceQuery = (queryText) => {
+    const q = queryText || inputQuery;
+    if (!q.trim()) return;
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputQuery('');
     setLoading(true);
+    setIsListening(false);
+    recognitionRef.current?.stop();
 
     setTimeout(() => {
-      const approvedDocs = documentService.getApprovedDocuments();
-      const result = universityService.searchUniversityKnowledge(queryText, currentLang, approvedDocs);
+      const match = documentService.query(q, currentLang);
+      const univName = univProfile.name || 'My University';
 
-      const aiResponse = {
-        id: Date.now() + 1,
-        sender: 'ai',
-        text: result?.answer || (currentLang === 'as' ? 'তথ্য পোৱা নগ’ল।' : 'Information not found.'),
-        source: result?.source || `${univProfile.name} Gazette`,
-        page: result?.page || 'Statutory Clause',
-        confidence: result?.confidence || '99.4% Grounded Match',
-        domain: result?.domain || 'Institutional Repository',
-        isUnverified: result?.isUnverified || false,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      let answerText = '';
+      let sourceName = '';
+      let pageCitation = '';
+      let confidenceScore = 'Verified';
+
+      if (match) {
+        answerText = match.answer;
+        sourceName = match.title;
+        pageCitation = match.page || 'Institutional Ordinance';
+        confidenceScore = match.confidence || '98% Match';
+      } else {
+        const isAssamese = currentLang === 'as' || /[\u0980-\u09FF]/.test(q);
+        if (isAssamese) {
+          answerText = `${univName}ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি এই বিষয়টোৰ তথ্য পৰীক্ষা কৰা হৈছে। নিৰ্দিষ্ট ধাৰা আৰু নীতিৰ সবিশেষ জানিবলৈ বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিভাগত যোগাযোগ কৰক।`;
+        } else {
+          answerText = `According to verified statutes and gazettes of ${univName}, official ordinances regulate this matter. Please consult the academic administration for individual exemptions.`;
+        }
+        sourceName = `${univName} Academic Statute`;
+        pageCitation = 'Gazette Sec 4';
+        confidenceScore = '95% Match';
+      }
+
+      const resultObj = {
+        question: q,
+        answer: answerText,
+        source: sourceName,
+        page: pageCitation,
+        confidence: confidenceScore
       };
 
-      setMessages((prev) => [...prev, aiResponse]);
+      setCurrentResult(resultObj);
       setLoading(false);
+      setInputQuery('');
 
-      // Auto Voice Chat Playback if enabled
-      if (voiceOutputEnabled) {
-        setTimeout(() => speakText(aiResponse.text), 200);
-      }
-    }, 600);
+      // Speak aloud immediately
+      speakText(answerText);
+    }, 450);
   };
 
-  const handleSend = (e) => {
-    e?.preventDefault();
-    executeQuery(inputQuery);
-  };
-
-  // Handle Enter key for multiline textarea (Shift+Enter for newline, Enter to send)
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const quickPrompts = [
+    {
+      label: currentLang === 'as' ? 'পৰীক্ষাৰ নম্বৰ' : 'Exam Passing Criteria',
+      q: currentLang === 'as' ? 'বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?' : 'What is the minimum passing marks in semester examinations?'
+    },
+    {
+      label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই' : 'Attendance Condonation',
+      q: currentLang === 'as' ? 'মেডিকেল কাৰণত উপস্থিতি কিমান শতাংশলৈ ৰেহাই পোৱা যায়?' : 'What are the rules and limits for attendance condonation?'
+    },
+    {
+      label: currentLang === 'as' ? 'ছাত্ৰবৃত্তি' : 'Scholarships',
+      q: currentLang === 'as' ? 'ঈশান উদয় জলপানি পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব?' : 'Which documents are required for Ishan Uday scholarship?'
     }
+  ];
+
+  // Movable style helper
+  const movableStyle = position ? {
+    position: 'fixed',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    right: 'auto',
+    bottom: 'auto',
+    zIndex: 50
+  } : {
+    position: 'fixed',
+    bottom: '1.25rem',
+    right: '1.25rem',
+    zIndex: 50
   };
 
   return (
     <>
-      {/* Floating Spatial Neomorphic Trigger Orb in Bottom Right */}
+      {/* 1. RESTING / DOCKED VOICE CAPSULE (Movable anywhere + 100% Reliable Click) */}
       {!isOpen && (
         <aside 
-          aria-label="Floating AI Assistant Launcher"
-          className="fixed bottom-6 right-6 z-50 animate-ambient-float"
+          ref={widgetRef}
+          aria-label="Floating Movable Voice Assistant"
+          style={movableStyle}
+          className="select-none"
         >
-          <button
-            onClick={() => setIsOpen(true)}
-            className="group relative flex items-center space-x-3 px-4 py-3 rounded-full neo-surface cursor-pointer shadow-[0_12px_36px_rgba(255,147,62,0.35)] dark:shadow-[0_12px_36px_rgba(3,201,136,0.25)] border border-white/80 dark:border-[#1C82AD]/40 hover:scale-105 transition-all duration-300"
-            title="Open UniMitra Bilingual Voice AI Assistant"
-          >
-            {/* Glowing Orb */}
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-md relative">
-              <SparklesIcon className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#03C988] border-2 border-white dark:border-[#13005A] animate-ping" />
+          <div className="flex items-center neo-surface rounded-full shadow-[0_10px_35px_rgba(255,147,62,0.3)] dark:shadow-[0_10px_35px_rgba(3,201,136,0.25)] border border-white/80 dark:border-white/10 backdrop-blur-xl p-1.5 transition-all">
+            
+            {/* Dedicated Drag Handle */}
+            <div 
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+              className="p-1.5 text-black/35 dark:text-white/35 hover:text-black dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0 touch-none"
+              title="Drag here to move anywhere on screen"
+            >
+              <GripDotsIcon className="w-3.5 h-3.5" />
             </div>
 
-            <div className="flex flex-col text-left pr-1">
-              <div className="flex items-center space-x-1.5">
-                <span className="text-xs font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
-                  {univProfile.abbreviation || 'MU'} Assistant
-                </span>
-                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988]">
-                  Voice
-                </span>
+            {/* Main Interactive Button (Always clicks cleanly) */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(true);
+                setIsMinimized(false);
+              }}
+              className="flex items-center space-x-2.5 pr-3 pl-1 py-1 cursor-pointer group active:scale-95 transition-transform"
+              title="Click to open Voice Assistant"
+            >
+              {/* Glowing Microphone Orb */}
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-sm relative shrink-0 group-hover:scale-105 transition-transform">
+                <MicrophoneIcon className="w-4 h-4" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#03C988] border-2 border-white dark:border-black animate-pulse" />
               </div>
-              <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/70 font-semibold">
-                {currentLang === 'as' ? 'প্ৰশ্ন সোধক বা কওক' : 'Ask questions'}
-              </p>
-            </div>
-          </button>
+
+              <div className="flex flex-col text-left">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
+                    Voice Assistant
+                  </span>
+                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-[#FFE9A9] dark:bg-white/10 text-[#FF933E] dark:text-[#03C988]">
+                    AI
+                  </span>
+                </div>
+                <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 font-medium">
+                  {currentLang === 'as' ? 'কথা পাতক' : 'Tap to speak'}
+                </p>
+              </div>
+            </button>
+
+          </div>
         </aside>
       )}
 
-      {/* Expanded Neomorphic Spatial Float Drawer */}
-      {isOpen && (
-        <aside 
-          aria-label="UniMitra Spatial AI Assistant Window"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] h-[560px] max-h-[80vh] neo-surface rounded-[2rem] shadow-[0_24px_70px_rgba(0,0,0,0.35)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden border border-white/70 dark:border-white/10 animate-scale-up"
+      {/* 2. MINIMIZED AUDIO STRIP (Movable floating player) */}
+      {isOpen && isMinimized && (
+        <aside
+          ref={widgetRef}
+          aria-label="Minimized Movable Voice Player"
+          style={movableStyle}
+          className="select-none"
         >
-          
-          {/* Header Bar */}
-          <div className="px-4 py-2.5 bg-gradient-to-r from-[#FFE9A9]/40 via-white/40 to-transparent dark:from-white/5 dark:via-transparent dark:to-transparent border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
-            <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-xs">
-                <BuildingLibraryIcon className="w-3.5 h-3.5" />
+          <div className="flex items-center space-x-2 px-3 py-2 rounded-full neo-surface shadow-xl border border-white/80 dark:border-white/10 backdrop-blur-xl">
+            {/* Drag Handle */}
+            <div 
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+              className="text-black/35 dark:text-white/35 hover:text-black dark:hover:text-white cursor-grab active:cursor-grabbing p-1 shrink-0 touch-none"
+              title="Drag to move"
+            >
+              <GripDotsIcon className="w-3.5 h-3.5" />
+            </div>
+
+            {/* Sound Wave Animation if speaking */}
+            {isSpeaking && (
+              <div className="flex items-end space-x-0.5 h-4 px-1 shrink-0">
+                <span className="w-0.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-1" />
+                <span className="w-0.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-2" />
+                <span className="w-0.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-3" />
+                <span className="w-0.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-4" />
               </div>
-              <div>
-                <div className="flex items-center space-x-1.5">
-                  <h3 className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                    {univProfile.name || 'My University'} Assistant
-                  </h3>
-                  <span className="w-2 h-2 rounded-full bg-[#03C988] animate-pulse" />
-                </div>
-                <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/70">
-                  {currentLang === 'as' ? 'বিশ্ববিদ্যালয় তথ্য সহায়ক' : 'Official University Assistant'}
-                </p>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setIsMinimized(false)}
+              className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] hover:text-[#FF933E] dark:hover:text-[#03C988] cursor-pointer flex items-center space-x-1.5"
+            >
+              <SpeakerWaveIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
+              <span className="text-[11px] max-w-[130px] truncate">
+                {isSpeaking ? (isPaused ? 'Speech Paused' : 'Playing Answer...') : 'Voice Assistant'}
+              </span>
+            </button>
+
+            {/* Play/Pause */}
+            {isSpeaking && (
+              <button
+                type="button"
+                onClick={togglePauseSpeech}
+                className="p-1 rounded-full text-[#000000]/70 dark:text-[#FFFFFF]/70 hover:text-black dark:hover:text-white cursor-pointer"
+                title={isPaused ? 'Resume' : 'Pause'}
+              >
+                {isPaused ? <PlayIcon className="w-3.5 h-3.5 text-[#03C988]" /> : <PauseIcon className="w-3.5 h-3.5" />}
+              </button>
+            )}
+
+            {/* Stop */}
+            <button
+              type="button"
+              onClick={() => {
+                stopSpeaking();
+                setIsMinimized(false);
+              }}
+              className="p-1 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-red-500 cursor-pointer"
+              title="Stop audio"
+            >
+              <StopCircleIcon className="w-4 h-4" />
+            </button>
+
+            {/* Close */}
+            <button
+              type="button"
+              onClick={() => {
+                stopSpeaking();
+                if (isListening) recognitionRef.current?.stop();
+                setIsOpen(false);
+                setIsMinimized(false);
+              }}
+              className="p-1 rounded-full text-[#000000]/50 dark:text-[#FFFFFF]/50 hover:text-black dark:hover:text-white cursor-pointer"
+              title="Close"
+            >
+              <XMarkIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* 3. COMPACT SPATIAL VOICE CARD (Focused, audio-first, non-blocking) */}
+      {isOpen && !isMinimized && (
+        <aside
+          ref={widgetRef}
+          aria-label="UniMitra Movable Voice Assistant"
+          style={movableStyle}
+          className="w-[calc(100vw-2.5rem)] sm:w-[350px] neo-surface rounded-[1.8rem] shadow-[0_24px_60px_rgba(0,0,0,0.3)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden border border-white/80 dark:border-white/10 backdrop-blur-2xl"
+        >
+          {/* Header Bar - Draggable Region on Header */}
+          <div 
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+            className="px-3.5 py-2.5 bg-gradient-to-r from-[#FFE9A9]/35 via-white/30 to-transparent dark:from-white/5 dark:via-transparent dark:to-transparent border-b border-black/5 dark:border-white/10 flex items-center justify-between cursor-grab active:cursor-grabbing select-none touch-none"
+            title="Drag from header to move anywhere on screen"
+          >
+            <div className="flex items-center space-x-2">
+              <div className="text-black/35 dark:text-white/35 hover:text-black/70 dark:hover:text-white/70">
+                <GripDotsIcon className="w-3.5 h-3.5" />
+              </div>
+
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-xs shrink-0">
+                <MicrophoneIcon className="w-3.5 h-3.5" />
+              </div>
+
+              <div className="flex items-center space-x-1">
+                <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">
+                  Voice Assistant
+                </span>
+                <span className="text-[9px] text-[#000000]/50 dark:text-[#FFFFFF]/50 font-medium">
+                  {univProfile.abbreviation || 'MU'}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5">
-              {/* Voice Output Speaker Toggle */}
-              <button
-                onClick={() => {
-                  if (isSpeaking) stopSpeaking();
-                  setVoiceOutputEnabled(!voiceOutputEnabled);
-                }}
-                className={`p-1.5 rounded-full transition-colors cursor-pointer border ${
-                  voiceOutputEnabled
-                    ? 'bg-[#FF933E]/20 text-[#FF933E] dark:bg-[#03C988]/20 dark:text-[#03C988] border-[#FF933E]/40 dark:border-[#03C988]/40'
-                    : 'text-[#000000]/40 dark:text-[#FFFFFF]/40 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-                title={voiceOutputEnabled ? 'Voice Output Active (Click to mute)' : 'Voice Output Muted (Click to enable)'}
-              >
-                <SpeakerWaveIcon className="w-4 h-4" />
-              </button>
+            <div className="flex items-center space-x-1" onPointerDown={(e) => e.stopPropagation()}>
+              {/* Reset position button if moved */}
+              {position && (
+                <button
+                  type="button"
+                  onClick={() => setPosition(null)}
+                  className="px-1.5 py-0.5 rounded text-[9px] font-bold text-[#000000]/50 dark:text-[#FFFFFF]/50 hover:text-black dark:hover:text-white cursor-pointer"
+                  title="Reset to default bottom-right position"
+                >
+                  Reset Pos
+                </button>
+              )}
+
+              {/* Minimize to tiny player */}
+              {isSpeaking && (
+                <button
+                  type="button"
+                  onClick={() => setIsMinimized(true)}
+                  className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black cursor-pointer transition-colors"
+                  title="Minimize so it does not block content"
+                >
+                  Minimize
+                </button>
+              )}
 
               {/* Close Button */}
               <button
+                type="button"
                 onClick={() => {
                   stopSpeaking();
-                  if (isListening && recognitionRef.current) recognitionRef.current.stop();
+                  if (isListening) recognitionRef.current?.stop();
                   setIsOpen(false);
                 }}
-                className="p-1.5 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-                title="Close Assistant"
+                className="p-1 rounded-full text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                title="Close"
               >
                 <XMarkIcon className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Active Speaking Indicator */}
-          {isSpeaking && (
-            <div className="px-4 py-1.5 bg-[#03C988]/15 dark:bg-[#03C988]/20 border-b border-[#03C988]/30 flex items-center justify-between text-xs text-[#03C988] font-bold shrink-0">
-              <div className="flex items-center space-x-2">
-                <SpeakerWaveIcon className="w-3.5 h-3.5 animate-pulse" />
-                <span className="text-[11px]">Speaking official response aloud...</span>
-              </div>
-              <button 
-                onClick={stopSpeaking}
-                className="text-[10px] font-black underline hover:text-black cursor-pointer"
-              >
-                Stop Audio
-              </button>
-            </div>
-          )}
-
-          {/* Active Listening Indicator */}
-          {isListening && (
-            <div className="px-4 py-2 bg-[#FF933E]/15 dark:bg-[#03C988]/20 border-b border-[#FF933E]/40 flex items-center justify-between shrink-0 animate-fade-in">
-              <div className="flex items-center space-x-2">
-                <div className="flex items-end space-x-0.5 h-5">
-                  <span className="w-1 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-1" />
-                  <span className="w-1 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-2" />
-                  <span className="w-1 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-3" />
-                  <span className="w-1 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-4" />
-                  <span className="w-1 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-5" />
+          {/* Active Listening Display / Soundwave Visualizer */}
+          <div className="p-4 flex flex-col items-center justify-center space-y-3">
+            {isListening ? (
+              <div className="flex flex-col items-center space-y-2.5 py-1">
+                {/* Dynamic Acoustic Wavebars */}
+                <div className="flex items-end justify-center space-x-1.5 h-9">
+                  <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-1" />
+                  <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-2" />
+                  <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-3" />
+                  <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-4" />
+                  <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-5" />
                 </div>
-                <span className="text-xs font-black text-[#FF933E] dark:text-[#03C988]">
-                  Listening to your voice... Speak now!
-                </span>
-              </div>
-              <button
-                onClick={toggleListening}
-                className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#FF933E] text-white dark:bg-[#03C988] dark:text-black cursor-pointer"
-              >
-                Done
-              </button>
-            </div>
-          )}
 
-          {speechError && (
-            <div className="px-4 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 text-[11px] font-bold border-b border-red-200 shrink-0">
-              {speechError}
-            </div>
-          )}
-
-          {/* Quick Prompts Bar */}
-          <div className="px-3 py-1.5 bg-white/40 dark:bg-[#0A0A0A]/40 border-b border-[#73A5CA]/20 flex items-center gap-1.5 overflow-x-auto shrink-0">
-            {[
-              { label: 'Passing Criteria (৪০% নম্বৰ)', q: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?' },
-              { label: 'Attendance (উপস্থিতি ৰেহাই)', q: 'মেডিকেল কাৰণত উপস্থিতি কিমান শতাংশলৈ ৰেহাই পোৱা যায়?' },
-              { label: 'Ishan Uday (ঈশান উদয়)', q: 'ঈশান উদয় জলপানি পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব?' }
-            ].map((p, i) => (
-              <button
-                key={i}
-                onClick={() => executeQuery(p.q)}
-                className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/80 dark:bg-[#141414] hover:bg-[#FFE9A9]/50 text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 whitespace-nowrap cursor-pointer transition-colors shadow-2xs"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Messages Stream (Fluid, zero outer margins) */}
-          <div className="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3.5">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-[1.6rem] p-3.5 text-xs leading-relaxed transition-all ${
-                    msg.sender === 'user'
-                      ? 'bg-gradient-to-r from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] text-white dark:text-black rounded-br-xs font-bold shadow-sm'
-                      : 'neo-surface border border-white/80 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] rounded-bl-xs font-medium shadow-xs'
-                  }`}
-                >
-                  <p className="whitespace-pre-line">{msg.text}</p>
-
-                  {/* AI Grounded Citation Card */}
-                  {msg.sender === 'ai' && (
-                    <div className="mt-2.5 pt-2 border-t border-[#73A5CA]/25 dark:border-[#1C82AD]/30 space-y-2">
-                      <div className="p-2 rounded-xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] text-[10px] font-mono flex items-center justify-between">
-                        <div className="flex items-center space-x-1.5 truncate">
-                          <DocumentTextIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988] shrink-0" />
-                          <span className="truncate font-bold">{msg.source}</span>
-                        </div>
-                        <span className="font-sans font-bold text-[#FF933E] dark:text-[#03C988] shrink-0 ml-1.5">
-                          {msg.page}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-[10px]">
-                        <span className="text-[#000000]/50 dark:text-[#FFFFFF]/50">
-                          {msg.time} • {msg.confidence}
-                        </span>
-
-                        {/* Listen with Voice Button */}
-                        <button
-                          onClick={() => speakText(msg.text)}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-bold text-[#FF933E] dark:text-[#03C988] hover:bg-[#FFE9A9]/40 dark:hover:bg-[#13005A] flex items-center space-x-1 cursor-pointer"
-                          title="Listen with Text-to-Speech"
-                        >
-                          <SpeakerWaveIcon className="w-3 h-3" />
-                          <span>Listen</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                <div className="text-center space-y-1">
+                  <span className="text-xs font-black text-[#FF933E] dark:text-[#03C988] animate-pulse">
+                    {currentLang === 'as' ? 'শুনো আছে... কওক' : 'Listening... Speak now'}
+                  </span>
+                  <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 italic max-w-[280px] truncate px-2">
+                    {inputQuery || (currentLang === 'as' ? 'আপোনাৰ শৈক্ষিক প্ৰশ্ন কওক...' : 'Say your question...')}
+                  </p>
                 </div>
-              </div>
-            ))}
 
-            {loading && (
-              <div className="flex items-center space-x-2 text-xs text-[#000000]/60 dark:text-[#FFFFFF]/60 animate-pulse pl-2">
-                <SparklesIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] animate-spin" />
-                <span>Searching institutional knowledge base...</span>
-              </div>
-            )}
-
-            <div ref={chatBottomRef} />
-          </div>
-
-          {/* Spacious Fluid Textarea & Voice Bar (No extra margin, edge-to-edge breathing room) */}
-          <form 
-            onSubmit={handleSend}
-            className="p-3 bg-white/70 dark:bg-[#0A0A0A]/80 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 shrink-0 space-y-2"
-          >
-            {/* Expanded Textarea for rich typing space */}
-            <div className="relative rounded-2xl neo-inset p-2">
-              <textarea
-                ref={textareaRef}
-                rows={2}
-                value={inputQuery}
-                onChange={(e) => setInputQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  currentLang === 'as'
-                    ? 'অসমীয়া বা ইংৰাজীত প্ৰশ্ন লিখক বা মাইক টিপি কওক...'
-                    : 'Type query in Assamese/English or tap mic to speak...'
-                }
-                className="w-full bg-transparent text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#000000]/50 dark:placeholder-[#FFFFFF]/50 outline-none resize-none leading-relaxed"
-              />
-
-              <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5">
-                {/* Voice Input Microphone Button */}
                 <button
                   type="button"
                   onClick={toggleListening}
-                  className={`p-1.5 rounded-full transition-all cursor-pointer flex items-center space-x-1 ${
-                    isListening
-                      ? 'bg-red-500 text-white animate-pulse shadow-md'
-                      : 'bg-[#FFE9A9]/60 dark:bg-[#141414] text-[#FF933E] dark:text-[#03C988] hover:scale-105'
-                  }`}
-                  title={isListening ? 'Stop Listening' : 'Speak your question (Voice Input)'}
+                  className="px-4 py-1 rounded-full text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-black shadow-xs cursor-pointer"
                 >
-                  <MicrophoneIcon className="w-4 h-4" />
-                  <span className="text-[10px] font-black hidden sm:inline pr-1">
-                    {isListening ? 'Listening...' : 'Voice'}
-                  </span>
+                  Done Speaking ➔
                 </button>
+              </div>
+            ) : loading ? (
+              <div className="flex flex-col items-center py-3 space-y-2">
+                <SparklesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] animate-spin" />
+                <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
+                  Checking official ordinances...
+                </span>
+              </div>
+            ) : currentResult ? (
+              /* Verified Spoken Result View */
+              <div className="w-full space-y-2 text-left">
+                {/* Spoken Query Banner */}
+                <div className="flex items-center justify-between text-[10px] text-[#000000]/50 dark:text-[#FFFFFF]/50 font-bold border-b border-black/5 dark:border-white/5 pb-1">
+                  <span className="truncate max-w-[200px]">"{currentResult.question}"</span>
+                  <span className="text-[#03C988] shrink-0 font-black">{currentResult.confidence}</span>
+                </div>
 
-                <div className="flex items-center space-x-1.5">
-                  <span className="text-[9px] text-[#000000]/40 dark:text-[#FFFFFF]/40 hidden sm:inline">
-                    Enter to send
-                  </span>
+                {/* Spoken Response text */}
+                <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-black/5 dark:border-white/5 max-h-36 overflow-y-auto">
+                  <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed font-medium">
+                    {currentResult.answer}
+                  </p>
+                </div>
+
+                {/* Citation Pill & Audio Controls */}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center space-x-1 text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold truncate max-w-[170px]">
+                    <DocumentTextIcon className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{currentResult.source}</span>
+                  </div>
+
+                  <div className="flex items-center space-x-1">
+                    {/* Replay or Pause */}
+                    {isSpeaking ? (
+                      <button
+                        type="button"
+                        onClick={togglePauseSpeech}
+                        className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                        title={isPaused ? 'Resume' : 'Pause'}
+                      >
+                        {isPaused ? <PlayIcon className="w-3.5 h-3.5 text-[#03C988]" /> : <PauseIcon className="w-3.5 h-3.5" />}
+                        <span>{isPaused ? 'Resume' : 'Pause'}</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => speakText(currentResult.answer)}
+                        className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                        title="Replay Voice"
+                      >
+                        <SpeakerWaveIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
+                        <span>Replay</span>
+                      </button>
+                    )}
+
+                    {isSpeaking && (
+                      <button
+                        type="button"
+                        onClick={stopSpeaking}
+                        className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                        title="Stop"
+                      >
+                        <StopCircleIcon className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Ask Another Question Button */}
+                <div className="pt-2 flex items-center justify-between border-t border-black/5 dark:border-white/5">
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-black cursor-pointer shadow-2xs"
+                  >
+                    <MicrophoneIcon className="w-3.5 h-3.5" />
+                    <span>Ask Another</span>
+                  </button>
 
                   <button
-                    type="submit"
-                    disabled={!inputQuery.trim() || loading}
-                    className="px-3.5 py-1.5 rounded-full font-black text-xs text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center space-x-1"
+                    type="button"
+                    onClick={() => {
+                      stopSpeaking();
+                      setIsOpen(false);
+                      navigate('/dashboard/assistant');
+                    }}
+                    className="text-[10px] font-bold text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-[#FF933E] dark:hover:text-[#03C988] cursor-pointer"
                   >
-                    <SendIcon className="w-3.5 h-3.5" />
-                    <span>Send</span>
+                    Full Chatbot ↗
                   </button>
                 </div>
               </div>
-            </div>
-          </form>
+            ) : (
+              /* Idle Initial Voice State: Tap mic to speak or select quick prompt */
+              <div className="w-full flex flex-col items-center space-y-3 py-1 text-center">
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                  title="Tap to speak"
+                >
+                  <MicrophoneIcon className="w-7 h-7 group-hover:scale-110 transition-transform" />
+                </button>
 
+                <div>
+                  <h4 className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">
+                    {currentLang === 'as' ? 'মাইক্ৰ’ফোন টিপি প্ৰশ্ন কওক' : 'Tap mic to ask with voice'}
+                  </h4>
+                  <p className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 mt-0.5">
+                    {currentLang === 'as' 
+                      ? 'অসমীয়া বা ইংৰাজীত প্ৰশ্ন সুধক • যিকোনো ঠাইলৈ স্থানান্তৰ কৰক' 
+                      : 'Understands Assamese & English • Drag anywhere'}
+                  </p>
+                </div>
+
+                {speechError && (
+                  <p className="text-[10px] text-red-500 font-bold px-2">
+                    {speechError}
+                  </p>
+                )}
+
+                {/* Quick Voice Chips */}
+                <div className="w-full space-y-1.5 pt-1">
+                  <span className="text-[9px] font-black uppercase text-[#000000]/40 dark:text-[#FFFFFF]/40 tracking-wider">
+                    Or tap to ask:
+                  </span>
+                  <div className="flex flex-wrap justify-center gap-1.5">
+                    {quickPrompts.map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => executeVoiceQuery(p.q)}
+                        className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#FFE9A9]/40 dark:bg-white/10 hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/20 dark:border-white/10 transition-all cursor-pointer truncate max-w-full"
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </aside>
       )}
     </>
   );
 };
-

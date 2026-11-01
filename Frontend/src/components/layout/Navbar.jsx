@@ -47,21 +47,32 @@ export const Navbar = ({
   const currentActive = getActiveId();
 
   const handleNav = (page) => {
-    if (page === 'dashboard' && !isLoggedIn) {
-      if (onOpenAuth) onOpenAuth('login', 'student');
-      else navigate('/auth');
+    setMobileMenuOpen(false);
+    if (page === 'dashboard') {
+      if (!isLoggedIn) {
+        if (onOpenAuth) onOpenAuth('login', 'student');
+        return;
+      }
+      navigate('/dashboard/overview');
       return;
     }
-    if (onNavigate) {
-      onNavigate(page);
+    if (page === 'admin') {
+      if (!isLoggedIn || (studentInfo?.role !== 'Admin' && studentInfo?.role !== 'Super Admin')) {
+        if (onOpenAuth) onOpenAuth('login', 'admin');
+        return;
+      }
+      navigate('/admin');
+      return;
     }
-    if (page === 'home') navigate('/');
-    else if (page === 'dashboard') navigate('/dashboard/overview');
-    else if (page === 'admin') navigate('/admin');
-    else if (page === 'auth') navigate('/auth');
-    else navigate(`/${page}`);
-    
-    setMobileMenuOpen(false);
+    if (page === 'auth' || page === 'login') {
+      if (onOpenAuth) onOpenAuth('login', 'student');
+      return;
+    }
+    if (page === 'home') {
+      navigate('/');
+      return;
+    }
+    navigate(`/${page}`);
   };
 
   const navLinks = [
@@ -154,7 +165,7 @@ export const Navbar = ({
           {/* Auth Controls */}
           {!isLoggedIn ? (
             <button 
-              onClick={() => onOpenAuth ? onOpenAuth('login', 'student') : navigate('/auth')}
+              onClick={() => onOpenAuth && onOpenAuth('login', 'student')}
               className="px-3.5 py-1.5 rounded-full text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-[#000000] transition-all cursor-pointer shadow-xs whitespace-nowrap"
             >
               {currentLang === 'as' ? 'প্ৰৱেশ' : 'Sign In'}
@@ -244,7 +255,6 @@ export const Navbar = ({
                 onClick={() => {
                   setMobileMenuOpen(false);
                   if (onOpenAuth) onOpenAuth('login', 'student');
-                  else navigate('/auth');
                 }}
                 className="w-full py-2.5 rounded-full text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] text-center shadow-md cursor-pointer transition-colors"
               >

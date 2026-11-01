@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { 
   DocumentTextIcon, 
   SparklesIcon, 
@@ -11,6 +12,17 @@ import {
 } from '../../components/common/Icons';
 
 export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const navigate = useNavigate();
+
+  const handlePortalAccess = () => {
+    if (isLoggedIn) {
+      if (onNavigate) onNavigate('dashboard');
+      else navigate('/dashboard/overview');
+    } else {
+      if (onOpenAuth) onOpenAuth('login', 'student');
+    }
+  };
+
   const steps = [
     {
       step: '01',
@@ -89,14 +101,6 @@ export const HowItWorks = ({ onNavigate, onOpenAuth, currentLang = 'en', isLogge
       ]
     }
   ];
-
-  const handlePortalAccess = () => {
-    if (isLoggedIn) {
-      if (onNavigate) onNavigate('dashboard');
-    } else {
-      if (onOpenAuth) onOpenAuth('login');
-    }
-  };
 
   return (
     <div className="bg-transparent relative z-10 min-h-screen text-[#000000] dark:text-[#FFFFFF] py-16 transition-colors duration-200">

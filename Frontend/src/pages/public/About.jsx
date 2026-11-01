@@ -1,17 +1,31 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, BuildingLibraryIcon, ShieldCheckIcon, LanguageIcon, UserGroupIcon } from '../../components/common/Icons';
+import { universityService } from '../../services/universityService';
 
 export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const navigate = useNavigate();
+  const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
+
+  useEffect(() => {
+    const handleUpdate = () => setUnivProfile(universityService.getProfile());
+    window.addEventListener('unimitra_university_changed', handleUpdate);
+    return () => window.removeEventListener('unimitra_university_changed', handleUpdate);
+  }, []);
+
+  const univName = univProfile?.name || 'My University';
+
   const platformFeatures = [
     {
       title: 'Institutional Natural Language Interface',
       capability: 'Fast, responsive bilingual interaction',
-      desc: 'Engineered so students, faculty, and administrative staff across Assam can query complex institutional rules effortlessly on mobile or desktop.',
+      desc: `Engineered so students, faculty, and administrative staff across ${univName} can query complex institutional rules effortlessly on mobile or desktop.`,
       badge: 'User First'
     },
     {
       title: 'Centralized Knowledge Base',
-      capability: 'Multi-university document metadata',
-      desc: 'Maintains verified regulations, circulars, and notices from all Assam universities in one unified repository with zero forced university selection.',
+      capability: 'University document metadata',
+      desc: `Maintains verified regulations, circulars, and notices for ${univName} in one unified repository.`,
       badge: 'Unified Access'
     },
     {
@@ -41,7 +55,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
     },
     {
       role: 'Administrative Staff',
-      focus: 'Effortless lookup of state government circulars, statutory regulations, fee structures, and document verification protocols.',
+      focus: 'Effortless lookup of state circulars, statutory regulations, fee structures, and document verification protocols.',
       tag: 'Governance Support'
     }
   ];
@@ -49,8 +63,9 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
   const handlePortalAccess = () => {
     if (isLoggedIn) {
       if (onNavigate) onNavigate('dashboard');
+      else navigate('/dashboard/overview');
     } else {
-      if (onOpenAuth) onOpenAuth('login');
+      if (onOpenAuth) onOpenAuth('login', 'student');
     }
   };
 
@@ -81,7 +96,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
               The Institutional Information Challenge
             </h2>
             <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
-              University students, teachers, and staff across Gauhati University, Dibrugarh University, Tezpur University, and regional colleges often struggle to locate updated examination ordinances, re-evaluation timelines, hostel allotment guidelines, and scholarship circulars. Generic search engines regularly serve outdated notices or fabricate answers.
+              University students, teachers, and staff at {univName} often struggle to locate updated examination ordinances, re-evaluation timelines, hostel allotment guidelines, and scholarship circulars. Generic search engines regularly serve outdated notices or fabricate answers.
             </p>
           </div>
 
@@ -93,7 +108,7 @@ export const About = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn =
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
-              UniMitra applies Retrieval-Augmented Generation (RAG) strictly grounded in official university documents. When you ask in Assamese or English, it references the exact gazette, section, and page number — ensuring authentic, trustworthy institutional guidance.
+              UniMitra applies verified AI answers strictly grounded in official university documents. When you ask in Assamese or English, it references the exact gazette, section, and page number — ensuring authentic, trustworthy institutional guidance.
             </p>
           </div>
 
