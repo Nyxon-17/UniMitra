@@ -62,8 +62,8 @@ export const generateToken = (user, expiresIn = env.JWT_EXPIRES_IN || '7d') => {
     id: user.id,
     email: user.email,
     role: user.role,
-    name: user.full_name || user.fullName,
-    memberId: user.member_id || user.memberId || null,
+    name: user.fullName || user.full_name || 'Member',
+    memberId: user.memberId || user.member_id || null,
   };
 
   return jwt.sign(payload, env.JWT_SECRET, { expiresIn });
@@ -82,7 +82,7 @@ const generateUniqueMemberId = async () => {
     const code = Math.floor(1000 + Math.random() * 9000);
     memberId = `UM-FAC-${code}`;
     const existing = await prisma.profile.findUnique({
-      where: { member_id: memberId },
+      where: { memberId },
     });
     if (!existing) {
       unique = true;
@@ -97,19 +97,19 @@ const generateUniqueMemberId = async () => {
  */
 export const sanitizeProfile = (profile) => {
   if (!profile) return null;
-  const { password_hash, ...safeUser } = profile;
+  const { passwordHash, ...safeUser } = profile;
   return {
     id: safeUser.id,
-    fullName: safeUser.full_name,
+    fullName: safeUser.fullName || safeUser.full_name,
     email: safeUser.email,
     role: safeUser.role,
-    memberId: safeUser.member_id,
+    memberId: safeUser.memberId || safeUser.member_id,
     department: safeUser.department,
     designation: safeUser.designation,
-    preferredLanguage: safeUser.preferred_language,
-    avatarUrl: safeUser.avatar_url,
-    isActive: safeUser.is_active,
-    createdAt: safeUser.created_at,
+    preferredLanguage: safeUser.preferredLang || safeUser.preferred_language || 'en',
+    isActive: safeUser.isActive ?? safeUser.is_active ?? true,
+    isVerified: safeUser.isVerified ?? safeUser.is_verified ?? false,
+    createdAt: safeUser.createdAt || safeUser.created_at,
   };
 };
 
@@ -129,16 +129,16 @@ export const registerStudent = async ({ fullName, email, password, preferredLang
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // Store student in pending state or create directly with is_active = true
   const profile = await prisma.profile.create({
     data: {
       email: normalizedEmail,
-      full_name: fullName.trim(),
-      password_hash: passwordHash,
+      fullName: fullName.trim(),
+      passwordHash,
       role: 'student',
-      preferred_language: preferredLanguage,
+      preferredLang: preferredLanguage,
       department: 'Undergraduate / Postgraduate Studies',
-      is_active: true,
+      isActive: true,
+      isVerified: true,
     },
   });
 
@@ -171,12 +171,16 @@ export const loginStudent = async ({ email, password, rememberMe = true }) => {
     throw ApiError.unauthorized('Account is not registered as a student.');
   }
 
-  const isMatch = await bcrypt.compare(password, profile.password_hash);
+  if (!profile.passwordHash) {
+    throw ApiError.unauthorized('Account authentication method not configured.');
+  }
+
+  const isMatch = await bcrypt.compare(password, profile.passwordHash);
   if (!isMatch) {
     throw ApiError.unauthorized('Invalid email or password.');
   }
 
-  if (!profile.is_active) {
+  if (!profile.isActive) {
     throw ApiError.forbidden('Your account has been deactivated. Please contact support.');
   }
 
@@ -217,14 +221,16 @@ export const registerFaculty = async ({
   const profile = await prisma.profile.create({
     data: {
       email: normalizedEmail,
-      member_id: memberId,
-      full_name: fullName.trim(),
-      password_hash: passwordHash,
+      memberId,
+      facultyId: facultyId || 'FAC-INST',
+      fullName: fullName.trim(),
+      passwordHash,
       role: 'faculty',
       department,
       designation,
-      preferred_language: preferredLanguage,
-      is_active: true,
+      preferredLang: preferredLanguage,
+      isActive: true,
+      isVerified: true,
     },
   });
 
@@ -244,7 +250,7 @@ export const loginFacultyCredentials = async ({ memberId, password }) => {
   const profile = await prisma.profile.findFirst({
     where: {
       OR: [
-        { member_id: trimmedId },
+        { memberId: trimmedId },
         { email: trimmedId.toLowerCase() },
       ],
     },
@@ -258,21 +264,24 @@ export const loginFacultyCredentials = async ({ memberId, password }) => {
     throw ApiError.unauthorized('Account does not hold faculty access privileges.');
   }
 
-  const isMatch = await bcrypt.compare(password, profile.password_hash);
+  if (!profile.passwordHash) {
+    throw ApiError.unauthorized('Account authentication method not configured.');
+  }
+
+  const isMatch = await bcrypt.compare(password, profile.passwordHash);
   if (!isMatch) {
     throw ApiError.unauthorized('Invalid Member ID or password.');
   }
 
-  if (!profile.is_active) {
+  if (!profile.isActive) {
     throw ApiError.forbidden('Your faculty account has been deactivated.');
   }
 
-  // Issue OTP for 2-step verification step required by the UI
-  const otp = saveOtp(profile.member_id || profile.email, 'faculty', { profileId: profile.id });
+  const otp = saveOtp(profile.memberId || profile.email, 'faculty', { profileId: profile.id });
 
   return {
     requiresOtp: true,
-    memberId: profile.member_id,
+    memberId: profile.memberId,
     email: profile.email,
     message: 'Credentials verified. Please enter the 6-digit OTP code.',
     ...(env.NODE_ENV === 'development' ? { devOtp: otp } : {}),
@@ -291,7 +300,7 @@ export const verifyFacultyOtp = async ({ identifier, otp }) => {
   const profile = await prisma.profile.findFirst({
     where: {
       OR: [
-        { member_id: identifier },
+        { memberId: identifier },
         { email: identifier.toLowerCase() },
       ],
     },
@@ -325,12 +334,13 @@ export const loginAdminCredentials = async ({ email, password }) => {
     admin = await prisma.profile.create({
       data: {
         email: 'admin@unimitra.edu.in',
-        full_name: 'System Administrator',
-        password_hash: passwordHash,
+        fullName: 'System Administrator',
+        passwordHash,
         role: 'super_admin',
         department: 'Institutional Governance',
         designation: 'Chief Administrator',
-        is_active: true,
+        isActive: true,
+        preferredLang: 'en',
       },
     });
     logger.info('Auto-seeded default Super Admin account (admin@unimitra.edu.in)');
@@ -344,7 +354,7 @@ export const loginAdminCredentials = async ({ email, password }) => {
     throw ApiError.unauthorized('Account does not possess Administrative privileges.');
   }
 
-  const isMatch = await bcrypt.compare(password, admin.password_hash);
+  const isMatch = await bcrypt.compare(password, admin.passwordHash);
   if (!isMatch) {
     throw ApiError.unauthorized('Invalid Administrator credentials.');
   }
@@ -354,7 +364,7 @@ export const loginAdminCredentials = async ({ email, password }) => {
   return {
     requiresOtp: true,
     email: admin.email,
-    name: admin.full_name,
+    name: admin.fullName,
     message: 'Admin credentials accepted. Please verify with the 6-digit OTP code.',
     ...(env.NODE_ENV === 'development' ? { devOtp: otp } : {}),
   };
@@ -414,11 +424,10 @@ export const getProfileById = async (id) => {
  */
 export const updateProfile = async (id, updateData) => {
   const data = {};
-  if (updateData.fullName) data.full_name = updateData.fullName;
-  if (updateData.avatarUrl !== undefined) data.avatar_url = updateData.avatarUrl;
+  if (updateData.fullName) data.fullName = updateData.fullName;
   if (updateData.department !== undefined) data.department = updateData.department;
   if (updateData.designation !== undefined) data.designation = updateData.designation;
-  if (updateData.preferredLanguage) data.preferred_language = updateData.preferredLanguage;
+  if (updateData.preferredLanguage) data.preferredLang = updateData.preferredLanguage;
 
   const updated = await prisma.profile.update({
     where: { id },
@@ -427,4 +436,3 @@ export const updateProfile = async (id, updateData) => {
 
   return sanitizeProfile(updated);
 };
-

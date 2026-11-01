@@ -133,9 +133,9 @@ export const getUsers = async ({ role = null, search = null, page = 1, limit = 2
   if (search && search.trim()) {
     const q = search.trim();
     where.OR = [
-      { full_name: { contains: q, mode: 'insensitive' } },
+      { fullName: { contains: q, mode: 'insensitive' } },
       { email: { contains: q, mode: 'insensitive' } },
-      { member_id: { contains: q, mode: 'insensitive' } },
+      { memberId: { contains: q, mode: 'insensitive' } },
     ];
   }
 
@@ -148,7 +148,7 @@ export const getUsers = async ({ role = null, search = null, page = 1, limit = 2
       where,
       skip,
       take,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
     }),
   ]);
 
@@ -177,7 +177,7 @@ export const toggleUserStatus = async (userId) => {
 
   const updated = await prisma.profile.update({
     where: { id: userId },
-    data: { is_active: !user.is_active },
+    data: { isActive: !user.isActive },
   });
   return sanitizeProfile(updated);
 };
