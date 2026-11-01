@@ -6,6 +6,7 @@ import {
   SendIcon, 
   SparklesIcon, 
   CheckCircleIcon, 
+  AiVoiceChatLogo, 
   DocumentTextIcon, 
   BuildingLibraryIcon,
   LanguageIcon,
@@ -413,8 +414,13 @@ export const DashboardAiAssistant = ({
         
         {/* Left: Assistant Identity & Live Indicator */}
         <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] text-[#D4A96A] dark:text-[#0B1518] flex items-center justify-center font-bold shadow-xs shrink-0">
-            <SparklesIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-transparent flex items-center justify-center shrink-0">
+            <AiVoiceChatLogo 
+              className="w-8 h-8 sm:w-9 sm:h-9" 
+              isSpeaking={isSpeaking}
+              isListening={isListening}
+              animated={true}
+            />
           </div>
           <div className="min-w-0 leading-tight">
             <div className="flex items-center space-x-1.5 truncate">
@@ -475,9 +481,9 @@ export const DashboardAiAssistant = ({
 
       {/* 2. AUDIO & VOICE STATUS BANNERS */}
       {isSpeaking && (
-        <div className="px-4 py-2 bg-[#55C7B2]/12 dark:bg-[#55C7B2]/15 border-b border-[#55C7B2]/25 flex items-center justify-between text-xs text-[#123C3A] dark:text-[#55C7B2] font-semibold shrink-0">
+        <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/20 dark:border-[#22D3EE]/20 flex items-center justify-between text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] shrink-0">
           <div className="flex items-center space-x-2 truncate mr-2">
-            <SpeakerWaveIcon className="w-4 h-4 animate-pulse shrink-0" />
+            <AiVoiceChatLogo className="w-5 h-5 shrink-0" isSpeaking={true} animated={true} />
             <span className="truncate">Reading verified institutional answer aloud...</span>
           </div>
           <button 
@@ -490,20 +496,16 @@ export const DashboardAiAssistant = ({
       )}
 
       {isListening && (
-        <div className="px-4 py-2 bg-[#D4A96A]/15 dark:bg-[#E0B77A]/15 border-b border-[#D4A96A]/30 flex items-center justify-between shrink-0">
+        <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2.5 truncate mr-2">
-            <div className="flex items-end space-x-0.5 h-4 shrink-0">
-              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-2 animate-bounce" />
-              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-4 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1 bg-[#123C3A] dark:bg-[#55C7B2] rounded-full h-3 animate-bounce" style={{ animationDelay: '300ms' }} />
-            </div>
-            <span className="text-xs font-semibold text-[#123C3A] dark:text-[#E0B77A] truncate">
+            <AiVoiceChatLogo className="w-5 h-5 shrink-0" isListening={true} isSpeaking={false} />
+            <span className="text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] truncate">
               Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak clearly!
             </span>
           </div>
           <button
             onClick={toggleListening}
-            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#0B1518] cursor-pointer shadow-xs shrink-0"
+            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#0B1518] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
           >
             Done
           </button>
@@ -638,8 +640,8 @@ export const DashboardAiAssistant = ({
           {/* Loading Animation */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
-              <div className="w-7 h-7 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-[#D4A96A] dark:text-[#0B1518] shrink-0">
-                <SparklesIcon className="w-3.5 h-3.5 animate-spin" />
+              <div className="w-7 h-7 rounded-xl bg-transparent flex items-center justify-center shrink-0">
+                <AiVoiceChatLogo className="w-6 h-6" isSpeaking={true} animated={true} />
               </div>
               <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4]">
                 {currentLang === 'as' 
@@ -738,15 +740,20 @@ export const DashboardAiAssistant = ({
           <button
             type="button"
             onClick={toggleListening}
-            className={`p-2 rounded-xl transition-all cursor-pointer shrink-0 ${
+            className={`p-1.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center ${
               isListening
-                ? 'bg-red-600 text-white animate-pulse shadow-md'
-                : 'bg-[#E9F0ED] dark:bg-[#0B1518] text-[#123C3A] dark:text-[#55C7B2] hover:bg-[#123C3A]/10'
+                ? 'bg-[#8B5CF6]/20 border border-[#22D3EE] shadow-[0_0_12px_rgba(34,211,238,0.5)]'
+                : 'bg-[#E9F0ED] dark:bg-[#0B1518] hover:bg-[#123C3A]/10 border border-transparent'
             }`}
             title={isListening ? 'Stop Listening' : 'Voice Input (Click to speak)'}
             aria-label="Voice Input"
           >
-            <MicrophoneIcon className="w-4 h-4" />
+            <AiVoiceChatLogo 
+              className="w-5 h-5 sm:w-5.5 sm:h-5.5" 
+              isListening={isListening}
+              isSpeaking={false}
+              animated={isListening}
+            />
           </button>
 
           {/* Flexible Textarea Input */}

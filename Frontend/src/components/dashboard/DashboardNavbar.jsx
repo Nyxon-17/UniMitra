@@ -5,6 +5,7 @@ import {
   SunIcon, 
   MoonIcon,
   SparklesIcon,
+  AiVoiceChatLogo,
   BuildingLibraryIcon
 } from '../common/Icons';
 
@@ -54,7 +55,7 @@ export const DashboardNavbar = ({
             onClick={onNavigateAi}
             className="hidden md:flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] dark:text-[#0B1518] transition-all cursor-pointer shadow-xs shrink-0 font-heading"
           >
-            <SparklesIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#0B1518]" />
+            <AiVoiceChatLogo className="w-4 h-4" animated={true} />
             <span>{currentLang === 'as' ? 'AI সহায়কক সোধক' : 'Ask AI Assistant'}</span>
           </button>
 

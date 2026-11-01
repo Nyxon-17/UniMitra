@@ -8,7 +8,8 @@ import {
   DocumentTextIcon, 
   CheckCircleIcon,
   ChevronDownIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  AiVoiceChatLogo
 } from './Icons';
 
 // Custom Microphone & Speaker Icons for Voice Chat
@@ -398,10 +399,15 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
               className="flex items-center space-x-2.5 pr-3 pl-1 py-1 cursor-pointer group active:scale-95 transition-transform"
               title="Click to open Voice Assistant"
             >
-              {/* Glowing Microphone Orb */}
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-sm relative shrink-0 group-hover:scale-105 transition-transform">
-                <MicrophoneIcon className="w-4 h-4" />
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#03C988] border-2 border-white dark:border-black animate-pulse" />
+              {/* UniMitra AI Voice Assistant Logo */}
+              <div className="relative shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+                <AiVoiceChatLogo 
+                  className="w-8 h-8 sm:w-9 sm:h-9" 
+                  isSpeaking={isSpeaking}
+                  isListening={isListening}
+                  animated={true}
+                />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#22D3EE] border-2 border-white dark:border-[#0B1518] animate-pulse" />
               </div>
 
               <div className="flex flex-col text-left">
@@ -530,8 +536,13 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 <GripDotsIcon className="w-3.5 h-3.5" />
               </div>
 
-              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-xs shrink-0">
-                <MicrophoneIcon className="w-3.5 h-3.5" />
+              <div className="shrink-0 flex items-center justify-center">
+                <AiVoiceChatLogo 
+                  className="w-6 h-6" 
+                  isSpeaking={isSpeaking}
+                  isListening={isListening}
+                  animated={true}
+                />
               </div>
 
               <div className="flex items-center space-x-1">
@@ -712,10 +723,15 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 <button
                   type="button"
                   onClick={toggleListening}
-                  className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FF933E] to-[#FFCB56] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white dark:text-black shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                  className="w-16 h-16 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group relative bg-black/5 dark:bg-white/5 border border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 p-1"
                   title="Tap to speak"
                 >
-                  <MicrophoneIcon className="w-7 h-7 group-hover:scale-110 transition-transform" />
+                  <AiVoiceChatLogo 
+                    className="w-14 h-14 group-hover:scale-105 transition-transform" 
+                    isListening={isListening}
+                    isSpeaking={isSpeaking}
+                    animated={true}
+                  />
                 </button>
 
                 <div>

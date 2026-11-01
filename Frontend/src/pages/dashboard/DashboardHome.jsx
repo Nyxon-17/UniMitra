@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { universityService } from '../../services/universityService';
 import { 
   SparklesIcon, 
+  AiVoiceChatLogo, 
   BuildingLibraryIcon, 
   ClipboardDocumentCheckIcon, 
   BanknotesIcon, 
@@ -145,7 +146,7 @@ export const DashboardHome = ({
               onClick={() => onNavigateTab('assistant')}
               className="flex items-center space-x-2 px-5 py-3 rounded-xl font-semibold text-white bg-[#123C3A] hover:bg-[#1a514e] dark:bg-[#55C7B2] dark:hover:bg-[#6be0cb] dark:text-[#0B1518] transition-all cursor-pointer shadow-xs font-heading text-xs sm:text-sm"
             >
-              <SparklesIcon className="w-4 h-4 text-[#D4A96A] dark:text-[#0B1518]" />
+              <AiVoiceChatLogo className="w-4.5 h-4.5" animated={true} />
               <span>{currentLang === 'as' ? 'AI সহায়কক সোধক' : 'Ask AI Assistant'}</span>
             </button>
 
