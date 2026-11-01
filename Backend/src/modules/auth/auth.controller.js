@@ -31,6 +31,20 @@ export const registerStudent = async (req, res, next) => {
 };
 
 /**
+ * Student OTP Verification
+ * POST /api/v1/auth/student/verify-otp
+ */
+export const verifyStudentOtp = async (req, res, next) => {
+  try {
+    const result = await authService.verifyStudentOtp(req.body);
+    setAuthCookie(res, result.token);
+    return ApiResponse.success(res, result, 'Student OTP verified successfully.');
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * Student Login
  * POST /api/v1/auth/student/login
  */

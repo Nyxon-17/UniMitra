@@ -19,6 +19,7 @@ const router = Router();
 // Apply auth rate limiter to public authentication endpoints
 router.post('/student/register', authLimiter, validate(studentRegisterSchema), authController.registerStudent);
 router.post('/student/login', authLimiter, validate(studentLoginSchema), authController.loginStudent);
+router.post('/student/verify-otp', authLimiter, validate(verifyOtpSchema), authController.verifyStudentOtp);
 
 router.post('/faculty/register', authLimiter, validate(facultyRegisterSchema), authController.registerFaculty);
 router.post('/faculty/login', authLimiter, validate(facultyLoginSchema), authController.loginFaculty);

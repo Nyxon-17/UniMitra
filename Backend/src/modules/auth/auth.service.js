@@ -154,6 +154,38 @@ export const registerStudent = async ({ fullName, email, password, preferredLang
 };
 
 /**
+ * 1b. Verify Student OTP
+ */
+export const verifyStudentOtp = async ({ identifier, otp }) => {
+  const verification = verifyOtpCode(identifier, otp);
+  if (!verification.success) {
+    throw ApiError.badRequest(verification.reason);
+  }
+
+  const profile = await prisma.profile.findUnique({
+    where: { email: identifier.toLowerCase().trim() },
+  });
+
+  if (!profile) {
+    throw ApiError.notFound('Student account not found.');
+  }
+
+  if (!profile.isVerified) {
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: { isVerified: true },
+    });
+  }
+
+  const token = generateToken(profile);
+
+  return {
+    user: sanitizeProfile(profile),
+    token,
+  };
+};
+
+/**
  * 2. Login Student
  */
 export const loginStudent = async ({ email, password, rememberMe = true }) => {

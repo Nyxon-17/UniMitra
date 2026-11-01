@@ -16,6 +16,7 @@ import {
   EyeIcon,
   EyeSlashIcon
 } from '../common/Icons';
+import { authService } from '../../services/authService';
 
 export const AuthModal = ({ 
   isOpen, 
@@ -234,11 +235,17 @@ export const AuthModal = ({
   };
 
   // 1. Student Handlers
-  const handleStudentLogin = (e) => {
+  const handleStudentLogin = async (e) => {
     e.preventDefault();
     setStatus({ loading: true, success: false, message: '', error: null });
 
-    setTimeout(() => {
+    try {
+      const res = await authService.loginStudent({
+        email: studentLogin.email,
+        password: studentLogin.password,
+        rememberMe: studentLogin.rememberMe,
+      });
+
       setStatus({
         loading: false,
         success: true,
@@ -249,18 +256,20 @@ export const AuthModal = ({
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({
-            name: studentLogin.email.split('@')[0],
-            email: studentLogin.email,
-            role: 'Student',
-            department: 'Higher Education'
-          });
+          onSuccessLogin(res.user);
         }
-      }, 700);
-    }, 600);
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Login failed. Please check your credentials.',
+      });
+    }
   };
 
-  const handleStudentRegSubmit = (e) => {
+  const handleStudentRegSubmit = async (e) => {
     e.preventDefault();
     if (studentReg.password !== studentReg.confirmPassword) {
       setStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
@@ -272,14 +281,33 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
-      setStatus({ loading: false, success: false, message: '', error: null });
+    try {
+      const res = await authService.registerStudent({
+        fullName: studentReg.fullName,
+        email: studentReg.email,
+        password: studentReg.password,
+        preferredLanguage: currentLang,
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: res.devOtp ? `OTP generated: ${res.devOtp}` : 'OTP sent to your email!',
+        error: null,
+      });
       setStep('otp');
       resetOtp();
-    }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Registration failed.',
+      });
+    }
   };
 
-  const handleVerifyStudentOtp = (e) => {
+  const handleVerifyStudentOtp = async (e) => {
     e.preventDefault();
     const code = otp.join('');
     if (code.length < 6) {
@@ -288,7 +316,12 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
+    try {
+      const res = await authService.verifyStudentOtp({
+        identifier: studentReg.email,
+        otp: code,
+      });
+
       setStatus({
         loading: false,
         success: true,
@@ -299,19 +332,21 @@ export const AuthModal = ({
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({
-            name: studentReg.fullName,
-            email: studentReg.email,
-            role: 'Student',
-            department: 'Undergraduate / Postgraduate Studies'
-          });
+          onSuccessLogin(res.user);
         }
-      }, 700);
-    }, 600);
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid OTP code.',
+      });
+    }
   };
 
   // 2. Faculty Handlers
-  const handleFacultyRegSubmit = (e) => {
+  const handleFacultyRegSubmit = async (e) => {
     e.preventDefault();
     if (facultyReg.password !== facultyReg.confirmPassword) {
       setStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
@@ -323,17 +358,33 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
-      const randomCode = Math.floor(1000 + Math.random() * 9000);
-      const newMemberId = `UM-FAC-${randomCode}`;
+    try {
+      const res = await authService.registerFaculty({
+        fullName: facultyReg.fullName,
+        officialEmail: facultyReg.officialEmail,
+        facultyId: facultyReg.facultyId,
+        department: facultyReg.department,
+        designation: facultyReg.designation,
+        password: facultyReg.password,
+        preferredLanguage: currentLang,
+      });
+
+      const newMemberId = res.memberId || res.user?.memberId;
       setGeneratedMemberId(newMemberId);
       setFacultyLogin((prev) => ({ ...prev, memberId: newMemberId }));
-      setStatus({ loading: false, success: true, message: '', error: null });
+      setStatus({ loading: false, success: true, message: res.message || 'Faculty registered successfully!', error: null });
       setStep('created_id');
-    }, 600);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Faculty registration failed.',
+      });
+    }
   };
 
-  const handleFacultyLoginCredentials = (e) => {
+  const handleFacultyLoginCredentials = async (e) => {
     e.preventDefault();
     if (!facultyLogin.memberId || !facultyLogin.password) {
       setStatus({ loading: false, success: false, message: '', error: 'Please enter Member ID and Password.' });
@@ -341,14 +392,31 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
-      setStatus({ loading: false, success: false, message: '', error: null });
+    try {
+      const res = await authService.loginFacultyCredentials({
+        memberId: facultyLogin.memberId,
+        password: facultyLogin.password,
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: res.devOtp ? `Credentials verified! (Dev OTP: ${res.devOtp})` : 'Credentials verified. OTP sent to registered email.',
+        error: null,
+      });
       setStep('login_otp');
       resetOtp();
-    }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid Member ID or password.',
+      });
+    }
   };
 
-  const handleVerifyFacultyOtp = (e) => {
+  const handleVerifyFacultyOtp = async (e) => {
     e.preventDefault();
     const code = otp.join('');
     if (code.length < 6) {
@@ -357,7 +425,12 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
+    try {
+      const res = await authService.verifyFacultyOtp({
+        identifier: facultyLogin.memberId,
+        otp: code,
+      });
+
       setStatus({
         loading: false,
         success: true,
@@ -368,22 +441,21 @@ export const AuthModal = ({
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({
-            name: facultyReg.fullName || 'Prof. Faculty Member',
-            email: facultyReg.officialEmail || `${facultyLogin.memberId.toLowerCase()}@unimitra.edu.in`,
-            role: 'Faculty Member',
-            department: facultyReg.department || 'Academic Department',
-            designation: facultyReg.designation || 'Faculty Member',
-            memberId: facultyLogin.memberId,
-            facultyId: facultyReg.facultyId || 'FAC-INST'
-          });
+          onSuccessLogin(res.user);
         }
-      }, 700);
-    }, 600);
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid OTP code.',
+      });
+    }
   };
 
   // 3. Admin Handlers
-  const handleAdminCredentials = (e) => {
+  const handleAdminCredentials = async (e) => {
     e.preventDefault();
     if (!adminLogin.superEmail || !adminLogin.superPassword) {
       setStatus({ loading: false, success: false, message: '', error: 'Please enter Super Email and Password.' });
@@ -391,14 +463,31 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
-      setStatus({ loading: false, success: false, message: '', error: null });
+    try {
+      const res = await authService.loginAdminCredentials({
+        email: adminLogin.superEmail,
+        password: adminLogin.superPassword,
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: res.devOtp ? `Credentials accepted! (Dev OTP: ${res.devOtp})` : 'Credentials accepted. OTP sent to Super Admin email.',
+        error: null,
+      });
       setStep('otp');
       resetOtp();
-    }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid Super Administrator credentials.',
+      });
+    }
   };
 
-  const handleVerifyAdminOtp = (e) => {
+  const handleVerifyAdminOtp = async (e) => {
     e.preventDefault();
     const code = otp.join('');
     if (code.length < 6) {
@@ -407,7 +496,12 @@ export const AuthModal = ({
     }
 
     setStatus({ loading: true, success: false, message: '', error: null });
-    setTimeout(() => {
+    try {
+      const res = await authService.verifyAdminOtp({
+        identifier: adminLogin.superEmail,
+        otp: code,
+      });
+
       setStatus({
         loading: false,
         success: true,
@@ -418,15 +512,43 @@ export const AuthModal = ({
       setTimeout(() => {
         onClose();
         if (onSuccessLogin) {
-          onSuccessLogin({
-            name: adminLogin.superName || 'Super Administrator',
-            email: adminLogin.superEmail,
-            role: 'Admin',
-            department: 'Institutional Governance'
-          });
+          onSuccessLogin(res.user);
         }
-      }, 700);
-    }, 600);
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid OTP code.',
+      });
+    }
+  };
+
+  // 4. Resend OTP Handler
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    setStatus({ loading: true, success: false, message: '', error: null });
+    try {
+      const identifier = role === 'admin' 
+        ? adminLogin.superEmail 
+        : (role === 'faculty' ? facultyLogin.memberId : studentReg.email);
+      const res = await authService.resendOtp({ identifier, role });
+      resetOtp();
+      setStatus({
+        loading: false,
+        success: true,
+        message: res.devOtp ? `Fresh OTP generated: ${res.devOtp}` : (res.message || 'New OTP code sent!'),
+        error: null,
+      });
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Failed to resend OTP.',
+      });
+    }
   };
 
   return (
@@ -748,7 +870,17 @@ export const AuthModal = ({
                       >
                         Edit Details
                       </button>
-                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={handleResendOtp}
+                          className="text-[#FF933E] dark:text-[#03C988] font-black hover:underline cursor-pointer"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span>{timer}s remaining</span>
+                      )}
                     </div>
 
                     <button
@@ -854,7 +986,17 @@ export const AuthModal = ({
                       >
                         Change ID
                       </button>
-                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={handleResendOtp}
+                          className="text-[#FF933E] dark:text-[#03C988] font-black hover:underline cursor-pointer"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span>{timer}s remaining</span>
+                      )}
                     </div>
 
                     <button
@@ -1167,7 +1309,17 @@ export const AuthModal = ({
                       >
                         Change Super Email
                       </button>
-                      <span>{canResend ? 'Code Expired' : `${timer}s remaining`}</span>
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={handleResendOtp}
+                          className="text-[#FF933E] dark:text-[#03C988] font-black hover:underline cursor-pointer"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span>{timer}s remaining</span>
+                      )}
                     </div>
 
                     <button

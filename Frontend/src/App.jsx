@@ -14,6 +14,7 @@ import { Faq } from './pages/public/Faq';
 import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { AuthModal } from './components/auth/AuthModal';
+import { authService } from './services/authService';
 
 // Institutional University Assistance Dashboard Components & Pages
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
@@ -258,6 +259,35 @@ export function App() {
     }
   }, [theme]);
 
+  // Restore and verify active session with Supabase PostgreSQL on mount
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      authService.getMe()
+        .then((user) => {
+          if (user) {
+            setIsLoggedIn(true);
+            setStudentInfo((prev) => ({
+              ...prev,
+              ...user,
+            }));
+          } else {
+            setIsLoggedIn(false);
+          }
+        })
+        .catch(() => {
+          setIsLoggedIn(false);
+        });
+    }
+
+    const handleAuthStateChange = (e) => {
+      if (e.detail?.isLoggedIn === false) {
+        setIsLoggedIn(false);
+      }
+    };
+    window.addEventListener('unimitra_auth_state_changed', handleAuthStateChange);
+    return () => window.removeEventListener('unimitra_auth_state_changed', handleAuthStateChange);
+  }, []);
+
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'as' : 'en'));
   };
@@ -295,7 +325,7 @@ export function App() {
     setAuthModalOpen(false);
 
     // Role-based routing: Admin directly to Admin Console; Students & Faculty to Assistant Dashboard
-    if (user?.role === 'Admin') {
+    if (user?.role === 'Admin' || user?.role === 'Super Admin') {
       navigate('/admin');
     } else {
       navigate('/dashboard/overview');
@@ -303,7 +333,8 @@ export function App() {
   };
 
   // Sign Out Handler: Revokes session, clears dashboard lock, and returns to home
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await authService.logout();
     setIsLoggedIn(false);
     localStorage.removeItem('unimitra_auth_logged_in');
     navigate('/');
@@ -345,10 +376,23 @@ export function App() {
     navigate(`/dashboard/${tab}`, { state: payload });
   };
 
-  const handleUpdateStudentInfo = (updated) => {
+  const handleUpdateStudentInfo = async (updated) => {
     const newInfo = { ...studentInfo, ...updated };
     setStudentInfo(newInfo);
     localStorage.setItem('unimitra_student_info', JSON.stringify(newInfo));
+
+    if (authService.isAuthenticated()) {
+      try {
+        await authService.updateProfile({
+          fullName: updated.name,
+          department: updated.department,
+          designation: updated.designation,
+          preferredLanguage: updated.preferredLang,
+        });
+      } catch (err) {
+        console.warn('Could not sync profile update to server:', err);
+      }
+    }
   };
 
   return (

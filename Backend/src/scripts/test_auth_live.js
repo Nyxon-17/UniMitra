@@ -40,6 +40,24 @@ server.listen(0, async () => {
 
     console.log(`   ✅ Student Registered: ${regJson.data.user.email} (ID: ${regJson.data.user.id})`);
 
+    // -----------------------------------------------------------------
+    // TEST 1b: Student OTP Verification (/student/verify-otp)
+    // -----------------------------------------------------------------
+    console.log(`\n1b. Testing Student Registration OTP Verification...`);
+    const studentOtpRes = await fetch(`${baseUrl}/student/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        identifier: testStudentEmail,
+        otp: '123456',
+      }),
+    });
+    const studentOtpJson = await studentOtpRes.json();
+    if (!studentOtpJson.success || !studentOtpJson.data.token) {
+      throw new Error(`Student OTP verification failed: ${JSON.stringify(studentOtpJson)}`);
+    }
+    console.log(`   ✅ Student OTP Verified! Token issued for: ${studentOtpJson.data.user.email}`);
+
     // Verify record in Supabase PostgreSQL
     const studentDbRecord = await prisma.profile.findUnique({
       where: { email: testStudentEmail },
