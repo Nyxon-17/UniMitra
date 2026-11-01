@@ -59,7 +59,7 @@ export const AuroraBackground = ({ className = '' }) => {
       </svg>
 
       {/* 6. Subtle Edge Vignette for Crystal Clear Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#F7F6F0]/60 via-transparent to-[#F7F6F0]/30 dark:from-[#0B1518]/70 dark:via-transparent dark:to-[#0B1518]/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#F7F6F0]/60 via-transparent to-[#F7F6F0]/30 dark:from-[#0B1518]/70 dark:via-transparent dark:to-[#0B1518]/40 transition-colors duration-500" />
     </div>
   );
 };

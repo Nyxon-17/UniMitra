@@ -247,9 +247,11 @@ export function App() {
     return 'light';
   });
 
-  // Apply dark mode class to <html> element
+  // Apply dark mode class to <html> element with smooth crossfade coordination
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.add('theme-transitioning');
+
     if (theme === 'dark') {
       root.classList.add('dark');
       localStorage.setItem('unimitra_theme', 'dark');
@@ -257,6 +259,12 @@ export function App() {
       root.classList.remove('dark');
       localStorage.setItem('unimitra_theme', 'light');
     }
+
+    const timer = setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 450);
+
+    return () => clearTimeout(timer);
   }, [theme]);
 
   // Restore and verify active session with Supabase PostgreSQL on mount
