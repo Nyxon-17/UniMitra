@@ -9,7 +9,13 @@ import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 // Route imports
 import authRoutes from './modules/auth/auth.routes.js';
-// (Additional route modules will be imported here)
+import documentRoutes from './modules/documents/documents.routes.js';
+import universityRoutes from './modules/universities/universities.routes.js';
+import chatRoutes from './modules/ai/chat.routes.js';
+import voiceRoutes from './modules/voice/voice.routes.js';
+import noticeRoutes from './modules/notices/notices.routes.js';
+import notificationRoutes from './modules/notifications/notifications.routes.js';
+import adminRoutes from './modules/admin/admin.routes.js';
 
 const app = express();
 
@@ -26,12 +32,11 @@ const allowedOrigins = env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(null, true); // Permissive in dev/hackathon
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -40,8 +45,8 @@ app.use(
 );
 
 // Request body parsers
-app.use(express.json({ limit: '15mb' }));
-app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
 
 // Request logging
@@ -80,8 +85,15 @@ app.get('/health', (req, res) => {
 // Apply rate limiting to all standard API routes
 app.use('/api', generalLimiter);
 
-// API v1 Routes
+// Mount API v1 Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/documents', documentRoutes);
+app.use('/api/v1/universities', universityRoutes);
+app.use('/api/v1/chat', chatRoutes);
+app.use('/api/v1/voice', voiceRoutes);
+app.use('/api/v1/notices', noticeRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // 404 Route Handler
 app.use(notFoundHandler);

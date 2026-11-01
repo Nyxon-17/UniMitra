@@ -39,3 +39,4 @@ export class ApiError extends Error {
     return new ApiError(500, message, code, details);
   }
 }
+

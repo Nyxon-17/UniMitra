@@ -67,3 +67,4 @@ export const updateProfileSchema = z.object({
     preferredLanguage: z.enum(['en', 'as']).optional(),
   }),
 });
+

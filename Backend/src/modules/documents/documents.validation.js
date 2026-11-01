@@ -44,3 +44,4 @@ export const createCategorySchema = z.object({
     description: z.string().optional(),
   }),
 });
+

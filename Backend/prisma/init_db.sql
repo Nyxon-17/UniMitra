@@ -273,3 +273,4 @@ CREATE INDEX IF NOT EXISTS idx_documents_university ON public.documents(universi
 CREATE INDEX IF NOT EXISTS idx_messages_session ON public.chat_messages(session_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_notices_active ON public.notices(university_id, is_active);
+

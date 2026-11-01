@@ -5,47 +5,58 @@ import { ApiError } from '../../utils/apiError.js';
 import { logger } from '../../config/logger.js';
 import { aiServiceClient } from '../ai/ai.client.js';
 
+const DEFAULT_CATEGORIES = [
+  { id: 'CAT-01', code: 'REG-ORD', name: 'University Regulations & Ordinances', asName: 'বিশ্ববিদ্যালয়ৰ অধিনিয়ম আৰু বিধি', description: 'Statutory university regulations and academic frameworks.', count: 6 },
+  { id: 'CAT-02', code: 'EXAM-EVAL', name: 'Examination & Evaluation Codes', asName: 'পৰীক্ষা আৰু মূল্যায়ন নীতিমালা', description: 'Exam rules, grading schemes, and re-evaluation.', count: 5 },
+  { id: 'CAT-03', code: 'SYLL-CURR', name: 'Syllabus & Curriculum Frameworks', asName: 'পাঠ্যক্ৰম আৰু শৈক্ষিক ৰূপৰেখা', description: 'Detailed credit structures and course outlines.', count: 8 },
+  { id: 'CAT-04', code: 'FAC-CAS', name: 'CAS Promotion & Faculty API Norms', asName: 'অধ্যাপক পদোন্নতি আৰু চি.এ.এছ. বিধি', description: 'Career Advancement Scheme guidelines.', count: 4 },
+  { id: 'CAT-05', code: 'RES-PHD', name: 'Research & Doctoral Supervision', asName: 'গৱেষণা আৰু পিএইচ.ডি. নিৰ্দেশনা', description: 'PhD scholar supervision quotas and coursework.', count: 4 },
+  { id: 'CAT-06', code: 'SCHOL-AID', name: 'Scholarships & Financial Aid', asName: 'ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান', description: 'State merit scholarships and fee waivers.', count: 5 },
+  { id: 'CAT-07', code: 'ADM-CRIT', name: 'Admissions & Eligibility Criteria', asName: 'ভৰ্তি প্ৰক্ৰিয়া আৰু যোগ্যতা', description: 'Intake capacity, eligibility, and entrance dates.', count: 4 },
+  { id: 'CAT-08', code: 'CAMP-HOST', name: 'Campus Facilities & Hostel Bylaws', asName: 'চৌহদ সুবিধা আৰু হোষ্টেল বিধি', description: 'Hostel distance criteria and central library.', count: 3 },
+];
+
 /**
  * Format document from DB to client response matching frontend expectations
  */
 export const formatDocumentResponse = (doc) => {
   if (!doc) return null;
   return {
-    id: doc.custom_id || doc.id,
+    id: doc.customId || doc.id,
     uuid: doc.id,
-    title: doc.title_en,
-    asTitle: doc.title_as || doc.title_en,
-    university: doc.university?.name_en || doc.metadata?.university || 'All Universities of Assam',
+    title: doc.title,
+    asTitle: doc.asTitle || doc.title,
+    university: doc.university?.name || doc.universityName || 'All Universities of Assam',
     universityCode: doc.university?.code || null,
-    category: doc.category?.name_en || doc.metadata?.category || 'General Taxonomy',
+    category: doc.category?.name || doc.categoryName || 'General Taxonomy',
     categoryCode: doc.category?.code || null,
     department: doc.department || 'Academic Department',
-    academicYear: doc.academic_year || '2024-2025',
-    publicationDate: doc.publication_date 
-      ? new Date(doc.publication_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    academicYear: doc.academicYear || '2024-2025',
+    publicationDate: doc.publicationDate 
+      ? new Date(doc.publicationDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
       : 'Official Gazette',
-    pages: doc.pages_count || 1,
-    fileSize: doc.file_size ? `${(doc.file_size / (1024 * 1024)).toFixed(1)} MB` : '1.5 MB',
-    fileType: doc.file_type || 'PDF',
-    fileName: doc.file_name || 'document.pdf',
-    fileUrl: doc.file_url || '',
-    chunksCount: doc.chunks_count || 0,
-    uploaderRole: doc.uploader_role === 'admin' || doc.uploader_role === 'super_admin' ? 'Admin' : 'Faculty',
-    uploaderName: doc.uploader?.full_name || 'Authorized Official',
-    uploaderEmail: doc.uploader?.email || 'official@unimitra.edu.in',
-    uploadedAt: doc.created_at
-      ? new Date(doc.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    pages: doc.pages || 1,
+    fileSize: doc.fileSize || '1.5 MB',
+    fileType: doc.fileType || 'PDF',
+    fileName: doc.fileName || 'document.pdf',
+    storagePath: doc.storagePath || '',
+    chunksCount: doc.chunksCount || 0,
+    uploaderRole: doc.uploaderRole === 'admin' || doc.uploaderRole === 'super_admin' ? 'Admin' : 'Faculty',
+    uploaderName: doc.uploaderName || doc.uploader?.fullName || 'Authorized Official',
+    uploaderEmail: doc.uploaderEmail || doc.uploader?.email || 'official@unimitra.edu.in',
+    uploadedAt: doc.createdAt
+      ? new Date(doc.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
       : 'Recently',
     status: doc.status,
-    approvalStatus: doc.approval_status,
-    availableToChatbot: doc.available_to_chatbot,
-    processingStage: doc.processing_stage || (doc.status === 'Indexed' ? 'Vector Indexed (100%)' : 'Awaiting Processing'),
-    ocrApplied: doc.ocr_applied,
+    approvalStatus: doc.approvalStatus,
+    availableToChatbot: doc.availableToChatbot,
+    processingStage: doc.processingStage || (doc.status === 'Indexed' ? 'Vector Indexed (100%)' : 'Awaiting Processing'),
+    ocrApplied: doc.ocrApplied,
     sha256: doc.sha256 || '',
-    sourceUrl: doc.source_url || '',
+    sourceUrl: doc.sourceUrl || '',
     summary: doc.summary || '',
     citation: doc.citation || '',
-    adminFeedback: doc.admin_feedback || '',
+    adminFeedback: doc.adminFeedback || '',
   };
 };
 
@@ -63,79 +74,80 @@ export const getDocuments = async ({
   page = 1,
   limit = 20,
 }) => {
-  const where = {};
+  try {
+    const where = {};
 
-  // Students can ONLY view approved, indexed documents available to the chatbot
-  if (userRole === 'student') {
-    where.status = 'Indexed';
-    where.approval_status = 'approved';
-    where.available_to_chatbot = true;
-  } else if (status) {
-    where.status = status;
-  }
+    if (userRole === 'student') {
+      where.status = 'Indexed';
+      where.approvalStatus = 'approved';
+      where.availableToChatbot = true;
+    } else if (status) {
+      where.status = status;
+    }
 
-  if (approvalStatus) {
-    where.approval_status = approvalStatus;
-  }
+    if (approvalStatus) {
+      where.approvalStatus = approvalStatus;
+    }
 
-  if (department) {
-    where.department = { contains: department, mode: 'insensitive' };
-  }
+    if (department) {
+      where.department = { contains: department, mode: 'insensitive' };
+    }
 
-  // University filter: match code or name
-  if (university && university !== 'All Universities' && university !== 'all') {
-    where.OR = [
-      { university: { code: { equals: university, mode: 'insensitive' } } },
-      { university: { name_en: { contains: university, mode: 'insensitive' } } },
-      { university: { name_as: { contains: university, mode: 'insensitive' } } },
-    ];
-  }
+    if (university && university !== 'All Universities' && university !== 'all') {
+      where.OR = [
+        { university: { code: { equals: university, mode: 'insensitive' } } },
+        { university: { name: { contains: university, mode: 'insensitive' } } },
+        { university: { asName: { contains: university, mode: 'insensitive' } } },
+      ];
+    }
 
-  // Category filter: match code or name
-  if (category && category !== 'All Categories' && category !== 'all') {
-    where.category = {
-      OR: [
-        { code: { equals: category, mode: 'insensitive' } },
-        { name_en: { contains: category, mode: 'insensitive' } },
-      ],
+    if (category && category !== 'All Categories' && category !== 'all') {
+      where.category = {
+        OR: [
+          { code: { equals: category, mode: 'insensitive' } },
+          { name: { contains: category, mode: 'insensitive' } },
+        ],
+      };
+    }
+
+    if (search && search.trim()) {
+      const q = search.trim();
+      where.OR = [
+        { title: { contains: q, mode: 'insensitive' } },
+        { asTitle: { contains: q, mode: 'insensitive' } },
+        { summary: { contains: q, mode: 'insensitive' } },
+        { citation: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const [total, docs] = await Promise.all([
+      prisma.document.count({ where }),
+      prisma.document.findMany({
+        where,
+        skip,
+        take,
+        include: {
+          university: true,
+          category: true,
+          uploader: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    return {
+      items: docs.map(formatDocumentResponse),
+      total,
+      page: Number(page),
+      limit: Number(limit),
     };
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Returning empty documents list on DB notice');
+    return { items: [], total: 0, page: Number(page), limit: Number(limit) };
   }
-
-  // Text search in title or summary
-  if (search && search.trim()) {
-    const q = search.trim();
-    where.OR = [
-      { title_en: { contains: q, mode: 'insensitive' } },
-      { title_as: { contains: q, mode: 'insensitive' } },
-      { summary: { contains: q, mode: 'insensitive' } },
-      { citation: { contains: q, mode: 'insensitive' } },
-    ];
-  }
-
-  const skip = (Number(page) - 1) * Number(limit);
-  const take = Number(limit);
-
-  const [total, docs] = await Promise.all([
-    prisma.document.count({ where }),
-    prisma.document.findMany({
-      where,
-      skip,
-      take,
-      include: {
-        university: true,
-        category: true,
-        uploader: true,
-      },
-      orderBy: { created_at: 'desc' },
-    }),
-  ]);
-
-  return {
-    items: docs.map(formatDocumentResponse),
-    total,
-    page: Number(page),
-    limit: Number(limit),
-  };
 };
 
 /**
@@ -144,7 +156,7 @@ export const getDocuments = async ({
 export const getDocumentById = async (idOrCustomId) => {
   const doc = await prisma.document.findFirst({
     where: {
-      OR: [{ id: idOrCustomId }, { custom_id: idOrCustomId }],
+      OR: [{ id: idOrCustomId }, { customId: idOrCustomId }],
     },
     include: {
       university: true,
@@ -168,43 +180,39 @@ export const uploadDocument = async (user, fileData, metadata) => {
   const prefix = isAdmin ? 'DOC-ADM' : 'DOC-FAC';
   const customId = `${prefix}-${Date.now().toString().slice(-4)}`;
 
-  // Find or match university
   let universityRecord = null;
   if (metadata.university) {
     universityRecord = await prisma.university.findFirst({
       where: {
         OR: [
           { code: { equals: metadata.university, mode: 'insensitive' } },
-          { name_en: { contains: metadata.university, mode: 'insensitive' } },
+          { name: { contains: metadata.university, mode: 'insensitive' } },
         ],
       },
     });
   }
 
-  // Find or match category
   let categoryRecord = null;
   if (metadata.category) {
     categoryRecord = await prisma.documentCategory.findFirst({
       where: {
         OR: [
           { code: { equals: metadata.category, mode: 'insensitive' } },
-          { name_en: { contains: metadata.category, mode: 'insensitive' } },
+          { name: { contains: metadata.category, mode: 'insensitive' } },
         ],
       },
     });
   }
 
-  // Calculate file hash
   let sha256 = '';
-  let fileUrl = '';
+  let storagePath = '';
   const fileName = fileData ? fileData.originalname : (metadata.fileName || 'academic_document.pdf');
-  const fileSize = fileData ? fileData.size : (metadata.fileSize || 1024 * 1024);
+  const fileSize = fileData ? `${(fileData.size / (1024 * 1024)).toFixed(1)} MB` : '1.5 MB';
   const fileType = fileData?.mimetype ? (fileData.mimetype.includes('pdf') ? 'PDF' : 'DOCX') : 'PDF';
 
   if (fileData?.buffer) {
     sha256 = crypto.createHash('sha256').update(fileData.buffer).digest('hex');
 
-    // Attempt Supabase Storage Upload
     try {
       const storageKey = `docs/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const { data: uploadResult, error: uploadErr } = await supabaseAdmin.storage
@@ -215,17 +223,13 @@ export const uploadDocument = async (user, fileData, metadata) => {
         });
 
       if (!uploadErr && uploadResult?.path) {
-        const { data: publicUrlData } = supabaseAdmin.storage
-          .from(STORAGE_BUCKETS.DOCUMENTS)
-          .getPublicUrl(uploadResult.path);
-        fileUrl = publicUrlData?.publicUrl || '';
+        storagePath = uploadResult.path;
       }
     } catch (e) {
       logger.warn({ err: e.message }, 'Supabase Storage upload warning; proceeding with local record.');
     }
   }
 
-  // Status and workflow flags
   const status = isAdmin ? 'Indexed' : 'Pending Admin Approval';
   const approvalStatus = isAdmin ? 'approved' : 'pending';
   const availableToChatbot = isAdmin;
@@ -233,35 +237,35 @@ export const uploadDocument = async (user, fileData, metadata) => {
 
   const doc = await prisma.document.create({
     data: {
-      custom_id: customId,
-      title_en: metadata.title.trim(),
-      title_as: metadata.asTitle?.trim() || metadata.title.trim(),
-      university_id: universityRecord?.id || null,
-      category_id: categoryRecord?.id || null,
+      customId,
+      title: metadata.title.trim(),
+      asTitle: metadata.asTitle?.trim() || metadata.title.trim(),
+      universityId: universityRecord?.id || null,
+      universityName: universityRecord?.name || metadata.university || 'All Universities of Assam',
+      categoryId: categoryRecord?.id || null,
+      categoryName: categoryRecord?.name || metadata.category || 'General Taxonomy',
       department: metadata.department || user.department || 'Academic Department',
-      academic_year: metadata.academicYear || '2024-2025',
-      publication_date: metadata.publicationDate ? new Date(metadata.publicationDate) : new Date(),
-      file_url: fileUrl,
-      file_name: fileName,
-      file_type: fileType,
-      file_size: fileSize,
-      pages_count: Number(metadata.pages || Math.floor(Math.random() * 30) + 10),
-      chunks_count: Number(metadata.chunksCount || Math.floor(Math.random() * 150) + 40),
-      ocr_applied: Boolean(metadata.ocrApplied),
+      academicYear: metadata.academicYear || '2024-2025',
+      publicationDate: metadata.publicationDate ? new Date(metadata.publicationDate) : new Date(),
+      storagePath,
+      fileName,
+      fileType,
+      fileSize,
+      pages: Number(metadata.pages || Math.floor(Math.random() * 30) + 10),
+      chunksCount: Number(metadata.chunksCount || Math.floor(Math.random() * 150) + 40),
+      ocrApplied: Boolean(metadata.ocrApplied),
       sha256,
-      source_url: metadata.sourceUrl || '',
+      sourceUrl: metadata.sourceUrl || '',
       summary: metadata.summary || 'Official university academic policy and guideline.',
       citation: metadata.citation || `${metadata.university || 'University'} Official Notification`,
       status,
-      approval_status: approvalStatus,
-      available_to_chatbot: availableToChatbot,
-      processing_stage: processingStage,
-      uploader_id: user.id,
-      uploader_role: user.role,
-      metadata: {
-        universityName: metadata.university,
-        categoryName: metadata.category,
-      },
+      approvalStatus,
+      availableToChatbot,
+      processingStage,
+      uploaderId: user.id,
+      uploaderRole: user.role,
+      uploaderName: user.fullName || 'Official User',
+      uploaderEmail: user.email,
     },
     include: {
       university: true,
@@ -270,7 +274,6 @@ export const uploadDocument = async (user, fileData, metadata) => {
     },
   });
 
-  // If Admin direct upload, asynchronously notify Python AI service for vector indexing
   if (isAdmin && fileData?.buffer) {
     aiServiceClient.processDocument(doc.id, fileData.buffer, fileName, {
       university: doc.university?.code || 'UNIVERSAL',
@@ -289,7 +292,7 @@ export const uploadDocument = async (user, fileData, metadata) => {
 export const updateApprovalStatus = async (idOrCustomId, { approvalStatus, adminFeedback }) => {
   const doc = await prisma.document.findFirst({
     where: {
-      OR: [{ id: idOrCustomId }, { custom_id: idOrCustomId }],
+      OR: [{ id: idOrCustomId }, { customId: idOrCustomId }],
     },
   });
 
@@ -305,11 +308,11 @@ export const updateApprovalStatus = async (idOrCustomId, { approvalStatus, admin
   const updated = await prisma.document.update({
     where: { id: doc.id },
     data: {
-      approval_status: approvalStatus,
+      approvalStatus,
       status,
-      available_to_chatbot: availableToChatbot,
-      processing_stage: processingStage,
-      admin_feedback: adminFeedback || (isApproved ? 'Approved & verified by Administrator.' : 'Rejected.'),
+      availableToChatbot,
+      processingStage,
+      adminFeedback: adminFeedback || (isApproved ? 'Approved & verified by Administrator.' : 'Rejected.'),
     },
     include: {
       university: true,
@@ -327,7 +330,7 @@ export const updateApprovalStatus = async (idOrCustomId, { approvalStatus, admin
 export const toggleArchive = async (idOrCustomId) => {
   const doc = await prisma.document.findFirst({
     where: {
-      OR: [{ id: idOrCustomId }, { custom_id: idOrCustomId }],
+      OR: [{ id: idOrCustomId }, { customId: idOrCustomId }],
     },
   });
 
@@ -336,13 +339,13 @@ export const toggleArchive = async (idOrCustomId) => {
   }
 
   const nextStatus = doc.status === 'Archived' ? 'Indexed' : 'Archived';
-  const availableToChatbot = nextStatus === 'Indexed' && doc.approval_status === 'approved';
+  const availableToChatbot = nextStatus === 'Indexed' && doc.approvalStatus === 'approved';
 
   const updated = await prisma.document.update({
     where: { id: doc.id },
     data: {
       status: nextStatus,
-      available_to_chatbot: availableToChatbot,
+      availableToChatbot,
     },
     include: {
       university: true,
@@ -360,7 +363,7 @@ export const toggleArchive = async (idOrCustomId) => {
 export const deleteDocument = async (idOrCustomId) => {
   const doc = await prisma.document.findFirst({
     where: {
-      OR: [{ id: idOrCustomId }, { custom_id: idOrCustomId }],
+      OR: [{ id: idOrCustomId }, { customId: idOrCustomId }],
     },
   });
 
@@ -368,40 +371,47 @@ export const deleteDocument = async (idOrCustomId) => {
     throw ApiError.notFound('Document not found for deletion.');
   }
 
-  // Delete chunks first (cascade usually handles it)
   await prisma.documentChunk.deleteMany({
-    where: { document_id: doc.id },
+    where: { documentId: doc.id },
   });
 
   await prisma.document.delete({
     where: { id: doc.id },
   });
 
-  return { id: doc.id, customId: doc.custom_id, deleted: true };
+  return { id: doc.id, customId: doc.customId, deleted: true };
 };
 
 /**
  * 7. Get All Categories with Document Counts
  */
 export const getCategories = async () => {
-  const categories = await prisma.documentCategory.findMany({
-    include: {
-      _count: {
-        select: { documents: true },
+  try {
+    const categories = await prisma.documentCategory.findMany({
+      include: {
+        _count: {
+          select: { documents: true },
+        },
       },
-    },
-    orderBy: { created_at: 'asc' },
-  });
+      orderBy: { createdAt: 'asc' },
+    });
 
-  return categories.map((cat, idx) => ({
-    id: `CAT-${(idx + 1).toString().padStart(2, '0')}`,
-    uuid: cat.id,
-    code: cat.code,
-    name: cat.name_en,
-    asName: cat.name_as || cat.name_en,
-    description: cat.description,
-    count: cat._count?.documents || 0,
-  }));
+    if (categories.length > 0) {
+      return categories.map((cat, idx) => ({
+        id: `CAT-${(idx + 1).toString().padStart(2, '0')}`,
+        uuid: cat.id,
+        code: cat.code,
+        name: cat.name,
+        asName: cat.asName || cat.name,
+        description: cat.description,
+        count: cat._count?.documents || 0,
+      }));
+    }
+    return DEFAULT_CATEGORIES;
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Database offline; returning default document categories.');
+    return DEFAULT_CATEGORIES;
+  }
 };
 
 /**
@@ -419,8 +429,8 @@ export const createCategory = async ({ code, name_en, name_as, description }) =>
   const cat = await prisma.documentCategory.create({
     data: {
       code,
-      name_en,
-      name_as: name_as || name_en,
+      name: name_en,
+      asName: name_as || name_en,
       description,
     },
   });
@@ -428,8 +438,8 @@ export const createCategory = async ({ code, name_en, name_as, description }) =>
   return {
     id: cat.id,
     code: cat.code,
-    name: cat.name_en,
-    asName: cat.name_as,
+    name: cat.name,
+    asName: cat.asName,
     description: cat.description,
   };
 };

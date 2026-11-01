@@ -9,10 +9,11 @@ if (env.NODE_ENV === 'production') {
 } else {
   if (!global.__prisma) {
     global.__prisma = new PrismaClient({
-      log: ['warn', 'error']
+      log: ['warn', 'error'],
     });
   }
   prisma = global.__prisma;
 }
 
+export { prisma };
 export default prisma;

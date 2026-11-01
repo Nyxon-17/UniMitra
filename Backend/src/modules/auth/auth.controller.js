@@ -158,3 +158,4 @@ export const logout = async (req, res) => {
   res.clearCookie('token', { path: '/' });
   return ApiResponse.success(res, null, 'Signed out successfully.');
 };
+

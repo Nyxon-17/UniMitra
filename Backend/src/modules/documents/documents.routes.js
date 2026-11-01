@@ -40,3 +40,4 @@ router.patch('/:id/archive', authenticate, requireAdmin, documentController.arch
 router.delete('/:id', authenticate, requireAdmin, documentController.deleteDocument);
 
 export default router;
+

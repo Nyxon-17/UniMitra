@@ -55,3 +55,4 @@ export const ensureStorageBuckets = async () => {
     logger.warn({ err: err.message }, 'Supabase storage initialization skipped (check SUPABASE_URL)');
   }
 };
+

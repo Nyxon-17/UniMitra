@@ -35,3 +35,4 @@ export const requireRole = (allowedRoles = []) => {
 export const requireAdmin = requireRole(['admin', 'super_admin']);
 export const requireFaculty = requireRole(['faculty', 'admin', 'super_admin']);
 export const requireStudent = requireRole(['student', 'faculty', 'admin', 'super_admin']);
+

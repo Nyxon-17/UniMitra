@@ -35,3 +35,4 @@ router.patch('/me', authenticate, validate(updateProfileSchema), authController.
 router.post('/logout', authController.logout);
 
 export default router;
+
