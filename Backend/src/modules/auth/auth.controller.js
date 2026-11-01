@@ -45,6 +45,20 @@ export const verifyStudentOtp = async (req, res, next) => {
 };
 
 /**
+ * Google Authentication (One-Tap / Sign-In Button)
+ * POST /api/v1/auth/google
+ */
+export const loginGoogle = async (req, res, next) => {
+  try {
+    const result = await authService.loginOrRegisterWithGoogle(req.body);
+    setAuthCookie(res, result.token);
+    return ApiResponse.success(res, result, 'Google authentication successful.');
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * Student Login
  * POST /api/v1/auth/student/login
  */

@@ -17,6 +17,7 @@ import {
   EyeSlashIcon
 } from '../common/Icons';
 import { authService } from '../../services/authService';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 export const AuthModal = ({ 
   isOpen, 
@@ -551,6 +552,38 @@ export const AuthModal = ({
     }
   };
 
+  // 5. Google Sign-In Handler (Students Only)
+  const handleGoogleSuccess = async (credential) => {
+    setStatus({ loading: true, success: false, message: '', error: null });
+    try {
+      const res = await authService.loginWithGoogle({
+        credential,
+        role: 'student',
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: 'Google authentication verified! Accessing UniMitra...',
+        error: null,
+      });
+
+      setTimeout(() => {
+        onClose();
+        if (onSuccessLogin) {
+          onSuccessLogin(res.user);
+        }
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Google sign-in failed. Please try again.',
+      });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
       {/* Backdrop */}
@@ -743,6 +776,20 @@ export const AuthModal = ({
                   >
                     {status.loading ? 'Signing In...' : 'Sign In as Student'}
                   </button>
+
+                  <div className="relative flex py-1 items-center">
+                    <div className="flex-grow border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30"></div>
+                    <span className="flex-shrink mx-3 text-[10px] font-black text-[#000000]/50 dark:text-[#FFFFFF]/50 uppercase tracking-wider">or continue with</span>
+                    <div className="flex-grow border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30"></div>
+                  </div>
+
+                  <GoogleSignInButton
+                    mode={mode}
+                    role={role}
+                    onSuccess={handleGoogleSuccess}
+                    onError={(errMsg) => setStatus({ loading: false, success: false, message: '', error: errMsg })}
+                    disabled={status.loading}
+                  />
                 </form>
               )}
 
@@ -837,6 +884,20 @@ export const AuthModal = ({
                   >
                     Send 6-Digit OTP & Continue
                   </button>
+
+                  <div className="relative flex py-1 items-center">
+                    <div className="flex-grow border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30"></div>
+                    <span className="flex-shrink mx-3 text-[10px] font-black text-[#000000]/50 dark:text-[#FFFFFF]/50 uppercase tracking-wider">or sign up with</span>
+                    <div className="flex-grow border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30"></div>
+                  </div>
+
+                  <GoogleSignInButton
+                    mode={mode}
+                    role={role}
+                    onSuccess={handleGoogleSuccess}
+                    onError={(errMsg) => setStatus({ loading: false, success: false, message: '', error: errMsg })}
+                    disabled={status.loading}
+                  />
                 </form>
               )}
 

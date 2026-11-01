@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
+import axios from 'axios';
 import { prisma } from '../../config/prisma.js';
 import { env } from '../../config/env.js';
 import { ApiError } from '../../utils/apiError.js';
@@ -467,4 +469,121 @@ export const updateProfile = async (id, updateData) => {
   });
 
   return sanitizeProfile(updated);
+};
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID || undefined);
+
+/**
+ * 11. Google ID Token Verification
+ */
+export const verifyGoogleCredential = async (credential) => {
+  // Support development test credential
+  if (env.NODE_ENV === 'development' && credential.startsWith('dev_mock_google')) {
+    const delimiter = credential.includes('#') ? '#' : (credential.includes(':::') ? ':::' : '_');
+    const tokens = credential.replace(/^dev_mock_google[:#_]*/, '').split(delimiter);
+    const emailIdent = tokens[1] || 'scholar.assam@gmail.com';
+    const email = emailIdent.includes('@') ? emailIdent : `${emailIdent}@gmail.com`;
+    const name = tokens[2] ? tokens[2].replace(/[-_]/g, ' ') : 'Google Scholar Member';
+    return {
+      email,
+      name,
+      picture: 'https://lh3.googleusercontent.com/a/default-user',
+      email_verified: true,
+    };
+  }
+
+  // 1. Try google-auth-library
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: env.GOOGLE_CLIENT_ID || undefined,
+    });
+    const payload = ticket.getPayload();
+    if (payload && payload.email) {
+      return payload;
+    }
+  } catch (libErr) {
+    logger.warn({ err: libErr.message }, 'google-auth-library verifyIdToken threw; trying tokeninfo fallback');
+  }
+
+  // 2. Fallback to Google TokenInfo API
+  try {
+    const res = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+    if (res.data && res.data.email) {
+      if (env.GOOGLE_CLIENT_ID && res.data.aud !== env.GOOGLE_CLIENT_ID) {
+        throw new Error('Google token audience does not match configured GOOGLE_CLIENT_ID.');
+      }
+      return res.data;
+    }
+  } catch (tokenInfoErr) {
+    logger.error({ err: tokenInfoErr.message }, 'Google tokeninfo verification failed');
+    throw ApiError.unauthorized('Invalid Google credential token or token expired.');
+  }
+
+  throw ApiError.unauthorized('Google token validation failed.');
+};
+
+/**
+ * 12. Login or Auto-Register with Google (STRICTLY FOR STUDENTS ONLY)
+ */
+export const loginOrRegisterWithGoogle = async ({ credential, role = 'student' }) => {
+  // Reject non-student role requests upfront
+  if (role && role !== 'student') {
+    throw ApiError.forbidden('Google Authentication is reserved exclusively for Students. Faculty Members and Administrators must sign in with their institutional credentials.');
+  }
+
+  const googleUser = await verifyGoogleCredential(credential);
+
+  if (!googleUser || !googleUser.email) {
+    throw ApiError.badRequest('Unable to retrieve verified email from Google identity.');
+  }
+
+  const normalizedEmail = googleUser.email.toLowerCase().trim();
+
+  // Find existing profile in PostgreSQL
+  let profile = await prisma.profile.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  // If account already exists but is faculty or admin, prohibit Google Sign-In
+  if (profile && profile.role !== 'student') {
+    throw ApiError.forbidden('Google Sign-In is only allowed for Students. Faculty members and Administrators must sign in using their institutional Member ID / credentials.');
+  }
+
+  // If user does not exist, auto-register them strictly as a student
+  if (!profile) {
+    profile = await prisma.profile.create({
+      data: {
+        email: normalizedEmail,
+        fullName: googleUser.name || googleUser.given_name || 'Google Student Member',
+        role: 'student',
+        department: 'Undergraduate / Postgraduate Studies',
+        preferredLang: 'en',
+        isActive: true,
+        isVerified: true,
+      },
+    });
+
+    logger.info({ email: normalizedEmail }, 'New Student auto-registered via Google Sign-In');
+  }
+
+  if (!profile.isActive) {
+    throw ApiError.forbidden('Your account has been deactivated. Please contact administration.');
+  }
+
+  // Ensure isVerified is true since Google verifies email addresses
+  if (!profile.isVerified) {
+    profile = await prisma.profile.update({
+      where: { id: profile.id },
+      data: { isVerified: true },
+    });
+  }
+
+  const token = generateToken(profile);
+
+  return {
+    user: sanitizeProfile(profile),
+    token,
+    isNewUser: !profile.createdAt || (Date.now() - new Date(profile.createdAt).getTime() < 10000),
+  };
 };

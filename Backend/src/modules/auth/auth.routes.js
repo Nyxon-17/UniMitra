@@ -12,11 +12,13 @@ import {
   verifyOtpSchema,
   resendOtpSchema,
   updateProfileSchema,
+  googleAuthSchema,
 } from './auth.validation.js';
 
 const router = Router();
 
 // Apply auth rate limiter to public authentication endpoints
+router.post('/google', authLimiter, validate(googleAuthSchema), authController.loginGoogle);
 router.post('/student/register', authLimiter, validate(studentRegisterSchema), authController.registerStudent);
 router.post('/student/login', authLimiter, validate(studentLoginSchema), authController.loginStudent);
 router.post('/student/verify-otp', authLimiter, validate(verifyOtpSchema), authController.verifyStudentOtp);

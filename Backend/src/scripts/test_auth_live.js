@@ -207,9 +207,57 @@ server.listen(0, async () => {
     }
     console.log(`   ✅ Super Admin Verified! Token issued for: ${adminOtpJson.data.user.email} [${adminOtpJson.data.user.role}]`);
 
+    // -----------------------------------------------------------------
+    // TEST 8: Google Authentication (Sign-In & Auto-Registration in PostgreSQL)
+    // -----------------------------------------------------------------
+    console.log(`\n8. Testing Google Sign-In & Supabase Auto-Registration...`);
+    const testGoogleEmail = `google_scholar_${timestamp}@gmail.com`;
+    const googleRes = await fetch(`${baseUrl}/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        credential: `dev_mock_google#student#${testGoogleEmail}#Bishnu Rabha`,
+        role: 'student',
+      }),
+    });
+
+    const googleJson = await googleRes.json();
+    if (!googleJson.success || !googleJson.data.token) {
+      throw new Error(`Google authentication failed: ${JSON.stringify(googleJson)}`);
+    }
+    console.log(`   ✅ Google Auth Succeeded! User: ${googleJson.data.user.fullName} (${googleJson.data.user.email})`);
+
+    // Verify in Supabase PostgreSQL
+    const googleDbRecord = await prisma.profile.findUnique({
+      where: { email: testGoogleEmail },
+    });
+    if (!googleDbRecord) {
+      throw new Error('Google user was not auto-registered in Supabase database!');
+    }
+    console.log(`   ✅ Verified in Supabase PostgreSQL: email="${googleDbRecord.email}", isVerified=${googleDbRecord.isVerified}`);
+
+    // -----------------------------------------------------------------
+    // TEST 8b: Verify Faculty/Admin are blocked from Google Sign-In
+    // -----------------------------------------------------------------
+    console.log(`\n8b. Verifying Admin/Faculty blocked from Google Sign-In...`);
+    const blockedRes = await fetch(`${baseUrl}/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        credential: `dev_mock_google#admin#admin@unimitra.edu.in#Admin-Blocked`,
+        role: 'student',
+      }),
+    });
+    const blockedJson = await blockedRes.json();
+    if (blockedRes.status === 403 || blockedJson.success === false) {
+      console.log(`   ✅ Correctly blocked Admin from Google Sign-In (Status: ${blockedRes.status})`);
+    } else {
+      throw new Error(`Admin was unexpectedly allowed Google Sign-In!`);
+    }
+
     // Clean up test records
     await prisma.profile.deleteMany({
-      where: { email: { in: [testStudentEmail, testFacultyEmail] } },
+      where: { email: { in: [testStudentEmail, testFacultyEmail, testGoogleEmail] } },
     });
     console.log(`\n🧹 Cleaned up temporary test accounts.`);
 

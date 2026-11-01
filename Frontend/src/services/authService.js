@@ -49,6 +49,37 @@ async function apiRequest(endpoint, options = {}) {
 
 export const authService = {
   /**
+   * 0. Google Authentication (Exclusively for Students)
+   */
+  async loginWithGoogle({ credential }) {
+    const res = await apiRequest('/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential, role: 'student' }),
+    });
+
+    if (res.data?.token) {
+      localStorage.setItem(TOKEN_KEY, res.data.token);
+      localStorage.setItem(LOGGED_IN_KEY, 'true');
+    }
+
+    if (res.data?.user) {
+      const mappedUser = {
+        id: res.data.user.id,
+        name: res.data.user.fullName,
+        email: res.data.user.email,
+        role: 'Student',
+        department: res.data.user.department || 'Undergraduate / Postgraduate Studies',
+        designation: '',
+        memberId: '',
+        preferredLanguage: res.data.user.preferredLanguage || 'en',
+      };
+      localStorage.setItem(USER_KEY, JSON.stringify(mappedUser));
+    }
+
+    return res.data;
+  },
+
+  /**
    * 1. Student Registration
    */
   async registerStudent({ fullName, email, password, preferredLanguage = 'en' }) {

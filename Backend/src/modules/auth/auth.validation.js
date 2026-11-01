@@ -68,3 +68,10 @@ export const updateProfileSchema = z.object({
   }),
 });
 
+export const googleAuthSchema = z.object({
+  body: z.object({
+    credential: z.string().min(1, 'Google credential token is required'),
+    role: z.enum(['student']).optional().default('student'),
+  }),
+});
+

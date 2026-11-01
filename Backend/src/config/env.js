@@ -16,6 +16,7 @@ const envSchema = z.object({
   AI_SERVICE_URL: z.string().url().default('http://localhost:8000'),
   AI_SERVICE_SECRET: z.string().default('unimitra_internal_ai_secret_2026'),
   CORS_ORIGIN: z.string().default('http://localhost:5173,http://localhost:3000'),
+  GOOGLE_CLIENT_ID: z.string().optional().default(''),
 });
 
 const parseEnv = () => {
