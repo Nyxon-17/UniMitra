@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState, useEffect, useRef } from 'react';
 import { 
   BuildingLibraryIcon, 
@@ -17,6 +18,7 @@ import {
 import { documentService } from '../../services/documentService';
 
 export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', studentInfo }) => {
+  const univProfile = universityService.getProfile();
   // Navigation tabs: 'repository' | 'upload' | 'my-submissions'
   const [activeTab, setActiveTab] = useState('repository');
   const [documents, setDocuments] = useState([]);
@@ -40,7 +42,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
   const [uploadFormData, setUploadFormData] = useState({
     title: '',
     asTitle: '',
-    university: 'Gauhati University (GU)',
+    university: univProfile.name || 'Our University',
     category: 'Syllabus & Curriculum Frameworks',
     department: studentInfo?.department || 'Computer Science & Engineering',
     academicYear: '2024-2025',
@@ -173,7 +175,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       setUploadFormData({
         title: '',
         asTitle: '',
-        university: 'Gauhati University (GU)',
+        university: univProfile.name || 'Our University',
         category: 'Syllabus & Curriculum Frameworks',
         department: studentInfo?.department || 'Computer Science & Engineering',
         academicYear: '2024-2025',
@@ -212,7 +214,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+              <span className="text-[11px] font-black uppercase tracking-wider text-[#000000]/80 dark:text-[#FFFFFF]/80">
                 {currentLang === 'as' ? 'অধ্যাপক আৰু গৱেষক পৰ্টেল' : 'Faculty Research & Academic Hub'}
               </span>
               <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
@@ -338,17 +340,9 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             </div>
 
             <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-              <select
-                value={selectedUniv}
-                onChange={(e) => setSelectedUniv(e.target.value)}
-                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]"
-              >
-                <option value="All">All Universities</option>
-                <option value="Gauhati">Gauhati University (GU)</option>
-                <option value="Dibrugarh">Dibrugarh University (DU)</option>
-                <option value="Tezpur">Tezpur University (TU)</option>
-                <option value="All Universities">State-Wide Gazettes</option>
-              </select>
+              <div className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1">
+                <span>{univProfile.abbreviation || 'UNIV'} Archive</span>
+              </div>
 
               <select
                 value={selectedCategory}
@@ -372,7 +366,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                    <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                       {doc.category}
                     </span>
                     <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">
@@ -559,20 +553,14 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
               <div>
                 <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-                  University / Academic Institution <span className="text-[#FF933E]">*</span>
+                  Our University <span className="text-[#FF933E]">*</span>
                 </label>
-                <select
-                  value={uploadFormData.university}
-                  onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
-                >
-                  <option value="Gauhati University (GU)">Gauhati University (GU)</option>
-                  <option value="Dibrugarh University (DU)">Dibrugarh University (DU)</option>
-                  <option value="Tezpur University (TU)">Tezpur University (TU)</option>
-                  <option value="Assam University (Silchar)">Assam University (Silchar)</option>
-                  <option value="Cotton University">Cotton University</option>
-                  <option value="All Universities of Assam">State-Wide Higher Education Council</option>
-                </select>
+                <input
+                  type="text"
+                  readOnly
+                  value={univProfile.name || 'Our University'}
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] opacity-90 cursor-not-allowed"
+                />
               </div>
 
               <div>

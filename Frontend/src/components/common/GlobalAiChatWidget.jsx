@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { documentService } from '../../services/documentService';
 import { chatService } from '../../services/chatService';
@@ -240,6 +240,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
   };
 
+  const location = useLocation();
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -249,6 +250,9 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   const [currentResult, setCurrentResult] = useState(null);
 
   const recognitionRef = useRef(null);
+  const audioPlayerRef = useRef(null);
+  const currentNavPathRef = useRef(location.pathname);
+  const isWidgetMountedRef = useRef(true);
 
   // Viewport Boundary Guard: Ensure open card NEVER overflows outside viewport when opened or contents change
   useEffect(() => {
@@ -323,56 +327,148 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
+      if (audioPlayerRef.current) {
+        try { audioPlayerRef.current.pause(); } catch (e) {}
+        audioPlayerRef.current = null;
+      }
       window.speechSynthesis?.cancel();
     };
   }, [currentLang]);
 
-  // Voice Synthesis: Speak verified response
-  const speakText = (text) => {
+  const fallbackSpeechSynthesis = (cleanText, gender = 'male') => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+    utterance.rate = 1.0;
+    utterance.pitch = gender === 'female' ? 1.08 : 0.88;
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+    window.speechSynthesis.speak(utterance);
+  };
 
-    // Clean text of technical tokens or markdown
+  // Ultra-Fast Voice Synthesis with TTS-Accelerator and fallback
+  const speakText = async (text, gender = 'male') => {
+    stopSpeaking();
+
     const cleanText = text
-      .replace(/[*_#`~[\]]/g, '')
+      .replace(/[*_#~[\]]/g, '')
       .replace(/•/g, ', ')
       .replace(/\n+/g, ' ')
       .trim();
 
     if (!cleanText) return;
 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    setIsSpeaking(true);
+    setIsPaused(false);
 
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setIsPaused(false);
-    };
+    try {
+      const audioUrl = await chatService.synthesizeVoiceAudio(cleanText, currentLang, gender);
+      if (!isWidgetMountedRef.current || currentNavPathRef.current !== location.pathname) {
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
+        setIsSpeaking(false);
+        return;
+      }
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audioPlayerRef.current = audio;
+        audio.onended = () => {
+          setIsSpeaking(false);
+          setIsPaused(false);
+          audioPlayerRef.current = null;
+          URL.revokeObjectURL(audioUrl);
+        };
+        audio.onerror = () => {
+          audioPlayerRef.current = null;
+          URL.revokeObjectURL(audioUrl);
+          fallbackSpeechSynthesis(cleanText, gender);
+        };
+        await audio.play();
+        return;
+      }
+    } catch (err) {
+      console.warn('TTS-Accelerator audio notice:', err);
+    }
 
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-
-    window.speechSynthesis.speak(utterance);
+    fallbackSpeechSynthesis(cleanText, gender);
   };
 
   const stopSpeaking = () => {
+    if (audioPlayerRef.current) {
+      try {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      } catch (e) {}
+      audioPlayerRef.current = null;
+    }
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
     }
     setIsSpeaking(false);
     setIsPaused(false);
   };
 
+  // Automatically stop voice speaking and listening whenever the user navigates to another page
+  useEffect(() => {
+    currentNavPathRef.current = location.pathname;
+    stopSpeaking();
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch (e) {}
+    }
+    setIsListening(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    isWidgetMountedRef.current = true;
+    const handleWidgetNavOrHide = () => {
+      stopSpeaking();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+      setIsListening(false);
+    };
+
+    window.addEventListener('popstate', handleWidgetNavOrHide);
+    window.addEventListener('pagehide', handleWidgetNavOrHide);
+    window.addEventListener('beforeunload', handleWidgetNavOrHide);
+
+    return () => {
+      isWidgetMountedRef.current = false;
+      window.removeEventListener('popstate', handleWidgetNavOrHide);
+      window.removeEventListener('pagehide', handleWidgetNavOrHide);
+      window.removeEventListener('beforeunload', handleWidgetNavOrHide);
+      handleWidgetNavOrHide();
+    };
+  }, []);
+
   const togglePauseSpeech = () => {
+    if (audioPlayerRef.current) {
+      if (audioPlayerRef.current.paused) {
+        audioPlayerRef.current.play();
+        setIsPaused(false);
+        setIsSpeaking(true);
+      } else {
+        audioPlayerRef.current.pause();
+        setIsPaused(true);
+      }
+      return;
+    }
     if (!('speechSynthesis' in window)) return;
     if (isPaused) {
       window.speechSynthesis.resume();
@@ -430,7 +526,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       };
 
       setCurrentResult(resultObj);
-      speakText(res.answer);
+      speakText(res.answer, 'female');
     } catch {
       const match = documentService.query(q, currentLang);
       const univName = univProfile.name || 'My University';
@@ -442,7 +538,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         page: match?.page || 'Clause 4',
         confidence: '96% Match'
       });
-      speakText(answer);
+      speakText(answer, 'female');
     } finally {
       setLoading(false);
       setInputQuery('');
@@ -832,7 +928,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                     ) : (
                       <button
                         type="button"
-                        onClick={() => speakText(currentResult.answer)}
+                        onClick={() => speakText(currentResult.answer, 'male')}
                         className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
                         title="Replay Voice"
                       >

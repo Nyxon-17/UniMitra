@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { HomeScreenBackground } from '../../components/common/HomeScreenBackground';
+import { AuroraBackground } from '../../components/common/AuroraBackground';
+import { DashboardAiAssistant } from '../dashboard/DashboardAiAssistant';
 import { documentService } from '../../services/documentService';
 import { universityService } from '../../services/universityService';
 import {
@@ -28,7 +29,8 @@ import {
   XMarkIcon,
   ClockIcon,
   UserGroupIcon,
-  MenuIcon
+  MenuIcon,
+  ChatBubbleIcon
 } from '../../components/common/Icons';
 
 export const AdminConsole = ({
@@ -43,7 +45,7 @@ export const AdminConsole = ({
   const tabParam = searchParams.get('tab');
 
   // Administrator Management Tabs (Single University Master Config + Operations)
-  const validTabs = ['univ-details', 'repository', 'upload', 'categories', 'processing', 'analytics', 'unanswered', 'feedback', 'users', 'health', 'llm-config'];
+  const validTabs = ['admin-assistant', 'univ-details', 'repository', 'upload', 'categories', 'processing', 'analytics', 'unanswered', 'feedback', 'users', 'health', 'llm-config'];
   const [activeTab, setActiveTab] = useState(
     tabParam && validTabs.includes(tabParam) ? tabParam : 'univ-details'
   );
@@ -357,7 +359,7 @@ export const AdminConsole = ({
   const [uploadFormData, setUploadFormData] = useState({
     title: '',
     asTitle: '',
-    university: 'Gauhati University (GU)',
+    university: univProfile?.name || 'Our University',
     category: 'University Regulations & Ordinances',
     department: 'Examination Branch',
     academicYear: '2024-2025',
@@ -417,7 +419,7 @@ export const AdminConsole = ({
     {
       id: 'UNANS-01',
       query: 'What is the procedure for duplicate registration certificate re-issuance at Gauhati University?',
-      university: 'Gauhati University (GU)',
+      university: univProfile?.name || 'Our University',
       attemptedAt: '1 hour ago',
       confidence: 'Below Strict Threshold (48%)',
       reason: 'No statutory circular regarding duplicate certificate fee matrix currently indexed.'
@@ -654,7 +656,7 @@ export const AdminConsole = ({
             setUploadFormData({
               title: '',
               asTitle: '',
-              university: 'Gauhati University (GU)',
+              university: univProfile?.name || 'Our University',
               category: 'University Regulations & Ordinances',
               department: 'Examination Branch',
               academicYear: '2024-2025',
@@ -713,6 +715,7 @@ export const AdminConsole = ({
 
   // Sidebar Menu Items with bilingual labels and live counter badges
   const adminNavItems = [
+    { id: 'admin-assistant', label: 'Admin Governance AI', asLabel: 'প্ৰশাসনিক AI সহায়ক', icon: ChatBubbleIcon },
     { id: 'univ-details', label: 'University Master Details', asLabel: 'বিশ্ববিদ্যালয়ৰ মূল তথ্য', icon: BuildingLibraryIcon },
     { id: 'repository', label: 'Documents & Approvals', asLabel: 'নথিপত্ৰ আৰু অনুমোদন', icon: DocumentTextIcon, badge: pendingDocs.length },
     { id: 'upload', label: 'Upload & Ingest PDF', asLabel: 'PDF নথিপত্ৰ আপলোড', icon: CloudArrowUpIcon },
@@ -727,11 +730,11 @@ export const AdminConsole = ({
   ];
 
   return (
-    <div className={`relative min-h-screen bg-transparent text-[#000000] dark:text-[#FFFFFF] flex flex-col lg:flex-row transition-colors duration-200 ${isDark ? 'dark' : ''}`}>
-      <HomeScreenBackground />
+    <div className={`relative min-h-screen bg-[#F7F6F0] dark:bg-[#16181A] text-[#273B45] dark:text-[#DCE8E4] flex flex-col lg:flex-row transition-colors duration-300 font-sans ${isDark ? 'dark' : ''}`}>
+      <AuroraBackground />
 
       {/* Mobile Top Header */}
-      <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden sticky top-0 z-40 bg-[#F7F6F0]/95 dark:bg-[#16181A]/95 backdrop-blur-md border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -778,7 +781,7 @@ export const AdminConsole = ({
       {/* ADMINISTRATOR NAVIGATION SIDEBAR                                    */}
       {/* =================================================================== */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-r border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-72 lg:w-80 h-screen bg-[#F7F6F0]/95 dark:bg-[#16181A]/95 backdrop-blur-md border-r border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex flex-col justify-between transition-transform duration-300 shadow-xl lg:shadow-none shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
         <div className="flex flex-col h-full overflow-hidden">
@@ -918,7 +921,7 @@ export const AdminConsole = ({
       <div className="flex-1 min-w-0 flex flex-col min-h-screen relative z-10">
 
         {/* Top Header Bar for Desktop */}
-        <header className="hidden lg:flex sticky top-0 z-30 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-xs border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 px-6 lg:px-8 py-4 items-center justify-between">
+        <header className="hidden lg:flex sticky top-0 z-30 bg-[#F7F6F0]/85 dark:bg-[#16181A]/85 backdrop-blur-md border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15 px-6 lg:px-8 py-4 items-center justify-between">
           <div className="flex items-center space-x-3">
             <span className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988]">
               {adminNavItems.find(i => i.id === activeTab)?.label}
@@ -930,6 +933,17 @@ export const AdminConsole = ({
           </div>
 
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => handleTabChange('admin-assistant')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black cursor-pointer flex items-center space-x-1.5 transition-all ${
+                activeTab === 'admin-assistant'
+                  ? 'bg-[#123C3A] text-white dark:bg-[#55C7B2] dark:text-[#16181A] shadow-xs'
+                  : 'bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+              }`}
+            >
+              <ChatBubbleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
+              <span>Admin AI Assistant</span>
+            </button>
             <button
               onClick={() => handleTabChange('upload')}
               className="px-3.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] shadow-xs cursor-pointer flex items-center space-x-1.5"
@@ -955,6 +969,19 @@ export const AdminConsole = ({
             <div className="p-3.5 rounded-2xl bg-[#FFE9A9] dark:bg-[#141414] border-2 border-[#FF933E] dark:border-[#03C988] text-xs font-black text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-2 shadow-xs animate-fade-in">
               <CheckCircleIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
               <span>{actionAlert}</span>
+            </div>
+          )}
+
+          {/* =================================================================== */}
+          {/* TAB: ADMIN GOVERNANCE AI CHATBOT (DEDICATED ADMINISTRATOR CHATBOT)  */}
+          {/* =================================================================== */}
+          {activeTab === 'admin-assistant' && (
+            <div className="h-[calc(100vh-140px)] min-h-[620px] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 bg-white/40 dark:bg-black/30 backdrop-blur-md animate-fade-in">
+              <DashboardAiAssistant
+                currentLang={currentLang}
+                studentInfo={{ name: 'Institutional Administrator', role: 'Admin' }}
+                portalDomain="admin"
+              />
             </div>
           )}
 
@@ -1856,17 +1883,9 @@ export const AdminConsole = ({
                 {/* Dropdowns & Search */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-[#73A5CA]/20 dark:border-[#1C82AD]/20">
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                    <select
-                      value={selectedUnivFilter}
-                      onChange={(e) => setSelectedUnivFilter(e.target.value)}
-                      className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
-                    >
-                      <option value="All">All Universities</option>
-                      <option value="Gauhati">Gauhati University (GU)</option>
-                      <option value="Dibrugarh">Dibrugarh University (DU)</option>
-                      <option value="Tezpur">Tezpur University (TU)</option>
-                      <option value="All Assam">All Assam Universities</option>
-                    </select>
+                    <div className="px-3 py-2 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
+                      {univProfile.abbreviation || 'UNIV'} Master Repository
+                    </div>
 
                     <select
                       value={selectedCategoryFilter}
@@ -2189,20 +2208,14 @@ export const AdminConsole = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-                            Issuing University <span className="text-[#FF933E]">*</span>
+                            Our University <span className="text-[#FF933E]">*</span>
                           </label>
-                          <select
-                            value={uploadFormData.university}
-                            onChange={(e) => setUploadFormData({ ...uploadFormData, university: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
-                          >
-                            <option>Gauhati University (GU)</option>
-                            <option>Dibrugarh University (DU)</option>
-                            <option>Tezpur University (TU)</option>
-                            <option>Assam University (Silchar)</option>
-                            <option>Cotton University</option>
-                            <option>All Assam Universities</option>
-                          </select>
+                          <input
+                            type="text"
+                            readOnly
+                            value={univProfile.name || 'Our University'}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none opacity-90 cursor-not-allowed"
+                          />
                         </div>
 
                         <div>

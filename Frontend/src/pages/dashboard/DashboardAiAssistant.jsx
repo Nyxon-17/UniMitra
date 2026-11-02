@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { chatService } from '../../services/chatService';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { 
   SendIcon, 
   CheckCircleIcon, 
@@ -43,13 +44,47 @@ export const SpeakerWaveIcon = ({ className = "w-5 h-5", ...props }) => (
  * - ChatGPT features: New Chat, auto-save history, share transcripts
  * - Google Gemini four-point star logo
  */
-export const DashboardAiAssistant = ({ 
+const DashboardAiAssistantInner = ({ 
   currentLang = 'en',
   prefillQuery = '',
-  studentInfo = { name: 'Member', role: 'Student' }
+  studentInfo = { name: 'Member', role: 'Student' },
+  portalDomain = null
 }) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
+
+  const domain = useMemo(() => {
+    if (portalDomain) return portalDomain.toLowerCase();
+    const r = (studentInfo?.role || '').toLowerCase();
+    if (r.includes('admin')) return 'admin';
+    if (r.includes('faculty')) return 'faculty';
+    return 'student';
+  }, [portalDomain, studentInfo?.role]);
+
+  const portalMeta = useMemo(() => {
+    if (domain === 'admin') {
+      return {
+        badge: currentLang === 'as' ? 'প্ৰশাসনিক শাসন • Admin Console' : 'Administrator Governance Console',
+        title: currentLang === 'as' ? 'প্ৰশাসনিক নিয়ন্ত্ৰক AI সহায়ক' : 'Admin Statutory & Governance AI',
+        sub: currentLang === 'as' ? 'বিশ্ববিদ্যালয় আইন, কাৰ্যবাহী পৰিষদৰ সিদ্ধান্ত আৰু অধিভুক্তিৰ নিয়মাৱলী' : 'University Executive Council ordinances, statutory compliance & faculty bylaws',
+        domainLabel: currentLang === 'as' ? 'প্ৰশাসক' : 'Admin'
+      };
+    } else if (domain === 'faculty') {
+      return {
+        badge: currentLang === 'as' ? 'শৈক্ষিক কৰ্মস্থান • Faculty Portal' : 'Faculty Academic Workspace',
+        title: currentLang === 'as' ? 'অধ্যাপক শৈক্ষিক AI সহায়ক' : 'Faculty Curriculum & Academic AI',
+        sub: currentLang === 'as' ? 'পাঠ্যক্ৰম, মডাৰেচন, উপস্থিতি ৰেহাই আৰু শৈক্ষিক কৰ্মভাৰ' : 'Curriculum moderation, grading bylaws, attendance condonation & duty leaves',
+        domainLabel: currentLang === 'as' ? 'অধ্যাপক' : 'Faculty'
+      };
+    } else {
+      return {
+        badge: currentLang === 'as' ? 'ছাত্ৰ প\'ৰ্টেল • Student Portal' : 'Student Academic Portal',
+        title: currentLang === 'as' ? 'দ্বিভাষিক ছাত্ৰ AI সহায়ক' : 'Student Academic AI Assistant',
+        sub: currentLang === 'as' ? 'বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, পাঠ্যক্ৰম আৰু ছাত্ৰবৃত্তি' : 'Instant verified university guidance on syllabus, CBCS grading & scholarships',
+        domainLabel: currentLang === 'as' ? 'ছাত্ৰ' : 'Student'
+      };
+    }
+  }, [domain, currentLang]);
 
   // Active university profile
   const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
@@ -62,23 +97,52 @@ export const DashboardAiAssistant = ({
     return () => window.removeEventListener('unimitra_university_changed', handleUnivChange);
   }, []);
 
-  const createInitialGreeting = () => ({
-    id: 'greeting',
-    sender: 'ai',
-    text: currentLang === 'as'
-      ? `নমস্কাৰ! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ AI প্রাতিষ্ঠানিক সহায়ক (UniMitra)। বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে। আপুনি মাইক টিপি কথা ক’বও পাৰে!`
-      : `Hello! I am your ${univProfile.name || 'Dibrugarh University'} Institutional Assistant. Ask any question on regulations, examinations, syllabus, scholarships, or admissions with grounded citations in Assamese and English.`,
-    source: `${univProfile.name || 'Dibrugarh University'} Statutory Knowledge Base`,
-    page: 'Official Gazette Section 14',
-    confidence: '100% Match',
-    time: 'Just now'
-  });
+  const createInitialGreeting = () => {
+    if (domain === 'admin') {
+      return {
+        id: `greeting-${domain}`,
+        sender: 'ai',
+        text: currentLang === 'as'
+          ? `নমস্কাৰ প্ৰশাসক মহোদয়! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ প্ৰশাসনিক শাসন ব্যৱস্থাৰ AI সহায়ক (UniMitra Admin AI)। কাৰ্যবাহী পৰিষদৰ সিদ্ধান্ত, বিশ্ববিদ্যালয়ৰ সংবিধি আইন, শিক্ষক ৰষ্টাৰ আৰু মহাবিদ্যালয় অধিভুক্তিৰ নিয়মাৱলীৰ বিষয়ে যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত অনুসন্ধান কৰক।`
+          : `Hello Administrator. Welcome to the ${univProfile.name || 'Dibrugarh University'} Statutory Governance AI Console. Ask any regulatory query regarding University Acts, Executive Council bylaws, faculty roster rules, or institutional affiliation norms with verified statutory citations.`,
+        source: `${univProfile.name || 'Dibrugarh University'} Executive & Statutory Knowledge Base`,
+        page: 'University Act Section 21',
+        confidence: '100% Match',
+        time: 'Just now'
+      };
+    } else if (domain === 'faculty') {
+      return {
+        id: `greeting-${domain}`,
+        sender: 'ai',
+        text: currentLang === 'as'
+          ? `নমস্কাৰ সহকৰ্মী! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ অধ্যাপক শৈক্ষিক AI সহায়ক (UniMitra Faculty Workspace)। পাঠ্যক্ৰম প্ৰস্তুতি, প্ৰশ্নকাকত মডাৰেচন, পৰীক্ষা মূল্যায়ন, উপস্থিতি ৰেহাই আৰু শৈক্ষিক কৰ্মভাৰৰ বিষয়ে যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে।`
+          : `Welcome Colleague. I am your ${univProfile.name || 'Dibrugarh University'} Faculty Academic & Curriculum Workspace Assistant. Consult statutory regulations on syllabus design, moderation, attendance condonation, or duty leaves with grounded citations.`,
+        source: `${univProfile.name || 'Dibrugarh University'} Academic Council Knowledge Base`,
+        page: 'Academic Ordinance Clause 7',
+        confidence: '100% Match',
+        time: 'Just now'
+      };
+    } else {
+      return {
+        id: `greeting-${domain}`,
+        sender: 'ai',
+        text: currentLang === 'as'
+          ? `নমস্কাৰ! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ ছাত্ৰ শৈক্ষিক AI প্রাতিষ্ঠানিক সহায়ক (UniMitra)। বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে। আপুনি মাইক টিপি কথা ক’বও পাৰে!`
+          : `Hello! I am your ${univProfile.name || 'Dibrugarh University'} Student Academic Assistant. Ask any question on CBCS regulations, semester examinations, admit cards, syllabus, scholarships, or admissions with grounded citations.`,
+        source: `${univProfile.name || 'Dibrugarh University'} Statutory Knowledge Base`,
+        page: 'Official Gazette Section 14',
+        confidence: '100% Match',
+        time: 'Just now'
+      };
+    }
+  };
 
-  // Chat Sessions & Active Thread State
-  const [sessions, setSessions] = useState(() => chatService.getLocalSessions());
-  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId() || `session-${Date.now()}`);
+  // Chat Sessions & Active Thread State (Strictly isolated by domain: student, faculty, admin)
+  const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain));
+  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain) || `session-${domain}-${Date.now()}`);
   const [messages, setMessages] = useState(() => {
-    const saved = chatService.getSessionMessages(chatService.getActiveSessionId());
+    const curId = chatService.getActiveSessionId(domain);
+    const saved = curId ? chatService.getSessionMessages(curId, domain) : null;
     return saved && saved.length > 0 ? saved : [createInitialGreeting()];
   });
 
@@ -108,16 +172,30 @@ export const DashboardAiAssistant = ({
   const messagesContainerRef = useRef(null);
   const chatBottomRef = useRef(null);
   const recognitionRef = useRef(null);
+  const audioPlayerRef = useRef(null);
   const textareaRef = useRef(null);
+  const isMountedRef = useRef(true);
+  const speakTimeoutRef = useRef(null);
+  const currentNavPathRef = useRef(location.pathname);
 
-  // Load saved sessions on mount
+  // Load saved sessions on mount and sync whenever domain or language changes
   useEffect(() => {
-    chatService.getSessions().then(data => {
-      if (Array.isArray(data) && data.length > 0) {
-        setSessions(data);
+    const domainSessions = chatService.getLocalSessions(domain);
+    setSessions(domainSessions);
+    const curId = chatService.getActiveSessionId(domain);
+    if (curId) {
+      setActiveSessionId(curId);
+      const saved = chatService.getSessionMessages(curId, domain);
+      if (saved && saved.length > 0) {
+        setMessages(saved);
+        return;
       }
-    });
-  }, []);
+    }
+    const freshId = `session-${domain}-${Date.now()}`;
+    setActiveSessionId(freshId);
+    chatService.setActiveSessionId(freshId, domain);
+    setMessages([createInitialGreeting()]);
+  }, [domain, currentLang]);
 
   // Handle URL / navigation state prefill query
   useEffect(() => {
@@ -201,67 +279,163 @@ export const DashboardAiAssistant = ({
     }
   };
 
-  const speakText = (text) => {
+  const fallbackSpeechSynthesis = (cleanText, gender = 'male') => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-
-    if (isSpeaking) {
-      setIsSpeaking(false);
-      return;
-    }
-
-    const cleanText = text.replace(/[*#_`]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
     utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
+    utterance.pitch = gender === 'female' ? 1.08 : 0.88;
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
-
     window.speechSynthesis.speak(utterance);
   };
 
-  const stopSpeaking = () => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+  // Ultra-Fast Voice Synthesis with TTS-Accelerator and fallback
+  const speakText = async (text, gender = 'male') => {
+    if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) return;
+    if (isSpeaking) {
+      stopSpeaking();
+      return;
+    }
+
+    const cleanText = text.replace(/[*#_]/g, '').trim();
+    if (!cleanText) return;
+
+    setIsSpeaking(true);
+
+    try {
+      const audioUrl = await chatService.synthesizeVoiceAudio(cleanText, currentLang, gender);
+      if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) {
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
+        setIsSpeaking(false);
+        return;
+      }
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audioPlayerRef.current = audio;
+        audio.onended = () => {
+          setIsSpeaking(false);
+          audioPlayerRef.current = null;
+          URL.revokeObjectURL(audioUrl);
+        };
+        audio.onerror = () => {
+          audioPlayerRef.current = null;
+          URL.revokeObjectURL(audioUrl);
+          if (isMountedRef.current && currentNavPathRef.current === location.pathname) {
+            fallbackSpeechSynthesis(cleanText, gender);
+          }
+        };
+        await audio.play();
+        return;
+      }
+    } catch (err) {
+      console.warn('TTS-Accelerator audio notice:', err);
+    }
+
+    if (isMountedRef.current && currentNavPathRef.current === location.pathname) {
+      fallbackSpeechSynthesis(cleanText, gender);
     }
   };
 
-  // Start a fresh thread
-  const handleNewChat = () => {
-    stopSpeaking();
-    const newId = `session-${Date.now()}`;
-    setActiveSessionId(newId);
-    chatService.setActiveSessionId(newId);
-    const greeting = createInitialGreeting();
-    setMessages([greeting]);
-    setInputQuery('');
-    setHistoryDrawerOpen(false); // Hide history during conversation
-    setActionAlert(currentLang === 'as' ? 'নতুন আলোচনা আৰম্ভ কৰা হ’ল' : 'New chat started');
-    setTimeout(() => setActionAlert(''), 2500);
+  const stopSpeaking = () => {
+    if (speakTimeoutRef.current) {
+      clearTimeout(speakTimeoutRef.current);
+      speakTimeoutRef.current = null;
+    }
+    if (audioPlayerRef.current) {
+      try {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      } catch (e) {}
+      audioPlayerRef.current = null;
+    }
+    if (window.speechSynthesis) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
+    setIsSpeaking(false);
   };
 
-  // Switch to an existing session
+  // Turn off voice listen mode and stop speech automatically when user navigates away
+  useEffect(() => {
+    isMountedRef.current = true;
+    currentNavPathRef.current = location.pathname;
+
+    const handleNavigationOrHide = () => {
+      stopSpeaking();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+      setIsListening(false);
+      setVoiceOutputEnabled(false);
+    };
+
+    window.addEventListener('popstate', handleNavigationOrHide);
+    window.addEventListener('pagehide', handleNavigationOrHide);
+    window.addEventListener('beforeunload', handleNavigationOrHide);
+
+    return () => {
+      isMountedRef.current = false;
+      window.removeEventListener('popstate', handleNavigationOrHide);
+      window.removeEventListener('pagehide', handleNavigationOrHide);
+      window.removeEventListener('beforeunload', handleNavigationOrHide);
+      handleNavigationOrHide();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentNavPathRef.current !== location.pathname) {
+      currentNavPathRef.current = location.pathname;
+      stopSpeaking();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+      setIsListening(false);
+      setVoiceOutputEnabled(false);
+    }
+  }, [location.pathname]);
+
+  // Start a fresh thread strictly for this portal domain
+  const handleNewChat = () => {
+    stopSpeaking();
+    const newId = `session-${domain}-${Date.now()}`;
+    setActiveSessionId(newId);
+    chatService.setActiveSessionId(newId, domain);
+    const greeting = createInitialGreeting();
+    setMessages([greeting]);
+    chatService.saveSessionMessages(newId, [greeting], domain);
+    setInputQuery('');
+    setHistoryDrawerOpen(false);
+    setActionAlert(currentLang === 'as' ? `নতুন ${portalMeta.domainLabel} আলোচনা আৰম্ভ কৰা হ’ল` : `New ${portalMeta.domainLabel} chat started`);
+    setTimeout(() => setActionAlert(''), 2500);
+    setTimeout(() => textareaRef.current?.focus(), 60);
+  };
+
+  // Switch to an existing session strictly in this portal domain
   const handleSelectSession = (session) => {
     stopSpeaking();
     setActiveSessionId(session.id);
-    chatService.setActiveSessionId(session.id);
-    const saved = chatService.getSessionMessages(session.id);
+    chatService.setActiveSessionId(session.id, domain);
+    const saved = chatService.getSessionMessages(session.id, domain);
     if (saved && saved.length > 0) {
       setMessages(saved);
     } else {
       setMessages([createInitialGreeting()]);
     }
-    setHistoryDrawerOpen(false); // Hide history to focus on selected conversation
+    setHistoryDrawerOpen(false);
   };
 
-  // Delete a session
+  // Delete a session from this portal domain
   const handleDeleteSession = (e, sessionId) => {
     e.stopPropagation();
-    const updated = chatService.deleteSession(sessionId);
+    const updated = chatService.deleteSession(sessionId, domain);
     setSessions(updated);
     if (activeSessionId === sessionId) {
       handleNewChat();
@@ -295,9 +469,10 @@ export const DashboardAiAssistant = ({
         id: activeSessionId,
         title: currentSessionTitle,
         language: currentLang,
+        domain: domain,
         createdAt: new Date().toISOString()
       };
-      const updatedSessions = chatService.saveLocalSession(newSession);
+      const updatedSessions = chatService.saveLocalSession(newSession, domain);
       setSessions(updatedSessions);
     }
 
@@ -324,11 +499,11 @@ export const DashboardAiAssistant = ({
       const finalMessages = [...newMessages, aiResponse];
       setMessages(finalMessages);
       
-      // Auto-save history automatically
-      chatService.saveSessionMessages(activeSessionId, finalMessages);
+      // Auto-save history automatically for this portal domain
+      chatService.saveSessionMessages(activeSessionId, finalMessages, domain);
 
       if (voiceOutputEnabled) {
-        setTimeout(() => speakText(aiResponse.text), 200);
+        setTimeout(() => speakText(aiResponse.text, 'female'), 200);
       }
     } catch (err) {
       console.error('Chat error:', err);
@@ -437,13 +612,31 @@ export const DashboardAiAssistant = ({
     return groups;
   }, [sessions]);
 
-  // Suggested Quick Prompts
-  const quickPrompts = [
-    { label: currentLang === 'as' ? 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ' : 'Passing Marks & CGPA', q: 'What is the minimum passing marks and CGPA requirement?' },
-    { label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (মেডিকেল)' : 'Medical Attendance Limit', q: 'What is the attendance condonation limit for medical reasons?' },
-    { label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation Process', q: 'Explain the fees and process for answer sheet re-evaluation.' },
-    { label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Grants', q: 'Eligibility and required documents for Ishan Uday scholarship?' }
-  ];
+  // Suggested Quick Prompts tailored specifically for this portal domain
+  const quickPrompts = useMemo(() => {
+    if (domain === 'admin') {
+      return [
+        { label: currentLang === 'as' ? 'কাৰ্যবাহী পৰিষদৰ ক্ষমতা' : 'Executive Council Powers', q: 'What are the statutory powers of the Executive Council under the University Act?' },
+        { label: currentLang === 'as' ? 'মহাবিদ্যালয় অধিভুক্তি নিয়ম' : 'College Affiliation Norms', q: 'Explain the regulatory guidelines for fresh college affiliation and inspection.' },
+        { label: currentLang === 'as' ? 'উত্তৰবহী সংৰক্ষণ সময়' : 'Answer Script Retention', q: 'What is the mandatory preservation period for evaluated answer scripts?' },
+        { label: currentLang === 'as' ? 'শিক্ষক ৰষ্টাৰ নিয়মাৱলী' : 'Faculty Roster Rules', q: 'What are the statutory bylaws for faculty roster and promotional seniority?' }
+      ];
+    } else if (domain === 'faculty') {
+      return [
+        { label: currentLang === 'as' ? 'প্ৰশ্নকাকত মডাৰেচন নিয়ম' : 'Paper Moderation Bylaws', q: 'What are the statutory guidelines for question paper setting and moderation?' },
+        { label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (মেডিকেল)' : 'Medical Attendance Limit', q: 'What is the attendance condonation limit for medical reasons in semester exams?' },
+        { label: currentLang === 'as' ? 'শৈক্ষিক কৰ্মভাৰ নিৰ্দেশনা' : 'Weekly Teaching Workload', q: 'What is the prescribed weekly teaching workload for professors and assistant professors?' },
+        { label: currentLang === 'as' ? 'কৰ্তব্য ছুটি (Duty Leave)' : 'Duty Leave Regulations', q: 'Explain duty leave entitlement for attending academic conferences and exam evaluation.' }
+      ];
+    } else {
+      return [
+        { label: currentLang === 'as' ? 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ' : 'Passing Marks & CGPA', q: 'What is the minimum passing marks and CGPA requirement?' },
+        { label: currentLang === 'as' ? 'উপস্থিতি নিয়ম (৭৫%)' : 'Attendance Criteria (75%)', q: 'What is the minimum attendance required to sit for semester examinations?' },
+        { label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation Fee (Rs. 350)', q: 'Explain the fees and process for answer sheet re-evaluation.' },
+        { label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Scholarship', q: 'Eligibility and required documents for Ishan Uday scholarship?' }
+      ];
+    }
+  }, [domain, currentLang]);
 
   return (
     <div className="w-full h-full flex flex-col editorial-surface rounded-xl sm:rounded-2xl border border-[#123C3A]/10 dark:border-[#55C7B2]/15 shadow-sm overflow-hidden min-h-0 relative select-text">
@@ -700,9 +893,14 @@ export const DashboardAiAssistant = ({
                 </h2>
                 <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#55C7B2] animate-pulse shrink-0" title="Online" />
               </div>
-              <p className="hidden xs:block text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
-                {currentLang === 'as' ? 'দ্বিভাষিক AI সহায়ক • সংবিধিবদ্ধ তথ্য' : 'Bilingual AI Assistant • Grounded Citations'}
-              </p>
+              <div className="flex items-center space-x-1.5 truncate">
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-[#123C3A]/10 text-[#123C3A] dark:bg-[#55C7B2]/20 dark:text-[#55C7B2]">
+                  {portalMeta.domainLabel}
+                </span>
+                <p className="hidden xs:block text-[10px] sm:text-[11px] text-[#627680] dark:text-[#879B99] truncate font-sans">
+                  {portalMeta.sub}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -869,7 +1067,7 @@ export const DashboardAiAssistant = ({
 
                       <div className="flex items-center space-x-1.5">
                         <button
-                          onClick={() => speakText(msg.text)}
+                          onClick={() => speakText(msg.text, 'male')}
                           className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#123C3A] dark:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
                           title="Listen with Text-to-Speech"
                         >
@@ -1135,5 +1333,11 @@ export const DashboardAiAssistant = ({
     </div>
   );
 };
+
+export const DashboardAiAssistant = (props) => (
+  <ErrorBoundary>
+    <DashboardAiAssistantInner {...props} />
+  </ErrorBoundary>
+);
 
 export default DashboardAiAssistant;

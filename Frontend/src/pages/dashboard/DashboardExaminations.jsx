@@ -115,7 +115,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
             className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+              <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-[#000000] dark:text-[#FFFFFF]">
                 {exam.category} • {exam.ordinanceNo}
               </span>
               <button
@@ -142,7 +142,7 @@ export const DashboardExaminations = ({ onNavigateTab, currentLang = 'en' }) => 
             </div>
 
             {exam.details && (
-              <div className="p-3 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs text-[#000000]/80 dark:text-[#FFFFFF]/80">
+              <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 text-xs text-[#000000]/80 dark:text-[#FFFFFF]/80">
                 <strong>Key Provision:</strong> {exam.details}
               </div>
             )}

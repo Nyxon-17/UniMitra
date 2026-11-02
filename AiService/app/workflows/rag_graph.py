@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any, Dict
 from app.services.embedding_service import embedding_service, normalize_assamese_unicode
 from app.services.gemini_service import gemini_service, detect_language_mode
@@ -36,16 +37,27 @@ class RagWorkflow:
             search_text = f"{clean_text} {' '.join(understanding.search_keywords)}"
         query_vector = embedding_service.embed_query(search_text)
 
-        # Node 4: pgvector Semantic Retrieval
-        retrieved_chunks = vector_store.search_similar_chunks(
-            query_embedding=query_vector,
-            university_code=university_code,
-            category_code=category_code,
-            match_count=5,
-            threshold=0.55,
-        )
+        # Node 4: pgvector Semantic Retrieval for OUR University only
+        # Check if query is asking about an OTHER / External university
+        external_univ_patterns = [
+            r"\bgauhati\b", r"\btezpur\b", r"\bcotton\b", r"\bassam university\b",
+            r"\bbodoland\b", r"\bdelhi university\b", r"\bjnu\b", r"\biit\b",
+            r"\bbhu\b", r"\bcalcutta university\b"
+        ]
+        is_external_univ = any(re.search(pat, clean_text.lower()) for pat in external_univ_patterns)
 
-        logger.info(f"Retrieved {len(retrieved_chunks)} statutory chunks for query.")
+        if is_external_univ:
+            logger.info("External university query detected. Bypassing our RAG vector store - answering via Web Data.")
+            retrieved_chunks = []
+        else:
+            retrieved_chunks = vector_store.search_similar_chunks(
+                query_embedding=query_vector,
+                university_code=university_code,
+                category_code=category_code,
+                match_count=5,
+                threshold=0.55,
+            )
+            logger.info(f"Retrieved {len(retrieved_chunks)} statutory chunks for Our University.")
 
         # Node 5 & 6: Grounded Generation with Gemini 1.5
         result = gemini_service.generate_grounded_answer(

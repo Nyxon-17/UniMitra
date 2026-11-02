@@ -102,11 +102,13 @@ class AiServiceClient {
   /**
    * Send text to Python TTS (Text-to-Speech)
    */
-  async synthesizeVoice(text, language = 'as') {
+  async synthesizeVoice(text, language = 'as', gender = 'male', voice = null) {
     try {
       const res = await this.client.post('/api/ai/voice/synthesize', {
         text,
         language,
+        gender,
+        voice,
       }, {
         responseType: 'arraybuffer',
       });

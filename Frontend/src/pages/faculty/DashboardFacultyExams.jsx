@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState } from 'react';
 import { 
   BuildingLibraryIcon, 
@@ -11,6 +12,7 @@ import {
 } from '../../components/common/Icons';
 
 export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', studentInfo }) => {
+  const univProfile = universityService.getProfile();
   const [selectedUniv, setSelectedUniv] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -134,16 +136,9 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
           />
         </div>
 
-        <select
-          value={selectedUniv}
-          onChange={(e) => setSelectedUniv(e.target.value)}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none cursor-pointer"
-        >
-          <option value="All">All University Exam Boards</option>
-          <option value="Gauhati">Gauhati University (GU)</option>
-          <option value="Dibrugarh">Dibrugarh University (DU)</option>
-          <option value="Tezpur">Tezpur University (TU)</option>
-        </select>
+        <div className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1.5">
+          <span>{univProfile.name || 'Our University'} Examination Authority</span>
+        </div>
       </div>
 
       {/* Cards */}
@@ -155,7 +150,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
+                <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                   {item.category}
                 </span>
                 <span className="text-xs font-mono font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">

@@ -625,6 +625,18 @@ export function App() {
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
+                portalDomain={(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}
+              />
+            }
+          />
+          <Route
+            path="faculty-assistant"
+            element={
+              <DashboardAiAssistant
+                currentLang={lang}
+                prefillQuery={assistantPrefill}
+                studentInfo={studentInfo}
+                portalDomain="faculty"
               />
             }
           />

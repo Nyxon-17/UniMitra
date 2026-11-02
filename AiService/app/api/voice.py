@@ -49,11 +49,15 @@ async def synthesize_speech(
 ):
     """
     Text-to-Speech synthesis returning high-fidelity neural audio for Assamese and English.
+    Supports male voice for chatbot text listen and female voice for voice assistant.
     """
-    logger.info(f"Synthesizing speech [lang={req.language}, length={len(req.text)}]")
+    gender = req.gender or "male"
+    logger.info(f"Synthesizing speech [lang={req.language}, gender={gender}, length={len(req.text)}]")
     audio_bytes = await tts_service.synthesize_async(
         text=req.text,
         language=req.language or "as",
+        gender=gender,
+        voice=req.voice,
     )
 
     if not audio_bytes:
@@ -70,4 +74,3 @@ async def synthesize_speech(
             "Content-Disposition": "inline; filename=unimitra_voice.mp3",
         },
     )
-

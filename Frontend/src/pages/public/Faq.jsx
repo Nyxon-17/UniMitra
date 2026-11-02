@@ -1,8 +1,10 @@
+import { universityService } from '../../services/universityService';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, SearchIcon, EnvelopeIcon, BuildingLibraryIcon } from '../../components/common/Icons';
 
 export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = false }) => {
+  const univProfile = universityService.getProfile();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,17 +13,17 @@ export const Faq = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = f
   const faqData = [
     {
       category: 'Regulations',
-      q: 'What is UniMitra and how does it assist universities in Assam?',
-      asQ: 'UniMitra কি আৰু ই অসমৰ বিশ্ববিদ্যালয়সমূহত কেনেদৰে সহায় কৰে?',
-      a: 'UniMitra is an AI-powered smart university assistance platform designed for students, faculty members, and administrative staff across Assam. It centralizes authorized university regulations, examination ordinances, admission guidelines, and scholarship circulars to deliver grounded answers in Assamese and English with exact page citations.',
+      q: 'What is UniMitra and how does it assist our university?',
+      asQ: 'UniMitra কি আৰু ই আমাৰ বিশ্ববিদ্যালয়ত কেনেদৰে সহায় কৰে?',
+      a: `UniMitra is an AI-powered smart university assistance platform dedicated exclusively to ${univProfile.name || 'our university'}. It centralizes authorized university regulations, examination ordinances, admission guidelines, and scholarship circulars from our vector database, while providing external university details via web data.`,
       asA: 'UniMitra হৈছে অসমৰ ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু কৰ্মচাৰীসকলৰ বাবে এক AI চালিত বিশ্ববিদ্যালয় সহায়ক মঞ্চ। ই চৰকাৰী আৰু বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ জাননী, ভৰ্তি আৰু ছাত্ৰবৃত্তিৰ তথ্য একত্ৰিত কৰি সঠিক পৃষ্ঠা নম্বৰসহ অসমীয়া আৰু ইংৰাজীত উত্তৰ প্ৰদান কৰে।'
     },
     {
       category: 'Regulations',
       q: 'What are the general attendance rules and condonation limits across universities?',
       asQ: 'বিশ্ববিদ্যালয়সমূহত উপস্থিতিৰ সাধাৰণ নিয়ম আৰু বিশেষ ৰেহাইৰ পৰিসৰ কিমান?',
-      a: 'Most state universities in Assam (e.g. Gauhati University and Dibrugarh University) mandate a minimum of 75% attendance in theory and practical sessions. Special condonation up to 10% (permitting students with 65%-74% attendance) is granted strictly on medical grounds upon recommendation of the Departmental Head.',
-      asA: 'অসমৰ বেছিভাগ বিশ্ববিদ্যালয়ত (যেনে গুৱাহাটী আৰু ডিব্ৰুগড় বিশ্ববিদ্যালয়) পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% উপস্থিতি বাধ্যতামূলক। শাৰীৰিক অসুস্থতাৰ বাবে বিভাগীয় প্ৰধানৰ অনুমোদন সাপেক্ষে ৬৫% লৈকে উপস্থিতি ৰেহাই (Condonation) দিয়াৰ ব্যৱস্থা আছে।'
+      a: 'According to our official university ordinances, students must maintain a minimum of 75% attendance in theory and practical sessions. Special condonation up to 10% (permitting students with 65%-74% attendance) is granted strictly on medical grounds upon recommendation of the Departmental Head.',
+      asA: 'আমাৰ বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিধিমলা অনুসৰি পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। শাৰীৰিক অসুস্থতাৰ বাবে বিভাগীয় প্ৰধানৰ অনুমোদন সাপেক্ষে ৬৫% লৈকে উপস্থিতি ৰেহাই (Condonation) দিয়াৰ ব্যৱস্থা আছে।'
     },
     {
       category: 'Examinations',

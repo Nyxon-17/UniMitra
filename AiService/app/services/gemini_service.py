@@ -98,7 +98,13 @@ INSTITUTIONAL_BENCHMARKS = [
     },
 ]
 
-ASSAMESE_SYSTEM_PROMPT = """You are UniMitra (ইউনিমিত্র), the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+ASSAMESE_SYSTEM_PROMPT = """আপুনি UniMitra (ইউনিমিত্র), আমাৰ বিশ্ববিদ্যালয়ৰ (Our University - এডমিন পেনেলত নিৰ্ধাৰিত একমাত্ৰ বিশ্ববিদ্যালয়) আনুষ্ঠানিক আৰু বৌদ্ধিক AI সহায়ক।
+
+গুৰুত্বপূৰ্ণ প্ৰতিষ্ঠানিক পৰিসৰ আৰু RAG নিৰ্দেশনা (SINGLE UNIVERSITY & RAG POLICY):
+- এই সমগ্ৰ ৱেবচাইট আৰু ইয়াৰ RAG ভেক্টৰ ডাটাবেচ কেৱল আমাৰ বিশ্ববিদ্যালয়ৰ বাবেহে উৎসৰ্গিত।
+- আমাৰ বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা মূল্যায়ন, পাঠ্যক্ৰম, শ্ৰেণী উপস্থিতি ৰেহাই (Condonation) বা জাননীৰ প্ৰশ্নৰ উত্তৰ আমাৰ RAG আৰু ভেক্টৰ ডাটাবেচৰ পৰা উদ্ধৃতিসহ (দস্তাবেজৰ নাম, ধাৰা, পৃষ্ঠা) প্ৰদান কৰক।
+- যদি ব্যৱহাৰকাৰীয়ে অন্য কোনো বিশ্ববিদ্যালয় (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, দিল্লী বিশ্ববিদ্যালয় আদি) সম্পৰ্কে সুধে:
+  আমাৰ RAG ভেক্টৰ ডাটাবেচ ব্যৱহাৰ নকৰিব। তাৰ সলনি সাধাৰণ ৱেব তথ্য আৰু শৈক্ষিক জ্ঞানৰ (Web & General Academic Knowledge) আধাৰত সেই অন্য বিশ্ববিদ্যালয়ৰ সঠিক আৰু সহায়কাৰী তথ্য প্ৰদান কৰক, আৰু স্পষ্টভাৱে জনাব যে এই তথ্য সাধাৰণ ৱেব জ্ঞানৰ পৰা দিয়া হৈছে, কাৰণ আমাৰ আনুষ্ঠানিক RAG সংবিধি ভঁৰাল আমাৰ বিশ্ববিদ্যালয়ৰ বাবেহে উৎসৰ্গিত।
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the user's question directly, clearly, and concisely.
@@ -128,7 +134,14 @@ Your behavioral instructions:
 4. Keep the tone encouraging, intellectual, and supportive of students and faculty in Assam.
 """
 
-ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Our University (the single university configured in the admin panel).
+
+CRITICAL SINGLE-UNIVERSITY & RAG POLICY:
+- This entire platform and its RAG vector database are exclusively dedicated to Our University.
+- For questions regarding Our University (regulations, examination bylaws, syllabus, attendance condonation, notices, hostels, scholarships):
+  Answer strictly using the statutory RAG and vector database with grounded citations (Document Name, Clause, Page Number).
+- For questions regarding OTHER universities (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, or any external institution):
+  Do NOT use our university's statutory RAG vector database. Instead, provide accurate, helpful details about that other university using general web data and educational knowledge. Explicitly clarify that this information is retrieved from general educational and web knowledge, as our official statutory RAG repository is exclusively dedicated to Our University.
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the user's question directly, concisely, and authoritatively.
@@ -154,7 +167,12 @@ Your primary instructions:
 """
 
 
-ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, etc.).
+ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Our University (the single university configured in the admin panel).
+
+CRITICAL SINGLE-UNIVERSITY & RAG POLICY:
+- This platform and its RAG vector database are exclusively dedicated to Our University.
+- For questions regarding Our University: Answer using our statutory RAG and vector database.
+- For questions regarding OTHER universities: Do NOT use our RAG database. Provide accurate details from web data and general knowledge in Romanized Assamese, clarifying that this is from general web knowledge.
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the question directly and naturally.
@@ -342,40 +360,51 @@ class GeminiService:
         if understanding.is_romanized and not target_language:
             lang = "as_roman" 
 
-        # Check pre-indexed statutory benchmarks
+        # Check if user is asking about an OTHER / External university
+        external_univ_keywords = [
+            "gauhati", "tezpur", "cotton", "assam university",
+            "bodoland", "delhi university", "jnu", "iit", "bhu", "calcutta university"
+        ]
+        is_external_univ_query = any(re.search(r'\b' + re.escape(u) + r'\b', clean_query.lower()) for u in external_univ_keywords)
+
+        # Check pre-indexed statutory benchmarks (strictly for Our University only)
         matched_benchmark = None
         normalized_q = clean_query.lower()
-        for benchmark in INSTITUTIONAL_BENCHMARKS:
-            is_greeting = any(g in benchmark["keywords"] for g in ["hello", "hi", "hey", "নমস্কাৰ"])
-            if is_greeting and len(clean_query.split()) > 4:
-                continue
+        if is_external_univ_query:
+            # For other universities, do NOT use our statutory benchmarks or RAG chunks
+            retrieved_chunks = []
+        else:
+            for benchmark in INSTITUTIONAL_BENCHMARKS:
+                is_greeting = any(g in benchmark["keywords"] for g in ["hello", "hi", "hey", "নমস্কাৰ"])
+                if is_greeting and len(clean_query.split()) > 4:
+                    continue
 
-            is_match = False
-            for kw in benchmark["keywords"]:
-                kw_lower = kw.lower()
-                if len(kw_lower) <= 3:
-                    if re.search(r'\b' + re.escape(kw_lower) + r'\b', normalized_q):
-                        is_match = True
-                        break
-                else:
-                    if kw_lower in normalized_q:
-                        is_match = True
-                        break
+                is_match = False
+                for kw in benchmark["keywords"]:
+                    kw_lower = kw.lower()
+                    if len(kw_lower) <= 3:
+                        if re.search(r'' + re.escape(kw_lower) + r'', normalized_q):
+                            is_match = True
+                            break
+                    else:
+                        if kw_lower in normalized_q:
+                            is_match = True
+                            break
 
-            if is_match:
-                matched_benchmark = benchmark
-                if not retrieved_chunks:
-                    retrieved_chunks = [{
-                        "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
-                        "document_id": "benchmark-statutory-clause",
-                        "metadata": {"title": benchmark["source"]},
-                        "page_number": benchmark["page"],
-                        "clause_reference": benchmark["page"],
-                        "similarity": 0.995,
-                    }]
-                break
+                if is_match:
+                    matched_benchmark = benchmark
+                    if not retrieved_chunks:
+                        retrieved_chunks = [{
+                            "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
+                            "document_id": "benchmark-statutory-clause",
+                            "metadata": {"title": benchmark["source"]},
+                            "page_number": benchmark["page"],
+                            "clause_reference": benchmark["page"],
+                            "similarity": 0.995,
+                        }]
+                    break
 
-        # 1. Format Context Chunks
+                # 1. Format Context Chunks
         context_blocks = []
         citations = []
         for i, chunk in enumerate(retrieved_chunks):
