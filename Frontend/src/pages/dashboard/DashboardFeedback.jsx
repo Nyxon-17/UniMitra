@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState, useEffect } from 'react';
 import { 
   BuildingLibraryIcon, 
@@ -8,8 +9,9 @@ import {
 } from '../../components/common/Icons';
 
 export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
+  const univProfile = universityService.getProfile();
   const [feedbackType, setFeedbackType] = useState('Accuracy & Citations');
-  const [university, setUniversity] = useState('Gauhati University (GU)');
+  const [university, setUniversity] = useState(univProfile.name || 'Our University');
   const [rating, setRating] = useState(5);
   const [comments, setComments] = useState('');
   const [submittedAlert, setSubmittedAlert] = useState(false);
@@ -19,7 +21,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
     {
       id: 'FB-901',
       type: 'Outdated Regulation',
-      university: 'Dibrugarh University (DU)',
+      university: 'Nivoraya University (DU)',
       rating: 4,
       comments: 'The syllabus reference for 3rd semester CBCS was accurate, but please update the 2024 revised attendance condonation circular.',
       submittedAt: 'Yesterday',
@@ -127,19 +129,14 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
 
             <div>
               <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-                University Context
+                Our University
               </label>
-              <select
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
-              >
-                <option>Gauhati University (GU)</option>
-                <option>Dibrugarh University (DU)</option>
-                <option>Tezpur University (TU)</option>
-                <option>Assam University (Silchar)</option>
-                <option>Directorate of Higher Education (DHE)</option>
-              </select>
+              <input
+                type="text"
+                readOnly
+                value={univProfile.name || 'Our University'}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none opacity-90 cursor-not-allowed"
+              />
             </div>
           </div>
 
@@ -202,7 +199,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
+                  <span className="text-[10px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                     {item.type}
                   </span>
                   <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">

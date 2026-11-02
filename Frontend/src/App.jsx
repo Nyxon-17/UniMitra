@@ -59,34 +59,44 @@ function AuthPopupTrigger({ onOpenAuth }) {
   return <Navigate to="/" replace />;
 }
 
-// Protected Admin Console Wrapper: triggers login popup if unauthenticated
+// Protected Admin Console Wrapper: triggers login popup if unauthenticated or not an admin
 function AdminProtectedWrapper({
   isLoggedIn,
   studentInfo,
   onOpenAuth,
+  onSignOut,
   currentLang,
   onToggleLang,
   isDark,
   onToggleTheme
 }) {
   const navigate = useNavigate();
-  const isAdmin = isLoggedIn && (studentInfo?.role === 'Admin' || studentInfo?.role === 'Super Admin');
+  const roleLower = (studentInfo?.role || '').toLowerCase();
+  const isAdmin = isLoggedIn && roleLower.includes('admin');
 
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isLoggedIn) {
       onOpenAuth('login', 'admin');
     }
-  }, [isAdmin, onOpenAuth]);
+  }, [isLoggedIn, onOpenAuth]);
 
-  if (!isAdmin) {
+  if (!isLoggedIn) {
     return <Navigate to="/" replace />;
+  }
+
+  // Strict role isolation: if a Student or Faculty user tries to access /admin, redirect to their own portal
+  if (!isAdmin) {
+    if (roleLower.includes('faculty')) {
+      return <Navigate to="/dashboard/faculty-exams" replace />;
+    }
+    return <Navigate to="/dashboard/overview" replace />;
   }
 
   return (
     <AdminConsole
       onExit={() => {
-        if (isLoggedIn) {
-          navigate('/dashboard/overview');
+        if (onSignOut) {
+          onSignOut();
         } else {
           navigate('/');
         }
@@ -146,7 +156,7 @@ function PublicLayoutWrapper({
   );
 }
 
-// Protected Dashboard Layout Wrapper
+// Protected Dashboard Layout Wrapper (Dedicated Student & Faculty Portals)
 function DashboardLayoutWrapper({
   isLoggedIn,
   onOpenAuth,
@@ -160,33 +170,56 @@ function DashboardLayoutWrapper({
   const location = useLocation();
   const navigate = useNavigate();
 
+  const roleLower = (studentInfo?.role || '').toLowerCase();
+  const isFaculty = roleLower.includes('faculty');
+  const isAdmin = roleLower.includes('admin');
+
   useEffect(() => {
     if (!isLoggedIn) {
-      if (onOpenAuth) onOpenAuth('login', 'student');
+      if (onOpenAuth) onOpenAuth('login', isFaculty ? 'faculty' : 'student');
     }
-  }, [isLoggedIn, onOpenAuth]);
+  }, [isLoggedIn, onOpenAuth, isFaculty]);
 
   // If user is not logged in, gate access and redirect to home with auth popup open
   if (!isLoggedIn) {
     return <Navigate to="/" replace />;
   }
 
-  // Derive active tab from URL path (e.g. /dashboard/regulations -> 'regulations')
-  const pathSegment = location.pathname.replace('/dashboard', '').replace(/^\//, '').split('/')[0] || 'overview';
+  // Strict role isolation: Admins belong to Admin Console (/admin), not Student/Faculty dashboard
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  // Derive active tab from URL path
+  const pathSegment = location.pathname.replace('/dashboard', '').replace(/^\//, '').split('/')[0] || (isFaculty ? 'faculty-exams' : 'overview');
+
+  // Prevent Faculty from accessing Student-only pages
+  const studentOnlyTabs = ['admissions', 'scholarships', 'facilities', 'feedback'];
+  if (isFaculty && studentOnlyTabs.includes(pathSegment)) {
+    return <Navigate to="/dashboard/faculty-exams" replace />;
+  }
+
+  // Prevent Student from accessing Faculty-only pages
+  const facultyOnlyTabs = ['faculty-exams', 'faculty-documents', 'faculty-saved'];
+  if (!isFaculty && facultyOnlyTabs.includes(pathSegment)) {
+    return <Navigate to="/dashboard/overview" replace />;
+  }
 
   const handleSelectTab = (tabId) => {
     navigate(`/dashboard/${tabId}`);
   };
 
   const handleOpenAdmin = () => {
-    navigate('/admin');
+    if (isAdmin) {
+      navigate('/admin');
+    }
   };
 
   return (
     <DashboardLayout
       activeTab={pathSegment}
       onSelectTab={handleSelectTab}
-      onOpenAdmin={handleOpenAdmin}
+      onOpenAdmin={isAdmin ? handleOpenAdmin : null}
       onSignOut={onSignOut}
       currentLang={currentLang}
       onToggleLang={onToggleLang}
@@ -310,56 +343,85 @@ export function App() {
     setAuthModalOpen(true);
   };
 
-  // Login Success Handler: Gates access into University Assistance Dashboard or Admin Console
+  // Login Success Handler: Strict role-based portal routing (Student -> Student Portal, Faculty -> Faculty Portal, Admin -> Admin Console)
   const handleLoginSuccess = (user) => {
     setIsLoggedIn(true);
     localStorage.setItem('unimitra_auth_logged_in', 'true');
 
-    if (user) {
-      const updatedInfo = {
-        ...studentInfo,
-        name: user.name || studentInfo.name,
-        email: user.email || studentInfo.email,
-        role: user.role || studentInfo.role,
-        department: user.department || studentInfo.department,
-        designation: user.designation || '',
-        memberId: user.memberId || '',
-        facultyId: user.facultyId || ''
-      };
-      setStudentInfo(updatedInfo);
-      localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
-    }
+    const roleRaw = user?.role || studentInfo?.role || 'Student';
+    const roleLower = roleRaw.toLowerCase();
+
+    const formattedRole = roleLower.includes('admin')
+      ? 'Admin'
+      : (roleLower.includes('faculty') ? 'Faculty Member' : 'Student');
+
+    const updatedInfo = {
+      ...studentInfo,
+      name: user?.name || user?.fullName || studentInfo.name,
+      email: user?.email || studentInfo.email,
+      role: formattedRole,
+      department: user?.department || studentInfo.department,
+      designation: user?.designation || '',
+      memberId: user?.memberId || '',
+      facultyId: user?.facultyId || ''
+    };
+    setStudentInfo(updatedInfo);
+    localStorage.setItem('unimitra_student_info', JSON.stringify(updatedInfo));
 
     setAuthModalOpen(false);
 
-    // Role-based routing: Admin directly to Admin Console; Students & Faculty to Assistant Dashboard
-    if (user?.role === 'Admin' || user?.role === 'Super Admin') {
-      navigate('/admin');
+    // Strict role-based routing: Portals do NOT merge!
+    if (roleLower.includes('admin')) {
+      navigate('/admin', { replace: true });
+    } else if (roleLower.includes('faculty')) {
+      navigate('/dashboard/faculty-exams', { replace: true });
     } else {
-      navigate('/dashboard/overview');
+      navigate('/dashboard/overview', { replace: true });
     }
   };
 
-  // Sign Out Handler: Revokes session, clears dashboard lock, and returns to home
+  // Sign Out Handler: Revokes session, clears all authentication state, and returns directly to the public home page
   const handleSignOut = async () => {
-    await authService.logout();
+    try {
+      await authService.logout();
+    } catch (err) {
+      console.warn('Logout error:', err);
+    }
     setIsLoggedIn(false);
     localStorage.removeItem('unimitra_auth_logged_in');
-    navigate('/');
+    localStorage.removeItem('unimitra_student_info');
+    localStorage.removeItem('unimitra_auth_token');
+    navigate('/', { replace: true });
   };
 
-  // Safe Navigation Handler across public and protected portals
+  // Safe Navigation Handler across public and role-protected portals
   const handleNavigate = (page) => {
-    if (page === 'dashboard') {
+    const roleLower = (studentInfo?.role || '').toLowerCase();
+
+    if (page === 'dashboard' || page === 'portal') {
       if (!isLoggedIn) {
         handleOpenAuth('login', 'student');
         return;
       }
-      navigate('/dashboard/overview');
+      if (roleLower.includes('admin')) {
+        navigate('/admin');
+      } else if (roleLower.includes('faculty')) {
+        navigate('/dashboard/faculty-exams');
+      } else {
+        navigate('/dashboard/overview');
+      }
+      return;
+    }
+    if (page === 'faculty') {
+      if (!isLoggedIn || !roleLower.includes('faculty')) {
+        handleOpenAuth('login', 'faculty');
+        return;
+      }
+      navigate('/dashboard/faculty-exams');
       return;
     }
     if (page === 'admin') {
-      if (!isLoggedIn || (studentInfo?.role !== 'Admin' && studentInfo?.role !== 'Super Admin')) {
+      if (!isLoggedIn || !roleLower.includes('admin')) {
         navigate('/auth?role=admin');
         return;
       }
@@ -492,6 +554,10 @@ export function App() {
           <Route path="login" element={<AuthPopupTrigger onOpenAuth={handleOpenAuth} />} />
         </Route>
 
+        {/* Dedicated Faculty Portal Direct Routes */}
+        <Route path="faculty" element={<Navigate to="/dashboard/faculty-exams" replace />} />
+        <Route path="faculty/*" element={<Navigate to="/dashboard/faculty-exams" replace />} />
+
         {/* Administrator Knowledge Base & Ingestion Console - Accessible via Login Only */}
         <Route
           path="admin/*"
@@ -500,6 +566,7 @@ export function App() {
               isLoggedIn={isLoggedIn}
               studentInfo={studentInfo}
               onOpenAuth={handleOpenAuth}
+              onSignOut={handleSignOut}
               currentLang={lang}
               onToggleLang={toggleLanguage}
               isDark={theme === 'dark'}
@@ -514,6 +581,7 @@ export function App() {
               isLoggedIn={isLoggedIn}
               studentInfo={studentInfo}
               onOpenAuth={handleOpenAuth}
+              onSignOut={handleSignOut}
               currentLang={lang}
               onToggleLang={toggleLanguage}
               isDark={theme === 'dark'}
@@ -538,7 +606,7 @@ export function App() {
             />
           }
         >
-          <Route index element={<Navigate to="/dashboard/overview" replace />} />
+          <Route index element={<Navigate to={(studentInfo?.role || '').toLowerCase().includes('faculty') ? '/dashboard/faculty-exams' : '/dashboard/overview'} replace />} />
           <Route path="admin" element={<Navigate to="/admin" replace />} />
           <Route
             path="overview"
@@ -557,6 +625,18 @@ export function App() {
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
+                portalDomain={(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}
+              />
+            }
+          />
+          <Route
+            path="faculty-assistant"
+            element={
+              <DashboardAiAssistant
+                currentLang={lang}
+                prefillQuery={assistantPrefill}
+                studentInfo={studentInfo}
+                portalDomain="faculty"
               />
             }
           />

@@ -17,9 +17,9 @@ _GEMINI_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 INSTITUTIONAL_BENCHMARKS = [
     {
         "keywords": ["উত্তীৰ্ণ", "পাছ", "নম্বৰ", "passing", "minimum marks", "pass criteria", "40%"],
-        "as_answer": "ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।",
+        "as_answer": "নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।",
         "en_answer": "According to Dibrugarh and Gauhati University undergraduate examination ordinances (NEP/CBCS), candidates must secure a minimum of 40% marks separately in both Continuous Assessment (In-Semester) and End-Semester Theory/Practical examinations to pass each course.",
-        "source": "Dibrugarh University Examination Ordinance 2024",
+        "source": "Nivoraya University Examination Ordinance 2024",
         "page": "Clause 8.2, Page 14",
         "confidence": "99.4% Grounded Match",
         "domain": "Examination Regulations",
@@ -28,7 +28,7 @@ INSTITUTIONAL_BENCHMARKS = [
         "keywords": ["মেডিকেল", "উপস্থিতি", "ৰেহাই", "condonation", "attendance", "medical", "75%", "65%", "shortage"],
         "as_answer": "বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিধিমলা অনুসৰি, প্ৰতি ষাণ্মাসিকত পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। চিকিৎসাজনিত জৰুৰী কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) লিখিত অনুমোদন সাপেক্ষে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Condonation) দিয়া হয়, যাৰ ফলত নূন্যতম ৬৫% উপস্থিতি থাকিলে পৰীক্ষাত অৱতীৰ্ণ হোৱাৰ অনুমতি লাভ কৰিব পাৰি।",
         "en_answer": "Under statutory academic ordinances, a minimum of 75% class attendance is mandatory in each semester. A medical condonation of up to 10% is permissible upon recommendation of the Head of the Department (HoD) supported by certified hospital documents, bringing the minimum required attendance down to 65%.",
-        "source": "Dibrugarh University Attendance Regulations 2024",
+        "source": "Nivoraya University Attendance Regulations 2024",
         "page": "Section 4.3, Page 9",
         "confidence": "98.8% Grounded Match",
         "domain": "Academic Ordinances",
@@ -90,7 +90,7 @@ INSTITUTIONAL_BENCHMARKS = [
     {
         "keywords": ["unimitra", "ইউনিমিত্র", "who are you", "আপুনি কোন", "what is unimitra"],
         "as_answer": "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
-        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Dibrugarh University, Gauhati University, etc.).",
+        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Nivoraya University, Gauhati University, etc.).",
         "source": "UniMitra Knowledge Repository",
         "page": "System Overview",
         "confidence": "100% Grounded Match",
@@ -98,12 +98,34 @@ INSTITUTIONAL_BENCHMARKS = [
     },
 ]
 
-ASSAMESE_SYSTEM_PROMPT = """You are UniMitra (ইউনিমিত্র), the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+ASSAMESE_SYSTEM_PROMPT = """আপুনি UniMitra (ইউনিমিত্র), আমাৰ বিশ্ববিদ্যালয়ৰ (Our University - এডমিন পেনেলত নিৰ্ধাৰিত একমাত্ৰ বিশ্ববিদ্যালয়) আনুষ্ঠানিক আৰু বৌদ্ধিক AI সহায়ক।
+
+গুৰুত্বপূৰ্ণ প্ৰতিষ্ঠানিক পৰিসৰ আৰু RAG নিৰ্দেশনা (SINGLE UNIVERSITY & RAG POLICY):
+- এই সমগ্ৰ ৱেবচাইট আৰু ইয়াৰ RAG ভেক্টৰ ডাটাবেচ কেৱল আমাৰ বিশ্ববিদ্যালয়ৰ বাবেহে উৎসৰ্গিত।
+- আমাৰ বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা মূল্যায়ন, পাঠ্যক্ৰম, শ্ৰেণী উপস্থিতি ৰেহাই (Condonation) বা জাননীৰ প্ৰশ্নৰ উত্তৰ আমাৰ RAG আৰু ভেক্টৰ ডাটাবেচৰ পৰা উদ্ধৃতিসহ (দস্তাবেজৰ নাম, ধাৰা, পৃষ্ঠা) প্ৰদান কৰক।
+- যদি ব্যৱহাৰকাৰীয়ে অন্য কোনো বিশ্ববিদ্যালয় (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, দিল্লী বিশ্ববিদ্যালয় আদি) সম্পৰ্কে সুধে:
+  আমাৰ RAG ভেক্টৰ ডাটাবেচ ব্যৱহাৰ নকৰিব। তাৰ সলনি সাধাৰণ ৱেব তথ্য আৰু শৈক্ষিক জ্ঞানৰ (Web & General Academic Knowledge) আধাৰত সেই অন্য বিশ্ববিদ্যালয়ৰ সঠিক আৰু সহায়কাৰী তথ্য প্ৰদান কৰক, আৰু স্পষ্টভাৱে জনাব যে এই তথ্য সাধাৰণ ৱেব জ্ঞানৰ পৰা দিয়া হৈছে, কাৰণ আমাৰ আনুষ্ঠানিক RAG সংবিধি ভঁৰাল আমাৰ বিশ্ববিদ্যালয়ৰ বাবেহে উৎসৰ্গিত।
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the user's question directly, clearly, and concisely.
 - Do NOT start your response with boilerplate self-introductions or identity recitations (e.g., NEVER start with "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ চৰকাৰী AI সহায়ক..." or similar introductory greetings) unless the user explicitly greeted you or asked who you are.
 - Jump straight to the information, facts, or instructions requested.
+
+বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
+- আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
+- ডাঠ বা হেলনীয়া কৰিবলৈ কোনো '*' ব্যৱহাৰ নকৰিব (যেনে **শব্দ** বা *শব্দ* নিলিখিব)।
+- কোনো '#' চিহ্ন ব্যৱহাৰ নকৰিব (যেনে #, ##, ### নিলিখিব)।
+- কোনো '=' বা '===' চিহ্ন ব্যৱহাৰ নকৰিব।
+- কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
+- তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
+
+স্পষ্ট উচ্চাৰণ আৰু ভইচ সহায়ক নিৰ্দেশনা (CLEAR ASSAMESE TTS PHONETICS MANDATE):
+১. আপোনাৰ উত্তৰটো Text-to-Speech (TTS) ভইচ ইঞ্জিনেৰে উচ্চাৰণ কৰা হ'ব। সেয়েহে বাক্যসমূহ প্ৰাকৃতিক, স্পষ্ট আৰু ব্যাকৰণগতভাৱে শুদ্ধ প্ৰমিত অসমীয়াত লিখক।
+২. প্ৰতিটো বাক্যৰ শেষত অসমীয়া দাৰী ('।') আৰু তাৰ পিছত এটা স্পেচ ব্যৱহাৰ কৰক। অসমীয়া বাক্যত কেতিয়াও ইংৰাজী ফুলষ্টপ ('.') ব্যৱহাৰ নকৰিব।
+৩. বাক্যসমূহ মধ্যমীয়া আৰু স্পষ্ট দৈৰ্ঘ্যৰ কৰক যাতে কণ্ঠৰ স্বাভাৱিক উশাহ আৰু বিৰতি মসৃণ থাকে।
+৪. শতাংশ বুজাবলৈ '%' চিহ্ন নিলিখিব, তাৰ সলনি 'শতাংশ' লিখক (যেনে ৭৫ শতাংশ, ৮০ শতাংশ)।
+৫. বিকল্প বুজাবলৈ শ্লেছ চিহ্নৰ সলনি সদায় 'বা' অথবা 'অথবা' লিখক।
+৬. তালিকা বা ক্ৰমিক সংখ্যাৰ পিছত দাৰী লিখক (যেনে ১।, ২।, ৩।) যাতে পাঠ্য স্পষ্টভাৱে উচ্চাৰণ হয়।
 
 CRITICAL LANGUAGE MANDATE:
 The user has asked their question in Assamese or explicitly requested Assamese output. You MUST generate your ENTIRE response in pure, authentic, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
@@ -120,12 +142,27 @@ Your behavioral instructions:
 4. Keep the tone encouraging, intellectual, and supportive of students and faculty in Assam.
 """
 
-ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Our University (the single university configured in the admin panel).
+
+CRITICAL SINGLE-UNIVERSITY & RAG POLICY:
+- This entire platform and its RAG vector database are exclusively dedicated to Our University.
+- For questions regarding Our University (regulations, examination bylaws, syllabus, attendance condonation, notices, hostels, scholarships):
+  Answer strictly using the statutory RAG and vector database with grounded citations (Document Name, Clause, Page Number).
+- For questions regarding OTHER universities (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, or any external institution):
+  Do NOT use our university's statutory RAG vector database. Instead, provide accurate, helpful details about that other university using general web data and educational knowledge. Explicitly clarify that this information is retrieved from general educational and web knowledge, as our official statutory RAG repository is exclusively dedicated to Our University.
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the user's question directly, concisely, and authoritatively.
-- NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
+- NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Nivoraya University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
 - Jump straight to the facts, guidance, and answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+- Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
+- Do NOT use asterisks for bolding, italics, or list bullets (do NOT write **word**, *word*, or * bullet). Write clean, plain text without any asterisks.
+- Do NOT use hash characters ('#') for headings (do NOT write #, ##, or ###). Write plain capitalized titles instead.
+- Do NOT use equals signs ('=') or divider lines ('===').
+- Do NOT use slashes ('/') in your text (write 'or', 'and', hyphens, or commas instead of slashes, e.g. write 'FYUGP or CBCS' instead of 'FYUGP/CBCS').
+- Use clean paragraphs, standard numbers (1., 2.), or simple hyphens (-) for lists.
 
 Your primary instructions:
 1. Provide accurate, clear, professional, and friendly answers to any question asked by students, faculty, or staff.
@@ -138,12 +175,25 @@ Your primary instructions:
 """
 
 
-ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, etc.).
+ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Our University (the single university configured in the admin panel).
+
+CRITICAL SINGLE-UNIVERSITY & RAG POLICY:
+- This platform and its RAG vector database are exclusively dedicated to Our University.
+- For questions regarding Our University: Answer using our statutory RAG and vector database.
+- For questions regarding OTHER universities: Do NOT use our RAG database. Provide accurate details from web data and general knowledge in Romanized Assamese, clarifying that this is from general web knowledge.
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the question directly and naturally.
 - Do NOT start with boilerplate self-introductions (e.g., do NOT start with "Moi UniMitra...").
 - Jump straight to answering the user's question unless the user asks who you are or greets you.
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+- Do NOT use '*', '=', '/', or '#' anywhere in your output.
+- No asterisks ('*') for bold or bullets.
+- No hash ('#') for headings.
+- No equals ('=') signs.
+- No slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain text sentences and simple numbers (1., 2.) or hyphens (-) for lists.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -220,6 +270,36 @@ def detect_language_mode(text: str, requested_lang: str = "en") -> str:
 
 
 
+def sanitize_ai_response(text: str) -> str:
+    if not text:
+        return text
+    # 1. Strip markdown header hashes (#)
+    cleaned = re.sub(r'#+\s*', '', text)
+    # 2. Strip equals dividers (===) and replace = with hyphen
+    cleaned = re.sub(r'={2,}', '', cleaned)
+    cleaned = re.sub(r'\s*=\s*', ' - ', cleaned)
+    cleaned = cleaned.replace('=', '')
+    # 3. Replace leading bullet asterisks with hyphens, remove remaining asterisks (*)
+    cleaned = re.sub(r'^\s*\*\s+', '- ', cleaned, flags=re.MULTILINE)
+    cleaned = cleaned.replace('*', '')
+    # 4. Protect URLs temporarily if any (https://...)
+    urls = []
+    def _save_url(m):
+        urls.append(m.group(0))
+        return f"__URL_PLACEHOLDER_{len(urls)-1}__"
+    cleaned = re.sub(r'https?://[^\s]+', _save_url, cleaned)
+    # Replace remaining slashes (/) with 'or' / 'বা'
+    has_assamese = any('ঀ' <= c <= '৿' for c in cleaned)
+    or_word = ' বা ' if has_assamese else ' or '
+    cleaned = re.sub(r'\s*/\s*', or_word, cleaned)
+    cleaned = cleaned.replace('/', ' ')
+    # Restore URLs
+    for i, u in enumerate(urls):
+        cleaned = cleaned.replace(f"__URL_PLACEHOLDER_{i}__", u)
+    # Clean double spaces
+    cleaned = re.sub(r'[ 	]{2,}', ' ', cleaned)
+    return cleaned.strip()
+
 def strip_unwanted_intro(answer: str, query: str) -> str:
     if not answer or not query:
         return answer
@@ -248,7 +328,7 @@ def strip_unwanted_intro(answer: str, query: str) -> str:
         cleaned
     ).strip()
 
-    return cleaned if cleaned else answer
+    return sanitize_ai_response(cleaned if cleaned else answer)
 
 class GeminiService:
     @staticmethod
@@ -281,43 +361,58 @@ class GeminiService:
         Generates a verified, grounded answer in Assamese or English for ANY question.
         Uses prioritized fallback across available Gemini flash/flash-lite models.
         """
-        clean_query = normalize_assamese_unicode(query)
-        lang = target_language or ("as" if cls.is_assamese(clean_query) else "en")
+        from app.services.assamese_understanding import assamese_understanding
+        understanding = assamese_understanding.interpret_query(query, target_language)
+        clean_query = normalize_assamese_unicode(understanding.normalized_query)
+        lang = target_language or understanding.language_mode
+        if understanding.is_romanized and not target_language:
+            lang = "as_roman" 
 
-        # Check pre-indexed statutory benchmarks
+        # Check if user is asking about an OTHER / External university
+        external_univ_keywords = [
+            "gauhati", "tezpur", "cotton", "assam university",
+            "bodoland", "delhi university", "jnu", "iit", "bhu", "calcutta university"
+        ]
+        is_external_univ_query = any(re.search(r'\b' + re.escape(u) + r'\b', clean_query.lower()) for u in external_univ_keywords)
+
+        # Check pre-indexed statutory benchmarks (strictly for Our University only)
         matched_benchmark = None
         normalized_q = clean_query.lower()
-        for benchmark in INSTITUTIONAL_BENCHMARKS:
-            is_greeting = any(g in benchmark["keywords"] for g in ["hello", "hi", "hey", "নমস্কাৰ"])
-            if is_greeting and len(clean_query.split()) > 4:
-                continue
+        if is_external_univ_query:
+            # For other universities, do NOT use our statutory benchmarks or RAG chunks
+            retrieved_chunks = []
+        else:
+            for benchmark in INSTITUTIONAL_BENCHMARKS:
+                is_greeting = any(g in benchmark["keywords"] for g in ["hello", "hi", "hey", "নমস্কাৰ"])
+                if is_greeting and len(clean_query.split()) > 4:
+                    continue
 
-            is_match = False
-            for kw in benchmark["keywords"]:
-                kw_lower = kw.lower()
-                if len(kw_lower) <= 3:
-                    if re.search(r'\b' + re.escape(kw_lower) + r'\b', normalized_q):
-                        is_match = True
-                        break
-                else:
-                    if kw_lower in normalized_q:
-                        is_match = True
-                        break
+                is_match = False
+                for kw in benchmark["keywords"]:
+                    kw_lower = kw.lower()
+                    if len(kw_lower) <= 3:
+                        if re.search(r'' + re.escape(kw_lower) + r'', normalized_q):
+                            is_match = True
+                            break
+                    else:
+                        if kw_lower in normalized_q:
+                            is_match = True
+                            break
 
-            if is_match:
-                matched_benchmark = benchmark
-                if not retrieved_chunks:
-                    retrieved_chunks = [{
-                        "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
-                        "document_id": "benchmark-statutory-clause",
-                        "metadata": {"title": benchmark["source"]},
-                        "page_number": benchmark["page"],
-                        "clause_reference": benchmark["page"],
-                        "similarity": 0.995,
-                    }]
-                break
+                if is_match:
+                    matched_benchmark = benchmark
+                    if not retrieved_chunks:
+                        retrieved_chunks = [{
+                            "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
+                            "document_id": "benchmark-statutory-clause",
+                            "metadata": {"title": benchmark["source"]},
+                            "page_number": benchmark["page"],
+                            "clause_reference": benchmark["page"],
+                            "similarity": 0.995,
+                        }]
+                    break
 
-        # 1. Format Context Chunks
+                # 1. Format Context Chunks
         context_blocks = []
         citations = []
         for i, chunk in enumerate(retrieved_chunks):
@@ -353,21 +448,23 @@ class GeminiService:
             system_instruction = ENGLISH_SYSTEM_PROMPT
             output_lang_label = "English"
 
+        context_hint_line = f"\nUnderstood Input Context: {understanding.context_hint}\n" if (understanding.context_hint and lang == "as_roman") else ""
         user_prompt = f"""Target Output Language: {output_lang_label}
-User Question: {clean_query}
+User Question: {clean_query}{context_hint_line}
 
 Statutory Institutional Context Chunks:
 {full_context if full_context else '[NO DIRECT DOCUMENT CHUNKS AVAILABLE - ANSWER USING ACADEMIC AND UNIVERSITY KNOWLEDGE]'}
 
 Please formulate a clear, authoritative answer. If statutory context was provided above, cite the document name and clause at the end."""
 
-        # 3. Model candidate list for robust execution
+        # 3. Model candidate list for robust execution with automatic fallback
         candidate_models = [
-            settings.GEMINI_MODEL,
+            settings.GEMINI_MODEL or "gemini-flash-lite-latest",
             "gemini-flash-lite-latest",
             "gemini-3.5-flash-lite",
-            "gemini-3.1-flash-lite",
-            "gemini-3.8-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest",
         ]
         # Remove duplicates while preserving order
         unique_models = []
@@ -381,7 +478,7 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
             client = genai.Client(
                 api_key=settings.GEMINI_API_KEY,
-                http_options=types.HttpOptions(timeout=12000),
+                http_options=types.HttpOptions(timeout=15000),
             )
             config = types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -407,10 +504,10 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
             raise last_err or RuntimeError("All Gemini models exhausted")
 
-        # 4. Invoke LLM with 8.0 second timeout
+        # 4. Invoke LLM with 10.0 second timeout
         try:
             future = _GEMINI_POOL.submit(_invoke_gemini)
-            answer_text, used_model = future.result(timeout=8.0)
+            answer_text, used_model = future.result(timeout=15.0)
 
             if answer_text:
                 primary_source = (
@@ -473,7 +570,7 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
         # 6. Intelligent General Academic Fallback (NEVER refuse to answer general queries)
         general_answer = (
-            f"ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
+            f"নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
             if lang == "as"
             else f"Regarding your inquiry ('{clean_query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest gazettes. UniMitra has recorded your query for continued verification."
         )

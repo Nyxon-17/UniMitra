@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState } from 'react';
 import { 
   BuildingLibraryIcon, 
@@ -11,6 +12,7 @@ import {
 } from '../../components/common/Icons';
 
 export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', studentInfo }) => {
+  const univProfile = universityService.getProfile();
   const [selectedUniv, setSelectedUniv] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -37,7 +39,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
       title: 'Continuous Internal Assessment (CIA) & Marks Submission Timelines',
       asTitle: 'আভ্যন্তৰীণ মূল্যায়ন (CIA) নম্বৰ সংৰক্ষণ আৰু দাখিলৰ সময়সীমা',
       ordinance: 'DU/CBCS-DIR/2024/07',
-      university: 'Dibrugarh University (DU)',
+      university: 'Nivoraya University (DU)',
       category: 'Internal Assessment',
       summary: 'Teachers must maintain comprehensive records of sessional tests, assignments, and attendance scores, uploading verified marks to the portal 10 days before end-semester commencement.',
       asSummary: 'শিক্ষকসকলে অন্তিম ষাণ্মাসিক পৰীক্ষা আৰম্ভ হোৱাৰ ১০ দিন পূৰ্বে আভ্যন্তৰীণ মূল্যায়নৰ নম্বৰ প’ৰ্টেলত আপলোড কৰি স্বাক্ষৰিত প্ৰতিলিপি সংৰক্ষণ কৰিব লাগিব।',
@@ -47,7 +49,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
         'Upload verified scores to the institutional examination portal 10 days prior to end-sem exams.',
         'Retain evaluated answer scripts and sessional records in department for minimum 1 academic year.'
       ],
-      citation: 'Dibrugarh University CBCS Evaluation Manual, Rule 6(b), Page 19'
+      citation: 'Nivoraya University CBCS Evaluation Manual, Rule 6(b), Page 19'
     },
     {
       id: 'FAC-EX-03',
@@ -134,16 +136,9 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
           />
         </div>
 
-        <select
-          value={selectedUniv}
-          onChange={(e) => setSelectedUniv(e.target.value)}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none cursor-pointer"
-        >
-          <option value="All">All University Exam Boards</option>
-          <option value="Gauhati">Gauhati University (GU)</option>
-          <option value="Dibrugarh">Dibrugarh University (DU)</option>
-          <option value="Tezpur">Tezpur University (TU)</option>
-        </select>
+        <div className="w-full sm:w-auto px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] flex items-center space-x-1.5">
+          <span>{univProfile.name || 'Our University'} Examination Authority</span>
+        </div>
       </div>
 
       {/* Cards */}
@@ -155,7 +150,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-xl bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
+                <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                   {item.category}
                 </span>
                 <span className="text-xs font-mono font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">

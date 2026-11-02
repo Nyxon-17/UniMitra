@@ -119,7 +119,18 @@ export const DashboardRegulations = ({
 
       {/* Regulations List */}
       <div className="space-y-4">
-        {filteredRegulations.map((reg) => {
+        {filteredRegulations.length === 0 ? (
+          <div className="neo-surface rounded-3xl p-10 text-center border border-dashed border-[#73A5CA]/40">
+            <BuildingLibraryIcon className="w-10 h-10 mx-auto text-[#FF933E] dark:text-[#03C988] mb-2" />
+            <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+              {currentLang === 'as' ? 'কোনো বিধিবদ্ধ নিয়মাৱলী পোৱা নগ’ল' : 'No Statutory Regulations Found'}
+            </h3>
+            <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">
+              {currentLang === 'as' ? 'অনুগ্ৰহ কৰি আন বিভাগ বা অনুসন্ধান শব্দ বাছনি কৰক।' : 'No statutory ordinances match the selected category or search filter.'}
+            </p>
+          </div>
+        ) : (
+          filteredRegulations.map((reg) => {
           const isExpanded = expandedDoc === reg.id;
           return (
             <div
@@ -128,7 +139,7 @@ export const DashboardRegulations = ({
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-[#000000] dark:text-[#FFFFFF]">
                     {reg.ordinanceNo || 'Statutory Ordinance'}
                   </span>
                   <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
@@ -172,7 +183,7 @@ export const DashboardRegulations = ({
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
     </div>

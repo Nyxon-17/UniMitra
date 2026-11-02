@@ -11,13 +11,13 @@ import {
 
 export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
   const [univA, setUnivA] = useState('Gauhati University (GU)');
-  const [univB, setUnivB] = useState('Dibrugarh University (DU)');
+  const [univB, setUnivB] = useState('Nivoraya University (DU)');
   const [selectedDiscipline, setSelectedDiscipline] = useState('BCA-DBMS');
   const [selectedSemester, setSelectedSemester] = useState(3);
 
   const universities = [
     'Gauhati University (GU)',
-    'Dibrugarh University (DU)',
+    'Nivoraya University (DU)',
     'Tezpur University (TU)',
     'Cotton University (CU)',
     'Assam University (Silchar)',
@@ -169,7 +169,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
       </div>
 
       {/* Alignment Summary Banner */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#FFE9A9] dark:bg-[#141414] border-2 border-[#FFCB56] dark:border-[#03C988] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300">
+      <div className="p-4 sm:p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] flex items-center justify-center font-black shrink-0">
             ✓
@@ -207,7 +207,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
               </h3>
               <p className="text-xs text-[#000000]/75 dark:text-[#FFFFFF]/80">{activeCompare.title}</p>
             </div>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] dark:text-[#C4B5FD]">
+            <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
               {activeCompare.univAData.credits}
             </span>
           </div>
@@ -266,7 +266,7 @@ export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
               </h3>
               <p className="text-xs text-[#000000]/75 dark:text-[#FFFFFF]/80">{activeCompare.title}</p>
             </div>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#03C988]">
+            <span className="text-xs font-bold text-[#000000] dark:text-[#03C988]">
               {activeCompare.univBData.credits}
             </span>
           </div>

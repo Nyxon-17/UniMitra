@@ -15,7 +15,6 @@ export const getSystemAnalytics = async () => {
     pendingDocuments,
     totalNotices,
     totalQueries,
-    assameseQueries,
     unansweredCount,
     feedbackCount,
   ] = await Promise.all([
@@ -24,15 +23,12 @@ export const getSystemAnalytics = async () => {
     prisma.profile.count({ where: { role: 'faculty' } }),
     prisma.document.count(),
     prisma.document.count({ where: { status: 'Indexed' } }),
-    prisma.document.count({ where: { approval_status: 'pending' } }),
+    prisma.document.count({ where: { approvalStatus: 'pending' } }),
     prisma.notice.count(),
-    prisma.chatMessage.count({ where: { role: 'user' } }),
-    prisma.chatMessage.count({ where: { role: 'user', language: 'as' } }),
-    prisma.unansweredQuery.count({ where: { status: 'pending' } }),
+    prisma.chatMessage.count({ where: { sender: 'user' } }),
+    prisma.unansweredQuery.count({ where: { status: { in: ['Unanswered', 'pending'] } } }),
     prisma.feedbackSubmission.count(),
   ]);
-
-  const englishQueries = totalQueries - assameseQueries;
 
   return {
     overview: {
@@ -43,21 +39,11 @@ export const getSystemAnalytics = async () => {
       indexedDocuments,
       pendingDocuments,
       totalNotices,
-      totalQueries: totalQueries || 14280,
-      assameseQueries: assameseQueries || 6012,
-      englishQueries: englishQueries || 8268,
-      avgConfidence: 96.8,
-      hallucinationRejectionRate: '99.4%',
+      totalQueries,
       unansweredCount,
       feedbackCount,
     },
-    topAskedTopics: [
-      { topic: 'DU 75% Attendance & 10% Medical Condonation', count: 2840, univ: 'Dibrugarh University' },
-      { topic: 'GU Undergraduate Passing Criteria (Clause 8.2)', count: 3120, univ: 'Gauhati University' },
-      { topic: 'DHE Combined Merit & Ishan Uday Scholarship', count: 2410, univ: 'All Assam Universities' },
-      { topic: 'Tezpur University Hostels Allotment Norms', count: 1890, univ: 'Tezpur University' },
-      { topic: 'UGC CAS Promotion from Assistant to Associate', count: 1420, univ: 'State Universities' },
-    ],
+    topAskedTopics: [],
   };
 };
 
@@ -66,16 +52,16 @@ export const getSystemAnalytics = async () => {
  */
 export const getUnansweredQueries = async () => {
   const list = await prisma.unansweredQuery.findMany({
-    orderBy: { created_at: 'desc' },
+    orderBy: { createdAt: 'desc' },
     take: 50,
   });
 
   return list.map((item) => ({
     id: item.id,
-    query: item.query_text,
+    query: item.query,
     language: item.language,
     status: item.status,
-    attemptedAt: new Date(item.created_at).toLocaleString(),
+    attemptedAt: new Date(item.createdAt).toLocaleString(),
     reason: 'No statutory clause currently indexed for this query.',
   }));
 };
@@ -86,7 +72,7 @@ export const getUnansweredQueries = async () => {
 export const resolveUnansweredQuery = async (id, status = 'resolved') => {
   return prisma.unansweredQuery.update({
     where: { id },
-    data: { status },
+    data: { status, resolvedAt: new Date() },
   });
 };
 
@@ -96,21 +82,21 @@ export const resolveUnansweredQuery = async (id, status = 'resolved') => {
 export const getFeedbackList = async () => {
   const list = await prisma.feedbackSubmission.findMany({
     include: { user: true },
-    orderBy: { created_at: 'desc' },
+    orderBy: { createdAt: 'desc' },
     take: 50,
   });
 
   return list.map((fb) => ({
     id: fb.id,
-    user: fb.user?.full_name || 'Anonymous Student',
-    role: fb.user?.role || 'Student',
-    query: fb.query_text,
-    answerSnippet: fb.answer_snippet,
+    user: fb.userName || fb.user?.fullName || 'Anonymous Student',
+    role: fb.userRole || fb.user?.role || 'Student',
+    query: fb.comments || fb.answerSnippet || fb.type,
+    answerSnippet: fb.answerSnippet,
     rating: fb.rating,
-    type: fb.feedback_type,
+    type: fb.type,
     comments: fb.comments,
-    status: fb.status === 'resolved' ? 'Reviewed & Resolved' : 'Pending Review',
-    submittedAt: new Date(fb.created_at).toLocaleString(),
+    status: fb.status === 'resolved' || fb.status === 'Resolved' ? 'Reviewed & Resolved' : (fb.status || 'Pending Review'),
+    submittedAt: new Date(fb.createdAt).toLocaleString(),
   }));
 };
 
@@ -207,19 +193,18 @@ export const updateSystemSetting = async (key, value) => {
  */
 export const getAuditLogs = async (limit = 50) => {
   const logs = await prisma.auditLog.findMany({
-    include: { user: true },
-    orderBy: { created_at: 'desc' },
+    include: { actor: true },
+    orderBy: { createdAt: 'desc' },
     take: limit,
   });
 
   return logs.map((l) => ({
     id: l.id,
     action: l.action,
-    entity: l.entity,
-    entityId: l.entity_id,
-    user: l.user?.full_name || 'System',
-    ipAddress: l.ip_address,
-    timestamp: l.created_at,
+    entity: l.entityType,
+    entityId: l.entityId,
+    user: l.actor?.fullName || 'System',
+    ipAddress: l.ipAddress,
+    timestamp: l.createdAt,
   }));
 };
-

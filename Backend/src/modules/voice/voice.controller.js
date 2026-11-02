@@ -57,10 +57,11 @@ export const transcribe = async (req, res, next) => {
 /**
  * Synthesize Text to Speech
  * POST /api/v1/voice/synthesize
+ * gender: 'male' for chat bot text listen feature, 'female' for voice assistant
  */
 export const synthesize = async (req, res, next) => {
   try {
-    const { text, language = 'as' } = req.body;
+    const { text, language = 'as', gender = 'female', voice = 'i43sm02kv3' } = req.body;
     if (!text) {
       return res.status(400).json({
         success: false,
@@ -68,7 +69,7 @@ export const synthesize = async (req, res, next) => {
       });
     }
 
-    const audioBytes = await voiceService.synthesizeText(text, language);
+    const audioBytes = await voiceService.synthesizeText(text, language, gender, voice);
     if (!audioBytes) {
       return res.status(503).json({
         success: false,
@@ -85,4 +86,3 @@ export const synthesize = async (req, res, next) => {
     next(err);
   }
 };
-

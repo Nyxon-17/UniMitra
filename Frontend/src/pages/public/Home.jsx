@@ -38,8 +38,8 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
   const [activeDemoTab, setActiveDemoTab] = useState('as');
   const [demoInput, setDemoInput] = useState('গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতকোত্তৰ হোষ্টেল আবণ্টন আৰু ছাত্ৰবৃত্তিৰ চৰ্ত কি?');
   const [demoResponse, setDemoResponse] = useState({
-    answer: 'গুৱাহাটী বিশ্ববিদ্যালয়ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি স্নাতকোত্তৰ হোষ্টেল আবণ্টন মেধা তালিকা (Merit List) আৰু দূৰত্বৰ ভিত্তিত কৰা হয়। ছাত্ৰবৃত্তিৰ বাবে ন্যূনতম ৫৫% নম্বৰ আৰু বাৰ্ষিক পাৰিবাৰিক আয় ২.৫ লাখতকৈ কম হ’ব লাগে। সকলো তথ্য মূল নথিত সংলগ্ন আছে।',
-    source: 'GU_Hostel_Scholarship_Regulations_2024.pdf',
+    answer: `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি স্নাতকোত্তৰ হোষ্টেল আবণ্টন মেধা তালিকা (Merit List) আৰু দূৰত্বৰ ভিত্তিত কৰা হয়। ছাত্ৰবৃত্তিৰ বাবে ন্যূনতম ৫৫% নম্বৰ আৰু বাৰ্ষিক পাৰিবাৰিক আয় ২.৫ লাখতকৈ কম হ’ব লাগে। সকলো তথ্য মূল নথিত সংলগ্ন আছে।`,
+    source: `${univProfile.abbreviation || 'UNIV'}_Hostel_Scholarship_Regulations_2024.pdf`,
     page: 'পৃষ্ঠা নং ১২, ধাৰা ৪.২',
     confidence: 'প্ৰমাণিত অফিচিয়েল মিল (Grounded Citation)',
   });
@@ -47,18 +47,18 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
   const handleDemoSwitch = (lang) => {
     setActiveDemoTab(lang);
     if (lang === 'as') {
-      setDemoInput('গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতকোত্তৰ হোষ্টেল আবণ্টন আৰু ছাত্ৰবৃত্তিৰ চৰ্ত কি?');
+      setDemoInput(`${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ স্নাতকোত্তৰ হোষ্টেল আবণ্টন আৰু ছাত্ৰবৃত্তিৰ চৰ্ত কি?`);
       setDemoResponse({
-        answer: 'গুৱাহাটী বিশ্ববিদ্যালয়ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি স্নাতকোত্তৰ হোষ্টেল আবণ্টন মেধা তালিকা (Merit List) আৰু দূৰত্বৰ ভিত্তিত কৰা হয়। ছাত্ৰবৃত্তিৰ বাবে ন্যূনতম ৫৫% নম্বৰ আৰু বাৰ্ষিক পাৰিবাৰিক আয় ২.৫ লাখতকৈ কম হ’ব লাগে। সকলো তথ্য মূল নথিত সংলগ্ন আছে।',
-        source: 'GU_Hostel_Scholarship_Regulations_2024.pdf',
+        answer: `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ অফিচিয়েল নিয়মাৱলী আৰু অধিসূচনা অনুসৰি স্নাতকোত্তৰ হোষ্টেল আবণ্টন মেধা তালিকা (Merit List) আৰু দূৰত্বৰ ভিত্তিত কৰা হয়। ছাত্ৰবৃত্তিৰ বাবে ন্যূনতম ৫৫% নম্বৰ আৰু বাৰ্ষিক পাৰিবাৰিক আয় ২.৫ লাখতকৈ কম হ’ব লাগে। সকলো তথ্য মূল নথিত সংলগ্ন আছে।`,
+        source: `${univProfile.abbreviation || 'UNIV'}_Hostel_Scholarship_Regulations_2024.pdf`,
         page: 'পৃষ্ঠা নং ১২, ধাৰা ৪.২',
         confidence: 'প্ৰমাণিত অফিচিয়েল মিল (Grounded Citation)',
       });
     } else {
-      setDemoInput('What is the minimum attendance requirement and re-evaluation procedure for Dibrugarh University examinations?');
+      setDemoInput(`What is the minimum attendance requirement and re-evaluation procedure for ${univProfile.name || 'university'} examinations?`);
       setDemoResponse({
-        answer: 'According to official Dibrugarh University Examination Ordinances, students must maintain a minimum of 75% class attendance to be eligible for end-semester examinations. Re-evaluation applications must be submitted within 20 days of mark sheet publication through the official portal with the prescribed fee.',
-        source: 'DU_Examination_Regulations_Gazette.pdf',
+        answer: `According to official ${univProfile.name || 'University'} Examination Ordinances, students must maintain a minimum of 75% class attendance to be eligible for end-semester examinations. Re-evaluation applications must be submitted within 20 days of mark sheet publication through the official portal with the prescribed fee.`,
+        source: `${univProfile.abbreviation || 'UNIV'}_Examination_Regulations_Gazette.pdf`,
         page: 'Page 22, Ordinance 9.3',
         confidence: 'Institutional Ordinance Match',
       });
@@ -73,15 +73,6 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
       if (onOpenAuth) onOpenAuth('login', 'student');
     }
   };
-
-  const universitiesList = [
-    { name: 'Gauhati University', code: 'GU', city: 'Guwahati', domains: 'Regulations, Exams & Scholarships' },
-    { name: 'Dibrugarh University', code: 'DU', city: 'Dibrugarh', domains: 'Admissions, Ordinances & Hostels' },
-    { name: 'Tezpur University', code: 'TU', city: 'Napaam, Tezpur', domains: 'Academic Programs & Research Grants' },
-    { name: 'Cotton University', code: 'CU', city: 'Panbazar, Guwahati', domains: 'Degree Ordinances & Campus Facilities' },
-    { name: 'Assam University', code: 'AUS', city: 'Silchar', domains: 'Post-Matric Schemes & Exam Criteria' },
-    { name: 'Bodoland University', code: 'BU', city: 'Kokrajhar', domains: 'Admission Procedures & Notifications' },
-  ];
 
   return (
     <div className="bg-transparent min-h-screen text-[#0F172A] dark:text-[#FAF8FF] transition-colors duration-200">
@@ -406,7 +397,7 @@ export const Home = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn = 
                 </span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF]">
-                {univProfile.name || 'My University'}
+                {univProfile.name || 'Nivoraya University'}
               </h3>
               <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/75 mt-1">
                 {univProfile.motto || 'Knowledge, Research & Innovation'}

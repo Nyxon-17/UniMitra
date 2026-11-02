@@ -3,89 +3,24 @@ import { prisma } from '../config/prisma.js';
 import { logger } from '../config/logger.js';
 
 export async function runSeed() {
-  logger.info('Starting UniMitra Database Seeding...');
+  logger.info('Starting UniMitra Database Seeding for Single University...');
 
-  // 1. Seed Universities
+  // 1. Seed Single University (Site is exclusively configured for Our University)
   const universities = [
     {
       code: 'DU',
-      abbreviation: 'DU',
-      name: 'Dibrugarh University',
-      asName: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়',
-      location: 'Dibrugarh, Assam - 786004',
-      website: 'https://dibru.ac.in',
+      abbreviation: 'NU',
+      name: 'Nivoraya University',
+      asName: 'নিভৰয়া বিশ্ববিদ্যালয়',
+      location: 'Nivoraya Campus, Assam - 786004',
+      website: 'https://nivoraya.ac.in',
       campusType: 'State University (UGC Recognized, NAAC A Grade)',
       asCampusType: 'ৰাজ্যিক বিশ্ববিদ্যালয় (UGC স্বীকৃত, NAAC A মানপ্ৰাপ্ত)',
       chancellor: 'Hon’ble Governor of Assam',
       viceChancellor: 'Prof. Jiten Hazarika',
       registrar: 'Dr. Paramananda Sonowal',
-      email: 'registrar@dibru.ac.in',
+      email: 'registrar@nivoraya.ac.in',
       helpline: '+91-373-2370000',
-      isActive: true,
-    },
-    {
-      code: 'GU',
-      abbreviation: 'GU',
-      name: 'Gauhati University',
-      asName: 'গুৱাহাটী বিশ্ববিদ্যালয়',
-      location: 'Jalukbari, Guwahati, Assam - 781014',
-      website: 'https://gauhati.ac.in',
-      campusType: 'State University (First university in North-East India)',
-      asCampusType: 'উত্তৰ-পূৰ্বাঞ্চলৰ প্ৰথমখন বিশ্ববিদ্যালয়',
-      chancellor: 'Hon’ble Governor of Assam',
-      email: 'registrar@gauhati.ac.in',
-      isActive: true,
-    },
-    {
-      code: 'TU',
-      abbreviation: 'TU',
-      name: 'Tezpur University',
-      asName: 'তেজপুৰ বিশ্ববিদ্যালয়',
-      location: 'Napaam, Tezpur, Sonitpur, Assam - 784028',
-      website: 'http://www.tezu.ernet.in',
-      campusType: 'Central University (NAAC A+ Grade)',
-      asCampusType: 'কেন্দ্ৰীয় বিশ্ববিদ্যালয়',
-      chancellor: 'Hon’ble President of India',
-      email: 'registrar@tezu.ernet.in',
-      isActive: true,
-    },
-    {
-      code: 'AU',
-      abbreviation: 'AU',
-      name: 'Assam University',
-      asName: 'অসম বিশ্ববিদ্যালয়',
-      location: 'Silchar, Assam - 788011',
-      website: 'http://www.aus.ac.in',
-      campusType: 'Central University',
-      asCampusType: 'কেন্দ্ৰীয় বিশ্ববিদ্যালয়',
-      chancellor: 'Hon’ble President of India',
-      email: 'registrar@aus.ac.in',
-      isActive: true,
-    },
-    {
-      code: 'CU',
-      abbreviation: 'CU',
-      name: 'Cotton University',
-      asName: 'কটন বিশ্ববিদ্যালয়',
-      location: 'Panbazar, Guwahati, Assam - 781001',
-      website: 'https://cottonuniversity.ac.in',
-      campusType: 'State University (Founded 1901)',
-      asCampusType: 'ৰাজ্যিক বিশ্ববিদ্যালয়',
-      chancellor: 'Hon’ble Governor of Assam',
-      email: 'registrar@cottonuniversity.ac.in',
-      isActive: true,
-    },
-    {
-      code: 'BU',
-      abbreviation: 'BU',
-      name: 'Bodoland University',
-      asName: 'বড়োলেণ্ড বিশ্ববিদ্যালয়',
-      location: 'Deborgaon, Kokrajhar, BTR, Assam - 783370',
-      website: 'https://bodolanduniversity.ac.in',
-      campusType: 'State University',
-      asCampusType: 'ৰাজ্যিক বিশ্ববিদ্যালয়',
-      chancellor: 'Hon’ble Governor of Assam',
-      email: 'registrar@bodolanduniversity.ac.in',
       isActive: true,
     },
   ];
@@ -102,13 +37,27 @@ export async function runSeed() {
         campusType: u.campusType,
         asCampusType: u.asCampusType,
         chancellor: u.chancellor,
+        viceChancellor: u.viceChancellor,
+        registrar: u.registrar,
         email: u.email,
+        helpline: u.helpline,
         isActive: u.isActive,
       },
       create: u,
     });
   }
-  logger.info(`Seeded ${universities.length} Universities.`);
+
+  // Deactivate any legacy universities if present in database
+  try {
+    await prisma.university.updateMany({
+      where: { code: { not: 'DU' } },
+      data: { isActive: false },
+    });
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Notice when deactivating non-primary universities');
+  }
+
+  logger.info(`Seeded Single University: ${universities[0].name} (${universities[0].code}).`);
 
   // 2. Seed Document Categories
   const categories = [
@@ -214,7 +163,7 @@ export async function runSeed() {
   }
   logger.info(`Seeded ${settings.length} System Settings.`);
 
-  logger.info('Database seeding completed successfully.');
+  logger.info('Database seeding completed successfully for single university.');
 }
 
 // Allow direct CLI execution: node src/scripts/seed.js

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ClockIcon, 
   SearchIcon, 
@@ -8,69 +8,72 @@ import {
   CheckCircleIcon,
   ShieldCheckIcon 
 } from '../../components/common/Icons';
+import { chatService } from '../../services/chatService';
 
 export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => {
   const [searchFilter, setSearchFilter] = useState('');
-  const [historyList, setHistoryList] = useState([
-    {
-      id: 1,
-      query: 'What are Gauhati University passing criteria for CBCS undergraduate courses?',
-      asQuery: 'গুৱাহাটী বিশ্ববিদ্যালয়ৰ CBCS স্নাতক পাঠ্যক্ৰমত উত্তীৰ্ণ হোৱাৰ নূন্যতম নম্বৰ কিমান?',
-      category: 'Examinations',
-      resolvedAnswer: 'Securing minimum 40% marks in In-Semester Sessional and End-Semester final exams separately is required to pass each theory and practical paper.',
-      source: 'GU_Examination_Regulations_UG.pdf (Page 14, Clause 8.2)',
-      timestamp: 'Today, 10:30 AM',
-      status: 'Resolved'
-    },
-    {
-      id: 2,
-      query: 'What is the attendance condonation criteria for medical illness at Dibrugarh University?',
-      asQuery: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ত চিকিৎসা জনিত কাৰণত উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
-      category: 'Regulations',
-      resolvedAnswer: 'Minimum 75% attendance is required. Up to 10% condonation is permissible on registered medical officer recommendation, allowing examination entry at 65% minimum.',
-      source: 'DU_Statutory_Attendance_Ordinance.pdf (Page 9, Section 4.3)',
-      timestamp: 'Yesterday, 04:15 PM',
-      status: 'Resolved'
-    },
-    {
-      id: 3,
-      query: 'What are the required documents and annual family income ceiling for DHE Combined Merit Scholarship?',
-      asQuery: 'উচ্চ শিক্ষা সঞ্চালকালয়ৰ মেধা ছাত্ৰবৃত্তিৰ বাবে প্ৰয়োজনীয় নথিপত্ৰ আৰু পাৰিবাৰিক আয়ৰ সীমা কি?',
-      category: 'Scholarships',
-      resolvedAnswer: 'Permanent Resident Certificate (PRC) of Assam, 10+2 mark sheet with min 60%, admission fee receipt, and Aadhaar seeded bank passbook copy required.',
-      source: 'Assam_DHE_Scholarship_Norms_2024.pdf (Page 6, Clause 3.1)',
-      timestamp: '28 Oct 2024, 02:20 PM',
-      status: 'Resolved'
-    },
-    {
-      id: 4,
-      query: 'How are campus hostel seats allotted at Gauhati University for new PG students?',
-      asQuery: 'গুৱাহাটী বিশ্ববিদ্যালয়ত নতুন স্নাতকোত্তৰ ছাত্ৰ-ছাত্ৰীৰ বাবে হোষ্টেল আসন আবণ্টন কেনেদৰে হয়?',
-      category: 'Facilities',
-      resolvedAnswer: 'Composite merit score (60% weightage on qualifying examination and 40% on permanent home distance from Jalukbari campus). Local guardian affidavit required.',
-      source: 'GU_Campus_Hostel_Board_Rules.pdf (Page 12, Rule 5)',
-      timestamp: '26 Oct 2024, 11:45 AM',
-      status: 'Resolved'
-    }
-  ]);
+  const [historyList, setHistoryList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDynamicHistory = async () => {
+      setLoading(true);
+      try {
+        const sessions = await chatService.getSessions('student');
+        const items = [];
+        for (const s of (sessions || []).slice(0, 30)) {
+          const msgs = await chatService.fetchSessionMessages(s.id, 'student');
+          if (msgs && msgs.length > 0) {
+            for (let i = 0; i < msgs.length; i++) {
+              if (msgs[i].sender === 'user') {
+                const userQ = msgs[i].text;
+                const nextAi = msgs.slice(i + 1).find(m => m.sender === 'ai');
+                items.push({
+                  id: msgs[i].id || `hist-${s.id}-${i}`,
+                  sessionId: s.id,
+                  query: userQ,
+                  asQuery: userQ,
+                  category: s.title ? s.title.slice(0, 30) : 'Academic Consultation',
+                  resolvedAnswer: nextAi?.text || 'Resolved institutional query.',
+                  source: nextAi?.source || 'UniMitra Knowledge Base',
+                  timestamp: msgs[i].time || (s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'Recent'),
+                  status: 'Resolved'
+                });
+              }
+            }
+          }
+        }
+        setHistoryList(items);
+      } catch (err) {
+        console.warn('Failed to load dynamic query history:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadDynamicHistory();
+  }, []);
 
   const filteredHistory = historyList.filter((item) => {
     const q = searchFilter.toLowerCase().trim();
     if (!q) return true;
     return (
-      item.query.toLowerCase().includes(q) ||
-      item.asQuery.includes(q) ||
-      item.resolvedAnswer.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q)
+      (item.query && item.query.toLowerCase().includes(q)) ||
+      (item.asQuery && item.asQuery.includes(q)) ||
+      (item.resolvedAnswer && item.resolvedAnswer.toLowerCase().includes(q)) ||
+      (item.category && item.category.toLowerCase().includes(q))
     );
   });
 
-  const handleDelete = (id) => {
-    setHistoryList(historyList.filter((item) => item.id !== id));
+  const handleDelete = (id, sessionId) => {
+    setHistoryList(prev => prev.filter(item => item.id !== id));
+    if (sessionId) {
+      chatService.deleteSession(sessionId, 'student');
+    }
   };
 
   const handleClearAll = () => {
-    if (window.confirm("Clear all recorded query history?")) {
+    if (window.confirm('Clear all recorded query history?')) {
+      chatService.clearAllSessions('student');
       setHistoryList([]);
     }
   };
@@ -107,7 +110,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
             )}
             <button
               onClick={() => onNavigateTab('assistant')}
-              className="flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-xs hover:shadow-md"
+              className="flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-xs hover:shadow-md"
             >
               <SparklesIcon className="w-3.5 h-3.5 text-[#FAF8FF]" />
               <span>Ask New Query</span>
@@ -132,7 +135,11 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
 
       {/* History Items */}
       <div className="space-y-4">
-        {filteredHistory.length === 0 ? (
+        {loading ? (
+          <div className="neo-surface rounded-3xl p-10 text-center text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+            Loading your verified query history...
+          </div>
+        ) : filteredHistory.length === 0 ? (
           <div className="neo-surface rounded-3xl p-10 text-center text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
             No queries match your search. Start a new conversation in the AI Assistant.
           </div>
@@ -142,9 +149,9 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
               key={item.id}
               className="neo-surface rounded-3xl p-5 sm:p-6 shadow-xs space-y-3"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40 pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white">
+                  <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                     {item.category}
                   </span>
                   <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
@@ -153,12 +160,12 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#0A0A0A] dark:text-[#FFFFFF] border border-[#FF933E]/50 dark:border-[#03C988]/50/30 flex items-center space-x-1">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#FFE9A9]/40 text-[#000000] dark:bg-[#0A0A0A] dark:text-[#FFFFFF] border border-[#FF933E]/50 dark:border-[#03C988]/50 flex items-center space-x-1">
                     <CheckCircleIcon className="w-3 h-3 text-[#FF933E] dark:text-[#03C988]" />
                     <span>{item.status}</span>
                   </span>
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(item.id, item.sessionId)}
                     className="p-1 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
                     title="Delete item"
                   >
@@ -198,4 +205,3 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
     </div>
   );
 };
-

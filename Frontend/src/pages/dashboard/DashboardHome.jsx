@@ -409,8 +409,19 @@ export const DashboardHome = ({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {notices.map((not) => (
+        {notices.length === 0 ? (
+          <div className="editorial-surface rounded-2xl p-8 text-center border border-dashed border-[#123C3A]/15 dark:border-[#55C7B2]/20">
+            <BuildingLibraryIcon className="w-10 h-10 mx-auto text-[#D4A96A] dark:text-[#55C7B2] mb-2" />
+            <h3 className="text-sm font-bold text-[#123C3A] dark:text-[#DCE8E4]">
+              {currentLang === 'as' ? 'বৰ্তমান কোনো অধিসূচনা প্ৰকাশ কৰা হোৱা নাই' : 'No Official Notices Published Yet'}
+            </h3>
+            <p className="text-xs text-[#627680] dark:text-[#879B99] mt-1">
+              {currentLang === 'as' ? 'প্ৰশাসন বা অধ্যাপকসকলে জাননী প্ৰকাশ কৰিলে ইয়াত প্ৰদৰ্শিত হ’ব।' : 'Official notifications and circulars published by administration or faculty will appear here automatically.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {notices.map((not) => (
             <div
               key={not.id}
               className="editorial-surface rounded-2xl p-5 space-y-3 flex flex-col justify-between hover:border-[#123C3A]/25 dark:hover:border-[#55C7B2]/40 transition-all shadow-xs"
@@ -469,6 +480,7 @@ export const DashboardHome = ({
             </div>
           ))}
         </div>
+        )}
       </section>
 
       {/* 4. GROUNDED CITATION & EVIDENCE LEDGER */}

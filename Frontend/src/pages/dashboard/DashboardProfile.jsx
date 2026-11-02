@@ -73,7 +73,7 @@ export const DashboardProfile = ({
                 <CheckCircleIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
                 <span>Verified Institutional User</span>
               </span>
-              <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40">
+              <span className="text-xs font-black text-[#000000]/80 dark:text-[#FFFFFF]/80">
                 Role: {formData.role}
               </span>
               {formData.memberId && (

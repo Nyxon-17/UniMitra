@@ -17,6 +17,7 @@ const envSchema = z.object({
   AI_SERVICE_SECRET: z.string().default('unimitra_internal_ai_secret_2026'),
   CORS_ORIGIN: z.string().default('http://localhost:5173,http://localhost:3000'),
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
+  BAKBAK_API_KEY: z.string().default('eX2lWnCNyy6JtU6KgUhBC4rpE6o8Bluw'),
 });
 
 const parseEnv = () => {
@@ -30,4 +31,3 @@ const parseEnv = () => {
 };
 
 export const env = parseEnv();
-

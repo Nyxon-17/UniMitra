@@ -18,4 +18,12 @@ class QueryRequest(BaseModel):
 class VoiceSynthesizeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Text to synthesize to speech")
     language: Optional[str] = Field("as", description="'as' for Assamese, 'en' for English")
+    gender: Optional[str] = Field("male", description="'male' for chatbot text listen, 'female' for voice assistant")
+    voice: Optional[str] = Field(None, description="Direct neural voice override")
 
+
+class TTSGenerateRequest(BaseModel):
+    text: str = Field(..., min_length=1, description="Original AI response to synthesize")
+    language: Optional[str] = Field(None, description="Language hint ('as' or 'en')")
+    gender: Optional[str] = Field("female", description="'female' for voice assistant, 'male' for listen")
+    voice: Optional[str] = Field(None, description="Voice ID override")

@@ -1,9 +1,36 @@
 import json
 import logging
+import uuid
 from typing import Any, Dict, List, Optional
 from app.core.database import execute_mutation, execute_query, get_db_connection
 
 logger = logging.getLogger("unimitra.vector_store")
+
+
+def resolve_document_uuid(raw_id: str) -> str:
+    """
+    Ensures raw_id is a valid UUID string for PostgreSQL UUID columns.
+    If a custom identifier (e.g. DOC-ADM-8195) is passed, checks documents table
+    or deterministically generates a version 5 UUID from it.
+    """
+    if not raw_id:
+        return str(uuid.uuid4())
+    try:
+        return str(uuid.UUID(str(raw_id)))
+    except (ValueError, AttributeError):
+        pass
+
+    try:
+        rows = execute_query(
+            "SELECT id FROM documents WHERE custom_id = %s LIMIT 1;",
+            (str(raw_id),)
+        )
+        if rows and rows[0].get("id"):
+            return str(rows[0]["id"])
+    except Exception:
+        pass
+
+    return str(uuid.uuid5(uuid.NAMESPACE_DNS, str(raw_id)))
 
 
 class VectorStoreService:
@@ -47,8 +74,6 @@ class VectorStoreService:
             SELECT id, document_id, chunk_index, page_number, clause_reference, 
                    content, 1 - (embedding <=> %s::vector) AS similarity, metadata
             FROM ai_document_chunks
-            WHERE (%s IS NULL OR university_code = %s OR university_code = 'ALL')
-              AND (%s IS NULL OR category_code = %s)
             ORDER BY embedding <=> %s::vector ASC
             LIMIT %s;
         """
@@ -57,15 +82,13 @@ class VectorStoreService:
                 direct_sql,
                 (
                     vector_str,
-                    university_code,
-                    university_code,
-                    category_code,
-                    category_code,
                     vector_str,
                     match_count,
                 ),
             )
-            return [r for r in results if float(r.get("similarity", 0)) >= threshold]
+            min_thresh = min(threshold, 0.35)
+            filtered = [r for r in results if float(r.get("similarity", 0)) >= min_thresh]
+            return filtered if filtered else results
         except Exception as err:
             logger.error(f"Vector search query error: {err}")
             return []
@@ -81,10 +104,12 @@ class VectorStoreService:
     ) -> int:
         """
         Batch inserts document chunks with 768-dim embeddings into ai_document_chunks.
+        Safely resolves document_id to a valid UUID for PostgreSQL UUID foreign keys.
         """
         if not chunks or not embeddings or len(chunks) != len(embeddings):
             return 0
 
+        doc_uuid = resolve_document_uuid(document_id)
         conn = None
         inserted_count = 0
         try:
@@ -93,7 +118,7 @@ class VectorStoreService:
                 # Remove prior chunks if re-indexing document
                 cur.execute(
                     "DELETE FROM ai_document_chunks WHERE document_id = %s;",
-                    (document_id,),
+                    (doc_uuid,),
                 )
 
                 insert_sql = """
@@ -115,6 +140,8 @@ class VectorStoreService:
                     vector_str = "[" + ",".join(f"{x:.6f}" for x in emb) + "]"
                     meta = {
                         **(doc_metadata or {}),
+                        "custom_id": document_id,
+                        "document_id": doc_uuid,
                         "page": chunk.get("page_number"),
                         "clause": chunk.get("clause_reference"),
                     }
@@ -122,7 +149,7 @@ class VectorStoreService:
                     cur.execute(
                         insert_sql,
                         (
-                            document_id,
+                            doc_uuid,
                             university_code,
                             category_code,
                             chunk.get("chunk_index", 0),
@@ -146,4 +173,3 @@ class VectorStoreService:
 
 
 vector_store = VectorStoreService()
-
