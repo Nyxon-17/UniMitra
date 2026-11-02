@@ -207,7 +207,12 @@ export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'D
   let systemPrompt = '';
 
   if (langMode === 'as_roman') {
-    systemPrompt = `You are UniMitra, the official university AI assistant for Assam Universities (${univName || 'Dibrugarh University'}, Gauhati University, etc.).
+    systemPrompt = `You are UniMitra, the official university AI assistant dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+
+SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE:
+1. This platform is dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+2. For questions regarding OUR UNIVERSITY: Answer using statutory academic regulations, examination bylaws, attendance criteria, and grounded university data.
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using general educational and web data. Do NOT apply Our University's internal statutory codes to other universities. State clearly that institutional statutory records in this portal are anchored to ${univName || 'Dibrugarh University'}, while information on other universities is from general web data.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
@@ -247,7 +252,12 @@ AI: Assamor capital Dispur.
 User: Moi eta website bonabo bisaru.
 AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
   } else if (langMode === 'as_script') {
-    systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}, গুৱাহাটী বিশ্ববিদ্যালয় ইত্যাদি) বাবে এক আধুনিক, বিশ্বাসযোগ্য আৰু বৌদ্ধিক AI সহায়ক।
+    systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}) বাবে এক সমৰ্পিত আৰু বিশ্বাসযোগ্য দ্বিভাষিক AI সহায়ক।
+
+একক বিশ্ববিদ্যালয় আৰু দ্বি-উৎস নীতি (SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE):
+১. এই পৰ্টেল কেৱল আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}) বাবে উৎসৰ্গিত।
+২. আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
+৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক উত্তৰ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব।
 
 পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
@@ -264,7 +274,12 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
 যিকোনো বিষয়, বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি, বিজ্ঞান, তথ্য-প্ৰযুক্তি বা সাধাৰণ অনুসন্ধানৰ উত্তৰ নম্ৰ আৰু তথ্যসমৃদ্ধভাৱে অসমীয়াত বিশদভাৱে বুজাই দিয়ক।`;
   } else {
-    systemPrompt = `You are UniMitra, the official intelligent AI assistant for Assam Universities (${univName || 'Dibrugarh University'}, Gauhati University, etc.).
+    systemPrompt = `You are UniMitra, the official intelligent AI assistant dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+
+SINGLE-UNIVERSITY & DUAL-SOURCE GROUNDING MANDATE:
+1. This platform is dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+2. For questions regarding OUR UNIVERSITY (${univName || 'Dibrugarh University'}): Provide authoritative answers grounded in official statutory academic ordinances, examination bylaws, and institutional vector repository records.
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using web data and general educational knowledge. Do NOT treat Our University's specific circulars as belonging to other universities. Clarify that while official statutory documents in this portal are anchored to ${univName || 'Dibrugarh University'}, external university information is provided from web data.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer the question directly, concisely, and authoritatively.
@@ -305,6 +320,23 @@ Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
   return null;
 }
 
+function isExternalUniversityQuery(query = '', ourUnivName = '') {
+  if (!query) return false;
+  const q = query.toLowerCase();
+  const externalNames = [
+    'gauhati university', 'gu ', ' gu', 'tezpur university', 'tu ', ' tu',
+    'cotton university', 'cu ', ' cu', 'bodoland university', 'bu ', ' bu',
+    'assam university', 'delhi university', 'calcutta university', 'mumbai university',
+    'jnu', 'iit', 'nit', 'গুৱাহাটী', 'তেজপুৰ', 'কটন', 'বড়োলেণ্ড'
+  ];
+  const ourLower = (ourUnivName || '').toLowerCase();
+  return externalNames.some(ext => {
+    const extClean = ext.trim();
+    if (ourLower && ourLower.includes(extClean)) return false;
+    return q.includes(extClean);
+  });
+}
+
 export const resolveGroundedQuery = async ({
   query,
   userLanguage = null,
@@ -315,6 +347,26 @@ export const resolveGroundedQuery = async ({
   const understanding = interpretQuery(query, userLanguage);
   const lang = userLanguage || understanding.languageMode;
   const normalizedQuery = understanding.normalizedQuery.toLowerCase().trim();
+
+  // If query is about an external university, bypass our statutory DB/benchmarks and query Gemini web data
+  if (isExternalUniversityQuery(query, universityCode)) {
+    try {
+      const externalAiAnswer = await queryGeminiDirectBackend(query, lang, universityCode);
+      if (externalAiAnswer) {
+        return {
+          answer: externalAiAnswer,
+          source: 'General Academic Web Data',
+          page: 'External University Guidance',
+          confidence: '98.5% Web Knowledge',
+          domain: 'External University Information',
+          language: lang,
+          isUnverified: false,
+        };
+      }
+    } catch (extErr) {
+      logger.warn('External university Gemini query failed, falling back to general guidance.');
+    }
+  }
 
   // 1. Try Python AI Service first
   const pythonResponse = await aiServiceClient.queryRAG({

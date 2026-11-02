@@ -706,7 +706,14 @@ class UniversityService {
     const uAsName = this.data.profile?.asName || 'মোৰ বিশ্ববিদ্যালয়';
     const uAbbr = this.data.profile?.abbreviation || 'MU';
     const uHelpline = this.data.profile?.helpline || '+91-373-2370000';
-    const uEmail = this.data.profile?.email || 'registrar@myuniversity.edu.in';
+        const uEmail = this.data.profile?.email || 'registrar@myuniversity.edu.in';
+
+    // External University Guardrail: Dedicated exclusively to Our University
+    const externalUnivKeywords = ['gauhati', 'tezpur', 'cotton', 'bodoland', 'assam university', 'delhi university', 'calcutta university', 'mumbai university', 'jnu', 'গুৱাহাটী', 'তেজপুৰ', 'কটন', 'বড়োলেণ্ড'];
+    const isExternalQuery = externalUnivKeywords.some((k) => lower.includes(k) && !uName.toLowerCase().includes(k));
+    if (isExternalQuery) {
+      return null;
+    }
 
     // 1. Search in Approved Uploaded Documents (Faculty/Admin Ingested)
     if (approvedDocs && approvedDocs.length > 0) {

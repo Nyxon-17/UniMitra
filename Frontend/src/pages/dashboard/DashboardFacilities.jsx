@@ -109,7 +109,7 @@ export const DashboardFacilities = ({ onNavigateTab, currentLang = 'en' }) => {
             className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+              <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                 {fac.category}
               </span>
               <button
@@ -132,7 +132,7 @@ export const DashboardFacilities = ({ onNavigateTab, currentLang = 'en' }) => {
               )}
             </div>
 
-            <div className="p-3 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] grid grid-cols-2 gap-2 text-xs">
+            <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60 block font-bold">Capacity / Size:</span>
                 <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{fac.capacity}</span>

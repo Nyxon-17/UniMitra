@@ -149,7 +149,7 @@ export const DashboardSavedAnswers = ({ onNavigateTab, currentLang = 'en' }) => 
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 pb-3">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] text-white">
+                  <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                     {item.category || 'General'}
                   </span>
                   <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 flex items-center space-x-1">

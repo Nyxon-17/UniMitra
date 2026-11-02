@@ -20,6 +20,25 @@ const GEMINI_CANDIDATES = [
 
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
 const ACTIVE_SESSION_ID_KEY = 'unimitra_active_session_id';
+export function getDomainSessionsKey(domain = 'student') {
+  const d = (domain || 'student').toLowerCase();
+  if (d.includes('admin')) return 'unimitra_chat_sessions_admin';
+  if (d.includes('faculty')) return 'unimitra_chat_sessions_faculty';
+  return 'unimitra_chat_sessions_student';
+}
+
+export function getDomainActiveSessionKey(domain = 'student') {
+  const d = (domain || 'student').toLowerCase();
+  if (d.includes('admin')) return 'unimitra_active_session_admin';
+  if (d.includes('faculty')) return 'unimitra_active_session_faculty';
+  return 'unimitra_active_session_student';
+}
+
+export function getDomainMessageKey(sessionId, domain = 'student') {
+  const d = (domain || 'student').toLowerCase();
+  const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
+  return unimitra_messages__;
+}
 
 export function sanitizeAiResponse(text = '') {
   if (!text) return text;
@@ -152,8 +171,18 @@ async function callDirectGemini({ query, language, university }) {
 
   let systemPrompt = '';
 
+  const activeProfile = universityService.getProfile();
+  const resolvedUnivName = activeProfile?.name || uName || 'Dibrugarh University';
+  const resolvedAsName = activeProfile?.asName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়';
+
   if (mode === 'as_roman') {
-    systemPrompt = `You are UniMitra, the official university AI assistant for Assam Universities (${uName}, Gauhati University, etc.).
+    systemPrompt = `You are UniMitra, the official university AI assistant dedicated exclusively to ${resolvedUnivName}.
+
+SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE:
+1. This platform is dedicated exclusively to Our University (${resolvedUnivName}).
+2. For questions regarding OUR UNIVERSITY (${resolvedUnivName}): Answer using statutory academic regulations, examination bylaws, attendance criteria, and grounded university data.
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details, comparisons, and academic facts using general educational and web data. Do NOT apply Our University's internal statutory codes to other universities. Mention politely that official statutory records in this portal are dedicated to ${resolvedUnivName}, while other university details are provided via web data.
+4. If the user asks about other universities, answer authoritatively and helpfully using web data. Never refuse to assist.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
@@ -193,7 +222,12 @@ AI: Assamor capital Dispur.
 User: Moi eta website bonabo bisaru.
 AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
   } else if (mode === 'as_script') {
-    systemPrompt = `You are UniMitra (ইউনিমিত্র), the official intelligent, supportive, and bilingual AI assistant for higher education institutions in Assam (such as ${uName}, Gauhati University, Tezpur University, and affiliated colleges).
+    systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${resolvedAsName} / ${resolvedUnivName}) বাবে এক সমৰ্পিত আৰু বিশ্বাসযোগ্য দ্বিভাষিক AI সহায়ক।
+
+একক বিশ্ববিদ্যালয় আৰু দ্বি-উৎস নীতি (SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE):
+১. এই প্লেটফৰ্ম কেৱল আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${resolvedAsName}) বাবে উৎসৰ্গিত।
+২. আমাৰ বিশ্ববিদ্যালয়ৰ (${resolvedAsName}) প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম, পৰীক্ষা বিধি আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
+৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, দিল্লী বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক বিৱৰণ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব। বুজাই দিয়ক যে এই পৰ্টেলটো আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰতিষ্ঠানিক বিধিৰ বাবে নিৰ্ধাৰিত, কিন্তু অন্যান্য বিশ্ববিদ্যালয়ৰ তথ্য সাধাৰণ ৱেব তথ্যৰ ভিত্তিত দিয়া হৈছে।
 
 CRITICAL DIRECT ANSWER MANDATE:
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
@@ -213,7 +247,12 @@ Do NOT reply in English. Every explanation, guideline, greeting, advice, paragra
 Provide comprehensive, clear, accurate, and well-structured answers to the user's question. 
 Answer any question (university rules, exams, admissions, syllabus, science, computing, career, general knowledge, etc.) politely, thoroughly, and encouragingly in Standard Assamese.`;
   } else {
-    systemPrompt = `You are UniMitra, the official intelligent, supportive, and bilingual AI assistant for higher education institutions in Assam (such as ${uName}, Gauhati University, Tezpur University, and affiliated colleges).
+    systemPrompt = `You are UniMitra, the official university AI assistant dedicated exclusively to Our University (${resolvedUnivName}).
+
+SINGLE-UNIVERSITY & DUAL-SOURCE GROUNDING MANDATE:
+1. This platform is dedicated exclusively to Our University (${resolvedUnivName}).
+2. For questions regarding OUR UNIVERSITY (${resolvedUnivName}): Provide authoritative answers grounded in official statutory academic ordinances, examination bylaws, and institutional vector repository records.
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate information, comparisons, and academic details using web data and general educational knowledge. Do NOT treat Our University's specific circulars as belonging to other universities. Clarify that while official statutory documents in this portal are anchored to ${resolvedUnivName}, external university information is provided from web data. Never refuse to answer.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer the user's question directly, concisely, and authoritatively.
@@ -373,121 +412,156 @@ export const chatService = {
   },
 
   /**
-   * Retrieve all chat sessions (ChatGPT style)
+   * Retrieve all chat sessions isolated by portal domain (student, faculty, admin)
    */
-  async getSessions() {
-    // 1. Try Backend if authenticated
-    try {
-      const token = localStorage.getItem('unimitra_auth_token');
-      if (token) {
-        const res = await fetch(`${CHAT_API}/sessions`, {
-          headers: getAuthHeaders(),
-          credentials: 'include'
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.success && Array.isArray(data.data)) {
-            localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(data.data));
-            return data.data;
-          }
-        }
-      }
-    } catch {
-      // Fallback to local storage
-    }
-
-    // 2. Load from localStorage
-    try {
-      const stored = localStorage.getItem(LOCAL_SESSIONS_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // ignore
-    }
-
-    return [];
+  async getSessions(domain = 'student') {
+    return this.getLocalSessions(domain);
   },
 
   /**
-   * Save or update a session in local storage
+   * Save or update a session in local storage for a specific portal domain
    */
-  saveLocalSession(session) {
+  saveLocalSession(session, domain = 'student') {
     try {
-      const sessions = this.getLocalSessions();
+      const key = getDomainSessionsKey(domain);
+      const sessions = this.getLocalSessions(domain);
       const existingIdx = sessions.findIndex(s => s.id === session.id);
       let updated;
       if (existingIdx >= 0) {
         updated = [...sessions];
-        updated[existingIdx] = { ...updated[existingIdx], ...session, updatedAt: new Date().toISOString() };
+        updated[existingIdx] = { ...updated[existingIdx], ...session, domain, updatedAt: new Date().toISOString() };
       } else {
-        updated = [{ ...session, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, ...sessions];
+        updated = [{ ...session, domain, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, ...sessions];
       }
-      localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(updated.slice(0, 50)));
+      localStorage.setItem(key, JSON.stringify(updated.slice(0, 50)));
       return updated;
     } catch {
       return [];
     }
   },
 
-  getLocalSessions() {
+  getLocalSessions(domain = 'student') {
     try {
-      const raw = localStorage.getItem(LOCAL_SESSIONS_KEY);
-      return raw ? JSON.parse(raw) : [];
+      const key = getDomainSessionsKey(domain);
+      const raw = localStorage.getItem(key);
+      if (raw) return JSON.parse(raw);
+      if (domain === 'student') {
+        const legacy = localStorage.getItem(LOCAL_SESSIONS_KEY);
+        if (legacy) return JSON.parse(legacy);
+      }
+      return [];
     } catch {
       return [];
     }
   },
 
-  deleteSession(sessionId) {
-    // 1. Call Backend if online
+  deleteSession(sessionId, domain = 'student') {
     try {
-      fetch(`${CHAT_API}/sessions/${sessionId}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders(),
-        credentials: 'include'
-      }).catch(() => {});
-    } catch {
-      // ignore
-    }
-
-    // 2. Remove locally
-    try {
-      const sessions = this.getLocalSessions().filter(s => s.id !== sessionId);
-      localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(sessions));
-      localStorage.removeItem(`unimitra_messages_${sessionId}`);
+      const key = getDomainSessionsKey(domain);
+      const sessions = this.getLocalSessions(domain).filter(s => s.id !== sessionId);
+      localStorage.setItem(key, JSON.stringify(sessions));
+      localStorage.removeItem(getDomainMessageKey(sessionId, domain));
+      if (this.getActiveSessionId(domain) === sessionId) {
+        this.setActiveSessionId(null, domain);
+      }
       return sessions;
     } catch {
       return [];
     }
   },
 
-  getSessionMessages(sessionId) {
+  clearAllSessions(domain = 'student') {
     try {
-      const raw = localStorage.getItem(`unimitra_messages_${sessionId}`);
-      return raw ? JSON.parse(raw) : null;
+      const key = getDomainSessionsKey(domain);
+      const sessions = this.getLocalSessions(domain);
+      sessions.forEach(s => {
+        localStorage.removeItem(getDomainMessageKey(s.id, domain));
+      });
+      localStorage.removeItem(key);
+      localStorage.removeItem(getDomainActiveSessionKey(domain));
+      return [];
+    } catch {
+      return [];
+    }
+  },
+
+  getSessionMessages(sessionId, domain = 'student') {
+    if (!sessionId) return null;
+    try {
+      const raw = localStorage.getItem(getDomainMessageKey(sessionId, domain));
+      if (raw) return JSON.parse(raw);
+      if (domain === 'student') {
+        const legacy = localStorage.getItem(unimitra_messages_);
+        if (legacy) return JSON.parse(legacy);
+      }
+      return null;
     } catch {
       return null;
     }
   },
 
-  saveSessionMessages(sessionId, messages) {
+  saveSessionMessages(sessionId, messages, domain = 'student') {
+    if (!sessionId) return;
     try {
-      localStorage.setItem(`unimitra_messages_${sessionId}`, JSON.stringify(messages));
+      localStorage.setItem(getDomainMessageKey(sessionId, domain), JSON.stringify(messages));
     } catch {
       // ignore
     }
   },
 
-  getActiveSessionId() {
-    return localStorage.getItem(ACTIVE_SESSION_ID_KEY) || null;
+  getActiveSessionId(domain = 'student') {
+    try {
+      const val = localStorage.getItem(getDomainActiveSessionKey(domain));
+      if (val) return val;
+      if (domain === 'student') {
+        return localStorage.getItem(ACTIVE_SESSION_ID_KEY) || null;
+      }
+      return null;
+    } catch {
+      return null;
+    }
   },
 
-  setActiveSessionId(id) {
-    if (id) {
-      localStorage.setItem(ACTIVE_SESSION_ID_KEY, id);
-    } else {
-      localStorage.removeItem(ACTIVE_SESSION_ID_KEY);
+  setActiveSessionId(id, domain = 'student') {
+    try {
+      const key = getDomainActiveSessionKey(domain);
+      if (id) {
+        localStorage.setItem(key, id);
+      } else {
+        localStorage.removeItem(key);
+      }
+    } catch {
+      // ignore
+    }
+  },
+
+  /**
+   * Synthesize high-speed neural speech audio using TTS-Accelerator.
+   * Calls Backend POST /api/v1/voice/synthesize, returning a playable Object URL.
+   */
+  async synthesizeVoiceAudio(text, language = 'as', gender = 'male') {
+    if (!text || !text.trim()) return null;
+    const clean = sanitizeAiResponse(text);
+    try {
+      const response = await fetch(`${API_BASE}/voice/synthesize`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          text: clean,
+          language: language || 'as',
+          gender: gender || 'male',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`TTS synthesis failed with status ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    } catch (err) {
+      console.warn('Backend TTS-Accelerator synthesis unavailable, falling back:', err);
+      return null;
     }
   },
 

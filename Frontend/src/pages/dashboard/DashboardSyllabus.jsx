@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState } from 'react';
 import {
   BookOpenIcon,
@@ -13,6 +14,7 @@ export const DashboardSyllabus = ({
   onNavigateTab,
   currentLang = 'en'
 }) => {
+  const univProfile = universityService.getProfile();
   const [selectedUniversity, setSelectedUniversity] = useState('All Universities');
   const [selectedProgram, setSelectedProgram] = useState('BCA');
   const [selectedSemester, setSelectedSemester] = useState(3);
@@ -268,8 +270,8 @@ export const DashboardSyllabus = ({
             </h1>
             <p className="text-xs sm:text-sm text-[#000000]/75 dark:text-[#FFFFFF]/80 max-w-2xl">
               {currentLang === 'as'
-                ? 'অসমৰ বিশ্ববিদ্যালয়সমূহৰ পাঠ্যক্ৰম, বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু অনুমোদিত পাঠ্যপুথি বিনামূলীয়াকৈ অন্বেষণ কৰক।'
-                : 'Freely browse verified semester units, credit allocation, recommended textbooks, and question blueprints across all Assam universities with zero login barriers.'}
+                ? 'আমাৰ বিশ্ববিদ্যালয়ৰ পাঠ্যক্ৰম, বিষয়ৰ ইউনিট, ক্ৰেডিট আৰু অনুমোদিত পাঠ্যপুথি অন্বেষণ কৰক।'
+                : 'Freely browse verified semester units, credit allocation, recommended textbooks, and question blueprints for our university with zero login barriers.'}
             </p>
           </div>
 
@@ -289,17 +291,14 @@ export const DashboardSyllabus = ({
         <div className="mt-8 pt-6 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-black text-[#000000]/75 dark:text-[#FFFFFF]/80 uppercase tracking-wider mb-1.5">
-              {currentLang === 'as' ? 'বিশ্ববিদ্যালয় বাছক' : 'University / Academic Board'}
+              {currentLang === 'as' ? 'আমাৰ বিশ্ববিদ্যালয়' : 'Our University'}
             </label>
-            <select
-              value={selectedUniversity}
-              onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#7C3AED]"
-            >
-              {universities.map((univ) => (
-                <option key={univ} value={univ}>{univ}</option>
-              ))}
-            </select>
+            <input
+              type="text"
+              readOnly
+              value={univProfile.name || 'Our University'}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E0D4FD] dark:border-[#3B2868] bg-[#FAF8FF] dark:bg-black text-xs sm:text-sm font-bold text-[#000000] dark:text-[#FFFFFF] outline-none opacity-90 cursor-not-allowed"
+            />
           </div>
 
           <div>
@@ -381,7 +380,7 @@ export const DashboardSyllabus = ({
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#03C988]">
+                        <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#03C988]">
                           {subject.code}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FAF8FF] dark:bg-black text-[#000000]/75 dark:text-[#FFFFFF]/80 border border-[#E0D4FD] dark:border-[#3B2868]">
@@ -469,7 +468,7 @@ export const DashboardSyllabus = ({
                     </div>
 
                     {/* Prescribed Textbooks */}
-                    <div className="mt-5 p-4 rounded-xl bg-[#FFE9A9] dark:bg-[#141414] border border-[#FFCB56] dark:border-[#1C82AD]">
+                    <div className="mt-5 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
                       <div className="flex items-center space-x-2 text-xs font-bold text-[#D97706] dark:text-[#FBBF24] mb-2">
                         <CheckCircleIcon className="w-4 h-4 text-[#F59E0B]" />
                         <span>{currentLang === 'as' ? 'অনুমোদিত পাঠ্যপুথি আৰু প্ৰসংগ পুথি' : 'Prescribed Textbooks & Reference Readings'}</span>

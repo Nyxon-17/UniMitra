@@ -128,7 +128,7 @@ export const DashboardRegulations = ({
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-[#000000] dark:text-[#FFFFFF]">
                     {reg.ordinanceNo || 'Statutory Ordinance'}
                   </span>
                   <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">

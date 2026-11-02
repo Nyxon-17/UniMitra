@@ -5,6 +5,7 @@ import { logger } from '../../config/logger.js';
 
 /**
  * 1. Process Voice Query: Audio in -> Transcript -> RAG Answer -> Audio out
+ * (Voice Assistant Mode: uses FEMALE voice for speech response)
  */
 export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', language = 'as', university = null) => {
   if (!audioBuffer) {
@@ -35,8 +36,9 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
   });
 
   // 3. Synthesize Speech Audio Output (TTS)
+  // Voice Assistant uses FEMALE voice (bn-IN-TanishaaNeural for Assamese, en-IN-NeerjaNeural for English)
   let audioBase64 = null;
-  const audioBytes = await aiServiceClient.synthesizeVoice(ragResult.answer, queryLang);
+  const audioBytes = await aiServiceClient.synthesizeVoice(ragResult.answer, queryLang, 'female');
   if (audioBytes) {
     audioBase64 = Buffer.from(audioBytes).toString('base64');
   }
@@ -82,13 +84,13 @@ export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', lang
 
 /**
  * 3. Text-to-Speech Synthesis Only
+ * Default gender is 'male' for chat bot text listen features, or 'female' for voice assistant
  */
-export const synthesizeText = async (text, language = 'as') => {
+export const synthesizeText = async (text, language = 'as', gender = 'male', voice = null) => {
   if (!text) {
     throw ApiError.badRequest('Text is required for speech synthesis.');
   }
 
-  const audioBytes = await aiServiceClient.synthesizeVoice(text, language);
+  const audioBytes = await aiServiceClient.synthesizeVoice(text, language, gender, voice);
   return audioBytes;
 };
-

@@ -1,3 +1,4 @@
+import { universityService } from './universityService';
 // Centralized Institutional Document & Ingestion Management Service
 // Supports bilingual (English & Assamese) documents, multi-tenancy, and 
 // role-based workflow: Faculty uploads require Administrator approval before vector indexing.
@@ -187,7 +188,7 @@ export const documentService = {
       id: `DOC-FAC-${Date.now().toString().slice(-4)}`,
       title: docData.title || 'Untitled Academic Document',
       asTitle: docData.asTitle || docData.title || '',
-      university: docData.university || 'Gauhati University (GU)',
+      university: docData.university || universityService.getProfile()?.name || 'Dibrugarh University (DU)',
       category: docData.category || 'Syllabus & Curriculum Frameworks',
       department: docData.department || 'Academic Department',
       academicYear: docData.academicYear || '2024-2025',
@@ -225,7 +226,7 @@ export const documentService = {
       id: `DOC-ADM-${Date.now().toString().slice(-4)}`,
       title: docData.title || 'Institutional Gazette',
       asTitle: docData.asTitle || docData.title || '',
-      university: docData.university || 'All Universities of Assam',
+      university: docData.university || universityService.getProfile()?.name || 'Dibrugarh University (DU)',
       category: docData.category || 'University Regulations & Ordinances',
       department: docData.department || 'Institutional Governance',
       academicYear: docData.academicYear || '2024-2025',

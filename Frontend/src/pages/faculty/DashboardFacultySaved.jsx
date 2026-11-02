@@ -108,7 +108,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
           </div>
 
           <div className="shrink-0 flex items-center space-x-2">
-            <span className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-[#FFE9A9] dark:bg-[#1A1A1A] text-[#000000] dark:text-[#FFFFFF]">
+            <span className="text-xs font-black text-[#000000]/80 dark:text-[#FFFFFF]/80">
               {consultations.length} Consultations
             </span>
           </div>
@@ -154,7 +154,7 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 pb-3">
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#3B2868] text-[#FAF8FF]">
+                <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
                   {item.tag}
                 </span>
                 <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80 flex items-center space-x-1">
@@ -185,11 +185,11 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
               {item.title}
             </h2>
 
-            <div className="p-3 bg-[#E0D4FD]/20 dark:bg-[#0A0A0A] rounded-xl text-xs text-[#000000] dark:text-[#FFFFFF] font-bold">
+            <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-xs text-[#000000] dark:text-[#FFFFFF] font-bold">
               Q: {item.query}
             </div>
 
-            <div className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
+            <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 text-xs sm:text-sm text-[#000000] dark:text-[#FFFFFF] leading-relaxed">
               {item.response}
             </div>
 

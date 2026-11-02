@@ -1,3 +1,4 @@
+import { universityService } from '../../services/universityService';
 import { useState } from 'react';
 import axios from 'axios';
 import {
@@ -10,10 +11,11 @@ import {
 } from '../../components/common/Icons';
 
 export const Contact = ({ currentLang = 'en' }) => {
+  const univProfile = universityService.getProfile();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    university: 'Gauhati University (GU)',
+    university: univProfile.name || 'Our University',
     role: 'Student',
     inquiryType: 'Regulation Clarification',
     message: ''
@@ -68,7 +70,7 @@ export const Contact = ({ currentLang = 'en' }) => {
       setFormData({
         name: '',
         email: '',
-        university: 'Gauhati University (GU)',
+        university: univProfile.name || 'Our University',
         role: 'Student',
         inquiryType: 'Regulation Clarification',
         message: ''
@@ -149,21 +151,14 @@ export const Contact = ({ currentLang = 'en' }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      University *
+                      Our University
                     </label>
-                    <select
-                      value={formData.university}
-                      onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
-                    >
-                      <option>Gauhati University (GU)</option>
-                      <option>Dibrugarh University (DU)</option>
-                      <option>Tezpur University (TU)</option>
-                      <option>Cotton University (CU)</option>
-                      <option>Assam University (Silchar)</option>
-                      <option>Bodoland University (BU)</option>
-                      <option>Other / General</option>
-                    </select>
+                    <input
+                      type="text"
+                      readOnly
+                      value={univProfile.name || 'Our University'}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] text-xs sm:text-sm outline-none font-bold opacity-90 cursor-not-allowed"
+                    />
                   </div>
 
                   <div>
