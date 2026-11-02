@@ -648,9 +648,11 @@ export const AuthModal = ({
         {/* Header with Brand & Close Button */}
         <div className="flex items-center justify-between px-6 py-4 bg-[#E0D4FD]/25 dark:bg-black border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] flex items-center justify-center text-white shadow-xs">
-              <BuildingLibraryIcon className="w-5 h-5 text-[#FAF8FF]" />
-            </div>
+            <img 
+              src="/unimitra-emblem.png" 
+              alt="UniMitra Shield" 
+              className="w-9 h-9 object-contain drop-shadow-xs" 
+            />
             <div>
               <span className="text-lg font-black text-[#000000] dark:text-[#FFFFFF] leading-tight">
                 Uni<span className="text-[#8F00FF]">Mitra</span>

@@ -14,18 +14,19 @@ MAX_CACHE_ENTRIES = 300
 
 class TTSManager:
     """
-    Centralized Dual-Engine TTS Manager:
-    1. Language Routing:
-       - Assamese (অসমীয়া) -> Bakbak API
-       - English -> GitHub-based TTS (edge-tts)
-    2. Credit Protection:
-       - In-memory SHA-256 deduplication cache
-       - Input validation & truncation
-       - Zero duplicate calls to Bakbak for previously generated responses
+    Unified Speech Synthesis (TTS) Manager:
+    - Primary Engine: Google Gemini Native Audio TTS for ALL languages
+      (English, Pure Assamese, Assamese-English code-mixed, and Romanized Assamese).
+    - Resilient Fallbacks:
+      - Bakbak API for Assamese / mixed speech if Gemini TTS is unavailable
+      - GitHub edge-tts for English speech if Gemini TTS is unavailable
+    - Credit & Latency Protection:
+      - In-memory SHA-256 deduplication cache
+      - Zero redundant API calls for cached responses
     """
 
     def __init__(self):
-        # Cache structure: hash(clean_text, lang, gender, voice) -> (audio_bytes, media_type)
+        # Cache structure: hash(clean_text, lang, gender, voice, speed) -> (audio_bytes, media_type)
         self._cache: Dict[str, Tuple[bytes, str]] = {}
         self._cache_keys: list = []
 
@@ -50,7 +51,7 @@ class TTSManager:
         speed: Optional[float] = None,
     ) -> Tuple[bytes, str, str, str]:
         """
-        Coordinates dual-engine speech synthesis.
+        Synthesizes speech using Google Gemini TTS for all languages with resilient fallbacks.
         Returns:
             (audio_bytes, media_type, provider_name, resolved_language)
         """
@@ -62,13 +63,13 @@ class TTSManager:
         if not clean_text:
             raise ValueError("Text contains no speakable characters.")
 
-        # 2. Classify text category for specialized routing
+        # 2. Classify text category for language resolution
         category, primary_lang, confidence = language_router.classify_text_for_tts(clean_text, hint=language)
         logger.info(
-            f"TTS Routing: category='{category}', resolved_lang='{primary_lang}' (confidence={confidence:.2f}) for text length={len(clean_text)}"
+            f"TTS Request: category='{category}', resolved_lang='{primary_lang}' (confidence={confidence:.2f}), length={len(clean_text)}"
         )
 
-        # 3. Apply phonetic normalization for Assamese TTS clarity
+        # 3. Apply phonetic normalization for Assamese script clarity
         if primary_lang == "as":
             clean_text = language_router.normalize_assamese_for_tts(clean_text)
 
@@ -77,52 +78,29 @@ class TTSManager:
         if cache_key in self._cache:
             cached_bytes, cached_media = self._cache[cache_key]
             logger.info(f"TTS Cache Hit! Serving {len(cached_bytes)} bytes from cache.")
-            provider = f"{category}_cache"
+            provider = f"gemini_{category}_cache"
             return cached_bytes, cached_media, provider, primary_lang
 
-        # 5. Route to specific engine according to language and code-mixing
-        if category == "pure_assamese":
-            # Pure Assamese speech -> Native Bakbak Assamese Voice Engine
-            logger.info("Routing pure Assamese text to native Bakbak Assamese TTS...")
-            try:
-                audio_bytes = await bakbak_tts.synthesize_async(
-                    text=clean_text,
-                    gender=gender,
-                    voice_override=voice,
-                    speed=speed,
-                )
-                media_type = "audio/wav"
-                provider = "bakbak_pure_assamese"
-            except Exception as b_err:
-                logger.warning(f"Bakbak TTS error: {b_err}. Falling back to Gemini TTS...")
-                audio_bytes = None
+        # 5. Primary Engine: Google Gemini Native Audio TTS for ALL languages
+        logger.info(f"Synthesizing '{category}' ({primary_lang}) speech using primary Google Gemini TTS...")
+        audio_bytes = None
+        media_type = "audio/wav"
+        provider = f"gemini_tts_{category}"
 
-            # Resilient Fallback to Gemini TTS if Bakbak is unavailable
-            if not audio_bytes:
-                logger.info("Engaging Gemini TTS fallback for Assamese speech...")
-                audio_bytes = await gemini_tts.synthesize_async(
-                    text=clean_text,
-                    gender=gender,
-                    voice_override=voice,
-                )
-                if audio_bytes:
-                    media_type = "audio/wav"
-                    provider = "gemini_tts_fallback"
-
-        elif category == "assamese_english":
-            # English + Assamese (Code-mixed or Romanized Assamese) -> Gemini TTS
-            logger.info("Routing English+Assamese code-mixed speech to Gemini TTS...")
+        try:
             audio_bytes = await gemini_tts.synthesize_async(
                 text=clean_text,
                 gender=gender,
                 voice_override=voice,
             )
-            media_type = "audio/wav"
-            provider = "gemini_tts_codemix"
+        except Exception as g_err:
+            logger.warning(f"Primary Gemini TTS error: {g_err}. Engaging resilient fallback...")
+            audio_bytes = None
 
-            # Resilient Fallback to Bakbak API
-            if not audio_bytes:
-                logger.info("Falling back to Bakbak API for mixed Assamese-English...")
+        # 6. Resilient Fallbacks (engaged only if Gemini TTS is unavailable)
+        if not audio_bytes:
+            if category in ("pure_assamese", "assamese_english") or primary_lang == "as":
+                logger.info("Engaging Bakbak Assamese Voice Engine fallback...")
                 try:
                     audio_bytes = await bakbak_tts.synthesize_async(
                         text=clean_text,
@@ -134,39 +112,26 @@ class TTSManager:
                         media_type = "audio/wav"
                         provider = "bakbak_fallback"
                 except Exception as b_err:
-                    logger.warning(f"Bakbak fallback error: {b_err}")
+                    logger.warning(f"Bakbak fallback notice: {b_err}")
 
-        else:
-            # Pure English -> GitHub Open-Source English TTS (edge-tts)
-            logger.info("Routing pure English speech to GitHub edge-tts...")
-            try:
-                audio_bytes = await english_tts.synthesize_async(
-                    text=clean_text,
-                    gender=gender,
-                    voice_override=voice,
-                )
-                media_type = "audio/mpeg"
-                provider = "github_english_tts"
-            except Exception as e_err:
-                logger.warning(f"GitHub English TTS error: {e_err}. Falling back to Gemini TTS...")
-                audio_bytes = None
-
-            # Resilient Fallback to Gemini TTS if GitHub edge-tts is unavailable
             if not audio_bytes:
-                logger.info("Falling back to Gemini TTS for English speech...")
-                audio_bytes = await gemini_tts.synthesize_async(
-                    text=clean_text,
-                    gender=gender,
-                    voice_override=voice,
-                )
-                if audio_bytes:
-                    media_type = "audio/wav"
-                    provider = "gemini_tts_fallback"
+                logger.info("Engaging GitHub English TTS fallback...")
+                try:
+                    audio_bytes = await english_tts.synthesize_async(
+                        text=clean_text,
+                        gender=gender,
+                        voice_override=voice,
+                    )
+                    if audio_bytes:
+                        media_type = "audio/mpeg"
+                        provider = "github_english_fallback"
+                except Exception as e_err:
+                    logger.warning(f"GitHub fallback notice: {e_err}")
 
         if not audio_bytes:
-            raise RuntimeError(f"Speech synthesis failed with provider {provider}.")
+            raise RuntimeError(f"All speech synthesis engines exhausted for category '{category}'.")
 
-        # 5. Cache result to protect credits
+        # 7. Cache result to protect credits and avoid duplicate calls
         self._store_cache(cache_key, audio_bytes, media_type)
 
         return audio_bytes, media_type, provider, primary_lang

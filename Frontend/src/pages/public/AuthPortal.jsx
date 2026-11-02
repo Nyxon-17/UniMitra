@@ -575,8 +575,12 @@ export const AuthPortal = ({
 
         {/* Top Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] text-white shadow-md border-2 border-[#FF933E]/50 dark:border-[#03C988]/50/40">
-            <BuildingLibraryIcon className="w-8 h-8 text-[#FAF8FF]" />
+          <div className="inline-flex items-center justify-center">
+            <img 
+              src="/unimitra-logo.png" 
+              alt="UniMitra Logo" 
+              className="h-16 sm:h-20 w-auto object-contain drop-shadow-md mx-auto" 
+            />
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-[#000000] dark:text-[#FFFFFF] tracking-tight">
             Uni<span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]/80">Mitra</span> Institutional Portals

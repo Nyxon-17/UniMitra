@@ -10,10 +10,10 @@ router = APIRouter(prefix="/api/tts", tags=["Text-to-Speech"])
 @router.post("/generate")
 async def generate_speech_endpoint(req: TTSGenerateRequest):
     """
-    Unified Dual-Engine TTS Endpoint:
-    - Assamese (অসমীয়া) -> Bakbak API (WAV)
-    - English -> GitHub-based Open-Source TTS (edge-tts MP3)
-    Includes in-memory deduplication caching to minimize Bakbak credit consumption.
+    Unified Speech Synthesis (TTS) Endpoint:
+    - Primary Engine: Google Gemini Native Audio TTS for ALL languages (English, Assamese, Code-Mixed)
+    - Fallbacks: Bakbak API (Assamese) and GitHub edge-tts (English)
+    Includes in-memory deduplication caching to minimize external API consumption.
     """
     if not req.text or not req.text.strip():
         raise HTTPException(

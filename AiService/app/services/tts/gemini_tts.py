@@ -10,12 +10,12 @@ logger = logging.getLogger("unimitra.tts.gemini")
 
 # Prioritized Gemini models supporting native audio modalities
 GEMINI_TTS_MODELS = [
-    "gemini-3.8-flash-tts",
-    "gemini-3.1-flash-tts-preview",
     "gemini-2.5-flash-preview-tts",
     "gemini-3.5-flash",
-    "gemini-3.8-flash",
     "gemini-flash-latest",
+    "gemini-3.8-flash",
+    "gemini-3.1-flash-tts-preview",
+    "gemini-3.8-flash-tts",
 ]
 
 DEFAULT_VOICE_NAMES = {
@@ -98,7 +98,6 @@ class GeminiTTS:
                 config = types.GenerateContentConfig(
                     response_modalities=["AUDIO"],
                     speech_config=speech_config,
-                    temperature=0.3,
                 )
 
                 response = client.models.generate_content(

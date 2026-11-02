@@ -119,9 +119,11 @@ export const DashboardSidebar = ({
           {/* Editorial Masthead / Logo Bar */}
           <div className="flex items-center justify-between h-18 px-6 border-b border-[#123C3A]/10 dark:border-[#55C7B2]/15">
             <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={handleLogoClick}>
-              <div className="w-9 h-9 rounded-xl bg-[#123C3A] dark:bg-[#55C7B2] flex items-center justify-center text-white dark:text-[#16181A] shadow-xs">
-                <BuildingLibraryIcon className="w-5 h-5 text-[#D4A96A] dark:text-[#16181A]" />
-              </div>
+              <img 
+                src="/unimitra-emblem.png" 
+                alt="UniMitra Shield" 
+                className="w-9 h-9 object-contain drop-shadow-xs" 
+              />
               <div>
                 <span className="text-lg font-bold tracking-tight text-[#123C3A] dark:text-[#DCE8E4] font-heading block leading-none">
                   Uni<span className="text-[#D4A96A] dark:text-[#55C7B2]">Mitra</span>
