@@ -34,6 +34,31 @@ export const SpeakerWaveIcon = ({ className = "w-5 h-5", ...props }) => (
   </svg>
 );
 
+export const PlayIcon = ({ className = "w-3 h-3", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+export const PauseIcon = ({ className = "w-3 h-3", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+  </svg>
+);
+
+export const StopIcon = ({ className = "w-3 h-3", ...props }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="M6 6h12v12H6z" />
+  </svg>
+);
+
+export const LoadingSpinnerIcon = ({ className = "w-3 h-3", ...props }) => (
+  <svg className={`${className} animate-spin`} fill="none" viewBox="0 0 24 24" {...props}>
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </svg>
+);
+
 /**
  * UniMitra Bilingual AI Assistant
  * 
@@ -139,7 +164,7 @@ const DashboardAiAssistantInner = ({
 
   // Chat Sessions & Active Thread State (Strictly isolated by domain: student, faculty, admin)
   const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain));
-  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain) || `session-${domain}-${Date.now()}`);
+  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain) || chatService.generateSessionId());
   const [messages, setMessages] = useState(() => {
     const curId = chatService.getActiveSessionId(domain);
     const saved = curId ? chatService.getSessionMessages(curId, domain) : null;
@@ -158,6 +183,10 @@ const DashboardAiAssistantInner = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(false);
   const [voiceError, setVoiceError] = useState('');
+  // Dipannita Pāṇini TTS State (Play, Pause, Resume, Stop, Loading, Error)
+  const [playingMessageId, setPlayingMessageId] = useState(null);
+  const [ttsState, setTtsState] = useState('idle'); // 'idle' | 'loading' | 'playing' | 'paused' | 'error'
+  const [ttsErrorMessage, setTtsErrorMessage] = useState('');
 
   // Share Modal State
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -180,21 +209,59 @@ const DashboardAiAssistantInner = ({
 
   // Load saved sessions on mount and sync whenever domain or language changes
   useEffect(() => {
-    const domainSessions = chatService.getLocalSessions(domain);
-    setSessions(domainSessions);
-    const curId = chatService.getActiveSessionId(domain);
-    if (curId) {
-      setActiveSessionId(curId);
-      const saved = chatService.getSessionMessages(curId, domain);
-      if (saved && saved.length > 0) {
-        setMessages(saved);
-        return;
+    let isCancelled = false;
+    const syncSessions = async () => {
+      const allSessions = await chatService.getSessions(domain);
+      if (!isCancelled && allSessions && allSessions.length > 0) {
+        setSessions(allSessions);
       }
-    }
-    const freshId = `session-${domain}-${Date.now()}`;
-    setActiveSessionId(freshId);
-    chatService.setActiveSessionId(freshId, domain);
-    setMessages([createInitialGreeting()]);
+
+      let curId = chatService.getActiveSessionId(domain);
+      if (!curId && allSessions && allSessions.length > 0) {
+        curId = allSessions[0].id;
+        chatService.setActiveSessionId(curId, domain);
+      }
+
+      if (curId) {
+        setActiveSessionId(curId);
+        const localMsgs = chatService.getSessionMessages(curId, domain);
+        if (!isCancelled && localMsgs && localMsgs.length > 0) {
+          setMessages(localMsgs);
+        }
+
+        const saved = await chatService.fetchSessionMessages(curId, domain);
+        if (!isCancelled && saved && saved.length > 0) {
+          setMessages(saved);
+        } else if (!localMsgs || localMsgs.length === 0) {
+          if (allSessions && allSessions.length > 0) {
+            const sessionWithMsgs = allSessions.find(s => {
+              const m = chatService.getSessionMessages(s.id, domain);
+              return m && m.length > 0;
+            });
+            if (sessionWithMsgs) {
+              setActiveSessionId(sessionWithMsgs.id);
+              chatService.setActiveSessionId(sessionWithMsgs.id, domain);
+              const m = chatService.getSessionMessages(sessionWithMsgs.id, domain);
+              if (m && m.length > 0) setMessages(m);
+              return;
+            }
+          }
+          if (!isCancelled) {
+            setMessages([createInitialGreeting()]);
+          }
+        }
+      } else {
+        const freshId = chatService.generateSessionId();
+        setActiveSessionId(freshId);
+        chatService.setActiveSessionId(freshId, domain);
+        if (!isCancelled) {
+          setMessages([createInitialGreeting()]);
+        }
+      }
+    };
+
+    syncSessions();
+    return () => { isCancelled = true; };
   }, [domain, currentLang]);
 
   // Handle URL / navigation state prefill query
@@ -279,64 +346,121 @@ const DashboardAiAssistantInner = ({
     }
   };
 
-  const fallbackSpeechSynthesis = (cleanText, gender = 'male') => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-    utterance.rate = 1.0;
-    utterance.pitch = gender === 'female' ? 1.08 : 0.88;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Ultra-Fast Voice Synthesis with TTS-Accelerator and fallback
-  const speakText = async (text, gender = 'male') => {
+  // Dual-Engine Speech Synthesis: Bakbak (Assamese) & GitHub Open-Source TTS (English)
+  const handleToggleMessageAudio = async (msgId, rawText) => {
     if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) return;
-    if (isSpeaking) {
-      stopSpeaking();
+
+    // 1. If currently playing this exact message -> Pause it
+    if (playingMessageId === msgId && ttsState === 'playing' && audioPlayerRef.current) {
+      try {
+        audioPlayerRef.current.pause();
+        setTtsState('paused');
+      } catch (err) {
+        console.warn('Audio pause error:', err);
+      }
       return;
     }
 
-    const cleanText = text.replace(/[*#_]/g, '').trim();
-    if (!cleanText) return;
+    // 2. If currently paused on this exact message -> Resume it
+    if (playingMessageId === msgId && ttsState === 'paused' && audioPlayerRef.current) {
+      try {
+        await audioPlayerRef.current.play();
+        setTtsState('playing');
+      } catch (err) {
+        console.warn('Audio resume error:', err);
+      }
+      return;
+    }
 
-    setIsSpeaking(true);
+    // 3. New message or stopped -> Stop previous audio and synthesize dual-engine audio
+    stopSpeaking();
+    setPlayingMessageId(msgId);
+    setTtsState('loading');
+    setTtsErrorMessage('');
 
     try {
-      const audioUrl = await chatService.synthesizeVoiceAudio(cleanText, currentLang, gender);
+      // Send the exact final Gemini response without rewriting or modifying
+      const audioUrl = await chatService.synthesizeVoiceAudio(rawText, currentLang, 'female');
       if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) {
-        if (audioUrl) URL.revokeObjectURL(audioUrl);
-        setIsSpeaking(false);
+        setTtsState('idle');
+        setPlayingMessageId(null);
         return;
       }
-      if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        audioPlayerRef.current = audio;
-        audio.onended = () => {
-          setIsSpeaking(false);
-          audioPlayerRef.current = null;
-          URL.revokeObjectURL(audioUrl);
-        };
-        audio.onerror = () => {
-          audioPlayerRef.current = null;
-          URL.revokeObjectURL(audioUrl);
-          if (isMountedRef.current && currentNavPathRef.current === location.pathname) {
-            fallbackSpeechSynthesis(cleanText, gender);
-          }
-        };
-        await audio.play();
-        return;
-      }
-    } catch (err) {
-      console.warn('TTS-Accelerator audio notice:', err);
-    }
 
-    if (isMountedRef.current && currentNavPathRef.current === location.pathname) {
-      fallbackSpeechSynthesis(cleanText, gender);
+      if (!audioUrl) {
+        setTtsState('error');
+        setTtsErrorMessage(currentLang === 'as' ? 'শব্দ সংশ্লেষণ বৰ্তমান উপলব্ধ নহয়।' : 'Speech synthesis temporarily unavailable.');
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setTtsState('idle');
+            setPlayingMessageId(null);
+            setTtsErrorMessage('');
+          }
+        }, 3500);
+        return;
+      }
+
+      const audio = new Audio(audioUrl);
+      audioPlayerRef.current = audio;
+
+      audio.onplay = () => {
+        if (isMountedRef.current) {
+          setIsSpeaking(true);
+          setTtsState('playing');
+        }
+      };
+
+      audio.onpause = () => {
+        if (isMountedRef.current && audio.currentTime < (audio.duration || 1)) {
+          setTtsState('paused');
+        }
+      };
+
+      audio.onended = () => {
+        if (isMountedRef.current) {
+          setIsSpeaking(false);
+          setTtsState('idle');
+          setPlayingMessageId(null);
+          audioPlayerRef.current = null;
+        }
+      };
+
+      audio.onerror = (e) => {
+        console.warn('Audio playback notice:', e);
+        if (isMountedRef.current) {
+          setIsSpeaking(false);
+          setTtsState('error');
+          setTtsErrorMessage(currentLang === 'as' ? 'অডিঅ’ প্লেবেকত সমস্যা হৈছে।' : 'Audio playback error occurred.');
+          setTimeout(() => {
+            if (isMountedRef.current) {
+              setTtsState('idle');
+              setPlayingMessageId(null);
+              setTtsErrorMessage('');
+            }
+          }, 3500);
+        }
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.warn('TTS generation notice:', err);
+      if (isMountedRef.current) {
+        setIsSpeaking(false);
+        setTtsState('error');
+        setTtsErrorMessage(currentLang === 'as' ? 'অডিঅ’ প্ৰস্তুত কৰিব পৰা নগল।' : 'Failed to synthesize speech.');
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setTtsState('idle');
+            setPlayingMessageId(null);
+            setTtsErrorMessage('');
+          }
+        }, 3500);
+      }
     }
+  };
+
+  const speakText = async (text, gender = 'female') => {
+    handleToggleMessageAudio('latest', text);
   };
 
   const stopSpeaking = () => {
@@ -348,15 +472,12 @@ const DashboardAiAssistantInner = ({
       try {
         audioPlayerRef.current.pause();
         audioPlayerRef.current.currentTime = 0;
-      } catch (e) {}
+      } catch {}
       audioPlayerRef.current = null;
     }
-    if (window.speechSynthesis) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch (e) {}
-    }
     setIsSpeaking(false);
+    setTtsState('idle');
+    setPlayingMessageId(null);
   };
 
   // Turn off voice listen mode and stop speech automatically when user navigates away
@@ -405,7 +526,7 @@ const DashboardAiAssistantInner = ({
   // Start a fresh thread strictly for this portal domain
   const handleNewChat = () => {
     stopSpeaking();
-    const newId = `session-${domain}-${Date.now()}`;
+    const newId = chatService.generateSessionId();
     setActiveSessionId(newId);
     chatService.setActiveSessionId(newId, domain);
     const greeting = createInitialGreeting();
@@ -419,14 +540,21 @@ const DashboardAiAssistantInner = ({
   };
 
   // Switch to an existing session strictly in this portal domain
-  const handleSelectSession = (session) => {
+  const handleSelectSession = async (session) => {
+    if (!session || !session.id) return;
     stopSpeaking();
     setActiveSessionId(session.id);
     chatService.setActiveSessionId(session.id, domain);
-    const saved = chatService.getSessionMessages(session.id, domain);
+
+    const immediate = chatService.getSessionMessages(session.id, domain);
+    if (immediate && immediate.length > 0) {
+      setMessages(immediate);
+    }
+
+    const saved = await chatService.fetchSessionMessages(session.id, domain);
     if (saved && saved.length > 0) {
       setMessages(saved);
-    } else {
+    } else if (!immediate || immediate.length === 0) {
       setMessages([createInitialGreeting()]);
     }
     setHistoryDrawerOpen(false);
@@ -476,6 +604,9 @@ const DashboardAiAssistantInner = ({
       setSessions(updatedSessions);
     }
 
+    // Immediately persist user's query into local cache
+    chatService.saveSessionMessages(activeSessionId, newMessages, domain);
+
     try {
       const res = await chatService.sendQuery({
         query: queryText,
@@ -483,6 +614,22 @@ const DashboardAiAssistantInner = ({
         language: currentLang,
         university: univProfile
       });
+
+      let targetSessionId = activeSessionId;
+      if (res.sessionId && res.sessionId !== activeSessionId) {
+        targetSessionId = res.sessionId;
+        chatService.deleteSession(activeSessionId, domain);
+        setActiveSessionId(targetSessionId);
+        chatService.setActiveSessionId(targetSessionId, domain);
+        const updated = chatService.saveLocalSession({
+          id: targetSessionId,
+          title: currentSessionTitle || queryText.slice(0, 36),
+          language: currentLang,
+          domain: domain,
+          createdAt: new Date().toISOString()
+        }, domain);
+        setSessions(updated);
+      }
 
       const aiResponse = {
         id: Date.now() + 1,
@@ -500,7 +647,12 @@ const DashboardAiAssistantInner = ({
       setMessages(finalMessages);
       
       // Auto-save history automatically for this portal domain
-      chatService.saveSessionMessages(activeSessionId, finalMessages, domain);
+      chatService.saveSessionMessages(targetSessionId, finalMessages, domain);
+
+      // Refresh sessions list in background
+      chatService.getSessions(domain).then(updated => {
+        if (updated && updated.length > 0) setSessions(updated);
+      });
 
       if (voiceOutputEnabled) {
         setTimeout(() => speakText(aiResponse.text, 'female'), 200);
@@ -1059,38 +1211,102 @@ const DashboardAiAssistantInner = ({
                       </span>
                     </div>
 
-                    {/* Action Bar (Audio, Bookmark, Feedback) */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                      <span className="text-[10px] text-[#627680] dark:text-[#879B99] font-medium">
-                        {msg.time}
-                      </span>
+                  </div>
+                )}
 
-                      <div className="flex items-center space-x-1.5">
-                        <button
-                          onClick={() => speakText(msg.text, 'male')}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#123C3A] dark:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
-                          title="Listen with Text-to-Speech"
-                        >
-                          <SpeakerWaveIcon className="w-3 h-3" />
-                          <span>Listen</span>
-                        </button>
+                {/* Action Bar (Audio, Bookmark, Feedback) for EVERY AI message */}
+                {msg.sender === 'ai' && (
+                  <div className="mt-3 pt-2.5 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[10px] text-[#627680] dark:text-[#879B99] font-medium">
+                      {msg.time}
+                    </span>
 
-                        <button
-                          onClick={() => handleSaveAnswer(msg)}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
-                        >
-                          <DocumentDuplicateIcon className="w-3 h-3 text-[#D4A96A]" />
-                          <span>Bookmark</span>
-                        </button>
+                    <div className="flex items-center space-x-1.5">
+                      {/* Dipannita Assamese Female Voice Play / Pause / Resume / Stop Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleMessageAudio(msg.id, msg.text)}
+                        disabled={playingMessageId === msg.id && ttsState === 'loading'}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border cursor-pointer flex items-center space-x-1.5 transition-all ${
+                          playingMessageId === msg.id && ttsState === 'playing'
+                            ? 'bg-[#8B5CF6]/15 border-[#8B5CF6] text-[#8B5CF6] dark:bg-[#22D3EE]/15 dark:border-[#22D3EE] dark:text-[#22D3EE] shadow-xs'
+                            : playingMessageId === msg.id && ttsState === 'paused'
+                            ? 'bg-amber-500/15 border-amber-500 text-amber-600 dark:text-amber-400'
+                            : playingMessageId === msg.id && ttsState === 'loading'
+                            ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-500 cursor-wait'
+                            : playingMessageId === msg.id && ttsState === 'error'
+                            ? 'bg-red-50 dark:bg-red-950/30 border-red-300 text-red-600 dark:text-red-400'
+                            : 'bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] border-[#123C3A]/10 dark:border-[#55C7B2]/15'
+                        }`}
+                        title={
+                          playingMessageId === msg.id && ttsState === 'playing'
+                            ? 'Pause Dipannita voice audio'
+                            : playingMessageId === msg.id && ttsState === 'paused'
+                            ? 'Resume Dipannita voice audio'
+                            : playingMessageId === msg.id && ttsState === 'loading'
+                            ? 'Synthesizing Dipannita voice audio...'
+                            : playingMessageId === msg.id && ttsState === 'error'
+                            ? (ttsErrorMessage || 'Audio error. Click to retry.')
+                            : 'Listen with Dipannita Assamese Female Voice'
+                        }
+                        aria-label="Listen with Dipannita Assamese Female Voice"
+                      >
+                        {playingMessageId === msg.id && ttsState === 'loading' ? (
+                          <>
+                            <LoadingSpinnerIcon className="w-3 h-3 text-[#8B5CF6] dark:text-[#22D3EE]" />
+                            <span>Loading...</span>
+                          </>
+                        ) : playingMessageId === msg.id && ttsState === 'playing' ? (
+                          <>
+                            <PauseIcon className="w-3 h-3 text-[#8B5CF6] dark:text-[#22D3EE]" />
+                            <span>Pause</span>
+                          </>
+                        ) : playingMessageId === msg.id && ttsState === 'paused' ? (
+                          <>
+                            <PlayIcon className="w-3 h-3 text-amber-500" />
+                            <span>Resume</span>
+                          </>
+                        ) : playingMessageId === msg.id && ttsState === 'error' ? (
+                          <>
+                            <SpeakerWaveIcon className="w-3 h-3 text-red-500" />
+                            <span>Retry</span>
+                          </>
+                        ) : (
+                          <>
+                            <SpeakerWaveIcon className="w-3 h-3" />
+                            <span>Listen</span>
+                          </>
+                        )}
+                      </button>
 
+                      {/* Stop Button (visible when this message is playing or paused) */}
+                      {playingMessageId === msg.id && (ttsState === 'playing' || ttsState === 'paused') && (
                         <button
-                          onClick={() => handleOpenFeedback(msg)}
-                          className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                          type="button"
+                          onClick={stopSpeaking}
+                          className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-900/40 cursor-pointer transition-colors"
+                          title="Stop speech"
+                          aria-label="Stop speech"
                         >
-                          <CheckCircleIcon className="w-3 h-3 text-[#55C7B2]" />
-                          <span>Feedback</span>
+                          <StopIcon className="w-3 h-3" />
                         </button>
-                      </div>
+                      )}
+
+                      <button
+                        onClick={() => handleSaveAnswer(msg)}
+                        className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                      >
+                        <DocumentDuplicateIcon className="w-3 h-3 text-[#D4A96A]" />
+                        <span>Bookmark</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenFeedback(msg)}
+                        className="px-2.5 py-1 rounded-lg bg-white/70 dark:bg-[#16181A]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] text-[10px] font-semibold text-[#627680] dark:text-[#879B99] hover:text-[#123C3A] dark:hover:text-[#55C7B2] border border-[#123C3A]/10 dark:border-[#55C7B2]/15 cursor-pointer flex items-center space-x-1 transition-colors"
+                      >
+                        <CheckCircleIcon className="w-3 h-3 text-[#55C7B2]" />
+                        <span>Feedback</span>
+                      </button>
                     </div>
                   </div>
                 )}

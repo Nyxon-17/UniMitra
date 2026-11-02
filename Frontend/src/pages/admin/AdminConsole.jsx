@@ -668,6 +668,12 @@ export const AdminConsole = ({
 
     setUploadProgress(50);
     setUploadStepName('2. Generating semantic vector embeddings...');
+    const docUuid = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+      ? crypto.randomUUID() 
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
     const docCustomId = `DOC-ADM-${Date.now().toString().slice(-4)}`;
 
     // Attempt direct ingestion into Python AI Service if available
@@ -675,12 +681,16 @@ export const AdminConsole = ({
       try {
         const fd = new FormData();
         fd.append('file', selectedPdfFile);
-        fd.append('document_id', docCustomId);
+        fd.append('document_id', docUuid);
         fd.append('metadata', JSON.stringify({
+          custom_id: docCustomId,
           title: uploadFormData.title,
           asTitle: uploadFormData.asTitle || uploadFormData.title,
           university: univProfile?.name || 'Nivoraya University',
-          category: uploadFormData.category
+          category: uploadFormData.category,
+          department: uploadFormData.department,
+          academicYear: uploadFormData.academicYear,
+          summary: uploadFormData.summary
         }));
         const res = await fetch('http://localhost:8000/api/ai/documents/ingest', {
           method: 'POST',
@@ -710,6 +720,7 @@ export const AdminConsole = ({
 
     documentService.uploadAdminDocument({
       id: docCustomId,
+      uuid: docUuid,
       title: uploadFormData.title,
       asTitle: uploadFormData.asTitle || uploadFormData.title,
       university: uploadFormData.university || univProfile?.name || 'Nivoraya University',
@@ -726,7 +737,7 @@ export const AdminConsole = ({
       pages: pageEstimate,
       chunksCount: Math.max(6, Math.round(extractedText.length / 300)),
       ocrApplied: uploadFormData.enableOcr
-    });
+    }, selectedPdfFile);
 
     setUploadProgress(100);
     setUploadStepName('4. Document vectorized and live in AI Chatbot!');

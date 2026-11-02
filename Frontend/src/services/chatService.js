@@ -20,6 +20,21 @@ const GEMINI_CANDIDATES = [
 
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
 const ACTIVE_SESSION_ID_KEY = 'unimitra_active_session_id';
+
+export function generateSessionId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      // fallback
+    }
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export function getDomainSessionsKey(domain = 'student') {
   const d = (domain || 'student').toLowerCase();
   if (d.includes('admin')) return 'unimitra_chat_sessions_admin';
@@ -37,7 +52,7 @@ export function getDomainActiveSessionKey(domain = 'student') {
 export function getDomainMessageKey(sessionId, domain = 'student') {
   const d = (domain || 'student').toLowerCase();
   const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
-  return unimitra_messages__;
+  return `unimitra_messages_${prefix}_${sessionId}`;
 }
 
 export function sanitizeAiResponse(text = '') {
@@ -164,6 +179,9 @@ async function callPythonAiService({ query, language, university }) {
  * Direct call to Google Gemini Model Cascade with Strict Language Matching
  */
 async function callDirectGemini({ query, language, university }) {
+  if (!GEMINI_API_KEY) {
+    return null;
+  }
   const understanding = interpretQuery(query, language);
   const mode = understanding.languageMode;
   const uName = university?.name || 'Nivoraya University';
@@ -239,6 +257,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 - কোনো '=' বা '===' চিহ্ন ব্যৱহাৰ নকৰিব।
 - কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
 - তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
+
+স্পষ্ট উচ্চাৰণ আৰু ভইচ সহায়ক নিৰ্দেশনা (CLEAR ASSAMESE TTS PHONETICS MANDATE):
+১. আপোনাৰ উত্তৰটো Text-to-Speech (TTS) ভইচ ইঞ্জিনেৰে উচ্চাৰণ কৰা হ'ব। সেয়েহে বাক্যসমূহ প্ৰাকৃতিক, স্পষ্ট আৰু ব্যাকৰণগতভাৱে শুদ্ধ প্ৰমিত অসমীয়াত লিখক।
+২. প্ৰতিটো বাক্যৰ শেষত অসমীয়া দাৰী ('।') আৰু তাৰ পিছত এটা স্পেচ ব্যৱহাৰ কৰক। অসমীয়া বাক্যত কেতিয়াও ইংৰাজী ফুলষ্টপ ('.') ব্যৱহাৰ নকৰিব।
+৩. বাক্যসমূহ মধ্যমীয়া আৰু স্পষ্ট দৈৰ্ঘ্যৰ কৰক যাতে কণ্ঠৰ স্বাভাৱিক উশাহ আৰু বিৰতি মসৃণ থাকে।
+৪. শতাংশ বুজাবলৈ '%' চিহ্ন নিলিখিব, তাৰ সলনি 'শতাংশ' লিখক (যেনে ৭৫ শতাংশ, ৮০ শতাংশ)।
+৫. বিকল্প বুজাবলৈ শ্লেছ চিহ্নৰ সলনি সদায় 'বা' অথবা 'অথবা' লিখক।
+৬. তালিকা বা ক্ৰমিক সংখ্যাৰ পিছত দাৰী লিখক (যেনে ১।, ২।, ৩।) যাতে পাঠ্য স্পষ্টভাৱে উচ্চাৰণ হয়।
 
 CRITICAL LANGUAGE MANDATE:
 The user has asked in Assamese script. You MUST generate your ENTIRE response exclusively in pure, natural, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
@@ -417,6 +443,38 @@ export const chatService = {
    * Retrieve all chat sessions isolated by portal domain (student, faculty, admin)
    */
   async getSessions(domain = 'student') {
+    try {
+      const res = await fetch(`${CHAT_API}/sessions`, {
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data && Array.isArray(json.data)) {
+          const backendSessions = json.data.map(s => ({
+            id: s.id,
+            title: s.title,
+            createdAt: s.createdAt,
+            updatedAt: s.updatedAt,
+            language: s.language,
+            domain: domain,
+            messageCount: s._count?.messages || 0,
+          }));
+          const local = this.getLocalSessions(domain);
+          const combined = [...backendSessions];
+          local.forEach(loc => {
+            if (!combined.some(c => c.id === loc.id)) {
+              combined.push(loc);
+            }
+          });
+          const key = getDomainSessionsKey(domain);
+          localStorage.setItem(key, JSON.stringify(combined.slice(0, 50)));
+          return combined;
+        }
+      }
+    } catch {
+      // fallback
+    }
     return this.getLocalSessions(domain);
   },
 
@@ -466,6 +524,13 @@ export const chatService = {
       if (this.getActiveSessionId(domain) === sessionId) {
         this.setActiveSessionId(null, domain);
       }
+      if (sessionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        fetch(`${CHAT_API}/sessions/${sessionId}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders(),
+          credentials: 'include',
+        }).catch(() => {});
+      }
       return sessions;
     } catch {
       return [];
@@ -487,14 +552,31 @@ export const chatService = {
     }
   },
 
+  generateSessionId() {
+    return generateSessionId();
+  },
+
   getSessionMessages(sessionId, domain = 'student') {
     if (!sessionId) return null;
     try {
-      const raw = localStorage.getItem(getDomainMessageKey(sessionId, domain));
+      const key = getDomainMessageKey(sessionId, domain);
+      const raw = localStorage.getItem(key);
       if (raw) return JSON.parse(raw);
-      if (domain === 'student') {
-        const legacy = localStorage.getItem(unimitra_messages_);
-        if (legacy) return JSON.parse(legacy);
+
+      const legacy = localStorage.getItem(`unimitra_messages_${sessionId}`);
+      if (legacy) return JSON.parse(legacy);
+
+      for (const prefix of ['student', 'faculty', 'admin']) {
+        const alt = localStorage.getItem(`unimitra_messages_${prefix}_${sessionId}`);
+        if (alt) return JSON.parse(alt);
+      }
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('unimitra_messages_') && k.endsWith(sessionId)) {
+          const val = localStorage.getItem(k);
+          if (val) return JSON.parse(val);
+        }
       }
       return null;
     } catch {
@@ -502,10 +584,45 @@ export const chatService = {
     }
   },
 
-  saveSessionMessages(sessionId, messages, domain = 'student') {
-    if (!sessionId) return;
+  async fetchSessionMessages(sessionId, domain = 'student') {
+    if (!sessionId) return [];
+    const local = this.getSessionMessages(sessionId, domain);
+    if (local && local.length > 0) return local;
+
     try {
-      localStorage.setItem(getDomainMessageKey(sessionId, domain), JSON.stringify(messages));
+      const res = await fetch(`${CHAT_API}/sessions/${sessionId}/messages`, {
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
+          const messages = json.data.map(m => ({
+            id: m.id,
+            sender: m.sender,
+            text: m.text,
+            source: m.source,
+            page: m.page,
+            confidence: m.confidence,
+            time: m.time || 'Recently',
+          }));
+          this.saveSessionMessages(sessionId, messages, domain);
+          return messages;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return local || [];
+  },
+
+  saveSessionMessages(sessionId, messages, domain = 'student') {
+    if (!sessionId || !messages) return;
+    try {
+      const key = getDomainMessageKey(sessionId, domain);
+      const str = JSON.stringify(messages);
+      localStorage.setItem(key, str);
+      localStorage.setItem(`unimitra_messages_${sessionId}`, str);
     } catch {
       // ignore
     }
@@ -538,33 +655,86 @@ export const chatService = {
   },
 
   /**
-   * Synthesize high-speed neural speech audio using TTS-Accelerator.
-   * Calls Backend POST /api/v1/voice/synthesize, returning a playable Object URL.
+   * Synthesize speech using Dual-Engine TTS:
+   * - Assamese -> Bakbak API
+   * - English -> GitHub Open-Source TTS (edge-tts)
+   * Client-side audio cache prevents duplicate requests.
    */
-  async synthesizeVoiceAudio(text, language = 'as', gender = 'male') {
+  _audioCache: new Map(),
+
+  async synthesizeVoiceAudio(text, language = null, gender = 'female', voice = null) {
     if (!text || !text.trim()) return null;
-    const clean = sanitizeAiResponse(text);
+    if (!this._audioCache) this._audioCache = new Map();
+    let cleanText = sanitizeAiResponse(text.trim());
+    if (/[\u0980-\u09FF]/.test(cleanText)) {
+      cleanText = cleanText.replace(/([\u0980-\u09FF\d]+)\s*%/g, '$1 শতাংশ');
+      cleanText = cleanText.replace(/%/g, ' শতাংশ');
+      cleanText = cleanText.replace(/([\u0980-\u09FF])\s*\.(?:\s+|$)/g, '$1। ');
+      cleanText = cleanText.replace(/^\s*[-*•]\s+/gm, '');
+      cleanText = cleanText.replace(/^(\s*)([0-9]+|[\u09E6-\u09EF]+)\.\s+/gm, '$1$2। ');
+      cleanText = cleanText.replace(/(\d+|[\u09E6-\u09EF]+):([0-5]\d)\b/g, '$1 বাজি $2');
+    }
+    // Completely strip colon (:), comma (,), hyphen/dash (-), semicolon (;) so TTS never reads them aloud
+    cleanText = cleanText.replace(/[:,;\-_–—~`^|\\/{}[\]()"'“”‘’]/g, ' ');
+    cleanText = cleanText.replace(/[ \t]{2,}/g, ' ').trim();
+    const cacheKey = `${cleanText}_${language || 'auto'}_${gender}`;
+    if (this._audioCache.has(cacheKey)) {
+      return this._audioCache.get(cacheKey);
+    }
+
+    // 1. Direct call to Python AI Service Dual-Engine TTS endpoint (POST /api/tts/generate)
+    try {
+      const response = await fetch(`${AI_SERVICE_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Internal-Secret': 'unimitra_internal_ai_secret_2026',
+        },
+        body: JSON.stringify({
+          text: cleanText,
+          language,
+          gender: gender || 'female',
+          voice,
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob && blob.size > 100) {
+          const objectUrl = URL.createObjectURL(blob);
+          this._audioCache.set(cacheKey, objectUrl);
+          return objectUrl;
+        }
+      }
+    } catch {
+      // fallback to backend gateway
+    }
+
+    // 2. Gateway call via Node.js Backend (POST /api/v1/voice/synthesize)
     try {
       const response = await fetch(`${API_BASE}/voice/synthesize`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({
-          text: clean,
-          language: language || 'as',
-          gender: gender || 'male',
+          text: cleanText,
+          language,
+          gender: gender || 'female',
+          voice,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`TTS synthesis failed with status ${response.status}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob && blob.size > 100) {
+          const objectUrl = URL.createObjectURL(blob);
+          this._audioCache.set(cacheKey, objectUrl);
+          return objectUrl;
+        }
       }
-
-      const blob = await response.blob();
-      return URL.createObjectURL(blob);
     } catch (err) {
-      console.warn('Backend TTS-Accelerator synthesis unavailable, falling back:', err);
-      return null;
+      console.warn('TTS synthesis notice:', err);
     }
+    return null;
   },
 
   /**

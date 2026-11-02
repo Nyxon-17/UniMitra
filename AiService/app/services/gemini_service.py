@@ -119,6 +119,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 - কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
 - তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
 
+স্পষ্ট উচ্চাৰণ আৰু ভইচ সহায়ক নিৰ্দেশনা (CLEAR ASSAMESE TTS PHONETICS MANDATE):
+১. আপোনাৰ উত্তৰটো Text-to-Speech (TTS) ভইচ ইঞ্জিনেৰে উচ্চাৰণ কৰা হ'ব। সেয়েহে বাক্যসমূহ প্ৰাকৃতিক, স্পষ্ট আৰু ব্যাকৰণগতভাৱে শুদ্ধ প্ৰমিত অসমীয়াত লিখক।
+২. প্ৰতিটো বাক্যৰ শেষত অসমীয়া দাৰী ('।') আৰু তাৰ পিছত এটা স্পেচ ব্যৱহাৰ কৰক। অসমীয়া বাক্যত কেতিয়াও ইংৰাজী ফুলষ্টপ ('.') ব্যৱহাৰ নকৰিব।
+৩. বাক্যসমূহ মধ্যমীয়া আৰু স্পষ্ট দৈৰ্ঘ্যৰ কৰক যাতে কণ্ঠৰ স্বাভাৱিক উশাহ আৰু বিৰতি মসৃণ থাকে।
+৪. শতাংশ বুজাবলৈ '%' চিহ্ন নিলিখিব, তাৰ সলনি 'শতাংশ' লিখক (যেনে ৭৫ শতাংশ, ৮০ শতাংশ)।
+৫. বিকল্প বুজাবলৈ শ্লেছ চিহ্নৰ সলনি সদায় 'বা' অথবা 'অথবা' লিখক।
+৬. তালিকা বা ক্ৰমিক সংখ্যাৰ পিছত দাৰী লিখক (যেনে ১।, ২।, ৩।) যাতে পাঠ্য স্পষ্টভাৱে উচ্চাৰণ হয়।
+
 CRITICAL LANGUAGE MANDATE:
 The user has asked their question in Assamese or explicitly requested Assamese output. You MUST generate your ENTIRE response in pure, authentic, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
 Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
@@ -449,13 +457,14 @@ Statutory Institutional Context Chunks:
 
 Please formulate a clear, authoritative answer. If statutory context was provided above, cite the document name and clause at the end."""
 
-        # 3. Model candidate list for robust execution
+        # 3. Model candidate list for robust execution with automatic fallback
         candidate_models = [
-            settings.GEMINI_MODEL,
+            settings.GEMINI_MODEL or "gemini-flash-lite-latest",
             "gemini-flash-lite-latest",
             "gemini-3.5-flash-lite",
-            "gemini-3.1-flash-lite",
-            "gemini-3.8-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest",
         ]
         # Remove duplicates while preserving order
         unique_models = []
@@ -469,7 +478,7 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
             client = genai.Client(
                 api_key=settings.GEMINI_API_KEY,
-                http_options=types.HttpOptions(timeout=12000),
+                http_options=types.HttpOptions(timeout=15000),
             )
             config = types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -495,10 +504,10 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
             raise last_err or RuntimeError("All Gemini models exhausted")
 
-        # 4. Invoke LLM with 8.0 second timeout
+        # 4. Invoke LLM with 10.0 second timeout
         try:
             future = _GEMINI_POOL.submit(_invoke_gemini)
-            answer_text, used_model = future.result(timeout=8.0)
+            answer_text, used_model = future.result(timeout=15.0)
 
             if answer_text:
                 primary_source = (

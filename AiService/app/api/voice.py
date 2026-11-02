@@ -4,7 +4,7 @@ from app.core.security import verify_internal_secret
 from app.models.request_models import VoiceSynthesizeRequest
 from app.models.response_models import VoiceTranscribeResponse
 from app.services.stt_service import stt_service
-from app.services.tts_service import tts_service
+from app.services.tts.tts_manager import tts_manager
 
 logger = logging.getLogger("unimitra.api.voice")
 router = APIRouter(prefix="/api/ai/voice", tags=["Voice AI"])
@@ -43,6 +43,7 @@ async def transcribe_voice(
 
 
 @router.post("/synthesize")
+@router.post("/speech")
 async def synthesize_speech(
     req: VoiceSynthesizeRequest,
     _auth: bool = Depends(verify_internal_secret),
@@ -51,14 +52,18 @@ async def synthesize_speech(
     Text-to-Speech synthesis returning high-fidelity neural audio for Assamese and English.
     Supports male voice for chatbot text listen and female voice for voice assistant.
     """
-    gender = req.gender or "male"
-    logger.info(f"Synthesizing speech [lang={req.language}, gender={gender}, length={len(req.text)}]")
-    audio_bytes = await tts_service.synthesize_async(
-        text=req.text,
-        language=req.language or "as",
-        gender=gender,
-        voice=req.voice,
-    )
+    gender = req.gender or "female"
+    logger.info(f"Synthesizing speech via Dual-Engine TTS [lang={req.language}, gender={gender}, length={len(req.text)}]")
+    try:
+        audio_bytes, media_type, provider, resolved_lang = await tts_manager.generate_speech(
+            text=req.text,
+            language=req.language,
+            gender=gender,
+            voice=req.voice,
+        )
+    except Exception as e:
+        logger.error(f"TTS synthesis failure: {e}")
+        audio_bytes = None
 
     if not audio_bytes:
         raise HTTPException(
@@ -68,9 +73,11 @@ async def synthesize_speech(
 
     return Response(
         content=audio_bytes,
-        media_type="audio/mpeg",
+        media_type=media_type,
         headers={
             "Content-Length": str(len(audio_bytes)),
-            "Content-Disposition": "inline; filename=unimitra_voice.mp3",
+            "Content-Disposition": f"inline; filename=unimitra_voice.{'wav' if 'wav' in media_type else 'mp3'}",
+            "X-TTS-Provider": provider,
+            "X-TTS-Language": resolved_lang,
         },
     )

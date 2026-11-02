@@ -61,7 +61,7 @@ export const transcribe = async (req, res, next) => {
  */
 export const synthesize = async (req, res, next) => {
   try {
-    const { text, language = 'as', gender = 'male', voice = null } = req.body;
+    const { text, language = 'as', gender = 'female', voice = 'i43sm02kv3' } = req.body;
     if (!text) {
       return res.status(400).json({
         success: false,

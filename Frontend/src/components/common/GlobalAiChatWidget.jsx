@@ -331,34 +331,11 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         try { audioPlayerRef.current.pause(); } catch (e) {}
         audioPlayerRef.current = null;
       }
-      window.speechSynthesis?.cancel();
     };
   }, [currentLang]);
 
-  const fallbackSpeechSynthesis = (cleanText, gender = 'male') => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-    utterance.rate = 1.0;
-    utterance.pitch = gender === 'female' ? 1.08 : 0.88;
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setIsPaused(false);
-    };
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Ultra-Fast Voice Synthesis with TTS-Accelerator and fallback
-  const speakText = async (text, gender = 'male') => {
+  // Dual-Engine Voice Synthesis (Bakbak for Assamese & GitHub edge-tts for English)
+  const speakText = async (text, gender = 'female') => {
     stopSpeaking();
 
     const cleanText = text
@@ -389,18 +366,20 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           URL.revokeObjectURL(audioUrl);
         };
         audio.onerror = () => {
+          setIsSpeaking(false);
+          setIsPaused(false);
           audioPlayerRef.current = null;
           URL.revokeObjectURL(audioUrl);
-          fallbackSpeechSynthesis(cleanText, gender);
         };
         await audio.play();
         return;
       }
     } catch (err) {
-      console.warn('TTS-Accelerator audio notice:', err);
+      console.warn('TTS audio notice:', err);
     }
 
-    fallbackSpeechSynthesis(cleanText, gender);
+    setIsSpeaking(false);
+    setIsPaused(false);
   };
 
   const stopSpeaking = () => {
@@ -410,11 +389,6 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         audioPlayerRef.current.currentTime = 0;
       } catch (e) {}
       audioPlayerRef.current = null;
-    }
-    if ('speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch (e) {}
     }
     setIsSpeaking(false);
     setIsPaused(false);
@@ -467,15 +441,6 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         audioPlayerRef.current.pause();
         setIsPaused(true);
       }
-      return;
-    }
-    if (!('speechSynthesis' in window)) return;
-    if (isPaused) {
-      window.speechSynthesis.resume();
-      setIsPaused(false);
-    } else {
-      window.speechSynthesis.pause();
-      setIsPaused(true);
     }
   };
 
@@ -928,12 +893,12 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                     ) : (
                       <button
                         type="button"
-                        onClick={() => speakText(currentResult.answer, 'male')}
+                        onClick={() => speakText(currentResult.answer, 'female')}
                         className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
-                        title="Replay Voice"
+                        title="Listen with Dipannita Assamese Female Voice"
                       >
                         <SpeakerWaveIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
-                        <span>Replay</span>
+                        <span>Listen</span>
                       </button>
                     )}
 

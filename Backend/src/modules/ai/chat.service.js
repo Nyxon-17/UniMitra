@@ -3,6 +3,12 @@ import { resolveGroundedQuery, detectLanguage } from './ai.service.js';
 import { ApiError } from '../../utils/apiError.js';
 import { logger } from '../../config/logger.js';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUuid(id) {
+  return typeof id === 'string' && UUID_REGEX.test(id);
+}
+
 /**
  * Handle AI Query execution
  */
@@ -11,9 +17,9 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
 
   let session = null;
   if (user?.id) {
-    if (sessionId) {
+    if (sessionId && isValidUuid(sessionId)) {
       session = await prisma.chatSession.findFirst({
-        where: { id: sessionId, user_id: user.id },
+        where: { id: sessionId, userId: user.id },
       });
     }
 
@@ -21,9 +27,10 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
       const title = query.slice(0, 45) + (query.length > 45 ? '...' : '');
       session = await prisma.chatSession.create({
         data: {
-          user_id: user.id,
+          ...(sessionId && isValidUuid(sessionId) ? { id: sessionId } : {}),
+          userId: user.id,
           title,
-          language: queryLang,
+          language: queryLang || 'en',
         },
       });
     }
@@ -33,11 +40,14 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
   let history = [];
   if (session) {
     const prevMessages = await prisma.chatMessage.findMany({
-      where: { session_id: session.id },
-      take: 6,
-      orderBy: { created_at: 'asc' },
+      where: { sessionId: session.id },
+      take: 10,
+      orderBy: { createdAt: 'asc' },
     });
-    history = prevMessages.map((m) => ({ role: m.role, content: m.content }));
+    history = prevMessages.map((m) => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.text,
+    }));
   }
 
   // Execute RAG Grounding Engine
@@ -53,37 +63,40 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
   if (session && user?.id) {
     await prisma.chatMessage.create({
       data: {
-        session_id: session.id,
-        role: 'user',
-        content: query,
-        language: queryLang,
+        sessionId: session.id,
+        sender: 'user',
+        text: query,
       },
     });
 
     await prisma.chatMessage.create({
       data: {
-        session_id: session.id,
-        role: 'assistant',
-        content: ragResult.answer,
-        language: queryLang,
-        source: ragResult.source,
-        page: ragResult.page,
-        confidence: ragResult.confidence,
-        metadata: {
-          domain: ragResult.domain,
-          isUnverified: ragResult.isUnverified,
-        },
+        sessionId: session.id,
+        sender: 'ai',
+        text: ragResult.answer,
+        sourceName: ragResult.source || null,
+        pageReference: ragResult.page || null,
+        confidence: ragResult.confidence || null,
+        domain: ragResult.domain || null,
+        isUnverified: Boolean(ragResult.isUnverified),
       },
     });
+
+    // Touch session updatedAt
+    await prisma.chatSession.update({
+      where: { id: session.id },
+      data: { updatedAt: new Date() },
+    }).catch(() => {});
   }
 
   // If unverified, record in UnansweredQuery for administrator review
   if (ragResult.isUnverified) {
     await prisma.unansweredQuery.create({
       data: {
-        query_text: query,
-        language: queryLang,
-        user_id: user?.id || null,
+        query: query,
+        language: queryLang || 'en',
+        userId: user?.id && isValidUuid(user.id) ? user.id : null,
+        userName: user?.fullName || user?.name || null,
         status: 'pending',
       },
     }).catch((e) => logger.warn({ err: e.message }, 'Failed to record unanswered query'));
@@ -108,14 +121,15 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
  * Get User Chat Sessions
  */
 export const getSessions = async (userId) => {
+  if (!isValidUuid(userId)) return [];
   return prisma.chatSession.findMany({
-    where: { user_id: userId },
+    where: { userId },
     include: {
       _count: {
         select: { messages: true },
       },
     },
-    orderBy: { updated_at: 'desc' },
+    orderBy: { updatedAt: 'desc' },
   });
 };
 
@@ -123,9 +137,12 @@ export const getSessions = async (userId) => {
  * Create New Chat Session
  */
 export const createSession = async (userId, title = 'New University Consultation') => {
+  if (!isValidUuid(userId)) {
+    throw ApiError.badRequest('Invalid user identifier.');
+  }
   return prisma.chatSession.create({
     data: {
-      user_id: userId,
+      userId,
       title,
     },
   });
@@ -135,8 +152,11 @@ export const createSession = async (userId, title = 'New University Consultation
  * Get Session Messages
  */
 export const getSessionMessages = async (sessionId, userId) => {
+  if (!isValidUuid(sessionId) || !isValidUuid(userId)) {
+    return [];
+  }
   const session = await prisma.chatSession.findFirst({
-    where: { id: sessionId, user_id: userId },
+    where: { id: sessionId, userId },
   });
 
   if (!session) {
@@ -144,18 +164,19 @@ export const getSessionMessages = async (sessionId, userId) => {
   }
 
   const messages = await prisma.chatMessage.findMany({
-    where: { session_id: sessionId },
-    orderBy: { created_at: 'asc' },
+    where: { sessionId },
+    orderBy: { createdAt: 'asc' },
   });
 
   return messages.map((m) => ({
     id: m.id,
-    sender: m.role === 'user' ? 'user' : 'ai',
-    text: m.content,
-    source: m.source,
-    page: m.page,
+    sender: m.sender,
+    text: m.text,
+    source: m.sourceName,
+    page: m.pageReference,
     confidence: m.confidence,
-    time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    isUnverified: m.isUnverified,
+    time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   }));
 };
 
@@ -163,8 +184,11 @@ export const getSessionMessages = async (sessionId, userId) => {
  * Delete Chat Session
  */
 export const deleteSession = async (sessionId, userId) => {
+  if (!isValidUuid(sessionId) || !isValidUuid(userId)) {
+    return { id: sessionId, deleted: true };
+  }
   const session = await prisma.chatSession.findFirst({
-    where: { id: sessionId, user_id: userId },
+    where: { id: sessionId, userId },
   });
 
   if (!session) {
@@ -172,7 +196,7 @@ export const deleteSession = async (sessionId, userId) => {
   }
 
   await prisma.chatMessage.deleteMany({
-    where: { session_id: sessionId },
+    where: { sessionId },
   });
 
   await prisma.chatSession.delete({
@@ -186,9 +210,12 @@ export const deleteSession = async (sessionId, userId) => {
  * Bookmark / Save Answer
  */
 export const saveAnswer = async (userId, { query, answer, source, page, category }) => {
+  if (!isValidUuid(userId)) {
+    throw ApiError.badRequest('Invalid user identifier.');
+  }
   const saved = await prisma.savedAnswer.create({
     data: {
-      user_id: userId,
+      userId,
       query,
       answer,
       source: source || 'Institutional Gazette',
@@ -204,7 +231,7 @@ export const saveAnswer = async (userId, { query, answer, source, page, category
     source: saved.source,
     page: saved.page,
     category: saved.category,
-    savedAt: new Date(saved.created_at).toLocaleDateString(),
+    savedAt: new Date(saved.createdAt).toLocaleDateString(),
   };
 };
 
@@ -212,9 +239,10 @@ export const saveAnswer = async (userId, { query, answer, source, page, category
  * Get Bookmarked Answers
  */
 export const getSavedAnswers = async (userId) => {
+  if (!isValidUuid(userId)) return [];
   const list = await prisma.savedAnswer.findMany({
-    where: { user_id: userId },
-    orderBy: { created_at: 'desc' },
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
   });
 
   return list.map((item) => ({
@@ -224,7 +252,7 @@ export const getSavedAnswers = async (userId) => {
     source: item.source,
     page: item.page,
     category: item.category,
-    savedAt: new Date(item.created_at).toLocaleDateString(),
+    savedAt: new Date(item.createdAt).toLocaleDateString(),
   }));
 };
 
@@ -232,8 +260,11 @@ export const getSavedAnswers = async (userId) => {
  * Delete Saved Answer
  */
 export const deleteSavedAnswer = async (userId, answerId) => {
+  if (!isValidUuid(userId) || !isValidUuid(answerId)) {
+    return { id: answerId, deleted: true };
+  }
   const record = await prisma.savedAnswer.findFirst({
-    where: { id: answerId, user_id: userId },
+    where: { id: answerId, userId },
   });
 
   if (!record) {
@@ -253,22 +284,22 @@ export const deleteSavedAnswer = async (userId, answerId) => {
 export const submitFeedback = async (user, feedbackData) => {
   const feedback = await prisma.feedbackSubmission.create({
     data: {
-      user_id: user?.id || null,
-      query_text: feedbackData.queryText || 'Query',
-      answer_snippet: feedbackData.answerSnippet || '',
-      rating: feedbackData.rating || 5,
-      feedback_type: feedbackData.type || 'Accurate Citation',
+      userId: user?.id && isValidUuid(user.id) ? user.id : null,
+      userName: user?.fullName || user?.name || null,
+      userRole: user?.role || 'student',
+      type: feedbackData.type || 'Accurate Citation',
+      rating: feedbackData.rating ? Number(feedbackData.rating) : 5,
       comments: feedbackData.comments || '',
-      university: feedbackData.university || 'General University',
-      status: 'pending',
+      answerSnippet: feedbackData.answerSnippet || '',
+      universityName: feedbackData.university || 'General University',
+      status: 'Pending Admin Review',
     },
   });
 
   return {
     id: feedback.id,
-    type: feedback.feedback_type,
+    type: feedback.type,
     status: feedback.status,
     message: 'Feedback received and queued for administrative review.',
   };
 };
-
