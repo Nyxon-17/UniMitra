@@ -69,17 +69,17 @@ const STATUTORY_BENCHMARKS = [
   },,
   {
     keywords: ['নমস্কাৰ', 'নমস্কার', 'হেল্ল', 'হাই', 'hello', 'hi', 'hey', 'greetings', 'good morning', 'good evening'],
-    asAnswer: "নমস্কাৰ! মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে আপোনাৰ শৈক্ষিক আৰু প্ৰশাসনিক AI সহায়ক। আপোনাক নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি বা চৌহদৰ সুবিধা সম্পৰ্কে কেনেকৈ সহায় কৰিব পাৰোঁ?",
-    enAnswer: "Hello! I am UniMitra, your official bilingual academic and administrative AI assistant for Assam Universities (Dibrugarh, Gauhati, Tezpur, etc.). How can I help you today regarding regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
+    asAnswer: "নমস্কাৰ! আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ? বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি বা ছাত্ৰবৃত্তি সম্পৰ্কে সুধিব পাৰে।",
+    enAnswer: "Hello! How can I help you today regarding university regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
     source: 'UniMitra Bilingual Assistant',
     page: 'Official Orientation',
     confidence: '100% Grounded Match',
     domain: 'General Assistance',
   },
   {
-    keywords: ['unimitra', 'ইউনিমিত্র', 'about', 'কি', 'who are you', 'আপুনি কোন'],
-    asAnswer: "ইউনিমিত্র (UniMitra) হ'ল অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড় বিশ্ববিদ্যালয়, গুৱাহাটী বিশ্ববিদ্যালয় ইত্যাদি) ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু প্ৰশাসনিক কৰ্মচাৰীসকলৰ বাবে নিৰ্মিত এক আধুনিক দ্বিভাষিক (অসমীয়া আৰু ইংৰাজী) AI সহায়ক। ই অনুমোদিত গেজেট, জাননী আৰু নিয়মাৱলীৰ সঠিক পৃষ্ঠা নম্বৰ আৰু ধাৰা উদ্ধৃত কৰি প্ৰমাণিত উত্তৰ প্ৰদান কৰে।",
-    enAnswer: "UniMitra is an official AI-powered smart university assistance platform designed for students, faculty, and administrative staff across Assam (Dibrugarh University, Gauhati University, etc.). It delivers verified answers in Assamese and English with exact gazette citations and page numbers.",
+    keywords: ['unimitra', 'ইউনিমিত্র', 'who are you', 'what is unimitra', 'আপুনি কোন'],
+    asAnswer: "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
+    enAnswer: "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Dibrugarh University, Gauhati University, etc.).",
     source: 'UniMitra Knowledge Repository',
     page: 'System Overview',
     confidence: '100% Grounded Match',
@@ -152,6 +152,19 @@ export const detectLanguage = (text = '', requestedLang = null) => {
   return mode;
 };
 
+export function stripUnwantedIntro(answer = '', query = '') {
+  if (!answer || !query) return answer;
+  const qLower = query.toLowerCase();
+  if (['who are you', 'what is unimitra', 'who is unimitra', 'আপুনি কোন', 'পৰিচয়', 'introduce yourself'].some(k => qLower.includes(k))) {
+    return answer;
+  }
+  let cleaned = answer.trim();
+  cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I'm|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant\s*(?:dedicated|designed)?[^.\n]*?(?:and others\.|\.\s*|\n+)/i, '').trim();
+  cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?)\s*(?:I am|I'm)\s+UniMitra[^.\n]*?\.\s*/i, '').trim();
+  cleaned = cleaned.replace(/^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^।\n]*?[।!]\s*/, '').trim();
+  return cleaned || answer;
+}
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODELS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
 
@@ -162,6 +175,9 @@ export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'D
 
   if (langMode === 'as_roman') {
     systemPrompt = `You are UniMitra, the official university AI assistant for Assam Universities (${univName || 'Dibrugarh University'}, Gauhati University, etc.).
+
+CRITICAL DIRECT ANSWER MANDATE:
+Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -192,11 +208,19 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
   } else if (langMode === 'as_script') {
     systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}, গুৱাহাটী বিশ্ববিদ্যালয় ইত্যাদি) বাবে এক আধুনিক, বিশ্বাসযোগ্য আৰু বৌদ্ধিক AI সহায়ক।
 
+পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
+কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
+
 গুৰুত্বপূৰ্ণ নিৰ্দেশনা (MANDATORY REQUIREMENT):
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
 যিকোনো বিষয়, বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি, বিজ্ঞান, তথ্য-প্ৰযুক্তি বা সাধাৰণ অনুসন্ধানৰ উত্তৰ নম্ৰ আৰু তথ্যসমৃদ্ধভাৱে অসমীয়াত বিশদভাৱে বুজাই দিয়ক।`;
   } else {
-    systemPrompt = `You are UniMitra, the official intelligent AI assistant for Assam Universities (${univName || 'Dibrugarh University'}, Gauhati University, etc.). Provide comprehensive, accurate, structured, and helpful answers to ANY user inquiry or academic topic in English. Never refuse to answer.`;
+    systemPrompt = `You are UniMitra, the official intelligent AI assistant for Assam Universities (${univName || 'Dibrugarh University'}, Gauhati University, etc.).
+
+CRITICAL DIRECT ANSWER MANDATE:
+Answer the question directly, concisely, and authoritatively.
+NEVER start your response with repetitive boilerplate self-introductions or persona declarations (do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam...").
+Jump straight to the direct answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?"). Provide comprehensive, accurate, structured, and helpful answers to ANY user inquiry or academic topic in English. Never refuse to answer.`;
   }
 
   for (const model of GEMINI_MODELS) {
@@ -214,7 +238,7 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text && text.trim().length > 0) {
-          return text.trim();
+          return stripUnwantedIntro(text.trim(), query);
         }
       }
     } catch (err) {
@@ -245,7 +269,7 @@ export const resolveGroundedQuery = async ({
 
   if (pythonResponse?.answer) {
     return {
-      answer: pythonResponse.answer,
+      answer: stripUnwantedIntro(pythonResponse.answer, query),
       source: pythonResponse.source || 'University Statutory Repository',
       page: pythonResponse.page || 'Verified Clause',
       confidence: pythonResponse.confidence || '99.0% Grounded Match',
@@ -293,10 +317,20 @@ export const resolveGroundedQuery = async ({
 
   // 3. Check Statutory Knowledge Benchmarks
   for (const benchmark of STATUTORY_BENCHMARKS) {
-    const hasMatch = benchmark.keywords.some((kw) => normalizedQuery.includes(kw.toLowerCase()));
+    const isGreeting = benchmark.keywords.some(g => ['hello', 'hi', 'hey', 'নমস্কাৰ'].includes(g));
+    if (isGreeting && normalizedQuery.split(/\s+/).length > 4) {
+      continue;
+    }
+    const hasMatch = benchmark.keywords.some((kw) => {
+      const kwLower = kw.toLowerCase();
+      if (kwLower.length <= 3) {
+        return new RegExp(`\\b${kwLower}\\b`, 'i').test(normalizedQuery);
+      }
+      return normalizedQuery.includes(kwLower);
+    });
     if (hasMatch) {
       return {
-        answer: lang === 'as' ? benchmark.asAnswer : benchmark.enAnswer,
+        answer: stripUnwantedIntro(lang === 'as' ? benchmark.asAnswer : benchmark.enAnswer, query),
         source: benchmark.source,
         page: benchmark.page,
         confidence: benchmark.confidence,
