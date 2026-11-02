@@ -21,14 +21,20 @@ class RagWorkflow:
         Executes the LangGraph RAG pipeline:
         Validate -> Detect Language -> Embed Query -> pgvector Search -> Relevance Check -> Gemini Grounded Generation.
         """
-        # Node 1: Validate & Normalize
-        clean_text = normalize_assamese_unicode(query)
+        from app.services.assamese_understanding import assamese_understanding
+
+        # Node 1: Validate & Normalize with Assamese Input Understanding Layer
+        understanding = assamese_understanding.interpret_query(query, language)
+        clean_text = normalize_assamese_unicode(understanding.normalized_query)
 
         # Node 2: Detect Language Mode (Strict Language Matching: as_script | as_roman | en)
-        detected_lang = detect_language_mode(clean_text, language)
+        detected_lang = understanding.language_mode
 
         # Node 3: Embed Query (Multilingual E5 Base with 'query: ' prefix)
-        query_vector = embedding_service.embed_query(clean_text)
+        search_text = clean_text
+        if understanding.is_romanized and understanding.search_keywords:
+            search_text = f"{clean_text} {' '.join(understanding.search_keywords)}"
+        query_vector = embedding_service.embed_query(search_text)
 
         # Node 4: pgvector Semantic Retrieval
         retrieved_chunks = vector_store.search_similar_chunks(

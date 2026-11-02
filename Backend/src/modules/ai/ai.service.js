@@ -1,3 +1,4 @@
+import { interpretQuery } from './assamese.understanding.js';
 import { prisma } from '../../config/prisma.js';
 import { aiServiceClient } from './ai.client.js';
 import { logger } from '../../config/logger.js';
@@ -152,24 +153,56 @@ export const detectLanguage = (text = '', requestedLang = null) => {
   return mode;
 };
 
+export function sanitizeAiResponse(text = '') {
+  if (!text) return text;
+  let cleaned = text;
+  // 1. Strip markdown header hashes (#)
+  cleaned = cleaned.replace(/#+\s*/g, '');
+  // 2. Strip equals dividers (===) and replace = with hyphen
+  cleaned = cleaned.replace(/={2,}/g, '');
+  cleaned = cleaned.replace(/\s*=\s*/g, ' - ');
+  cleaned = cleaned.replace(/=/g, '');
+  // 3. Replace leading bullet asterisks with hyphens, remove remaining asterisks (*)
+  cleaned = cleaned.replace(/^\s*\*\s+/gm, '- ');
+  cleaned = cleaned.replace(/\*/g, '');
+  // 4. Protect URLs temporarily if any (https://...)
+  const urls = [];
+  cleaned = cleaned.replace(/https?:\/\/[^\s]+/g, (match) => {
+    urls.push(match);
+    return `__URL_PLACEHOLDER_${urls.length - 1}__`;
+  });
+  // Replace remaining slashes (/) with 'or' / 'বা'
+  const hasAssamese = /[\u0980-\u09FF]/.test(cleaned);
+  const orWord = hasAssamese ? ' বা ' : ' or ';
+  cleaned = cleaned.replace(/\s*\/\s*/g, orWord);
+  cleaned = cleaned.replace(/\//g, ' ');
+  // Restore URLs
+  cleaned = cleaned.replace(/__URL_PLACEHOLDER_(\d+)__/g, (_, idx) => urls[Number(idx)]);
+  // Clean double spaces
+  cleaned = cleaned.replace(/[ \t]{2,}/g, ' ');
+  return cleaned.trim();
+}
+
 export function stripUnwantedIntro(answer = '', query = '') {
-  if (!answer || !query) return answer;
+  if (!answer || !query) return sanitizeAiResponse(answer);
   const qLower = query.toLowerCase();
   if (['who are you', 'what is unimitra', 'who is unimitra', 'আপুনি কোন', 'পৰিচয়', 'introduce yourself'].some(k => qLower.includes(k))) {
-    return answer;
+    return sanitizeAiResponse(answer);
   }
   let cleaned = answer.trim();
   cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I'm|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant\s*(?:dedicated|designed)?[^.\n]*?(?:and others\.|\.\s*|\n+)/i, '').trim();
   cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?)\s*(?:I am|I'm)\s+UniMitra[^.\n]*?\.\s*/i, '').trim();
   cleaned = cleaned.replace(/^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^।\n]*?[।!]\s*/, '').trim();
-  return cleaned || answer;
+  return sanitizeAiResponse(cleaned || answer);
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODELS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
 
 export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Dibrugarh University') {
-  const langMode = mode === 'as' ? 'as_script' : (mode || detectLanguageMode(query));
+  const understanding = interpretQuery(query, mode);
+  const langMode = mode === 'as' ? 'as_script' : (mode || understanding.languageMode);
+  const contextNote = (understanding.contextHint && langMode === 'as_roman') ? `\nUnderstood Input Context: ${understanding.contextHint}` : '';
 
   let systemPrompt = '';
 
@@ -178,6 +211,14 @@ export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'D
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+Do NOT use '*', '=', '/', or '#' anywhere in your output.
+- No asterisks ('*') for bold or bullets.
+- No hash ('#') for headings.
+- No equals ('=') signs.
+- No slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain text sentences and simple numbers (1., 2.) or hyphens (-) for lists.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -211,6 +252,14 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
 
+বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
+আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
+- ডাঠ বা হেলনীয়া কৰিবলৈ কোনো '*' ব্যৱহাৰ নকৰিব (যেনে **শব্দ** বা *শব্দ* নিলিখিব)।
+- কোনো '#' চিহ্ন ব্যৱহাৰ নকৰিব (যেনে #, ##, ### নিলিখিব)।
+- কোনো '=' বা '===' চিহ্ন ব্যৱহাৰ নকৰিব।
+- কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
+- তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
+
 গুৰুত্বপূৰ্ণ নিৰ্দেশনা (MANDATORY REQUIREMENT):
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
 যিকোনো বিষয়, বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি, বিজ্ঞান, তথ্য-প্ৰযুক্তি বা সাধাৰণ অনুসন্ধানৰ উত্তৰ নম্ৰ আৰু তথ্যসমৃদ্ধভাৱে অসমীয়াত বিশদভাৱে বুজাই দিয়ক।`;
@@ -220,7 +269,15 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 CRITICAL DIRECT ANSWER MANDATE:
 Answer the question directly, concisely, and authoritatively.
 NEVER start your response with repetitive boilerplate self-introductions or persona declarations (do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam...").
-Jump straight to the direct answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?"). Provide comprehensive, accurate, structured, and helpful answers to ANY user inquiry or academic topic in English. Never refuse to answer.`;
+Jump straight to the direct answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
+- Do NOT use asterisks for bold or bullets (do NOT write **word** or * bullet). Write clean plain text.
+- Do NOT use hash symbols for headings (do NOT write #, ##, or ###). Use plain capitalized titles instead.
+- Do NOT use equals signs ('=') or dividers ('===').
+- Do NOT use slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain sentences and standard numbers (1., 2.) or hyphens (-) for lists. Provide comprehensive, accurate, structured, and helpful answers to ANY user inquiry or academic topic in English. Never refuse to answer.`;
   }
 
   for (const model of GEMINI_MODELS) {
@@ -230,7 +287,7 @@ Jump straight to the direct answer without preamble, unless the user specificall
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${query}` }] }],
+          contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${understanding.normalizedQuery}${contextNote}` }] }],
           generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
         })
       });
@@ -255,8 +312,9 @@ export const resolveGroundedQuery = async ({
   categoryCode = null,
   history = [],
 }) => {
-  const lang = detectLanguage(query, userLanguage);
-  const normalizedQuery = query.toLowerCase().trim();
+  const understanding = interpretQuery(query, userLanguage);
+  const lang = userLanguage || understanding.languageMode;
+  const normalizedQuery = understanding.normalizedQuery.toLowerCase().trim();
 
   // 1. Try Python AI Service first
   const pythonResponse = await aiServiceClient.queryRAG({

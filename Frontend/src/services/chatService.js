@@ -1,3 +1,4 @@
+import { detectLanguageModeAdvanced, interpretQuery } from './assameseUnderstanding';
 // Centralized AI Chat & RAG Grounding Service
 // Seamlessly connects React Frontend to Node.js Backend, Python AI Service, & Direct Gemini Model Cascade
 // Supports: Assamese Script, Romanized Assamese (English letters), and English
@@ -20,17 +21,47 @@ const GEMINI_CANDIDATES = [
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
 const ACTIVE_SESSION_ID_KEY = 'unimitra_active_session_id';
 
+export function sanitizeAiResponse(text = '') {
+  if (!text) return text;
+  let cleaned = text;
+  // 1. Strip markdown header hashes (#)
+  cleaned = cleaned.replace(/#+\s*/g, '');
+  // 2. Strip equals dividers (===) and replace = with hyphen
+  cleaned = cleaned.replace(/={2,}/g, '');
+  cleaned = cleaned.replace(/\s*=\s*/g, ' - ');
+  cleaned = cleaned.replace(/=/g, '');
+  // 3. Replace leading bullet asterisks with hyphens, remove remaining asterisks (*)
+  cleaned = cleaned.replace(/^\s*\*\s+/gm, '- ');
+  cleaned = cleaned.replace(/\*/g, '');
+  // 4. Protect URLs temporarily if any (https://...)
+  const urls = [];
+  cleaned = cleaned.replace(/https?:\/\/[^\s]+/g, (match) => {
+    urls.push(match);
+    return `__URL_PLACEHOLDER_${urls.length - 1}__`;
+  });
+  // Replace remaining slashes (/) with 'or' / 'বা'
+  const hasAssamese = /[\u0980-\u09FF]/.test(cleaned);
+  const orWord = hasAssamese ? ' বা ' : ' or ';
+  cleaned = cleaned.replace(/\s*\/\s*/g, orWord);
+  cleaned = cleaned.replace(/\//g, ' ');
+  // Restore URLs
+  cleaned = cleaned.replace(/__URL_PLACEHOLDER_(\d+)__/g, (_, idx) => urls[Number(idx)]);
+  // Clean double spaces
+  cleaned = cleaned.replace(/[ \t]{2,}/g, ' ');
+  return cleaned.trim();
+}
+
 export function stripUnwantedIntro(answer = '', query = '') {
-  if (!answer || !query) return answer;
+  if (!answer || !query) return sanitizeAiResponse(answer);
   const qLower = query.toLowerCase();
   if (['who are you', 'what is unimitra', 'who is unimitra', 'আপুনি কোন', 'পৰিচয়', 'introduce yourself'].some(k => qLower.includes(k))) {
-    return answer;
+    return sanitizeAiResponse(answer);
   }
   let cleaned = answer.trim();
   cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I'm|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant\s*(?:dedicated|designed)?[^.\n]*?(?:and others\.|\.\s*|\n+)/i, '').trim();
   cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?)\s*(?:I am|I'm)\s+UniMitra[^.\n]*?\.\s*/i, '').trim();
   cleaned = cleaned.replace(/^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^।\n]*?[।!]\s*/, '').trim();
-  return cleaned || answer;
+  return sanitizeAiResponse(cleaned || answer);
 }
 
 export const ROMANIZED_ASSAMESE_WORDS = new Set([
@@ -58,39 +89,7 @@ export const ROMANIZED_ASSAMESE_PHRASES = [
  * 'en'        -> User wrote in English
  */
 export function detectLanguageMode(text = '', requestedLang = 'en') {
-  if (!text) return requestedLang === 'as' ? 'as_script' : 'en';
-
-  // 1. Assamese Unicode Script input
-  if (/[\u0980-\u09FF]/.test(text)) {
-    return 'as_script';
-  }
-
-  const lower = text.toLowerCase();
-
-  // 2. Explicit request for Assamese script
-  if (lower.includes('assamese script') || lower.includes('in assamese script') || lower.includes('অসমীয়া লিপি')) {
-    return 'as_script';
-  }
-
-  // 3. Romanized Assamese phrase match
-  for (const p of ROMANIZED_ASSAMESE_PHRASES) {
-    if (lower.includes(p)) {
-      return 'as_roman';
-    }
-  }
-
-  // 4. Token-based match for Romanized Assamese
-  const words = lower.match(/[a-zA-Z]+/g) || [];
-  const assameseCount = words.filter(w => ROMANIZED_ASSAMESE_WORDS.has(w)).length;
-  if (assameseCount >= 1 && (assameseCount >= 2 || words.length <= 4 || assameseCount / Math.max(1, words.length) >= 0.2)) {
-    return 'as_roman';
-  }
-
-  if (requestedLang === 'as') {
-    return 'as_script';
-  }
-
-  return 'en';
+  return detectLanguageModeAdvanced(text, requestedLang);
 }
 
 function getAuthHeaders() {
@@ -146,8 +145,10 @@ async function callPythonAiService({ query, language, university }) {
  * Direct call to Google Gemini Model Cascade with Strict Language Matching
  */
 async function callDirectGemini({ query, language, university }) {
-  const mode = detectLanguageMode(query, language);
+  const understanding = interpretQuery(query, language);
+  const mode = understanding.languageMode;
   const uName = university?.name || 'Dibrugarh University';
+  const cleanQuery = understanding.normalizedQuery;
 
   let systemPrompt = '';
 
@@ -156,6 +157,14 @@ async function callDirectGemini({ query, language, university }) {
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+Do NOT use '*', '=', '/', or '#' anywhere in your output.
+- No asterisks ('*') for bold or bullets.
+- No hash ('#') for headings.
+- No equals ('=') signs.
+- No slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain text sentences and simple numbers (1., 2.) or hyphens (-) for lists.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -189,6 +198,14 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 CRITICAL DIRECT ANSWER MANDATE:
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
 
+বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
+আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
+- ডাঠ বা হেলনীয়া কৰিবলৈ কোনো '*' ব্যৱহাৰ নকৰিব (যেনে **শব্দ** বা *শব্দ* নিলিখিব)।
+- কোনো '#' চিহ্ন ব্যৱহাৰ নকৰিব (যেনে #, ##, ### নিলিখিব)।
+- কোনো '=' বা '===' চিহ্ন ব্যৱহাৰ নকৰিব।
+- কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
+- তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
+
 CRITICAL LANGUAGE MANDATE:
 The user has asked in Assamese script. You MUST generate your ENTIRE response exclusively in pure, natural, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
 Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
@@ -202,6 +219,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 Answer the user's question directly, concisely, and authoritatively.
 NEVER start your response with repetitive boilerplate self-introductions or persona declarations (do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University...").
 Jump straight to the direct answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
+- Do NOT use asterisks for bold or bullets (do NOT write **word** or * bullet). Write clean plain text.
+- Do NOT use hash symbols for headings (do NOT write #, ##, or ###). Use plain capitalized titles instead.
+- Do NOT use equals signs ('=') or dividers ('===').
+- Do NOT use slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain sentences and standard numbers (1., 2.) or hyphens (-) for lists.
 
 Provide comprehensive, clear, accurate, and well-structured answers to ANY user query or topic.
 You should assist with university ordinances, examination codes, grading, attendance rules, scholarships (like Ishan Uday/DHE), syllabus, admissions, as well as general academic topics, science, computing, career advice, and knowledge.
@@ -219,7 +244,7 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
             {
               parts: [
                 {
-                  text: `${systemPrompt}\n\nUser Question: ${query}`
+                  text: `${systemPrompt}\n\nUser Question: ${cleanQuery}`
                 }
               ]
             }
