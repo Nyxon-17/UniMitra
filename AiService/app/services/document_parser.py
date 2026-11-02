@@ -25,48 +25,135 @@ class DocumentParser:
     @staticmethod
     def parse_pdf(file_bytes: bytes) -> Tuple[List[Dict[str, Any]], bool]:
         """
-        Extracts pages and text using PyMuPDF.
-        Detects if document is a scanned image-only PDF.
-        Returns: (list_of_pages, ocr_needed_flag)
+        Extracts pages, text, and tables from PDF bytes.
+        Prioritizes pdfplumber for high-fidelity table extraction (topper lists, results, rankings),
+        with robust fallbacks to pypdfium2, PyPDF2, and PyMuPDF.
+        Returns: (list_of_pages, is_scanned_flag)
         """
-        try:
-            import pymupdf as fitz
-        except ImportError:
-            try:
-                import fitz
-            except ImportError:
-                logger.error("PyMuPDF (fitz) is not installed.")
-                return [], False
-
         pages = []
         is_scanned = True
         total_chars = 0
 
+        # Method 1: pdfplumber (best for tables, merit lists, structured text)
         try:
-            doc = fitz.open(stream=file_bytes, filetype="pdf")
-            for page_idx in range(len(doc)):
-                page = doc[page_idx]
-                raw_text = page.get_text("text") or ""
-                cleaned_text = normalize_assamese_unicode(raw_text)
+            import pdfplumber
+            with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+                for page_idx, page in enumerate(pdf.pages):
+                    raw_text = page.extract_text() or ""
+                    
+                    # Extract tables (e.g. topper lists, rank tables, student results)
+                    try:
+                        tables = page.extract_tables() or []
+                        table_blocks = []
+                        for tbl in tables:
+                            rows = []
+                            for r in tbl:
+                                cells = [str(c or "").strip() for c in r if c is not None]
+                                if any(cells):
+                                    rows.append(" | ".join(cells))
+                            if rows:
+                                table_blocks.append("\n".join(rows))
+                        if table_blocks:
+                            raw_text += "\n\n[Structured Table / Merit Data]:\n" + "\n\n".join(table_blocks)
+                    except Exception as te:
+                        logger.debug(f"Table extraction notice: {te}")
 
-                char_count = len(cleaned_text.strip())
-                total_chars += char_count
+                    cleaned_text = normalize_assamese_unicode(raw_text)
+                    char_count = len(cleaned_text.strip())
+                    total_chars += char_count
 
-                pages.append({
-                    "page_number": page_idx + 1,
-                    "text": cleaned_text,
-                    "char_count": char_count,
-                })
+                    pages.append({
+                        "page_number": page_idx + 1,
+                        "text": cleaned_text,
+                        "char_count": char_count,
+                    })
 
-            doc.close()
-
-            # If average chars per page > 100, PDF has usable digital text
-            if len(pages) > 0 and (total_chars / len(pages)) > 100:
-                is_scanned = False
-
+                if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                    is_scanned = False
+                if pages and total_chars > 0:
+                    logger.info(f"pdfplumber parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
+                    return pages, is_scanned
         except Exception as e:
-            logger.error(f"PyMuPDF parse error: {e}")
-            return [], False
+            logger.info(f"pdfplumber parser notice: {e}. Attempting pypdfium2 fallback.")
+
+        # Method 2: pypdfium2 (ultra-fast C++ PDFium)
+        if not pages or total_chars == 0:
+            try:
+                import pypdfium2
+                doc = pypdfium2.PdfDocument(file_bytes)
+                pages = []
+                total_chars = 0
+                for page_idx in range(len(doc)):
+                    page = doc[page_idx]
+                    textpage = page.get_textpage()
+                    raw_text = textpage.get_text_range() or ""
+                    cleaned_text = normalize_assamese_unicode(raw_text)
+                    char_count = len(cleaned_text.strip())
+                    total_chars += char_count
+
+                    pages.append({
+                        "page_number": page_idx + 1,
+                        "text": cleaned_text,
+                        "char_count": char_count,
+                    })
+                if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                    is_scanned = False
+                if pages and total_chars > 0:
+                    logger.info(f"pypdfium2 parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
+                    return pages, is_scanned
+            except Exception as e:
+                logger.info(f"pypdfium2 parser notice: {e}. Attempting PyPDF2 fallback.")
+
+        # Method 3: PyPDF2 fallback
+        if not pages or total_chars == 0:
+            try:
+                import PyPDF2
+                reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+                pages = []
+                total_chars = 0
+                for page_idx, page in enumerate(reader.pages):
+                    raw_text = page.extract_text() or ""
+                    cleaned_text = normalize_assamese_unicode(raw_text)
+                    char_count = len(cleaned_text.strip())
+                    total_chars += char_count
+
+                    pages.append({
+                        "page_number": page_idx + 1,
+                        "text": cleaned_text,
+                        "char_count": char_count,
+                    })
+                if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                    is_scanned = False
+                if pages and total_chars > 0:
+                    logger.info(f"PyPDF2 parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
+                    return pages, is_scanned
+            except Exception as e:
+                logger.error(f"PyPDF2 parser error: {e}")
+
+        # Method 4: fitz / PyMuPDF if ever installed
+        if not pages or total_chars == 0:
+            try:
+                import fitz
+                doc = fitz.open(stream=file_bytes, filetype="pdf")
+                pages = []
+                total_chars = 0
+                for page_idx in range(len(doc)):
+                    page = doc[page_idx]
+                    raw_text = page.get_text("text") or ""
+                    cleaned_text = normalize_assamese_unicode(raw_text)
+                    char_count = len(cleaned_text.strip())
+                    total_chars += char_count
+
+                    pages.append({
+                        "page_number": page_idx + 1,
+                        "text": cleaned_text,
+                        "char_count": char_count,
+                    })
+                doc.close()
+                if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                    is_scanned = False
+            except Exception as e:
+                logger.error(f"fitz parser error: {e}")
 
         return pages, is_scanned
 

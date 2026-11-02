@@ -260,6 +260,15 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   const silenceTimeoutRef = useRef(null);
   const maxTimeoutRef = useRef(null);
   const inputQueryRef = useRef(inputQuery);
+  const abortControllerRef = useRef(null);
+
+  const cancelQuery = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     inputQueryRef.current = inputQuery;
@@ -416,6 +425,12 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     const q = queryText || inputQuery;
     if (!q.trim()) return;
 
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
     setIsListening(false);
     setIsTranscribing(false);
@@ -427,8 +442,13 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       const res = await chatService.sendQuery({
         query: q,
         language: currentLang,
-        university: univProfile
+        university: univProfile,
+        signal: controller.signal
       });
+
+      if (!res || res.aborted || controller.signal.aborted) {
+        return;
+      }
 
       const resultObj = {
         question: q,
@@ -440,7 +460,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
       setCurrentResult(resultObj);
       speakText(res.answer, 'female');
-    } catch {
+    } catch (err) {
+      if (err?.name === 'AbortError' || controller.signal.aborted) {
+        return;
+      }
       const match = documentService.query(q, currentLang);
       const univName = univProfile.name || 'My University';
       const answer = match?.answer || (currentLang === 'as' ? `${univName}ৰ তথ্য সংগ্ৰহ কৰা হৈছে।` : 'Information retrieved from knowledge repository.');
@@ -453,6 +476,9 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       });
       speakText(answer, 'female');
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setLoading(false);
       setInputQuery('');
     }
@@ -481,13 +507,17 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
       recorder.onstop = () => {
         finishStream();
+        const mimeType = recorder?.mimeType || 'audio/webm';
         const blob = audioChunksRef.current.length > 0
-          ? new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          ? new Blob(audioChunksRef.current, { type: mimeType })
           : null;
         resolve(blob);
       };
 
       try {
+        if (recorder.state === 'recording') {
+          try { recorder.requestData(); } catch {}
+        }
         recorder.stop();
       } catch {
         finishStream();
@@ -526,25 +556,29 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
 
     const audioBlob = await stopAudioRecording();
-
-    // Check if browser recognition captured the text
     const currentQuery = (inputQueryRef.current || '').trim();
-    if (currentQuery && !forceServerFallback) {
+
+    // If pure English speech was recognized cleanly and explicitly in English mode without audio fallback
+    if (currentLang === 'en' && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
       executeVoiceQuery(currentQuery);
       return;
     }
 
-    // Fall back to server-side Gemini Multimodal STT
+    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
+    // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
     if (audioBlob && audioBlob.size > 200) {
       setIsTranscribing(true);
       setSpeechError('');
       try {
-        const serverTranscript = await chatService.transcribeAudio(audioBlob, currentLang);
+        // Always pass 'as' with 'codemix' to Sarvam Saaras V4 to accurately transcribe Assamese & code-mixing
+        const serverTranscript = await chatService.transcribeAudio(audioBlob, 'as', 'codemix');
         if (serverTranscript && serverTranscript.trim()) {
           const clean = serverTranscript.trim();
           setInputQuery(clean);
           inputQueryRef.current = clean;
           executeVoiceQuery(clean);
+        } else if (currentQuery) {
+          executeVoiceQuery(currentQuery);
         } else {
           setSpeechError(
             currentLang === 'as'
@@ -554,16 +588,22 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           setTimeout(() => setSpeechError(''), 4000);
         }
       } catch (err) {
-        console.warn('Server transcription notice:', err);
-        setSpeechError(
-          currentLang === 'as'
-            ? 'ভইচ চিনাক্তকৰণত সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।'
-            : 'Voice transcription failed. Please try again.'
-        );
-        setTimeout(() => setSpeechError(''), 4000);
+        console.warn('Sarvam transcription notice:', err);
+        if (currentQuery) {
+          executeVoiceQuery(currentQuery);
+        } else {
+          setSpeechError(
+            currentLang === 'as'
+              ? 'ভইচ চিনাক্তকৰণত সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।'
+              : 'Voice transcription failed. Please try again.'
+          );
+          setTimeout(() => setSpeechError(''), 4000);
+        }
       } finally {
         setIsTranscribing(false);
       }
+    } else if (currentQuery) {
+      executeVoiceQuery(currentQuery);
     } else {
       setSpeechError(
         currentLang === 'as'
@@ -628,7 +668,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           audioChunksRef.current.push(e.data);
         }
       };
-      mr.start(200);
+      mr.start(100);
       mediaRecorderRef.current = mr;
     } catch (mrErr) {
       console.warn('MediaRecorder init error:', mrErr);
@@ -648,7 +688,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
     maxTimeoutRef.current = setTimeout(() => {
       handleSpeechCaptureFinish();
-    }, 90000);
+    }, 30000);
   };
 
   const toggleListening = () => {
@@ -687,7 +727,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
         silenceTimeoutRef.current = setTimeout(() => {
           handleSpeechCaptureFinish();
-        }, 8000);
+        }, 5000);
       };
 
       recognition.onerror = (event) => {
@@ -700,10 +740,11 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           );
           cancelListening();
         }
+        // Do NOT abort MediaRecorder on no-speech or language errors
       };
 
       recognition.onend = () => {
-        // Recognition cycle completed
+        // Recognition cycle completed; MediaRecorder keeps running
       };
 
       recognitionRef.current = recognition;
@@ -1063,8 +1104,17 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
               <div className="flex flex-col items-center py-3 space-y-2">
                 <SparklesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] animate-spin" />
                 <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                  Checking official ordinances...
+                  {currentLang === 'as' ? 'উত্তৰ প্ৰস্তুত কৰা হৈছে...' : 'Checking official ordinances...'}
                 </span>
+                <button
+                  type="button"
+                  onClick={cancelQuery}
+                  className="mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950/60 dark:hover:bg-red-900/80 dark:text-red-300 border border-red-300 dark:border-red-800 transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+                  title="Cancel query"
+                >
+                  <XMarkIcon className="w-3.5 h-3.5" />
+                  <span>{currentLang === 'as' ? 'বাতিল কৰক' : 'Cancel'}</span>
+                </button>
               </div>
             ) : currentResult ? (
               /* Verified Spoken Result View */

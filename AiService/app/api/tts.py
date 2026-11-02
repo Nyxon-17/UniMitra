@@ -27,6 +27,7 @@ async def generate_speech_endpoint(req: TTSGenerateRequest):
             language=req.language,
             gender=req.gender or "female",
             voice=req.voice,
+            speed=req.speed,
         )
 
         filename = f"unimitra_{resolved_lang}.{'wav' if 'wav' in media_type else 'mp3'}"

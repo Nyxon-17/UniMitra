@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
@@ -6,39 +7,37 @@ import { prisma } from '../../config/prisma.js';
 import { env } from '../../config/env.js';
 import { ApiError } from '../../utils/apiError.js';
 import { logger } from '../../config/logger.js';
+import { emailService } from '../../services/email.service.js';
 
 // In-memory OTP storage with TTL (5 minutes)
 // Key: identifier (email or memberId), Value: { otp: string, expiresAt: number, role?: string, tempUser?: any }
 const otpStore = new Map();
 
 /**
- * Generate a random 6-digit OTP
+ * Generate a cryptographically secure dynamic 6-digit OTP (e.g. 749216)
  */
 const generateOtpCode = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 };
 
 /**
  * Set OTP for an identifier (5 minutes expiry)
+ * Generates a dynamic, unique 6-digit OTP code every time (never static 123456)
  */
 export const saveOtp = (identifier, role = null, tempUser = null) => {
-  const code = env.NODE_ENV === 'development' ? '123456' : generateOtpCode();
+  const code = generateOtpCode();
   const expiresAt = Date.now() + 5 * 60 * 1000;
   otpStore.set(identifier.toLowerCase(), { otp: code, expiresAt, role, tempUser });
-  logger.info({ identifier, code }, 'OTP generated for user');
+  logger.info({ identifier, code }, 'Secure 6-digit OTP generated for user');
   return code;
 };
 
 /**
- * Verify OTP
+ * Verify OTP code strictly against the generated OTP
  */
 export const verifyOtpCode = (identifier, code) => {
   const record = otpStore.get(identifier.toLowerCase());
   if (!record) {
-    // In dev mode, allow default demo OTP 123456 as fallback
-    if (env.NODE_ENV === 'development' && code === '123456') {
-      return { success: true };
-    }
     return { success: false, reason: 'OTP expired or not found. Please request a new one.' };
   }
 
@@ -47,7 +46,7 @@ export const verifyOtpCode = (identifier, code) => {
     return { success: false, reason: 'OTP has expired. Please request a new one.' };
   }
 
-  if (record.otp !== code && !(env.NODE_ENV === 'development' && code === '123456')) {
+  if (record.otp !== String(code).trim()) {
     return { success: false, reason: 'Invalid OTP code entered.' };
   }
 
@@ -147,11 +146,19 @@ export const registerStudent = async ({ fullName, email, password, preferredLang
   const otp = saveOtp(normalizedEmail, 'student', { profileId: profile.id });
   const token = generateToken(profile);
 
+  // Send OTP email via Brevo
+  emailService.sendOtpEmail({
+    to: normalizedEmail,
+    name: profile.fullName,
+    otp,
+    role: 'student',
+    reason: 'completing your student registration',
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch student OTP email'));
+
   return {
     user: sanitizeProfile(profile),
     token,
     otpSent: true,
-    ...(env.NODE_ENV === 'development' ? { devOtp: otp } : {}),
   };
 };
 
@@ -180,6 +187,14 @@ export const verifyStudentOtp = async ({ identifier, otp }) => {
   }
 
   const token = generateToken(profile);
+
+  // Send welcome message upon successful verification
+  emailService.sendWelcomeEmail({
+    to: profile.email,
+    name: profile.fullName,
+    role: 'student',
+    loginTime: new Date(),
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch student welcome email'));
 
   return {
     user: sanitizeProfile(profile),
@@ -231,6 +246,14 @@ export const loginStudent = async ({ email, password, rememberMe = true }) => {
   const expiresIn = rememberMe ? '30d' : '1d';
   const token = generateToken(profile, expiresIn);
 
+  // Send welcome / login notification email
+  emailService.sendWelcomeEmail({
+    to: profile.email,
+    name: profile.fullName,
+    role: 'student',
+    loginTime: new Date(),
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch student login welcome email'));
+
   return {
     user: sanitizeProfile(profile),
     token,
@@ -243,28 +266,38 @@ export const loginStudent = async ({ email, password, rememberMe = true }) => {
 export const registerFaculty = async ({
   fullName,
   officialEmail,
+  memberEmail,
   facultyId,
   department,
   designation,
   password,
   preferredLanguage = 'en',
 }) => {
-  const normalizedEmail = officialEmail.toLowerCase().trim();
+  const normalizedOfficialEmail = officialEmail.toLowerCase().trim();
+  // Member email is the personal/member email where verification emails and OTPs are sent
+  const normalizedMemberEmail = (memberEmail || officialEmail).toLowerCase().trim();
 
-  const existing = await prisma.profile.findUnique({
-    where: { email: normalizedEmail },
+  // Check if either memberEmail or officialEmail is already registered
+  const existing = await prisma.profile.findFirst({
+    where: {
+      OR: [
+        { email: normalizedMemberEmail },
+        { email: normalizedOfficialEmail },
+      ],
+    },
   });
 
   if (existing) {
-    throw ApiError.conflict('An account with this official email address already exists.');
+    throw ApiError.conflict('An account with this email address already exists. Please sign in or use a different email.');
   }
 
   const memberId = await generateUniqueMemberId();
   const passwordHash = await bcrypt.hash(password, 10);
 
+  // Store normalizedMemberEmail as primary email so all notifications, password resets, and OTPs go to member email
   const profile = await prisma.profile.create({
     data: {
-      email: normalizedEmail,
+      email: normalizedMemberEmail,
       memberId,
       facultyId: facultyId || 'FAC-INST',
       fullName: fullName.trim(),
@@ -274,14 +307,38 @@ export const registerFaculty = async ({
       designation,
       preferredLang: preferredLanguage,
       isActive: true,
-      isVerified: true,
+      isVerified: false, // OTP required on registration to activate account
+      notificationPreferences: {
+        officialEmail: normalizedOfficialEmail,
+        memberEmail: normalizedMemberEmail,
+        regulations: true,
+        exams: true,
+        scholarships: true,
+        admissions: false,
+      },
     },
   });
 
+  // Generate 6-digit OTP for faculty registration verification
+  const otp = saveOtp(memberId, 'faculty', { profileId: profile.id, memberEmail: normalizedMemberEmail });
+  saveOtp(normalizedMemberEmail, 'faculty', { profileId: profile.id, memberId });
+
+  // Send Registration Verification OTP email to MEMBER EMAIL (NOT UNIVERSITY EMAIL)
+  emailService.sendOtpEmail({
+    to: normalizedMemberEmail,
+    name: profile.fullName,
+    otp,
+    role: 'faculty',
+    reason: 'verifying your Faculty registration on UniMitra',
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch faculty registration OTP email'));
+
   return {
+    requiresOtp: true,
     memberId,
+    memberEmail: normalizedMemberEmail,
+    officialEmail: normalizedOfficialEmail,
     user: sanitizeProfile(profile),
-    message: `Faculty account registered! Your unique Member ID is ${memberId}.`,
+    message: `Verification code sent to member email: ${normalizedMemberEmail}. Please enter the 6-digit OTP to complete registration.`,
   };
 };
 
@@ -291,7 +348,7 @@ export const registerFaculty = async ({
 export const loginFacultyCredentials = async ({ memberId, password }) => {
   const trimmedId = memberId.trim();
 
-  const profile = await prisma.profile.findFirst({
+  let profile = await prisma.profile.findFirst({
     where: {
       OR: [
         { memberId: trimmedId },
@@ -299,6 +356,22 @@ export const loginFacultyCredentials = async ({ memberId, password }) => {
       ],
     },
   });
+
+  // Also check if entered value matches officialEmail in notificationPreferences
+  if (!profile) {
+    const allFaculty = await prisma.profile.findMany({
+      where: {
+        role: { in: ['faculty', 'admin', 'super_admin'] },
+      },
+    });
+    profile = allFaculty.find((f) => {
+      const prefs = typeof f.notificationPreferences === 'object' ? f.notificationPreferences : {};
+      return (
+        prefs?.officialEmail?.toLowerCase() === trimmedId.toLowerCase() ||
+        prefs?.memberEmail?.toLowerCase() === trimmedId.toLowerCase()
+      );
+    });
+  }
 
   if (!profile) {
     throw ApiError.unauthorized('Invalid Member ID or password.');
@@ -331,14 +404,31 @@ export const loginFacultyCredentials = async ({ memberId, password }) => {
     throw ApiError.forbidden('Your faculty account has been deactivated.');
   }
 
-  const otp = saveOtp(profile.memberId || profile.email, 'faculty', { profileId: profile.id });
+  // Get MEMBER EMAIL (NOT UNIVERSITY EMAIL)
+  const prefs = typeof profile.notificationPreferences === 'object' ? profile.notificationPreferences : {};
+  const memberEmail = prefs?.memberEmail || profile.email;
+
+  const otp = saveOtp(profile.memberId || memberEmail, 'faculty', { profileId: profile.id, memberEmail });
+  if (memberEmail && memberEmail !== profile.memberId) {
+    saveOtp(memberEmail, 'faculty', { profileId: profile.id, memberId: profile.memberId });
+  }
+
+  // Send 2FA OTP email to faculty's MEMBER EMAIL (NOT UNIVERSITY EMAIL)
+  emailService.sendOtpEmail({
+    to: memberEmail,
+    name: profile.fullName,
+    otp,
+    role: 'faculty',
+    reason: 'Faculty Member 2-Factor Authentication sign-in',
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch faculty OTP email'));
+
+  const maskedEmail = memberEmail.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => `${a}***${c}`);
 
   return {
     requiresOtp: true,
     memberId: profile.memberId,
-    email: profile.email,
-    message: 'Credentials verified. Please enter the 6-digit OTP code.',
-    ...(env.NODE_ENV === 'development' ? { devOtp: otp } : {}),
+    email: maskedEmail,
+    message: `Credentials verified. 6-digit OTP sent to your member email (${maskedEmail}).`,
   };
 };
 
@@ -351,24 +441,62 @@ export const verifyFacultyOtp = async ({ identifier, otp }) => {
     throw ApiError.badRequest(verification.reason);
   }
 
-  const profile = await prisma.profile.findFirst({
+  const trimmed = identifier.trim();
+  let profile = await prisma.profile.findFirst({
     where: {
       OR: [
-        { memberId: identifier },
-        { email: identifier.toLowerCase() },
+        { memberId: trimmed },
+        { email: trimmed.toLowerCase() },
       ],
     },
   });
 
   if (!profile) {
+    const allFaculty = await prisma.profile.findMany({
+      where: {
+        role: { in: ['faculty', 'admin', 'super_admin'] },
+      },
+    });
+    profile = allFaculty.find((f) => {
+      const prefs = typeof f.notificationPreferences === 'object' ? f.notificationPreferences : {};
+      return (
+        prefs?.officialEmail?.toLowerCase() === trimmed.toLowerCase() ||
+        prefs?.memberEmail?.toLowerCase() === trimmed.toLowerCase()
+      );
+    });
+  }
+
+  if (!profile) {
     throw ApiError.notFound('Faculty profile not found.');
+  }
+
+  // Mark account as verified if it was unverified (registration OTP)
+  if (!profile.isVerified) {
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: { isVerified: true },
+    });
+    profile.isVerified = true;
   }
 
   const token = generateToken(profile);
 
+  // Send welcome / login notification email to MEMBER EMAIL (NOT UNIVERSITY EMAIL)
+  const prefs = typeof profile.notificationPreferences === 'object' ? profile.notificationPreferences : {};
+  const recipientEmail = prefs?.memberEmail || profile.email;
+
+  emailService.sendWelcomeEmail({
+    to: recipientEmail,
+    name: profile.fullName,
+    role: 'faculty',
+    memberId: profile.memberId,
+    loginTime: new Date(),
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch faculty welcome email'));
+
   return {
     user: sanitizeProfile(profile),
     token,
+    memberId: profile.memberId,
   };
 };
 
@@ -415,12 +543,20 @@ export const loginAdminCredentials = async ({ email, password }) => {
 
   const otp = saveOtp(admin.email, 'admin', { profileId: admin.id });
 
+  // Send 2FA OTP email to administrator email
+  emailService.sendOtpEmail({
+    to: admin.email,
+    name: admin.fullName,
+    otp,
+    role: admin.role,
+    reason: 'Administrator 2FA sign-in verification',
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch admin OTP email'));
+
   return {
     requiresOtp: true,
     email: admin.email,
     name: admin.fullName,
     message: 'Admin credentials accepted. Please verify with the 6-digit OTP code.',
-    ...(env.NODE_ENV === 'development' ? { devOtp: otp } : {}),
   };
 };
 
@@ -443,6 +579,14 @@ export const verifyAdminOtp = async ({ identifier, otp }) => {
 
   const token = generateToken(admin);
 
+  // Send welcome / login notification email upon successful admin login
+  emailService.sendWelcomeEmail({
+    to: admin.email,
+    name: admin.fullName,
+    role: admin.role,
+    loginTime: new Date(),
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch admin welcome email'));
+
   return {
     user: sanitizeProfile(admin),
     token,
@@ -454,9 +598,54 @@ export const verifyAdminOtp = async ({ identifier, otp }) => {
  */
 export const resendOtp = async ({ identifier, role }) => {
   const code = saveOtp(identifier, role);
+
+  let targetEmail = identifier.includes('@') ? identifier.toLowerCase().trim() : null;
+  let targetName = 'Member';
+
+  if (!targetEmail) {
+    const found = await prisma.profile.findFirst({
+      where: {
+        OR: [
+          { memberId: identifier.trim() },
+          { email: identifier.toLowerCase().trim() },
+        ],
+      },
+    });
+    if (found) {
+      const prefs = typeof found.notificationPreferences === 'object' ? found.notificationPreferences : {};
+      targetEmail = (found.role === 'faculty' && prefs?.memberEmail) ? prefs.memberEmail : found.email;
+      targetName = found.fullName || 'Member';
+    }
+  } else if (role === 'faculty') {
+    // If targetEmail is an official email, check if there is an associated memberEmail
+    const found = await prisma.profile.findFirst({
+      where: {
+        role: { in: ['faculty', 'admin', 'super_admin'] },
+        OR: [
+          { email: targetEmail },
+        ],
+      },
+    });
+    if (found) {
+      const prefs = typeof found.notificationPreferences === 'object' ? found.notificationPreferences : {};
+      if (prefs?.memberEmail) {
+        targetEmail = prefs.memberEmail;
+      }
+    }
+  }
+
+  if (targetEmail) {
+    emailService.sendOtpEmail({
+      to: targetEmail,
+      name: targetName,
+      otp: code,
+      role: role || 'member',
+      reason: 'your requested OTP resend',
+    }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch resent OTP email'));
+  }
+
   return {
     message: 'A fresh 6-digit OTP code has been dispatched.',
-    ...(env.NODE_ENV === 'development' ? { devOtp: code } : {}),
   };
 };
 
@@ -616,6 +805,14 @@ export const loginOrRegisterWithGoogle = async ({ credential, role = 'student' }
   }
 
   const token = generateToken(profile);
+
+  // Send welcome / login notification email upon successful Google sign-in
+  emailService.sendWelcomeEmail({
+    to: profile.email,
+    name: profile.fullName,
+    role: 'student',
+    loginTime: new Date(),
+  }).catch((err) => logger.warn({ err: err.message }, 'Failed to dispatch Google login welcome email'));
 
   return {
     user: sanitizeProfile(profile),

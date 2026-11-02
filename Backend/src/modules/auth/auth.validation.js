@@ -21,6 +21,7 @@ export const facultyRegisterSchema = z.object({
   body: z.object({
     fullName: z.string().min(2, 'Full name must be at least 2 characters'),
     officialEmail: z.string().email('Invalid official email address'),
+    memberEmail: z.string().email('Invalid member email address').optional(),
     facultyId: z.string().optional().default('FAC-INST'),
     department: z.string().min(2, 'Department is required'),
     designation: z.string().min(2, 'Designation is required'),

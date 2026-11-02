@@ -42,6 +42,10 @@ class VoiceTranscribeResponse(BaseModel):
     transcript: str
     language: str
     confidence: float = 0.95
+    provider: Optional[str] = "sarvam_saaras_v4"
+    mode: Optional[str] = "codemix"
+    request_id: Optional[str] = None
+    error: Optional[str] = None
 
 
 class HealthResponse(BaseModel):

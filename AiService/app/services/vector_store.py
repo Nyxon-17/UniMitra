@@ -39,13 +39,18 @@ class VectorStoreService:
         query_embedding: List[float],
         university_code: Optional[str] = None,
         category_code: Optional[str] = None,
-        match_count: int = 5,
-        threshold: float = 0.55,
+        match_count: int = 10,
+        threshold: float = 0.20,
+        query_text: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Retrieves top matching document chunks from Supabase PostgreSQL using pgvector cosine distance.
+        Hybrid Document Retrieval:
+        1. Multilingual pgvector dense semantic search with forgiving threshold (0.20)
+        2. Full-text keyword/entity search for exact ranks, toppers, numbers, merit lists, and clauses
+        3. Deduplication and reciprocal rank fusion to ensure relevant context is never lost.
         """
         vector_str = "[" + ",".join(f"{x:.6f}" for x in query_embedding) + "]"
+        vector_results: List[Dict[str, Any]] = []
 
         # 1. Try match_document_chunks RPC function first
         rpc_sql = """
@@ -65,33 +70,108 @@ class VectorStoreService:
                 (vector_str, threshold, match_count, university_code, category_code),
             )
             if results:
-                return results
+                vector_results = results
         except Exception as e:
             logger.warning(f"RPC match_document_chunks notice: {e}. Executing direct pgvector query.")
 
-        # 2. Fallback direct SQL query
-        direct_sql = """
-            SELECT id, document_id, chunk_index, page_number, clause_reference, 
-                   content, 1 - (embedding <=> %s::vector) AS similarity, metadata
-            FROM ai_document_chunks
-            ORDER BY embedding <=> %s::vector ASC
-            LIMIT %s;
-        """
-        try:
-            results = execute_query(
-                direct_sql,
-                (
-                    vector_str,
-                    vector_str,
-                    match_count,
-                ),
-            )
-            min_thresh = min(threshold, 0.35)
-            filtered = [r for r in results if float(r.get("similarity", 0)) >= min_thresh]
-            return filtered if filtered else results
-        except Exception as err:
-            logger.error(f"Vector search query error: {err}")
-            return []
+        # 2. Fallback direct SQL query if RPC returned empty or failed
+        if not vector_results:
+            direct_sql = """
+                SELECT id, document_id, chunk_index, page_number, clause_reference, 
+                       content, 1 - (embedding <=> %s::vector) AS similarity, metadata
+                FROM ai_document_chunks
+                ORDER BY embedding <=> %s::vector ASC
+                LIMIT %s;
+            """
+            try:
+                results = execute_query(
+                    direct_sql,
+                    (
+                        vector_str,
+                        vector_str,
+                        match_count,
+                    ),
+                )
+                min_thresh = min(threshold, 0.20)
+                filtered = [r for r in results if float(r.get("similarity", 0)) >= min_thresh]
+                vector_results = filtered if filtered else results
+            except Exception as err:
+                logger.error(f"Vector search query error: {err}")
+                vector_results = []
+
+        # 3. Keyword / Hybrid Search for specific entities, ordinals & ranks (e.g., 2nd topper, rank 2, merit)
+        keyword_results: List[Dict[str, Any]] = []
+        if query_text:
+            import re
+            raw_tokens = re.findall(r'[a-zA-Z0-9\u0980-\u09FF]+', query_text.lower())
+            stop_words = {
+                "give", "me", "the", "a", "an", "what", "is", "of", "in", "for", "to",
+                "and", "or", "who", "whom", "which", "tell", "show", "can", "you",
+                "please", "about", "kowa", "kuwa", "muk", "ki", "kun", "hoi"
+            }
+            salient_tokens = [t for t in raw_tokens if len(t) >= 2 and t not in stop_words]
+
+            # Ordinal & topper expansions
+            expanded_tokens = list(salient_tokens)
+            for t in salient_tokens:
+                if t in ("2nd", "second", "dui", "দ্বিতীয়"):
+                    expanded_tokens.extend(["2nd", "second", "rank 2", "merit", "topper", "2."])
+                elif t in ("1st", "first", "first topper", "প্রথম"):
+                    expanded_tokens.extend(["1st", "first", "rank 1", "topper", "1."])
+                elif t in ("3rd", "third", "তৃতীয়"):
+                    expanded_tokens.extend(["3rd", "third", "rank 3", "3."])
+                elif t in ("topper", "toppers", "শীৰ্ষ", "মেধা"):
+                    expanded_tokens.extend(["topper", "merit", "rank", "marks", "result", "grade", "cgpa", "percentage"])
+
+            # Deduplicate tokens
+            unique_tokens = []
+            for ut in expanded_tokens:
+                if ut not in unique_tokens:
+                    unique_tokens.append(ut)
+
+            if unique_tokens:
+                like_clauses = []
+                params = []
+                for tok in unique_tokens[:8]:
+                    like_clauses.append("content ILIKE %s")
+                    params.append(f"%{tok}%")
+
+                kw_sql = f"""
+                    SELECT id, document_id, chunk_index, page_number, clause_reference,
+                           content, 0.88 AS similarity, metadata
+                    FROM ai_document_chunks
+                    WHERE {' OR '.join(like_clauses)}
+                    LIMIT {match_count};
+                """
+                try:
+                    kw_res = execute_query(kw_sql, tuple(params))
+                    if kw_res:
+                        keyword_results = kw_res
+                        logger.info(f"Hybrid keyword search found {len(keyword_results)} matching chunks for tokens: {unique_tokens[:4]}")
+                except Exception as kw_err:
+                    logger.debug(f"Keyword search notice: {kw_err}")
+
+        # 4. Merge, Deduplicate & Rank Fusion
+        chunk_map: Dict[str, Dict[str, Any]] = {}
+
+        # Add vector chunks
+        for c in vector_results:
+            c_key = f"{c.get('document_id')}_{c.get('chunk_index')}"
+            chunk_map[c_key] = dict(c)
+
+        # Merge keyword chunks with boost
+        for kc in keyword_results:
+            c_key = f"{kc.get('document_id')}_{kc.get('chunk_index')}"
+            if c_key in chunk_map:
+                # If matched both semantically and via keyword, boost relevance
+                chunk_map[c_key]["similarity"] = max(float(chunk_map[c_key].get("similarity", 0)), 0.95)
+            else:
+                chunk_map[c_key] = dict(kc)
+
+        combined_chunks = list(chunk_map.values())
+        combined_chunks.sort(key=lambda x: float(x.get("similarity", 0.0)), reverse=True)
+
+        return combined_chunks[:match_count]
 
     @staticmethod
     def insert_document_chunks(

@@ -141,11 +141,13 @@ function getAuthHeaders(includeContentType = true) {
 /**
  * Direct call to Python AI Service (Port 8000)
  */
-async function callPythonAiService({ query, language, university }) {
+async function callPythonAiService({ query, language, university, signal = null }) {
+  if (signal?.aborted) return null;
   try {
     const mode = detectLanguageMode(query, language);
     const res = await fetch(`${AI_SERVICE_URL}/api/ai/query`, {
       method: 'POST',
+      signal,
       headers: {
         'Content-Type': 'application/json',
         'X-Internal-Secret': 'unimitra_internal_ai_secret_2026'
@@ -182,8 +184,8 @@ async function callPythonAiService({ query, language, university }) {
 /**
  * Direct call to Google Gemini Model Cascade with Strict Language Matching
  */
-async function callDirectGemini({ query, language, university }) {
-  if (!GEMINI_API_KEY) {
+async function callDirectGemini({ query, language, university, signal = null }) {
+  if (signal?.aborted || !GEMINI_API_KEY) {
     return null;
   }
   const understanding = interpretQuery(query, language);
@@ -307,6 +309,7 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
       const res = await fetch(url, {
         method: 'POST',
+        signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [
@@ -356,7 +359,10 @@ export const chatService = {
    * Send a query to the AI Assistant
    * Tier 1: Node.js Backend Gateway -> Tier 2: Python AI Service -> Tier 3: Direct Gemini AI Model Cascade -> Tier 4: Local Search
    */
-  async sendQuery({ query, sessionId = null, language = 'en', university = null }) {
+  async sendQuery({ query, sessionId = null, language = 'en', university = null, signal = null }) {
+    if (signal?.aborted) {
+      return { success: false, aborted: true };
+    }
     const sId = sessionId || `session-${Date.now()}`;
     const mode = detectLanguageMode(query, language);
 
@@ -364,6 +370,7 @@ export const chatService = {
     try {
       const response = await fetch(`${CHAT_API}/query`, {
         method: 'POST',
+        signal,
         headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
@@ -391,12 +398,17 @@ export const chatService = {
           };
         }
       }
-    } catch {
+    } catch (e) {
+      if (signal?.aborted || e?.name === 'AbortError') {
+        return { success: false, aborted: true };
+      }
       // Backend is offline or unreachable - proceed to live AI engines
     }
 
+    if (signal?.aborted) return { success: false, aborted: true };
+
     // 2. Direct Python AI Service Call (Port 8000)
-    const pythonResult = await callPythonAiService({ query, language: mode, university });
+    const pythonResult = await callPythonAiService({ query, language: mode, university, signal });
     if (pythonResult) {
       return {
         ...pythonResult,
@@ -405,8 +417,10 @@ export const chatService = {
       };
     }
 
+    if (signal?.aborted) return { success: false, aborted: true };
+
     // 3. Direct Google Gemini AI Model Cascade (Strict Language Matching: as_script | as_roman | en)
-    const geminiResult = await callDirectGemini({ query, language: mode, university, documentContext: uploadedPdfContext });
+    const geminiResult = await callDirectGemini({ query, language: mode, university, signal });
     if (geminiResult) {
       return {
         ...geminiResult,
@@ -666,7 +680,7 @@ export const chatService = {
    */
   _audioCache: new Map(),
 
-  async synthesizeVoiceAudio(text, language = null, gender = 'female', voice = null) {
+  async synthesizeVoiceAudio(text, language = null, gender = 'female', voice = null, speed = 1.0) {
     if (!text || !text.trim()) return null;
     if (!this._audioCache) this._audioCache = new Map();
     let cleanText = sanitizeAiResponse(text.trim());
@@ -679,13 +693,13 @@ export const chatService = {
       cleanText = cleanText.replace(/(\d+|[\u09E6-\u09EF]+):([0-5]\d)\b/g, '$1 বাজি $2');
     }
     // Completely strip colon (:), comma (,), hyphen/dash (-), semicolon (;) so TTS never reads them aloud
-    cleanText = cleanText.replace(/[:,;\-_–—~`^|\\/{}[\]()"'“”‘’]/g, ' ');
+    cleanText = cleanText.replace(/[`~*#=|^\\/{}[\]()"'“”‘’]/g, ' ').replace(/[:;,–—]/g, ' ').replace(/\s+-\s+/g, ' ');
     cleanText = cleanText.replace(/[ \t]{2,}/g, ' ').trim();
 
     const hasAssamese = /[\u0980-\u09FF]/.test(cleanText);
     const resolvedLang = (language && language !== 'auto') ? language : (hasAssamese ? 'as' : 'en');
 
-    const cacheKey = `${cleanText}_${resolvedLang}_${gender}`;
+    const cacheKey = `${cleanText}_${resolvedLang}_${gender}_${speed || 1.0}`;
     if (this._audioCache.has(cacheKey)) {
       return this._audioCache.get(cacheKey);
     }
@@ -703,6 +717,7 @@ export const chatService = {
           language: resolvedLang,
           gender: gender || 'female',
           voice,
+          speed: speed || 1.0,
         }),
       });
 
@@ -728,6 +743,7 @@ export const chatService = {
           language,
           gender: gender || 'female',
           voice,
+          speed: speed || 1.0,
         }),
       });
 
@@ -746,16 +762,37 @@ export const chatService = {
   },
 
   /**
-   * Transcribe recorded audio using server-side Gemini Multimodal STT
+   * Transcribe recorded audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
    * Seamlessly transcribes Assamese, Romanized Assamese ('mur hostel r bikhoye kowa'), and English
+   * Supported modes: 'codemix', 'transcribe', 'translit'
    */
-  async transcribeAudio(audioBlob, language = 'as') {
+  async transcribeAudio(audioBlob, language = 'as', mode = 'codemix') {
     if (!audioBlob) return null;
     const formData = new FormData();
     formData.append('audio', audioBlob, 'voice_query.webm');
     formData.append('language', language || 'as');
+    formData.append('mode', mode || 'codemix');
 
-    // 1. Direct call to Python AI Service (Port 8000)
+    // 1. Direct call to Python AI Service (Port 8000) - Official Sarvam Saaras V4 endpoint
+    try {
+      const res = await fetch(`${AI_SERVICE_URL}/api/voice/transcribe`, {
+        method: 'POST',
+        headers: {
+          'X-Internal-Secret': 'unimitra_internal_ai_secret_2026',
+        },
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.transcript && data.transcript.trim()) {
+          return data.transcript.trim();
+        }
+      }
+    } catch {
+      // fallback to backend gateway
+    }
+
+    // 2. Direct call to secondary Python AI Service path (/api/ai/voice/transcribe)
     try {
       const res = await fetch(`${AI_SERVICE_URL}/api/ai/voice/transcribe`, {
         method: 'POST',
@@ -774,7 +811,7 @@ export const chatService = {
       // fallback to backend gateway
     }
 
-    // 2. Gateway call via Node.js Backend (Port 5000)
+    // 3. Gateway call via Node.js Backend (Port 5000)
     try {
       const res = await fetch(`${API_BASE}/voice/transcribe`, {
         method: 'POST',
@@ -790,6 +827,60 @@ export const chatService = {
     } catch {
       // fallback
     }
+
+    // 4. Direct Client-side Gemini Multimodal STT Fallback
+    if (GEMINI_API_KEY) {
+      try {
+        const base64Audio = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const res = reader.result;
+            const b64 = typeof res === 'string' ? res.substring(res.indexOf(',') + 1) : '';
+            resolve(b64);
+          };
+          reader.readAsDataURL(audioBlob);
+        });
+
+        if (base64Audio) {
+          const cleanMime = (audioBlob.type || 'audio/webm').split(';')[0].trim();
+          const gRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [
+                      {
+                        inline_data: {
+                          mime_type: cleanMime,
+                          data: base64Audio,
+                        },
+                      },
+                      {
+                        text: 'You are an accurate speech-to-text transcriber for Assamese and English. Transcribe the audio faithfully into Assamese Unicode or Romanized Assamese/English. Output ONLY the transcribed words with zero introductory remarks.',
+                      },
+                    ],
+                  },
+                ],
+              }),
+            }
+          );
+
+          if (gRes.ok) {
+            const gData = await gRes.json();
+            const transcript = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+            if (transcript) {
+              return transcript;
+            }
+          }
+        }
+      } catch (geminiErr) {
+        console.warn('Direct Gemini STT fallback notice:', geminiErr);
+      }
+    }
+
     return null;
   },
 

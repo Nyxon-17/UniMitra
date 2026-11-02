@@ -76,8 +76,9 @@ def vector_retrieval_node(state: RagGraphState) -> Dict[str, Any]:
         query_embedding=query_vector,
         university_code=univ_code,
         category_code=cat_code,
-        match_count=5,
-        threshold=0.55,
+        match_count=10,
+        threshold=0.20,
+        query_text=clean_text,
     )
 
     logger.info(f"LangGraph [retrieval_node]: Retrieved {len(chunks)} statutory chunks from Supabase pgvector.")
