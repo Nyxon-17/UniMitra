@@ -32,7 +32,7 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
     logger.info({ fallbackTranscript: transcript }, 'Used default benchmark transcript as STT fallback.');
   }
 
-  const queryLang = language || detectLanguage(transcript);
+  const queryLang = detectLanguage(transcript);
 
   // 2. Resolve Grounded Answer through RAG Pipeline
   const ragResult = await resolveGroundedQuery({

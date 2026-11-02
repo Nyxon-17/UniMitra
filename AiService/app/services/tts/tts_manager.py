@@ -2,6 +2,7 @@ import hashlib
 import logging
 from typing import Dict, Optional, Tuple
 from app.services.tts.language_router import language_router
+from app.services.tts.gemini_tts import gemini_tts
 from app.services.tts.bakbak_assamese import bakbak_tts
 from app.services.tts.english_tts import english_tts
 
@@ -79,16 +80,30 @@ class TTSManager:
 
         # 5. Route to specific engine
         if primary_lang == "as":
-            # Engine 1: Bakbak Assamese TTS API
-            audio_bytes = await bakbak_tts.synthesize_async(
+            # Primary: Gemini TTS natively speaks Assamese + English mixed and Assinglish
+            audio_bytes = await gemini_tts.synthesize_async(
                 text=clean_text,
                 gender=gender,
                 voice_override=voice,
             )
             media_type = "audio/wav"
-            provider = "bakbak"
+            provider = "gemini_tts"
+
+            # Resilient Fallback to Bakbak API if Gemini TTS is unavailable or rate limited
+            if not audio_bytes:
+                logger.info("Falling back to Bakbak API for Assamese speech synthesis...")
+                try:
+                    audio_bytes = await bakbak_tts.synthesize_async(
+                        text=clean_text,
+                        gender=gender,
+                        voice_override=voice,
+                    )
+                    if audio_bytes:
+                        provider = "bakbak"
+                except Exception as b_err:
+                    logger.warning(f"Bakbak fallback also failed: {b_err}")
         else:
-            # Engine 2: GitHub Open-Source English TTS
+            # Engine 2: GitHub Open-Source English TTS (edge-tts)
             audio_bytes = await english_tts.synthesize_async(
                 text=clean_text,
                 gender=gender,

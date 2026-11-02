@@ -29,30 +29,30 @@ ASSAMESE_PHONETIC_ACRONYMS = [
     (re.compile(r"\bAI\b"), "এ আই"),
 ]
 
-# Romanized Assamese phonetic markers
+# Romanized Assamese (Assinglish) phonetic markers
 ROMANIZED_ASSAMESE_WORDS = {
-    "aji", "kali", "ketiya", "kot", "ki", "kio", "kenekua", "kenekuwa", "kenedore",
+    "aji", "kali", "ketiya", "kot", "ki", "kio", "kenekua", "kenekuwa", "kenedore", "keneka", "keneke",
     "moi", "mur", "muk", "tumi", "tumar", "apuni", "apunar", "apunak",
     "ami", "amar", "eitu", "heitu", "bhal", "kotha", "khobor", "asa", "asu",
     "ase", "asil", "nohoy", "hobo", "hoi", "lagibo", "lage", "bisaru", "bisare",
-    "dada", "baideu", "bhaity", "dhonnobad", "namaskar"
+    "dada", "baideu", "bhaity", "dhonnobad", "namaskar", "kailoi", "kora", "korim",
+    "korisa", "koribo", "ahiba", "ahibo", "examor", "collegeot", "formtu"
 }
 
 
 class LanguageRouter:
     """
     Analyzes AI generated text to determine the primary language routing:
-    - 'as': Routes strictly to Bakbak Assamese TTS
-    - 'en': Routes strictly to GitHub Open-Source English TTS
+    - 'as': Routes strictly to Gemini TTS (handles pure Assamese, mixed Assamese-English, and Assinglish)
+    - 'en': Routes strictly to GitHub Open-Source English TTS (edge-tts)
     """
 
     @classmethod
     def normalize_assamese_for_tts(cls, text: str) -> str:
         """
-        Phonetically normalizes Assamese text so that the Bakbak TTS engine
-        articulates and pronounces each syllable with crystal clarity.
-        Completely strips colon (:), comma (,), hyphen/dash (-), semicolon (;), etc.,
-        so they are NEVER read aloud by the speech synthesizer.
+        Cleans and normalizes Assamese and Assamese-English text so the TTS voice engine
+        speaks with natural, fluid pronunciation.
+        Strips colons (:), commas (,), hyphens (-), and semicolons (;) so symbols are never read aloud.
         """
         if not text:
             return ""
@@ -72,14 +72,13 @@ class LanguageRouter:
         # 3. Replace slashes with Assamese ' বা ' (or)
         cleaned = re.sub(r"\s*/\s*", " বা ", cleaned)
 
-        # 4. Handle time expressions before removing colons (e.g., ১০:৩০ -> ১০ বাজি ৩০)
-        cleaned = re.sub(r"(\d+|[\u09E6-\u09EF]+):([0-5]\d)\b", r"\1 বাজি \2", cleaned)
+        # 4. Handle time expressions before removing colons (e.g. 10:30 -> 10 30)
+        cleaned = re.sub(r"(\d+|[\u09E6-\u09EF]+):([0-5]\d)\b", r"\1 \2", cleaned)
 
-        # 5. Handle range hyphens before stripping hyphens (e.g., ৫-১০ -> ৫ ৰ পৰা ১০)
+        # 5. Handle range hyphens before stripping hyphens (e.g. ৫-১০ -> ৫ ৰ পৰা ১০)
         cleaned = re.sub(r"(\d+|[\u09E6-\u09EF]+)\s*[-–—]\s*(\d+|[\u09E6-\u09EF]+)", r"\1 ৰ পৰা \2", cleaned)
 
         # 6. Convert bullet markers and numbered list headings to clean pause points
-        # e.g., '1. ', '১. ' -> '১। '
         cleaned = re.sub(r"(?m)^\s*[-*•]\s+", "", cleaned)
         cleaned = re.sub(r"(?m)^(\s*)([0-9]+|[\u09E6-\u09EF]+)\.\s+", r"\1\2। ", cleaned)
 
@@ -87,12 +86,11 @@ class LanguageRouter:
         for pattern, replacement in ASSAMESE_PHONETIC_ACRONYMS:
             cleaned = pattern.sub(replacement, cleaned)
 
-        # 8. Convert English periods and mixed punctuation to Assamese Dari ('। ') for authentic cadence
+        # 8. Convert English periods after Assamese words to Assamese Dari ('। ')
         cleaned = re.sub(r"([\u0980-\u09FF])\s*\.(?:\s+|$)", r"\1। ", cleaned)
         cleaned = re.sub(r"\.(?:\s+|$)", "। ", cleaned)
 
         # 9. Completely strip colon (:), comma (,), hyphen/dash (-), semicolon (;), and brackets
-        # so TTS NEVER pronounces words like 'colon', 'comma', 'hyphen', or 'dash'
         for sym in [
             ":", ",", "-", "–", "—", ";", "_", "*", "#", "`", "~", "=",
             "<", ">", "{", "}", "[", "]", "(", ")", "|", "^", "\\",
@@ -138,20 +136,20 @@ class LanguageRouter:
     @classmethod
     def detect_primary_language(cls, text: str, hint: str = None) -> Tuple[str, float]:
         """
-        Detects whether Assamese or English is the primary language of the text.
+        Detects whether Assamese (native script, mixed Assamese-English, or Assinglish)
+        or English is the primary language of the text.
         Returns a tuple: (language_code, confidence_score)
-        - 'as': Assamese Unicode or Assamese-primary mixed text
-        - 'en': English Latin text
+        - 'as': Assamese Unicode, Assamese-English mixed, or Romanized Assamese (Assinglish) -> Gemini TTS
+        - 'en': Standard English text -> GitHub edge-tts
         """
         if not text or not text.strip():
             return "en", 1.0
 
-        if hint in ("as", "as_script", "assamese"):
+        if hint in ("as", "as_script", "as_roman", "assamese", "assinglish"):
             return "as", 1.0
         elif hint in ("en", "english"):
-            # If hint is English, but text contains significant Assamese unicode, prioritize Assamese
             as_count = len(ASSAMESE_UNICODE_PATTERN.findall(text))
-            if as_count >= 5:
+            if as_count >= 3:
                 return "as", 0.95
             return "en", 1.0
 
@@ -159,29 +157,26 @@ class LanguageRouter:
         as_chars = len(ASSAMESE_UNICODE_PATTERN.findall(clean))
         latin_chars = len(LATIN_PATTERN.findall(clean))
 
-        # 1. Clear Assamese Unicode presence
+        # 1. Assamese Unicode presence (Pure Assamese or Mixed Assamese-English)
         if as_chars > 0:
             if latin_chars == 0:
                 return "as", 1.0
-            # Assamese-English mixed: compare character density
             total = as_chars + latin_chars
             as_ratio = as_chars / max(1, total)
-            if as_ratio >= 0.20 or as_chars >= 5:
-                # Primary Assamese with English loanwords (e.g. 'Exam', 'Syllabus', 'Dispur')
-                return "as", as_ratio
-            else:
-                return "en", 1.0 - as_ratio
+            if as_chars >= 2 or as_ratio >= 0.08:
+                return "as", max(0.85, as_ratio)
 
-        # 2. Check Romanized Assamese keywords
+        # 2. Check Romanized Assamese (Assinglish) keywords
         words = clean.lower().split()
         if words:
-            as_word_hits = sum(1 for w in words if re.sub(r"[^a-z]", "", w) in ROMANIZED_ASSAMESE_WORDS)
-            if as_word_hits >= 2 or (len(words) <= 5 and as_word_hits >= 1):
-                return "as", 0.85
+            clean_words = [re.sub(r"[^a-z]", "", w) for w in words]
+            as_word_hits = sum(1 for w in clean_words if w in ROMANIZED_ASSAMESE_WORDS)
+            hit_ratio = as_word_hits / max(1, len(words))
+            if as_word_hits >= 2 or (len(words) <= 5 and as_word_hits >= 1) or hit_ratio >= 0.15:
+                return "as", 0.90
 
         # 3. Default to English
         return "en", 1.0
 
 
 language_router = LanguageRouter()
-
