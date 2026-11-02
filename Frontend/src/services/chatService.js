@@ -20,6 +20,19 @@ const GEMINI_CANDIDATES = [
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
 const ACTIVE_SESSION_ID_KEY = 'unimitra_active_session_id';
 
+export function stripUnwantedIntro(answer = '', query = '') {
+  if (!answer || !query) return answer;
+  const qLower = query.toLowerCase();
+  if (['who are you', 'what is unimitra', 'who is unimitra', 'আপুনি কোন', 'পৰিচয়', 'introduce yourself'].some(k => qLower.includes(k))) {
+    return answer;
+  }
+  let cleaned = answer.trim();
+  cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I'm|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant\s*(?:dedicated|designed)?[^.\n]*?(?:and others\.|\.\s*|\n+)/i, '').trim();
+  cleaned = cleaned.replace(/^(?:Hello!?|Hi!?|Greetings!?)\s*(?:I am|I'm)\s+UniMitra[^.\n]*?\.\s*/i, '').trim();
+  cleaned = cleaned.replace(/^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^।\n]*?[।!]\s*/, '').trim();
+  return cleaned || answer;
+}
+
 export const ROMANIZED_ASSAMESE_WORDS = new Set([
   'aji', 'kali', 'ahibor', 'ketiya', 'kot', 'ki', 'kio', 'kioba', 'kenekua', 'kenekuwa', 'kenedore',
   'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'he', 'hehot',
@@ -141,6 +154,9 @@ async function callDirectGemini({ query, language, university }) {
   if (mode === 'as_roman') {
     systemPrompt = `You are UniMitra, the official university AI assistant for Assam Universities (${uName}, Gauhati University, etc.).
 
+CRITICAL DIRECT ANSWER MANDATE:
+Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
+
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
 You MUST respond strictly in Romanized Assamese (Assamese words written using English/Latin alphabet letters).
@@ -170,6 +186,9 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
   } else if (mode === 'as_script') {
     systemPrompt = `You are UniMitra (ইউনিমিত্র), the official intelligent, supportive, and bilingual AI assistant for higher education institutions in Assam (such as ${uName}, Gauhati University, Tezpur University, and affiliated colleges).
 
+CRITICAL DIRECT ANSWER MANDATE:
+কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
+
 CRITICAL LANGUAGE MANDATE:
 The user has asked in Assamese script. You MUST generate your ENTIRE response exclusively in pure, natural, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
 Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
@@ -178,6 +197,12 @@ Provide comprehensive, clear, accurate, and well-structured answers to the user'
 Answer any question (university rules, exams, admissions, syllabus, science, computing, career, general knowledge, etc.) politely, thoroughly, and encouragingly in Standard Assamese.`;
   } else {
     systemPrompt = `You are UniMitra, the official intelligent, supportive, and bilingual AI assistant for higher education institutions in Assam (such as ${uName}, Gauhati University, Tezpur University, and affiliated colleges).
+
+CRITICAL DIRECT ANSWER MANDATE:
+Answer the user's question directly, concisely, and authoritatively.
+NEVER start your response with repetitive boilerplate self-introductions or persona declarations (do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University...").
+Jump straight to the direct answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
+
 Provide comprehensive, clear, accurate, and well-structured answers to ANY user query or topic.
 You should assist with university ordinances, examination codes, grading, attendance rules, scholarships (like Ishan Uday/DHE), syllabus, admissions, as well as general academic topics, science, computing, career advice, and knowledge.
 Always be polite, authoritative, and helpful. Respond in English with clarity.`;
@@ -214,7 +239,7 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
             success: true,
             fromBackend: false,
             fromAi: true,
-            answer: text.trim(),
+            answer: stripUnwantedIntro(text.trim(), query),
             source: `${uName} AI Knowledge Engine`,
             page: mode === 'as_roman' ? 'Romanized Assamese Output' : (mode === 'as_script' ? 'Assamese Script Output' : 'English Output'),
             confidence: '99.2% AI Verified',
@@ -261,7 +286,7 @@ export const chatService = {
             fromBackend: true,
             fromAi: true,
             sessionId: data.data.sessionId || sId,
-            answer: data.data.answer || data.data.text,
+            answer: stripUnwantedIntro(data.data.answer || data.data.text, query),
             source: data.data.source || `${university?.name || 'Dibrugarh University'} Gazette`,
             page: data.data.page || data.data.clause || 'Verified Regulation',
             confidence: data.data.confidence || '99.4% Verified Match',
@@ -279,6 +304,7 @@ export const chatService = {
     if (pythonResult) {
       return {
         ...pythonResult,
+        answer: stripUnwantedIntro(pythonResult.answer, query),
         sessionId: sId
       };
     }
@@ -312,7 +338,7 @@ export const chatService = {
       fromBackend: false,
       fromAi: false,
       sessionId: sId,
-      answer: localResult?.answer || fallbackAnswer,
+      answer: stripUnwantedIntro(localResult?.answer || fallbackAnswer, query),
       source: localResult?.source || `${university?.name || 'Dibrugarh University'} Knowledge Repository`,
       page: localResult?.page || 'Statute Section 14',
       confidence: localResult?.confidence || '98.5% Grounded Match',

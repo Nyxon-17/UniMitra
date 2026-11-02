@@ -1,6 +1,7 @@
 import concurrent.futures
 import json
 import logging
+import re
 from typing import Any, Dict, List, Optional
 from google import genai
 from google.genai import types
@@ -79,17 +80,17 @@ INSTITUTIONAL_BENCHMARKS = [
     },
     {
         "keywords": ["নমস্কাৰ", "নমস্কার", "হেল্ল", "হাই", "hello", "hi", "hey", "greetings", "good morning", "good evening"],
-        "as_answer": "নমস্কাৰ! মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে আপোনাৰ শৈক্ষিক আৰু প্ৰশাসনিক AI সহায়ক। আপোনাক নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি বা চৌহদৰ সুবিধা সম্পৰ্কে কেনেকৈ সহায় কৰিব পাৰোঁ?",
-        "en_answer": "Hello! I am UniMitra, your official bilingual academic and administrative AI assistant for Assam Universities (Dibrugarh, Gauhati, Tezpur, etc.). How can I help you today regarding regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
+        "as_answer": "নমস্কাৰ! আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ? বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি বা ছাত্ৰবৃত্তি সম্পৰ্কে সুধিব পাৰে।",
+        "en_answer": "Hello! How can I help you today regarding university regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
         "source": "UniMitra Bilingual Assistant",
         "page": "Official Orientation",
         "confidence": "100% Grounded Match",
         "domain": "General Assistance",
     },
     {
-        "keywords": ["unimitra", "ইউনিমিত্র", "about", "কি", "who are you", "আপুনি কোন"],
-        "as_answer": "ইউনিমিত্র (UniMitra) হ'ল অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড় বিশ্ববিদ্যালয়, গুৱাহাটী বিশ্ববিদ্যালয় ইত্যাদি) ছাত্ৰ-ছাত্ৰী, অধ্যাপক আৰু প্ৰশাসনিক কৰ্মচাৰীসকলৰ বাবে নিৰ্মিত এক আধুনিক দ্বিভাষিক (অসমীয়া আৰু ইংৰাজী) AI সহায়ক। ই অনুমোদিত গেজেট, জাননী আৰু নিয়মাৱলীৰ সঠিক পৃষ্ঠা নম্বৰ আৰু ধাৰা উদ্ধৃত কৰি প্ৰমাণিত উত্তৰ প্ৰদান কৰে।",
-        "en_answer": "UniMitra is an official AI-powered smart university assistance platform designed for students, faculty, and administrative staff across Assam (Dibrugarh University, Gauhati University, etc.). It delivers verified answers in Assamese and English with exact gazette citations and page numbers.",
+        "keywords": ["unimitra", "ইউনিমিত্র", "who are you", "আপুনি কোন", "what is unimitra"],
+        "as_answer": "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
+        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Dibrugarh University, Gauhati University, etc.).",
         "source": "UniMitra Knowledge Repository",
         "page": "System Overview",
         "confidence": "100% Grounded Match",
@@ -98,6 +99,11 @@ INSTITUTIONAL_BENCHMARKS = [
 ]
 
 ASSAMESE_SYSTEM_PROMPT = """You are UniMitra (ইউনিমিত্র), the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+
+CRITICAL DIRECT ANSWER MANDATE:
+- Answer the user's question directly, clearly, and concisely.
+- Do NOT start your response with boilerplate self-introductions or identity recitations (e.g., NEVER start with "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ চৰকাৰী AI সহায়ক..." or similar introductory greetings) unless the user explicitly greeted you or asked who you are.
+- Jump straight to the information, facts, or instructions requested.
 
 CRITICAL LANGUAGE MANDATE:
 The user has asked their question in Assamese or explicitly requested Assamese output. You MUST generate your ENTIRE response in pure, authentic, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
@@ -115,6 +121,12 @@ Your behavioral instructions:
 """
 
 ENGLISH_SYSTEM_PROMPT = """You are UniMitra, the official intelligent university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, etc.).
+
+CRITICAL DIRECT ANSWER MANDATE:
+- Answer the user's question directly, concisely, and authoritatively.
+- NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
+- Jump straight to the facts, guidance, and answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
+
 Your primary instructions:
 1. Provide accurate, clear, professional, and friendly answers to any question asked by students, faculty, or staff.
 2. If statutory institutional documents or circulars are provided in the context, ground your answer on them and provide explicit citations (Document Name, Section/Clause, Page number).
@@ -127,6 +139,11 @@ Your primary instructions:
 
 
 ROMANIZED_ASSAMESE_SYSTEM_PROMPT = """You are UniMitra, the official university AI assistant for Assam Universities (Dibrugarh University, Gauhati University, Tezpur University, etc.).
+
+CRITICAL DIRECT ANSWER MANDATE:
+- Answer the question directly and naturally.
+- Do NOT start with boilerplate self-introductions (e.g., do NOT start with "Moi UniMitra...").
+- Jump straight to answering the user's question unless the user asks who you are or greets you.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -202,6 +219,37 @@ def detect_language_mode(text: str, requested_lang: str = "en") -> str:
     return "en"
 
 
+
+def strip_unwanted_intro(answer: str, query: str) -> str:
+    if not answer or not query:
+        return answer
+    q_lower = query.lower()
+    if any(k in q_lower for k in ["who are you", "what is unimitra", "who is unimitra", "আপুনি কোন", "আপোনাৰ পৰিচয়", "introduce yourself"]):
+        return answer
+
+    cleaned = answer.strip()
+    cleaned = re.sub(
+        r'^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I\'m|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant\s*(?:dedicated|designed)?[^.\n]*?(?:and others\.|\.\s*|\n+)',
+        '',
+        cleaned,
+        flags=re.IGNORECASE
+    ).strip()
+
+    cleaned = re.sub(
+        r'^(?:Hello!?|Hi!?|Greetings!?)\s*(?:I am|I\'m)\s+UniMitra[^.\n]*?\.\s*',
+        '',
+        cleaned,
+        flags=re.IGNORECASE
+    ).strip()
+
+    cleaned = re.sub(
+        r'^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^।\n]*?[।!]\s*',
+        '',
+        cleaned
+    ).strip()
+
+    return cleaned if cleaned else answer
+
 class GeminiService:
     @staticmethod
     def is_assamese(text: str) -> bool:
@@ -240,7 +288,23 @@ class GeminiService:
         matched_benchmark = None
         normalized_q = clean_query.lower()
         for benchmark in INSTITUTIONAL_BENCHMARKS:
-            if any(kw.lower() in normalized_q for kw in benchmark["keywords"]):
+            is_greeting = any(g in benchmark["keywords"] for g in ["hello", "hi", "hey", "নমস্কাৰ"])
+            if is_greeting and len(clean_query.split()) > 4:
+                continue
+
+            is_match = False
+            for kw in benchmark["keywords"]:
+                kw_lower = kw.lower()
+                if len(kw_lower) <= 3:
+                    if re.search(r'\b' + re.escape(kw_lower) + r'\b', normalized_q):
+                        is_match = True
+                        break
+                else:
+                    if kw_lower in normalized_q:
+                        is_match = True
+                        break
+
+            if is_match:
                 matched_benchmark = benchmark
                 if not retrieved_chunks:
                     retrieved_chunks = [{
@@ -360,8 +424,9 @@ Please formulate a clear, authoritative answer. If statutory context was provide
                     else (citations[0]["clause_reference"] if citations else "Verified Guidance")
                 )
 
+                clean_final_answer = strip_unwanted_intro(answer_text, clean_query)
                 return {
-                    "answer": answer_text,
+                    "answer": clean_final_answer,
                     "source": primary_source,
                     "page": primary_page,
                     "confidence": "99.2% Grounded Match" if citations else "Academic AI Verified",
