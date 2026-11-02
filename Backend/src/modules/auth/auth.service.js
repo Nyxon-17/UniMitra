@@ -206,7 +206,17 @@ export const loginStudent = async ({ email, password, rememberMe = true }) => {
   }
 
   if (!profile.passwordHash) {
-    throw ApiError.unauthorized('Account authentication method not configured.');
+    if (password && password.length >= 6) {
+      const passwordHash = await bcrypt.hash(password, 10);
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: { passwordHash },
+      });
+      logger.info({ email: normalizedEmail }, 'Configured initial password for student account');
+      profile.passwordHash = passwordHash;
+    } else {
+      throw ApiError.unauthorized('This account was created via Google Sign-In and has no password configured. Please sign in using "Continue with Google" or enter a password of at least 6 characters to configure password access.');
+    }
   }
 
   const isMatch = await bcrypt.compare(password, profile.passwordHash);
@@ -299,7 +309,17 @@ export const loginFacultyCredentials = async ({ memberId, password }) => {
   }
 
   if (!profile.passwordHash) {
-    throw ApiError.unauthorized('Account authentication method not configured.');
+    if (password && password.length >= 6) {
+      const passwordHash = await bcrypt.hash(password, 10);
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: { passwordHash },
+      });
+      logger.info({ memberId: profile.memberId }, 'Configured initial password for faculty account');
+      profile.passwordHash = passwordHash;
+    } else {
+      throw ApiError.unauthorized('Faculty account password not configured. Please enter a valid password (min 6 characters) to initialize access.');
+    }
   }
 
   const isMatch = await bcrypt.compare(password, profile.passwordHash);

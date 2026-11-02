@@ -34,13 +34,15 @@ export const DashboardSidebar = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isFaculty = studentInfo?.role === 'Faculty Member';
+  const roleLower = (studentInfo?.role || '').toLowerCase();
+  const isFaculty = roleLower.includes('faculty');
+  const isAdmin = roleLower.includes('admin');
 
   // Active tab derived from URL or activeTab prop
   const pathSegment = location.pathname.startsWith('/dashboard/')
     ? location.pathname.replace('/dashboard/', '').split('/')[0]
     : '';
-  const effectiveTab = pathSegment || activeTab || 'overview';
+  const effectiveTab = pathSegment || activeTab || (isFaculty ? 'faculty-exams' : 'overview');
 
   // Role-Specific Navigation Menu Items
   const studentMenuItems = [
@@ -58,12 +60,12 @@ export const DashboardSidebar = ({
   ];
 
   const facultyMenuItems = [
-    { id: 'overview', label: 'Faculty Academic Hub', asLabel: 'অধ্যাপক পৰিদৰ্শন কেন্দ্ৰ', icon: HomeIcon },
+    { id: 'faculty-exams', label: 'Examination Guidelines', asLabel: 'পৰীক্ষা আৰু মূল্যায়ন নিৰ্দেশনা', icon: ClipboardDocumentCheckIcon },
     { id: 'assistant', label: 'Faculty AI Workspace', asLabel: 'শৈক্ষিক AI সহায়ক', icon: ChatBubbleIcon },
     { id: 'regulations', label: 'Academic Regulations & Workload', asLabel: 'শৈক্ষিক নিয়মাৱলী আৰু কৰ্মভাৰ', icon: BuildingLibraryIcon },
-    { id: 'faculty-exams', label: 'Examination Guidelines', asLabel: 'পৰীক্ষা আৰু মূল্যায়ন নিৰ্দেশনা', icon: ClipboardDocumentCheckIcon },
     { id: 'faculty-documents', label: 'Authorized Documents', asLabel: 'অনুমোদিত প্ৰতিষ্ঠানিক নথিপত্ৰ', icon: DocumentTextIcon },
     { id: 'faculty-saved', label: 'Saved Reference Circulars', asLabel: 'সংৰক্ষিত জাননীসমূহ', icon: DocumentTextIcon },
+    { id: 'profile', label: 'Faculty Profile', asLabel: 'অধ্যাপক প্ৰফাইল', icon: UserIcon },
   ];
 
   const menuItems = isFaculty ? facultyMenuItems : studentMenuItems;
@@ -81,8 +83,13 @@ export const DashboardSidebar = ({
   };
 
   const handleLogoClick = () => {
-    if (onSelectTab) onSelectTab('overview');
-    navigate('/dashboard/overview');
+    if (isFaculty) {
+      if (onSelectTab) onSelectTab('faculty-exams');
+      navigate('/dashboard/faculty-exams');
+    } else {
+      if (onSelectTab) onSelectTab('overview');
+      navigate('/dashboard/overview');
+    }
   };
 
   const handleAdminClick = () => {
@@ -165,14 +172,16 @@ export const DashboardSidebar = ({
 
         {/* Lower Sidebar Actions with Hairline Divider */}
         <div className="p-3.5 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-1.5">
-          {/* Admin Ingestion Console Access */}
-          <button
-            onClick={handleAdminClick}
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-[#E9F0ED]/70 dark:bg-[#142426]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] transition-all cursor-pointer border border-[#123C3A]/10 dark:border-[#55C7B2]/15"
-          >
-            <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-[#D4A96A] dark:text-[#55C7B2]">RAG ⚙️</span>
-          </button>
+          {/* Admin Ingestion Console Access - Strictly visible ONLY to Admins */}
+          {isAdmin && (
+            <button
+              onClick={handleAdminClick}
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold text-[#123C3A] dark:text-[#DCE8E4] bg-[#E9F0ED]/70 dark:bg-[#142426]/70 hover:bg-[#E9F0ED] dark:hover:bg-[#142426] transition-all cursor-pointer border border-[#123C3A]/10 dark:border-[#55C7B2]/15"
+            >
+              <span>{currentLang === 'as' ? 'প্ৰশাসন কেন্দ্ৰ' : 'Admin Console'}</span>
+              <span className="text-[10px] uppercase font-mono tracking-wider text-[#D4A96A] dark:text-[#55C7B2]">RAG ⚙️</span>
+            </button>
+          )}
 
           {/* Secure Sign Out Action */}
           <button

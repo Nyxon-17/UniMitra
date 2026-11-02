@@ -105,6 +105,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 - Do NOT start your response with boilerplate self-introductions or identity recitations (e.g., NEVER start with "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ চৰকাৰী AI সহায়ক..." or similar introductory greetings) unless the user explicitly greeted you or asked who you are.
 - Jump straight to the information, facts, or instructions requested.
 
+বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
+- আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
+- ডাঠ বা হেলনীয়া কৰিবলৈ কোনো '*' ব্যৱহাৰ নকৰিব (যেনে **শব্দ** বা *শব্দ* নিলিখিব)।
+- কোনো '#' চিহ্ন ব্যৱহাৰ নকৰিব (যেনে #, ##, ### নিলিখিব)।
+- কোনো '=' বা '===' চিহ্ন ব্যৱহাৰ নকৰিব।
+- কোনো শ্লেছ ('/') ব্যৱহাৰ নকৰিব (শ্লেছৰ সলনি 'বা', 'আৰু', কমা বা হাইফেন ব্যৱহাৰ কৰক)।
+- তালিকাৰ বাবে কেৱল সাধাৰণ সংখ্যা (১., ২.) বা সাধাৰণ হাইফেন (-) ব্যৱহাৰ কৰক।
+
 CRITICAL LANGUAGE MANDATE:
 The user has asked their question in Assamese or explicitly requested Assamese output. You MUST generate your ENTIRE response in pure, authentic, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
 Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
@@ -127,6 +135,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 - NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
 - Jump straight to the facts, guidance, and answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
 
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+- Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
+- Do NOT use asterisks for bolding, italics, or list bullets (do NOT write **word**, *word*, or * bullet). Write clean, plain text without any asterisks.
+- Do NOT use hash characters ('#') for headings (do NOT write #, ##, or ###). Write plain capitalized titles instead.
+- Do NOT use equals signs ('=') or divider lines ('===').
+- Do NOT use slashes ('/') in your text (write 'or', 'and', hyphens, or commas instead of slashes, e.g. write 'FYUGP or CBCS' instead of 'FYUGP/CBCS').
+- Use clean paragraphs, standard numbers (1., 2.), or simple hyphens (-) for lists.
+
 Your primary instructions:
 1. Provide accurate, clear, professional, and friendly answers to any question asked by students, faculty, or staff.
 2. If statutory institutional documents or circulars are provided in the context, ground your answer on them and provide explicit citations (Document Name, Section/Clause, Page number).
@@ -144,6 +160,14 @@ CRITICAL DIRECT ANSWER MANDATE:
 - Answer the question directly and naturally.
 - Do NOT start with boilerplate self-introductions (e.g., do NOT start with "Moi UniMitra...").
 - Jump straight to answering the user's question unless the user asks who you are or greets you.
+
+CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
+- Do NOT use '*', '=', '/', or '#' anywhere in your output.
+- No asterisks ('*') for bold or bullets.
+- No hash ('#') for headings.
+- No equals ('=') signs.
+- No slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
+- Use clean plain text sentences and simple numbers (1., 2.) or hyphens (-) for lists.
 
 STRICT LANGUAGE MATCHING RULE (ROMANIZED ASSAMESE):
 The user is speaking in Romanized Assamese (Assamese language written using English/Latin alphabet letters, e.g. "Tumi kenekua asa?", "Mur exam ketiya hobo?", "Aji college ot ki ki hol?", "Assam or capital ki?").
@@ -220,6 +244,36 @@ def detect_language_mode(text: str, requested_lang: str = "en") -> str:
 
 
 
+def sanitize_ai_response(text: str) -> str:
+    if not text:
+        return text
+    # 1. Strip markdown header hashes (#)
+    cleaned = re.sub(r'#+\s*', '', text)
+    # 2. Strip equals dividers (===) and replace = with hyphen
+    cleaned = re.sub(r'={2,}', '', cleaned)
+    cleaned = re.sub(r'\s*=\s*', ' - ', cleaned)
+    cleaned = cleaned.replace('=', '')
+    # 3. Replace leading bullet asterisks with hyphens, remove remaining asterisks (*)
+    cleaned = re.sub(r'^\s*\*\s+', '- ', cleaned, flags=re.MULTILINE)
+    cleaned = cleaned.replace('*', '')
+    # 4. Protect URLs temporarily if any (https://...)
+    urls = []
+    def _save_url(m):
+        urls.append(m.group(0))
+        return f"__URL_PLACEHOLDER_{len(urls)-1}__"
+    cleaned = re.sub(r'https?://[^\s]+', _save_url, cleaned)
+    # Replace remaining slashes (/) with 'or' / 'বা'
+    has_assamese = any('ঀ' <= c <= '৿' for c in cleaned)
+    or_word = ' বা ' if has_assamese else ' or '
+    cleaned = re.sub(r'\s*/\s*', or_word, cleaned)
+    cleaned = cleaned.replace('/', ' ')
+    # Restore URLs
+    for i, u in enumerate(urls):
+        cleaned = cleaned.replace(f"__URL_PLACEHOLDER_{i}__", u)
+    # Clean double spaces
+    cleaned = re.sub(r'[ 	]{2,}', ' ', cleaned)
+    return cleaned.strip()
+
 def strip_unwanted_intro(answer: str, query: str) -> str:
     if not answer or not query:
         return answer
@@ -248,7 +302,7 @@ def strip_unwanted_intro(answer: str, query: str) -> str:
         cleaned
     ).strip()
 
-    return cleaned if cleaned else answer
+    return sanitize_ai_response(cleaned if cleaned else answer)
 
 class GeminiService:
     @staticmethod
@@ -281,8 +335,12 @@ class GeminiService:
         Generates a verified, grounded answer in Assamese or English for ANY question.
         Uses prioritized fallback across available Gemini flash/flash-lite models.
         """
-        clean_query = normalize_assamese_unicode(query)
-        lang = target_language or ("as" if cls.is_assamese(clean_query) else "en")
+        from app.services.assamese_understanding import assamese_understanding
+        understanding = assamese_understanding.interpret_query(query, target_language)
+        clean_query = normalize_assamese_unicode(understanding.normalized_query)
+        lang = target_language or understanding.language_mode
+        if understanding.is_romanized and not target_language:
+            lang = "as_roman" 
 
         # Check pre-indexed statutory benchmarks
         matched_benchmark = None
@@ -353,8 +411,9 @@ class GeminiService:
             system_instruction = ENGLISH_SYSTEM_PROMPT
             output_lang_label = "English"
 
+        context_hint_line = f"\nUnderstood Input Context: {understanding.context_hint}\n" if (understanding.context_hint and lang == "as_roman") else ""
         user_prompt = f"""Target Output Language: {output_lang_label}
-User Question: {clean_query}
+User Question: {clean_query}{context_hint_line}
 
 Statutory Institutional Context Chunks:
 {full_context if full_context else '[NO DIRECT DOCUMENT CHUNKS AVAILABLE - ANSWER USING ACADEMIC AND UNIVERSITY KNOWLEDGE]'}
