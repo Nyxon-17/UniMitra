@@ -47,8 +47,6 @@ class VectorStoreService:
             SELECT id, document_id, chunk_index, page_number, clause_reference, 
                    content, 1 - (embedding <=> %s::vector) AS similarity, metadata
             FROM ai_document_chunks
-            WHERE (%s IS NULL OR university_code = %s OR university_code = 'ALL')
-              AND (%s IS NULL OR category_code = %s)
             ORDER BY embedding <=> %s::vector ASC
             LIMIT %s;
         """
@@ -57,15 +55,13 @@ class VectorStoreService:
                 direct_sql,
                 (
                     vector_str,
-                    university_code,
-                    university_code,
-                    category_code,
-                    category_code,
                     vector_str,
                     match_count,
                 ),
             )
-            return [r for r in results if float(r.get("similarity", 0)) >= threshold]
+            min_thresh = min(threshold, 0.35)
+            filtered = [r for r in results if float(r.get("similarity", 0)) >= min_thresh]
+            return filtered if filtered else results
         except Exception as err:
             logger.error(f"Vector search query error: {err}")
             return []

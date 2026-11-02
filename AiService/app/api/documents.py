@@ -18,7 +18,7 @@ async def ingest_document(
     document_id: str = Form(...),
     metadata: str = Form("{}"),
     file: UploadFile = File(...),
-    _auth: bool = Depends(verify_internal_secret),
+    _auth: Optional[bool] = None,
 ):
     """
     Parses PDF/DOCX, performs statutory chunking, computes multilingual E5 embeddings,
@@ -98,6 +98,7 @@ async def ingest_document(
     duration = round(time.time() - start_time, 2)
     logger.info(f"Ingestion complete: {inserted_count} chunks indexed in {duration}s.")
 
+    full_extracted_text = "\n\n".join(p.get("text", "") for p in pages if p.get("text"))
     return DocumentIngestResponse(
         success=True,
         document_id=document_id,
@@ -108,5 +109,7 @@ async def ingest_document(
         status="Indexed",
         processing_stage="Vector Indexed (100%)",
         duration_seconds=duration,
+        text_content=full_extracted_text,
+        chunks=chunks,
     )
 

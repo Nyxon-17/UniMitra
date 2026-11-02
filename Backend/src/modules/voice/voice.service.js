@@ -21,8 +21,8 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
   } else {
     // Graceful fallback for dev/demo if Python STT is offline
     transcript = language === 'as' 
-      ? 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?'
-      : 'What is the minimum passing criteria for Dibrugarh University semester exams?';
+      ? 'নিভৰয়া বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?'
+      : 'What is the minimum passing criteria for Nivoraya University semester exams?';
     logger.info({ fallbackTranscript: transcript }, 'Used default benchmark transcript as STT fallback.');
   }
 

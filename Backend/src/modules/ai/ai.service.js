@@ -6,72 +6,9 @@ import { logger } from '../../config/logger.js';
 // Pre-indexed statutory benchmarks for North-East & Assam Universities
 const STATUTORY_BENCHMARKS = [
   {
-    keywords: ['উত্তীৰ্ণ', 'পাছ', 'নম্বৰ', 'passing', 'minimum marks', 'pass criteria', '40%'],
-    asAnswer: 'ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।',
-    enAnswer: 'According to Dibrugarh and Gauhati University undergraduate examination ordinances (NEP/CBCS), candidates must secure a minimum of 40% marks separately in both Continuous Assessment (In-Semester) and End-Semester Theory/Practical examinations to pass each course.',
-    source: 'Dibrugarh University Examination Ordinance 2024',
-    page: 'Clause 8.2, Page 14',
-    confidence: '99.4% Grounded Match',
-    domain: 'Examination Regulations',
-  },
-  {
-    keywords: ['মেডিকেল', 'উপস্থিতি', 'ৰেহাই', 'condonation', 'attendance', 'medical', '75%', '65%', 'shortage'],
-    asAnswer: 'বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিধিমলা অনুসৰি, প্ৰতি ষাণ্মাসিকত পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। চিকিৎসাজনিত জৰুৰী কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) লিখিত অনুমোদন সাপেক্ষে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Condonation) দিয়া হয়, যাৰ ফলত নূন্যতম ৬৫% উপস্থিতি থাকিলে পৰীক্ষাত অৱতীৰ্ণ হোৱাৰ অনুমতি লাভ কৰিব পাৰি।',
-    enAnswer: 'Under statutory academic ordinances, a minimum of 75% class attendance is mandatory in each semester. A medical condonation of up to 10% is permissible upon recommendation of the Head of the Department (HoD) supported by certified hospital documents, bringing the minimum required attendance down to 65%.',
-    source: 'Dibrugarh University Attendance Regulations 2024',
-    page: 'Section 4.3, Page 9',
-    confidence: '98.8% Grounded Match',
-    domain: 'Academic Ordinances',
-  },
-  {
-    keywords: ['ঈশান উদয়', 'জলপানি', 'বৃত্তি', 'ishan uday', 'scholarship', 'income', 'পাৰিবাৰিক আয়', '4.5'],
-    asAnswer: 'ইউজিচিৰ (UGC) ঈশান উদয় বিশেষ ছাত্ৰবৃত্তিৰ অধীনত সাধাৰণ পাঠ্যক্ৰমৰ বাবে মাহে ৫,৪০০ টকা আৰু পেছাদাৰী পাঠ্যক্ৰমৰ বাবে মাহে ৭,৮০০ টকা প্ৰদান কৰা হয়। ইয়াৰ বাবে প্ৰাৰ্থী উত্তৰ-পূৰ্বাঞ্চলৰ বাসিন্দা হ’ব লাগিব আৰু তেওঁলোকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ’ব লাগিব। আবেদনৰ সৈতে স্থায়ী বাসস্থান প্ৰমাণপত্ৰ (PRC) আৰু আয় প্ৰমাণপত্ৰ সংলগ্ন কৰা অপৰিহাৰ্য।',
-    enAnswer: 'The UGC Ishan Uday Special Scholarship for North Eastern Region (NER) grants INR 5,400/month for General Degree courses and INR 7,800/month for Technical/Medical courses. Domicile candidates of the North Eastern states whose annual parental family income does not exceed INR 4.5 Lakhs are eligible.',
-    source: 'UGC Ishan Uday Special Scholarship Framework',
-    page: 'Clause 3.1 & 4.2, Page 5',
-    confidence: '99.1% Grounded Match',
-    domain: 'Financial Aid & Scholarships',
-  },
-  {
-    keywords: ['পুনৰীক্ষণ', 'ৰে-ইভালুৱেচন', 'মাচুল', 're-evaluation', 'scrutiny', 'fee', '350', '20 days'],
-    asAnswer: 'পৰীক্ষাৰ ফলাফল ঘোষণাৰ ২০ দিনৰ ভিতৰত বিশ্ববিদ্যালয়ৰ পৰীক্ষা পৰ্টেলৰ জৰিয়তে উত্তৰবহী পুনৰীক্ষণৰ (Re-evaluation) বাবে আবেদন কৰিব পাৰি। প্ৰতিখন পত্ৰৰ বাবে নিৰ্ধাৰিত মাচুল ৩৫০ টকা। এজন শিক্ষাৰ্থীয়ে এটা ষাণ্মাসিকত সৰ্বাধিক ৩ খন পত্ৰৰ বাবে পুনৰীক্ষণ আবেদন দাখিল কৰিব পাৰে।',
-    enAnswer: 'Under university evaluation rules, students can apply for answer script re-evaluation within 20 days of results declaration. The statutory fee is INR 350 per course paper, and candidates can request scrutiny for up to a maximum of 3 papers in a single semester.',
-    source: 'Examination Evaluation Bylaws & Scrutiny Code',
-    page: 'Section 12, Page 22',
-    confidence: '98.5% Grounded Match',
-    domain: 'Examination Guidelines',
-  },
-  {
-    keywords: ['হোষ্টেল', 'hostel', 'distance', 'দূৰত্ব', 'allotment', '35 km'],
-    asAnswer: 'বিশ্ববিদ্যালয়ৰ ছাত্ৰাৱাস আৰু ছাত্ৰীনিবাসত আসন আৱণ্টন মেধা আৰু ভৌগোলিক দূৰত্বৰ ভিত্তিত কৰা হয়। নিয়ম অনুসৰি, শিক্ষাৰ্থীৰ স্থায়ী বাসস্থান বিশ্ববিদ্যালয় চৌহদৰ পৰা নূন্যতম ৩৫ কিলোমিটাৰতকৈ অধিক দূৰত্বত অৱস্থিত হ’ব লাগিব। ইয়াৰ উপৰিও সকলো আৱাসীয়ে ৰেগিং বিৰোধী শপতনামা দাখিল কৰা বাধ্যতামূলক।',
-    enAnswer: 'University hostel allotment is strictly governed by merit-cum-distance criteria. A student’s permanent home residence must be located at a minimum distance of greater than 35 km from the university campus. Submission of an anti-ragging affidavit is mandatory for all hostel residents.',
-    source: 'Hostel Bylaws & Campus Residential Ordinances',
-    page: 'Clause 5.1, Page 8',
-    confidence: '97.9% Grounded Match',
-    domain: 'Campus Facilities',
-  },
-  {
-    keywords: ['cas', 'পদোন্নতি', 'promotion', 'ugc', 'অধ্যাপক', 'api score', 'assistant professor'],
-    asAnswer: 'ইউজিচি ২০১৮ ৰ সংশোধিত অধিসূচনা অনুসৰি, সহকাৰী অধ্যাপকৰ পৰা সহযোগী অধ্যাপক পদলৈ পদোন্নতিৰ (CAS) বাবে পিএইচ.ডি. ডিগ্ৰী, নূন্যতম ৮ বছৰৰ শিক্ষাদানৰ অভিজ্ঞতা, নিৰ্ধাৰিত API নম্বৰ আৰু UGC-Care তালিকাভুক্ত আলোচনীত নিৰ্ধাৰিত গৱেষণা প্ৰবন্ধ প্ৰকাশ হোৱাটো বাধ্যতামূলক।',
-    enAnswer: 'According to UGC 2018 regulations, Career Advancement Scheme (CAS) promotion from Assistant Professor (Senior Scale / Selection Grade) to Associate Professor requires a mandatory PhD degree, 8 years of teaching experience, requisite API PBAS research score, and UGC-CARE listed peer-reviewed publications.',
-    source: 'UGC Regulations on Minimum Qualifications (CAS Amendment)',
-    page: 'Appendix II, Table 1, Page 68',
-    confidence: '98.2% Grounded Match',
-    domain: 'Faculty Regulations',
-  },
-  {
-    keywords: ['phd', 'পিএইচডি', 'supervision', 'quota', 'তত্ত্বাবধান', 'গৱেষক'],
-    asAnswer: 'বিশ্ববিদ্যালয়ৰ পিএইচ.ডি. নিয়মাৱলী অনুসৰি, গৱেষক তত্ত্বাবধানৰ সৰ্বাধিক কোটা নিৰ্ধাৰণ কৰা হৈছে: এগৰাকী অধ্যাপকে সৰ্বাধিক ৮ জন, সহযোগী অধ্যাপকে ৬ জন আৰু সহকাৰী অধ্যাপকে ৪ জন গৱেষকক একে সময়তে নিৰ্দেশনা প্ৰদান কৰিব পাৰে।',
-    enAnswer: 'Under doctoral research ordinances, the maximum permissible PhD supervision quota at any given time is: Professor (up to 8 scholars), Associate Professor (up to 6 scholars), and Assistant Professor (up to 4 scholars).',
-    source: 'Statutory Research & Doctoral Ordinances',
-    page: 'Section 9, Page 22',
-    confidence: '98.7% Grounded Match',
-    domain: 'Research Ordinances',
-  },,
-  {
-    keywords: ['নমস্কাৰ', 'নমস্কার', 'হেল্ল', 'হাই', 'hello', 'hi', 'hey', 'greetings', 'good morning', 'good evening'],
-    asAnswer: "নমস্কাৰ! আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ? বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি বা ছাত্ৰবৃত্তি সম্পৰ্কে সুধিব পাৰে।",
-    enAnswer: "Hello! How can I help you today regarding university regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
+    keywords: ['নমস্কাৰ', 'নমস্কার', 'হেল্ল', 'হাই', 'hello', 'hi', 'hii', 'hiii', 'hey', 'heyy', 'greetings', 'good morning', 'good evening', 'how are you', 'how r u', 'ki khobor', 'kenekua'],
+    asAnswer: 'নমস্কাৰ! আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ? বিশ্ববিদ্যালয়ৰ শেহতীয়া জাননী, নিয়ম বা যিকোনো শৈক্ষিক বিষয়ৰ ওপৰত সুধিব পাৰে।',
+    enAnswer: 'Hello! How can I assist you today? Feel free to ask any question regarding university notices, academic guidelines, or regulations.',
     source: 'UniMitra Bilingual Assistant',
     page: 'Official Orientation',
     confidence: '100% Grounded Match',
@@ -79,13 +16,13 @@ const STATUTORY_BENCHMARKS = [
   },
   {
     keywords: ['unimitra', 'ইউনিমিত্র', 'who are you', 'what is unimitra', 'আপুনি কোন'],
-    asAnswer: "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
-    enAnswer: "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Dibrugarh University, Gauhati University, etc.).",
+    asAnswer: 'মই ইউনিমিত্র (UniMitra), নিভৰয়া বিশ্ববিদ্যালয়ৰ বাবে নিবেদিত আধুনিক দ্বিভাষিক AI প্রাতিষ্ঠানিক সহায়ক।',
+    enAnswer: 'I am UniMitra, the official bilingual AI academic assistant for Nivoraya University.',
     source: 'UniMitra Knowledge Repository',
     page: 'System Overview',
     confidence: '100% Grounded Match',
     domain: 'General Assistance',
-  }
+  },
 ];
 
 /**
@@ -199,7 +136,7 @@ export function stripUnwantedIntro(answer = '', query = '') {
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODELS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
 
-export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Dibrugarh University') {
+export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Nivoraya University') {
   const understanding = interpretQuery(query, mode);
   const langMode = mode === 'as' ? 'as_script' : (mode || understanding.languageMode);
   const contextNote = (understanding.contextHint && langMode === 'as_roman') ? `\nUnderstood Input Context: ${understanding.contextHint}` : '';
@@ -207,19 +144,12 @@ export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'D
   let systemPrompt = '';
 
   if (langMode === 'as_roman') {
-    systemPrompt = `You are UniMitra, the official university AI assistant dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+    systemPrompt = `You are UniMitra, the official university AI assistant dedicated exclusively to Our University (${univName || 'Nivoraya University'}).
 
 SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE:
-1. This platform is dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+1. This platform is dedicated exclusively to Our University (${univName || 'Nivoraya University'}).
 2. For questions regarding OUR UNIVERSITY: Answer using statutory academic regulations, examination bylaws, attendance criteria, and grounded university data.
-3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using general educational and web data. Do NOT apply Our University's internal statutory codes to other universities. State clearly that institutional statutory records in this portal are anchored to ${univName || 'Dibrugarh University'}, while information on other universities is from general web data.
-
-CRITICAL UNPUBLISHED DOCUMENT & ANSWER MANDATE:
-You can and MUST answer ALL user questions with maximum accuracy. Never refuse to answer.
-If the specific notice or ordinance for Our University is NOT present in the verified documents:
-1. State: "The official notification or ordinance on this specific topic has not yet been published by the university authority."
-2. Provide a comprehensive, accurate alternative answer on the topic using general educational knowledge.
-3. Conclude: "Your requirement has been automatically recorded and forwarded to the university administrator on the Review & Feedback page for official document verification." 
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using general educational and web data. Do NOT apply Our University's internal statutory codes to other universities. State clearly that institutional statutory records in this portal are anchored to ${univName || 'Nivoraya University'}, while information on other universities is from general web data.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
@@ -259,19 +189,12 @@ AI: Assamor capital Dispur.
 User: Moi eta website bonabo bisaru.
 AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
   } else if (langMode === 'as_script') {
-    systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}) বাবে এক সমৰ্পিত আৰু বিশ্বাসযোগ্য দ্বিভাষিক AI সহায়ক।
+    systemPrompt = `আপুনি UniMitra (ইউনিমিত্র), আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'নিভৰয়া বিশ্ববিদ্যালয়'}) বাবে এক সমৰ্পিত আৰু বিশ্বাসযোগ্য দ্বিভাষিক AI সহায়ক।
 
 একক বিশ্ববিদ্যালয় আৰু দ্বি-উৎস নীতি (SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE):
-১. এই পৰ্টেল কেৱল আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'ডিব্ৰুগড় বিশ্ববিদ্যালয়'}) বাবে উৎসৰ্গিত।
+১. এই পৰ্টেল কেৱল আমাৰ নিৰ্দিষ্ট বিশ্ববিদ্যালয়ৰ (${univName || 'নিভৰয়া বিশ্ববিদ্যালয়'}) বাবে উৎসৰ্গিত।
 ২. আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
 ৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক উত্তৰ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব।
-
-অপ্ৰকাশিত নথি আৰু বিকল্প উত্তৰৰ নিৰ্দেশনা:
-আপুনি ব্যৱহাৰকাৰীৰ সকলো প্ৰশ্নৰ সঠিক উত্তৰ দিব লাগিব।
-যদি আমাৰ বিশ্ববিদ্যালয়ৰ কোনো নিৰ্দিষ্ট নথি বা অধিনিয়ম এতিয়ালৈকে অন্তৰ্ভুক্ত হোৱা নাই:
-১. কওক: "এই বিষয়ৰ আনুষ্ঠানিক অধিসূচনা বা অধিনিয়ম বিশ্ববিদ্যালয় কৰ্তৃপক্ষৰ দ্বাৰা এতিয়ালৈকে প্ৰকাশ কৰা হোৱা নাই।"
-২. সাধাৰণ শৈক্ষিক জ্ঞানৰ ভিত্তিত এটা সঠিক আৰু সহায়ক বিকল্প উত্তৰ দিয়ক।
-৩. কওক: "আপোনাৰ এই প্ৰয়োজনীয়তা পৰ্যালোচনা আৰু নথি অন্তৰ্ভুক্তিকৰণৰ বাবে ৰিভিউ আৰু ফীডবেক (Review & Feedback) পৃষ্ঠাত প্ৰশাসকলৈ স্বয়ংক্ৰিয়ভাৱে প্ৰেৰণ কৰা হৈছে।" 
 
 পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
@@ -288,12 +211,12 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
 যিকোনো বিষয়, বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি, বিজ্ঞান, তথ্য-প্ৰযুক্তি বা সাধাৰণ অনুসন্ধানৰ উত্তৰ নম্ৰ আৰু তথ্যসমৃদ্ধভাৱে অসমীয়াত বিশদভাৱে বুজাই দিয়ক।`;
   } else {
-    systemPrompt = `You are UniMitra, the official intelligent AI assistant dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
+    systemPrompt = `You are UniMitra, the official intelligent AI assistant dedicated exclusively to Our University (${univName || 'Nivoraya University'}).
 
 SINGLE-UNIVERSITY & DUAL-SOURCE GROUNDING MANDATE:
-1. This platform is dedicated exclusively to Our University (${univName || 'Dibrugarh University'}).
-2. For questions regarding OUR UNIVERSITY (${univName || 'Dibrugarh University'}): Provide authoritative answers grounded in official statutory academic ordinances, examination bylaws, and institutional vector repository records.
-3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using web data and general educational knowledge. Do NOT treat Our University's specific circulars as belonging to other universities. Clarify that while official statutory documents in this portal are anchored to ${univName || 'Dibrugarh University'}, external university information is provided from web data.
+1. This platform is dedicated exclusively to Our University (${univName || 'Nivoraya University'}).
+2. For questions regarding OUR UNIVERSITY (${univName || 'Nivoraya University'}): Provide authoritative answers grounded in official statutory academic ordinances, examination bylaws, and institutional vector repository records.
+3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details using web data and general educational knowledge. Do NOT treat Our University's specific circulars as belonging to other universities. Clarify that while official statutory documents in this portal are anchored to ${univName || 'Nivoraya University'}, external university information is provided from web data.
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer the question directly, concisely, and authoritatively.
@@ -485,7 +408,7 @@ export const resolveGroundedQuery = async ({
 
     // 4. Intelligent academic fallback
   const helpfulAnswer = lang === 'as'
-    ? `ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম অনুসৰি, আপোনাৰ প্ৰশ্নটো ('${query}') প্ৰাসংগিক বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ পৰ্টেল বা পৰীক্ষা শাখাৰ জাননী পৰীক্ষা কৰক।`
+    ? `নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম অনুসৰি, আপোনাৰ প্ৰশ্নটো ('${query}') প্ৰাসংগিক বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ পৰ্টেল বা পৰীক্ষা শাখাৰ জাননী পৰীক্ষা কৰক।`
     : `Regarding your inquiry ('${query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest circulars.`;
 
   return {

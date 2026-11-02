@@ -17,7 +17,7 @@ class SpeechToTextService:
         """
         if not audio_bytes or len(audio_bytes) < 100:
             return {
-                "transcript": "ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?" if language == "as" else "What is the passing criteria for semester exams?",
+                "transcript": "নিভৰয়া বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?" if language == "as" else "What is the passing criteria for semester exams?",
                 "language": language,
                 "confidence": 0.95,
             }
@@ -51,7 +51,7 @@ class SpeechToTextService:
 
         # Benchmark fallback
         fallback = (
-            "ডিব্ৰুগড় বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?"
+            "নিভৰয়া বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?"
             if language == "as"
             else "What is the minimum passing criteria for semester exams?"
         )

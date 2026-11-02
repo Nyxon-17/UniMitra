@@ -104,8 +104,8 @@ const DashboardAiAssistantInner = ({
         sender: 'ai',
         text: currentLang === 'as'
           ? `নমস্কাৰ প্ৰশাসক মহোদয়! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ প্ৰশাসনিক শাসন ব্যৱস্থাৰ AI সহায়ক (UniMitra Admin AI)। কাৰ্যবাহী পৰিষদৰ সিদ্ধান্ত, বিশ্ববিদ্যালয়ৰ সংবিধি আইন, শিক্ষক ৰষ্টাৰ আৰু মহাবিদ্যালয় অধিভুক্তিৰ নিয়মাৱলীৰ বিষয়ে যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত অনুসন্ধান কৰক।`
-          : `Hello Administrator. Welcome to the ${univProfile.name || 'Dibrugarh University'} Statutory Governance AI Console. Ask any regulatory query regarding University Acts, Executive Council bylaws, faculty roster rules, or institutional affiliation norms with verified statutory citations.`,
-        source: `${univProfile.name || 'Dibrugarh University'} Executive & Statutory Knowledge Base`,
+          : `Hello Administrator. Welcome to the ${univProfile.name || 'Nivoraya University'} Statutory Governance AI Console. Ask any regulatory query regarding University Acts, Executive Council bylaws, faculty roster rules, or institutional affiliation norms with verified statutory citations.`,
+        source: `${univProfile.name || 'Nivoraya University'} Executive & Statutory Knowledge Base`,
         page: 'University Act Section 21',
         confidence: '100% Match',
         time: 'Just now'
@@ -116,8 +116,8 @@ const DashboardAiAssistantInner = ({
         sender: 'ai',
         text: currentLang === 'as'
           ? `নমস্কাৰ সহকৰ্মী! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ অধ্যাপক শৈক্ষিক AI সহায়ক (UniMitra Faculty Workspace)। পাঠ্যক্ৰম প্ৰস্তুতি, প্ৰশ্নকাকত মডাৰেচন, পৰীক্ষা মূল্যায়ন, উপস্থিতি ৰেহাই আৰু শৈক্ষিক কৰ্মভাৰৰ বিষয়ে যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে।`
-          : `Welcome Colleague. I am your ${univProfile.name || 'Dibrugarh University'} Faculty Academic & Curriculum Workspace Assistant. Consult statutory regulations on syllabus design, moderation, attendance condonation, or duty leaves with grounded citations.`,
-        source: `${univProfile.name || 'Dibrugarh University'} Academic Council Knowledge Base`,
+          : `Welcome Colleague. I am your ${univProfile.name || 'Nivoraya University'} Faculty Academic & Curriculum Workspace Assistant. Consult statutory regulations on syllabus design, moderation, attendance condonation, or duty leaves with grounded citations.`,
+        source: `${univProfile.name || 'Nivoraya University'} Academic Council Knowledge Base`,
         page: 'Academic Ordinance Clause 7',
         confidence: '100% Match',
         time: 'Just now'
@@ -128,8 +128,8 @@ const DashboardAiAssistantInner = ({
         sender: 'ai',
         text: currentLang === 'as'
           ? `নমস্কাৰ! মই ${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ ছাত্ৰ শৈক্ষিক AI প্রাতিষ্ঠানিক সহায়ক (UniMitra)। বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষাৰ মূল্যায়ন, ভৰ্তি প্ৰক্ৰিয়া, ছাত্ৰবৃত্তি আৰু হোষ্টেলৰ সুবিধাৰ বিষয়ে মোক যিকোনো প্ৰশ্ন অসমীয়া বা ইংৰাজীত সুধিব পাৰে। আপুনি মাইক টিপি কথা ক’বও পাৰে!`
-          : `Hello! I am your ${univProfile.name || 'Dibrugarh University'} Student Academic Assistant. Ask any question on CBCS regulations, semester examinations, admit cards, syllabus, scholarships, or admissions with grounded citations.`,
-        source: `${univProfile.name || 'Dibrugarh University'} Statutory Knowledge Base`,
+          : `Hello! I am your ${univProfile.name || 'Nivoraya University'} Student Academic Assistant. Ask any question on CBCS regulations, semester examinations, admit cards, syllabus, scholarships, or admissions with grounded citations.`,
+        source: `${univProfile.name || 'Nivoraya University'} Statutory Knowledge Base`,
         page: 'Official Gazette Section 14',
         confidence: '100% Match',
         time: 'Just now'

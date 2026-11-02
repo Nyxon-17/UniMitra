@@ -21,7 +21,7 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
     {
       id: 'FB-901',
       type: 'Outdated Regulation',
-      university: 'Dibrugarh University (DU)',
+      university: 'Nivoraya University (DU)',
       rating: 4,
       comments: 'The syllabus reference for 3rd semester CBCS was accurate, but please update the 2024 revised attendance condonation circular.',
       submittedAt: 'Yesterday',

@@ -33,6 +33,8 @@ class DocumentIngestResponse(BaseModel):
     status: str = "Indexed"
     processing_stage: str = "Vector Indexed (100%)"
     duration_seconds: float = 0.0
+    text_content: Optional[str] = None
+    chunks: Optional[List[Dict[str, Any]]] = None
 
 
 class VoiceTranscribeResponse(BaseModel):

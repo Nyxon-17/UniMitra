@@ -151,6 +151,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       const estimatedPages = Math.max(1, Math.round(selectedFile.size / (60 * 1024)));
 
       documentService.uploadFacultyDocument({
+        id: `DOC-FAC-${Date.now().toString().slice(-4)}`,
         title: uploadFormData.title,
         asTitle: uploadFormData.asTitle || uploadFormData.title,
         university: uploadFormData.university,
@@ -168,7 +169,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
         uploaderName: studentInfo?.name || 'Dr. J. K. Sarma, Associate Professor',
         uploaderEmail: studentInfo?.email || 'faculty@university.ac.in',
         ocrApplied: true
-      });
+      }, selectedFile);
 
       setIsProcessing(false);
       setSelectedFile(null);
@@ -359,7 +360,14 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
           {/* Documents Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredAuthorizedDocs.map((doc) => (
+            {filteredAuthorizedDocs.length === 0 ? (
+              <div className="col-span-full neo-surface rounded-3xl p-10 text-center border border-dashed border-[#73A5CA]/40">
+                <DocumentTextIcon className="w-10 h-10 mx-auto text-[#FF933E] dark:text-[#03C988] mb-2" />
+                <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">No Authorized Documents Found</h3>
+                <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">No verified documents match your search or category filter. Approved faculty uploads will appear here.</p>
+              </div>
+            ) : (
+              filteredAuthorizedDocs.map((doc) => (
               <div 
                 key={doc.id}
                 className="neo-surface rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
@@ -422,7 +430,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   </div>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
       )}
@@ -676,7 +684,14 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#73A5CA]/20 dark:divide-[#1C82AD]/20 text-[#000000] dark:text-[#FFFFFF]">
-                  {facultySubmissions.map((sub) => (
+                  {facultySubmissions.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="p-8 text-center text-[#000000]/60 dark:text-[#FFFFFF]/60">
+                        No submissions yet. Use the Upload Document tab to submit academic materials.
+                      </td>
+                    </tr>
+                  ) : (
+                    facultySubmissions.map((sub) => (
                     <tr key={sub.id} className="hover:bg-[#FFE9A9]/10 dark:hover:bg-[#13005A]/40 transition-colors">
                       <td className="p-4">
                         <span className="font-mono text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold block">{sub.id}</span>
@@ -740,7 +755,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                         </button>
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>

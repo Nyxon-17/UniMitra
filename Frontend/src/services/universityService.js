@@ -1,5 +1,5 @@
 // Centralized Single-University Master Service for UniMitra
-// Focuses the platform on ONE active university (Default: Dibrugarh University / ডিব্ৰুগড় বিশ্ববিদ্যালয়)
+// Focuses the platform on ONE active university (Default: Nivoraya University / নিভৰয়া বিশ্ববিদ্যালয়)
 // Gives the Administrator complete authority to add, update, and manage ALL university details:
 // - University Profile & Governance
 // - Academic Regulations & Ordinances
@@ -14,13 +14,14 @@
 // with exact source citations, clause numbers, and hallucination reduction.
 
 const STORAGE_KEY = 'unimitra_university_master_config';
+const API_BASE = import.meta.env?.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 export const DEFAULT_UNIVERSITY_CONFIG = {
   profile: {
-    id: 'UNIV-MYUNIV',
-    name: 'My University',
-    asName: 'মোৰ বিশ্ববিদ্যালয়',
-    abbreviation: 'MU',
+    id: 'UNIV-NIVORAYA',
+    name: 'Nivoraya University',
+    asName: 'নিভৰয়া বিশ্ববিদ্যালয়',
+    abbreviation: 'NU',
     motto: 'Excellence in Knowledge & Research',
     asMotto: 'জ্ঞান আৰু গৱেষণাত উৎকৃষ্টতা',
     establishedYear: 1965,
@@ -28,19 +29,19 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
     asCampusType: 'ৰাজ্যিক বিশ্ববিদ্যালয় (UGC স্বীকৃত, NAAC A++ মানপ্ৰাপ্ত)',
     campusArea: '500+ Acres Main Campus',
     asCampusArea: '৫০০+ একৰ মুখ্য চৌহদ',
-    location: 'University Campus, Assam, India',
-    asLocation: 'বিশ্ববিদ্যালয় চৌহদ, অসম, ভাৰত',
+    location: 'Nivoraya Campus, Assam, India',
+    asLocation: 'নিভৰয়া চৌহদ, অসম, ভাৰত',
     chancellor: 'Hon’ble Governor of Assam',
     asChancellor: 'অসমৰ সন্মানীয় ৰাজ্যপাল',
     viceChancellor: 'Prof. Vice Chancellor',
     asViceChancellor: 'অধ্যাপক উপাচাৰ্য্য',
     registrar: 'Registrar',
     asRegistrar: 'পঞ্জীয়ক',
-    email: 'registrar@myuniversity.edu.in',
+    email: 'registrar@nivoraya.ac.in',
     helpline: '+91-373-2370000 / +91-373-2370001',
-    admissionsEmail: 'admissions@myuniversity.edu.in',
-    examBranchEmail: 'exam@myuniversity.edu.in',
-    website: 'https://myuniversity.edu.in',
+    admissionsEmail: 'admissions@nivoraya.ac.in',
+    examBranchEmail: 'exam@nivoraya.ac.in',
+    website: 'https://nivoraya.ac.in',
     naacAccreditation: 'Grade A++ (CGPA 3.62 / 4.0)',
     nirfRank: 'Top Tier University'
   },
@@ -51,11 +52,11 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       title: 'Statutory Regulations on Class Attendance & Medical Condonation',
       asTitle: 'শ্ৰেণী উপস্থিতি আৰু চিকিৎসা ৰেহাইৰ বিধিবদ্ধ নিয়মাৱলী',
       category: 'Attendance & Ordinances',
-      ordinanceNo: 'DU/AC/ORD/2024/09',
+      ordinanceNo: 'NU/AC/ORD/2024/09',
       summary: 'Mandatory 75% class attendance required in each semester. Medical condonation up to 10% (permitting 65% attendance) allowed upon recommendation of the Head of the Department with genuine hospital certificates.',
       asSummary: 'প্ৰতি ষাণ্মাসিকত নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। প্ৰমাণিত চিকিৎসাজনিত কাৰণত বিভাগীয় মুৰব্বীৰ অনুমোদন সাপেক্ষে ৬৫% লৈকে ১০% উপস্থিতি ৰেহাই (Condonation) প্ৰদান কৰা হয়।',
-      citation: 'Dibrugarh University Attendance Regulations 2024, Section 4.3, Page 9',
-      sourceDoc: 'DU_Attendance_Regulations_2024.pdf'
+      citation: 'Nivoraya University Attendance Regulations 2024, Section 4.3, Page 9',
+      sourceDoc: 'NU_Attendance_Regulations_2024.pdf'
     },
     {
       id: 'REG-02',
@@ -65,7 +66,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       ordinanceNo: 'DU/NEP/ORD/2023/14',
       summary: 'Governs multiple entry and exit pathways: Certificate (1 Year), Diploma (2 Years), Bachelor Degree (3 Years), and Bachelor Degree with Honours/Research (4 Years) with minimum 160 credits.',
       asSummary: 'একাধিক প্ৰৱেশ আৰু প্ৰস্থানৰ সুবিধা: ১ বছৰত চাৰ্টিফিকেট, ২ বছৰত ডিপ্লমা, ৩ বছৰত স্নাতক ডিগ্ৰী, আৰু ৪ বছৰত গৱেষণাসহ অনাৰ্ছ ডিগ্ৰী (নূন্যতম ১৬০ ক্ৰেডিট)।',
-      citation: 'Dibrugarh University FYUGP NEP Ordinance 2023, Clause 6.1, Page 15',
+      citation: 'Nivoraya University FYUGP NEP Ordinance 2023, Clause 6.1, Page 15',
       sourceDoc: 'DU_FYUGP_NEP_Regulations_2023.pdf'
     },
     {
@@ -102,7 +103,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       summary: 'Candidates must secure a minimum of 40% marks in End-Semester Final Examination (theory/practical) and 40% marks in In-Semester Continuous Internal Assessments separately to pass any paper.',
       asSummary: 'প্ৰতিটো বিষয়ত উত্তীৰ্ণ হ’বলৈ ছাত্ৰ-ছাত্ৰীয়ে ইন-চেমিষ্টাৰ (Internal Assessment) আৰু এণ্ড-চেমিষ্টাৰ চূড়ান্ত পৰীক্ষাত সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব।',
       details: 'Internal assessment carries 20% weightage (sessional tests, assignments, seminar presentations) and End-semester carries 80% weightage. Both must be cleared independently.',
-      citation: 'Dibrugarh University Examination Regulations, Section 8.2, Page 29',
+      citation: 'Nivoraya University Examination Regulations, Section 8.2, Page 29',
       sourceDoc: 'DU_Exam_Ordinances_2024.pdf'
     },
     {
@@ -115,7 +116,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       asSummary: 'পৰীক্ষাৰ ফলাফল ঘোষণাৰ ২০ দিনৰ ভিতৰত উত্তৰবহী পুনৰমূল্যায়ন (Re-evaluation) আৰু ফটোকপিৰ বাবে অনলাইন আবেদন কৰিব পাৰি। প্ৰতিখন তাত্বিক বিষয়ৰ বাবে মাচুল ৩৫০ টকা।',
       details: 'Maximum 3 papers can be requested for re-evaluation in a single semester. Mark changes of 5% or more are officially updated in the revised grade sheet.',
       citation: 'DU Examination Manual 2024, Clause 14.1, Page 52',
-      sourceDoc: 'DU_ReEvaluation_Norms.pdf'
+      sourceDoc: 'NU_ReEvaluation_Norms.pdf'
     },
     {
       id: 'EXAM-03',
@@ -126,7 +127,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       summary: 'A student with backlog courses may clear them in the corresponding subsequent semester examination (Odd semester with Odd, Even with Even) within a maximum span of N+2 years (5 years for a 3-year degree).',
       asSummary: 'যিকোনো ষাণ্মাসিকত অনুত্তীৰ্ণ হোৱা পাঠ্যক্ৰমসমূহ পৰৱৰ্তী অনুৰূপ ষাণ্মাসিকৰ পৰীক্ষাত (যুগ্মৰ সৈতে যুগ্ম, অযুগ্মৰ সৈতে অযুগ্ম) সৰ্বাধিক N+2 বছৰৰ ভিতৰত সম্পূৰ্ণ কৰিব পাৰিব।',
       details: 'Betterment opportunity is allowed once per paper in subsequent semester, limited to two theory papers per semester.',
-      citation: 'Dibrugarh University CBCS Exam Ordinance, Clause 12(A), Page 44',
+      citation: 'Nivoraya University CBCS Exam Ordinance, Clause 12(A), Page 44',
       sourceDoc: 'DU_Backlog_Betterment_Rules.pdf'
     }
   ],
@@ -177,7 +178,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       department: 'All University Faculties & Research Centres',
       duration: '3 to 6 Years',
       intake: 120,
-      eligibility: 'Master’s degree with minimum 55% marks and clearance of DURAT (Dibrugarh University Research Admission Test) or UGC-NET JRF.',
+      eligibility: 'Master’s degree with minimum 55% marks and clearance of DURAT (Nivoraya University Research Admission Test) or UGC-NET JRF.',
       asEligibility: 'স্নাতকোত্তৰত নূন্যতম ৫৫% নম্বৰ আৰু DURAT পৰীক্ষা বা UGC-NET JRF উত্তীৰ্ণ।'
     }
   ],
@@ -203,7 +204,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       provider: 'Directorate of Higher Education (DHE), Govt. of Assam',
       type: 'State Merit Scholarship',
       amount: '₹6,000 per year for UG / ₹8,000 per year for PG',
-      eligibility: 'Minimum 60% marks in HS / Degree examination, Assam domicile, studying in regular full-time mode at Dibrugarh University.',
+      eligibility: 'Minimum 60% marks in HS / Degree examination, Assam domicile, studying in regular full-time mode at Nivoraya University.',
       asEligibility: 'উচ্চতৰ মাধ্যমিক বা ডিগ্ৰী পৰীক্ষাত নূন্যতম ৬০% নম্বৰ, অসমৰ স্থায়ী বাসিন্দা, আৰু নিয়মিত ছাত্ৰ-ছাত্ৰী।',
       deadline: '15th November Annually (via DHE Assam Online Portal)',
       citation: 'Govt. of Assam DHE Gazette Notification No. DHE/SCH/11/2024',
@@ -227,21 +228,21 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
   admissions: [
     {
       id: 'ADM-01',
-      title: 'Postgraduate Admission Procedure via DUPGET (Entrance Test)',
-      asTitle: 'ডিব্ৰুগড় বিশ্ববিদ্যালয় স্নাতকোত্তৰ প্ৰৱেশ পৰীক্ষা (DUPGET) ভৰ্তি পদ্ধতি',
+      title: 'Postgraduate Admission Procedure via NUPGET (Entrance Test)',
+      asTitle: 'নিভৰয়া বিশ্ববিদ্যালয় স্নাতকোত্তৰ প্ৰৱেশ পৰীক্ষা (NUPGET) ভৰ্তি পদ্ধতি',
       category: 'PG Admissions',
       dates: 'Application: May - June | Entrance Test: July 1st Week | Merit List: July 3rd Week',
       fee: 'Application Fee: ₹750 | Semester Fee: ₹8,500 - ₹18,000 (depending on department)',
       eligibility: 'Bachelor’s Degree with Major/Honours in relevant discipline with minimum 45% - 50% aggregate marks.',
       asEligibility: 'সংশ্লিষ্ট বিষয়ত মেজৰ বা অনাৰ্ছসহ স্নাতক ডিগ্ৰীত নূন্যতম ৪৫% - ৫০% নম্বৰ।',
       steps: [
-        'Register online on official portal: https://dibru.ac.in/admission',
+        'Register online on official portal: https://nivoraya.ac.in/admission',
         'Fill academic qualifications and upload scanned signature, photo, and PRC.',
-        'Appear in DUPGET entrance examination (100 MCQ questions, 2 hours).',
+        'Appear in NUPGET entrance examination (100 MCQ questions, 2 hours).',
         'Verify documents in person during counseling session at respective Department.',
         'Pay admission fees online via SBI Collect to finalize seat allotment.'
       ],
-      portalUrl: 'https://dibru.ac.in/admission'
+      portalUrl: 'https://nivoraya.ac.in/admission'
     },
     {
       id: 'ADM-02',
@@ -254,7 +255,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       asEligibility: 'উচ্চতৰ মাধ্যমিক (১০+২) পৰীক্ষাত প্ৰয়োজনীয় বিষয়সহ উত্তীৰ্ণ।',
       steps: [
         'Apply through Assam Higher Education Admission Portal (Samarth).',
-        'Select Dibrugarh University / affiliated autonomous colleges as preference.',
+        'Select Nivoraya University / affiliated autonomous colleges as preference.',
         'Merit ranking generated based on Best 4 HS subjects.',
         'Present original PRC, HS Marksheet, and Anti-Ragging affidavit on verification day.'
       ],
@@ -281,7 +282,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
       asName: 'লক্ষ্মীনাথ বেজবৰুৱা কেন্দ্ৰীয় গ্ৰন্থাগাৰ',
       category: 'Academic Resource',
       capacity: 'Over 2,50,000 Books, 15,000+ E-Journals, Digital Reading Room',
-      location: 'Central Campus Plaza, Dibrugarh University',
+      location: 'Central Campus Plaza, Nivoraya University',
       timings: 'Monday - Saturday: 8:00 AM to 8:00 PM | Sunday: 10:00 AM to 5:00 PM',
       head: 'University Librarian',
       rules: 'Access with biometric / RFID student identity card. Scholars can borrow up to 4 books for 15 days.',
@@ -313,60 +314,7 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
     }
   ],
 
-  notices: [
-    {
-      id: 'NOT-01',
-      title: 'Submission of Examination Forms for Odd Semester Examinations 2024',
-      asTitle: 'অযুগ্ম ষাণ্মাসিক পৰীক্ষা ২০২৪ ৰ পৰীক্ষা ফৰ্ম জমা দিয়াৰ জাননী',
-      date: '28 October 2024',
-      category: 'Examination Notification',
-      department: 'Office of the Controller of Examinations',
-      refNo: 'DU/EXAM/NOT/2024/912',
-      summary: 'Online examination portal will remain open for form fill-up from 1st to 15th November 2024. Late fine of ₹300 applies thereafter.',
-      asSummary: 'পৰীক্ষাৰ ফৰ্ম পূৰণৰ অনলাইন পৰ্টেল ১ ৰ পৰা ১৫ নৱেম্বৰ ২০২৪ লৈকে খোলা থাকিব। তাৰ পিছত ৩০০ টকা বিলম্ব মাচুল কাৰ্যকৰী হ’ব।',
-      isUrgent: true,
-      pdfUrl: '/notices/DU_Odd_Sem_Exam_Form_Fillup_2024.pdf'
-    },
-    {
-      id: 'NOT-02',
-      title: 'DUPGET Merit List & Counselling Schedule for PG Admissions 2024-25',
-      asTitle: 'স্নাতকোত্তৰ নামভৰ্তিৰ বাবে DUPGET মেধা তালিকা আৰু কাউন্সেলিং সূচী',
-      date: '20 October 2024',
-      category: 'Admission Circular',
-      department: 'Office of Academic Registrar',
-      refNo: 'DU/ACAD/ADM/2024/441',
-      summary: 'Provisionally selected candidates are instructed to report with original documents and PRC on scheduled counseling dates.',
-      asSummary: 'নিৰ্বাচিত প্ৰাৰ্থীসকলক নিৰ্ধাৰিত কাউন্সেলিং তাৰিখত মূল নথিপত্ৰ আৰু PRC সহ উপস্থিত থাকিবলৈ নিৰ্দেশ দিয়া হৈছে।',
-      isUrgent: false,
-      pdfUrl: '/notices/DU_DUPGET_Admission_Counselling_2024.pdf'
-    },
-    {
-      id: 'NOT-03',
-      title: 'Statutory Regulations on Class Attendance & Medical Condonation (Clause 4.3)',
-      asTitle: 'শ্ৰেণী উপস্থিতি আৰু চিকিৎসা ৰেহাইৰ বিধিমলা (ধাৰা ৪.৩)',
-      date: '02 August 2024',
-      category: 'Academic Regulation',
-      department: 'Office of the Dean, Academic Affairs',
-      refNo: 'DU/ACAD/ATT/2024/108',
-      summary: 'Mandatory 75% class attendance for End-Semester examinations; maximum 10% medical condonation on verified health grounds.',
-      asSummary: 'পৰীক্ষাত অৱতীৰ্ণ হ’বলৈ ৭৫% উপস্থিতি বাধ্যতামূলক; উপযুক্ত চিকিৎসা প্ৰমাণপত্ৰৰ ভিত্তিত সৰ্বাধিক ১০% ৰেহাই প্ৰদান কৰা হয়।',
-      isUrgent: false,
-      pdfUrl: '/notices/DU_Medical_Attendance_Condonation_2024.pdf'
-    },
-    {
-      id: 'NOT-04',
-      title: 'UGC Ishan Uday Special Scholarship Scheme for North Eastern Region (NER) 2024-25',
-      asTitle: 'উত্তৰ-পূব অঞ্চলৰ ছাত্ৰ-ছাত্ৰীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি জাননী',
-      date: '15 October 2024',
-      category: 'Scholarship Notification',
-      department: 'Scholarship Cell & Student Welfare Section',
-      refNo: 'DU/SCHOL/UGC/2024/67',
-      summary: 'Financial support of ₹5,400/month for General UG degree and ₹7,800/month for Technical/Medical degrees on NSP portal.',
-      asSummary: 'সাধাৰণ ডিগ্ৰীৰ বাবে মাহে ৫,৪০০ টকা আৰু কাৰিকৰী শিক্ষাৰ বাবে মাহে ৭,৮০০ টকাৰ আৰ্থিক সাহাৰ্য।',
-      isUrgent: false,
-      pdfUrl: '/notices/DU_Ishan_Uday_Scholarship_2024.pdf'
-    }
-  ]
+  notices: []
 };
 
 // Singleton University Service with reactive persistence
@@ -381,19 +329,21 @@ class UniversityService {
       if (stored) {
         const parsed = JSON.parse(stored);
         let profile = parsed.profile || DEFAULT_UNIVERSITY_CONFIG.profile;
-        if (profile.name === 'Dibrugarh University') {
+        if (profile.name === 'Nivoraya University') {
           profile = {
             ...profile,
-            name: 'My University',
-            asName: 'মোৰ বিশ্ববিদ্যালয়',
-            abbreviation: 'MU',
-            email: 'registrar@myuniversity.edu.in',
+            name: 'Nivoraya University',
+            asName: 'নিভৰয়া বিশ্ববিদ্যালয়',
+            abbreviation: 'NU',
+            email: 'registrar@nivoraya.ac.in',
             website: 'https://myuniversity.edu.in'
           };
         }
-        let loadedNotices = parsed.notices || DEFAULT_UNIVERSITY_CONFIG.notices;
-        if (!Array.isArray(loadedNotices) || loadedNotices.length === 0 || !loadedNotices.some(n => n.pdfUrl)) {
-          loadedNotices = DEFAULT_UNIVERSITY_CONFIG.notices;
+        let loadedNotices = parsed.notices || [];
+        if (Array.isArray(loadedNotices)) {
+          loadedNotices = loadedNotices.filter(n => !n.id?.startsWith('NOT-0'));
+        } else {
+          loadedNotices = [];
         }
         // Ensure all top-level keys exist
         return {
@@ -414,14 +364,11 @@ class UniversityService {
     return DEFAULT_UNIVERSITY_CONFIG;
   }
 
-  saveConfig(data, notificationInfo = null) {
+  saveConfig(data) {
     try {
       this.data = data;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
-      if (notificationInfo && typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('unimitra_site_notification', { detail: notificationInfo }));
-      }
     } catch (err) {
       console.error('Error saving university config:', err);
     }
@@ -437,15 +384,7 @@ class UniversityService {
       ...this.data,
       profile: { ...this.data.profile, ...newProfile }
     };
-    this.saveConfig(updated, {
-      id: `NOTIF-${Date.now()}`,
-      title: 'New University Regulation Added',
-      asTitle: 'নতুন শৈক্ষিক অধিনিয়ম অন্তৰ্ভুক্ত কৰা হৈছে',
-      message: `"${newReg.title}" added to statutory regulations by Administrator.`,
-      author: 'Administrator',
-      role: 'admin',
-      timestamp: 'Just now'
-    });
+    this.saveConfig(updated);
     return updated.profile;
   }
 
@@ -457,7 +396,7 @@ class UniversityService {
   addRegulation(item) {
     const newReg = {
       id: `REG-${Date.now()}`,
-      ordinanceNo: item.ordinanceNo || `DU/AC/ORD/${new Date().getFullYear()}/${Math.floor(10 + Math.random() * 90)}`,
+      ordinanceNo: item.ordinanceNo || `NU/AC/ORD/${new Date().getFullYear()}/${Math.floor(10 + Math.random() * 90)}`,
       sourceDoc: item.sourceDoc || 'DU_Academic_Regulations_Gazette.pdf',
       ...item
     };
@@ -598,7 +537,7 @@ class UniversityService {
   addAdmission(item) {
     const newAdm = {
       id: `ADM-${Date.now()}`,
-      portalUrl: item.portalUrl || 'https://dibru.ac.in/admission',
+      portalUrl: item.portalUrl || 'https://nivoraya.ac.in/admission',
       ...item
     };
     const updated = {
@@ -664,43 +603,129 @@ class UniversityService {
     return this.data.notices || [];
   }
 
+  async fetchNoticesFromBackend() {
+    try {
+      const res = await fetch(`${API_BASE}/notices?limit=100`);
+      if (res.ok) {
+        const json = await res.json();
+        const serverItems = json.data?.items || json.data || [];
+        if (Array.isArray(serverItems) && serverItems.length > 0) {
+          const formatted = serverItems.map(n => ({
+            id: n.id,
+            uuid: n.id,
+            title: n.title,
+            asTitle: n.asTitle || n.title,
+            category: n.category || 'General Notice',
+            refNo: n.fileName || `NU/ADMIN/NOT/${new Date().getFullYear()}`,
+            date: n.publishedAt || (n.createdAt ? new Date(n.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Official Notice'),
+            summary: n.description || n.content || '',
+            asSummary: n.asDescription || n.asContent || n.description || '',
+            importance: n.importance || (n.isPinned ? 'High' : 'Normal'),
+            isPinned: n.isPinned ?? (n.importance === 'High' || n.importance === 'Urgent'),
+            attachmentUrl: n.attachmentUrl,
+            fileName: n.fileName,
+            sourceDoc: n.fileName || 'University_Official_Notice.pdf'
+          }));
+          const updated = {
+            ...this.data,
+            notices: formatted
+          };
+          this.saveConfig(updated);
+          return formatted;
+        }
+      }
+    } catch {
+      // Offline fallback
+    }
+    return this.getNotices();
+  }
+
   addNotice(item) {
+    const noticeId = item.id || `NOT-${Date.now()}`;
     const newNotice = {
-      id: `NOT-${Date.now()}`,
-      refNo: item.refNo || `DU/ADMIN/NOT/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
+      id: noticeId,
+      uuid: item.uuid || null,
+      refNo: item.refNo || `NU/ADMIN/NOT/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
       date: item.date || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
       ...item
     };
     const updated = {
       ...this.data,
-      notices: [newNotice, ...this.data.notices]
+      notices: [newNotice, ...(this.data.notices || []).filter(n => n.id !== noticeId)]
     };
-    this.saveConfig(updated, {
-      id: `NOTIF-${Date.now()}`,
-      title: 'New Official Circular Published',
-      asTitle: 'নতুন চৰকাৰী অধিসূচনা প্ৰকাশ কৰা হৈছে',
-      message: `"${newNotice.title}" published by University Authority.`,
-      author: 'Administrator',
-      role: 'admin',
-      timestamp: 'Just now'
-    });
+    this.saveConfig(updated);
+
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('unimitra_auth_token');
+      fetch(`${API_BASE}/notices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          title: newNotice.title,
+          asTitle: newNotice.asTitle || newNotice.title,
+          description: newNotice.summary || newNotice.content || '',
+          asDescription: newNotice.asSummary || newNotice.asContent || newNotice.summary || '',
+          category: newNotice.category || 'General Notice',
+          importance: newNotice.importance || (newNotice.isPinned ? 'High' : 'Normal'),
+          university: 'Nivoraya University',
+          fileName: newNotice.fileName || newNotice.sourceDoc || null,
+          attachmentUrl: newNotice.attachmentUrl || null
+        })
+      }).then(r => r.json()).then(data => {
+        if (data?.data?.id) {
+          newNotice.uuid = data.data.id;
+          this.saveConfig({
+            ...this.data,
+            notices: [newNotice, ...(this.data.notices || []).filter(n => n.id !== noticeId)]
+          });
+        }
+      }).catch(() => {});
+    }
+
     return newNotice;
   }
 
   updateNotice(id, updatedFields) {
+    const target = (this.data.notices || []).find(n => n.id === id);
     const updated = {
       ...this.data,
-      notices: this.data.notices.map((n) => (n.id === id ? { ...n, ...updatedFields } : n))
+      notices: (this.data.notices || []).map((n) => (n.id === id ? { ...n, ...updatedFields } : n))
     };
     this.saveConfig(updated);
+
+    if (typeof window !== 'undefined') {
+      const backendId = target?.uuid || id;
+      const token = localStorage.getItem('unimitra_auth_token');
+      fetch(`${API_BASE}/notices/${backendId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(updatedFields)
+      }).catch(() => {});
+    }
   }
 
   deleteNotice(id) {
+    const target = (this.data.notices || []).find(n => n.id === id);
     const updated = {
       ...this.data,
-      notices: this.data.notices.filter((n) => n.id !== id)
+      notices: (this.data.notices || []).filter((n) => n.id !== id)
     };
     this.saveConfig(updated);
+
+    if (typeof window !== 'undefined') {
+      const backendId = target?.uuid || id;
+      const token = localStorage.getItem('unimitra_auth_token');
+      fetch(`${API_BASE}/notices/${backendId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }).catch(() => {});
+    }
   }
 
   // Reset to Factory Defaults
@@ -721,8 +746,8 @@ class UniversityService {
     const lower = query.toLowerCase().trim();
     const isAssamese = lang === 'as' || /[\u0980-\u09FF]/.test(query);
 
-    const uName = this.data.profile?.name || 'My University';
-    const uAsName = this.data.profile?.asName || 'মোৰ বিশ্ববিদ্যালয়';
+    const uName = this.data.profile?.name || 'Nivoraya University';
+    const uAsName = this.data.profile?.asName || 'নিভৰয়া বিশ্ববিদ্যালয়';
     const uAbbr = this.data.profile?.abbreviation || 'MU';
     const uHelpline = this.data.profile?.helpline || '+91-373-2370000';
         const uEmail = this.data.profile?.email || 'registrar@myuniversity.edu.in';
@@ -736,30 +761,45 @@ class UniversityService {
 
     // 1. Search in Approved Uploaded Documents (Faculty/Admin Ingested)
     if (approvedDocs && approvedDocs.length > 0) {
+      const qTokens = lower.split(/[\s,?.!]+/).filter((w) => w.length > 2);
       for (const doc of approvedDocs) {
+        const fullContent = (doc.content || doc.summary || '');
+        const lowerContent = fullContent.toLowerCase();
+
+        // Search for matching paragraphs inside the uploaded PDF content
+        if (fullContent.length > 30) {
+          const paragraphs = fullContent.split(/[\r\n]+/).filter(p => p.trim().length > 15);
+          for (const para of paragraphs) {
+            const pLower = para.toLowerCase();
+            const hitCount = qTokens.filter(t => pLower.includes(t)).length;
+            if (hitCount >= 2 || (qTokens.length === 1 && hitCount === 1)) {
+              return {
+                answer: isAssamese && doc.asTitle
+                  ? `${uAsName}ৰ আপলোড কৰা অধিসূচনা (${doc.fileName || doc.title}) অনুসৰি:\n\n${para.trim()}`
+                  : `According to uploaded ${uName} document (${doc.fileName || doc.title}):\n\n${para.trim()}`,
+                source: doc.fileName || doc.title,
+                page: doc.citation || 'Official Uploaded PDF',
+                confidence: '99.8% Grounded Document Match',
+                domain: doc.category || 'Uploaded Document'
+              };
+            }
+          }
+        }
+
         const titleMatch = (doc.title || '').toLowerCase().includes(lower);
         const asTitleMatch = (doc.asTitle || '').toLowerCase().includes(lower);
-        const summaryMatch = (doc.summary || '').toLowerCase().includes(lower);
-        const catMatch = (doc.category || '').toLowerCase().includes(lower);
+        const contentMatch = lowerContent.includes(lower);
 
-        // Word overlap
-        const words = lower.split(/[\s,?.!]+/).filter((w) => w.length > 3);
-        const hasOverlap = words.some(
-          (w) =>
-            (doc.title || '').toLowerCase().includes(w) ||
-            (doc.asTitle || '').toLowerCase().includes(w) ||
-            (doc.summary || '').toLowerCase().includes(w)
-        );
-
-        if (titleMatch || asTitleMatch || (words.length > 0 && hasOverlap)) {
+        if (titleMatch || asTitleMatch || contentMatch) {
+          const excerpt = fullContent.slice(0, 1000).trim();
           return {
             answer: isAssamese && doc.asTitle
-              ? `${uAsName}ৰ প্ৰমাণিত নথিপত্ৰ (${doc.fileName || doc.title}) অনুসৰি: ${doc.summary}`
-              : `According to authorized ${uName} documentation (${doc.fileName || doc.title}): ${doc.summary}`,
+              ? `${uAsName}ৰ আপলোড কৰা নথিপত্ৰ (${doc.fileName || doc.title}) অনুসৰি:\n\n${excerpt}`
+              : `According to authorized ${uName} document (${doc.fileName || doc.title}):\n\n${excerpt}`,
             source: doc.fileName || doc.title,
-            page: doc.citation || `Clause ${doc.category}`,
+            page: doc.citation || 'Uploaded Document',
             confidence: '99.8% Grounded Document Match',
-            domain: doc.category
+            domain: doc.category || 'Uploaded Document'
           };
         }
       }
@@ -980,3 +1020,7 @@ class UniversityService {
 }
 
 export const universityService = new UniversityService();
+
+if (typeof window !== 'undefined') {
+  setTimeout(() => universityService.fetchNoticesFromBackend(), 200);
+}

@@ -17,9 +17,9 @@ _GEMINI_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 INSTITUTIONAL_BENCHMARKS = [
     {
         "keywords": ["উত্তীৰ্ণ", "পাছ", "নম্বৰ", "passing", "minimum marks", "pass criteria", "40%"],
-        "as_answer": "ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।",
+        "as_answer": "নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।",
         "en_answer": "According to Dibrugarh and Gauhati University undergraduate examination ordinances (NEP/CBCS), candidates must secure a minimum of 40% marks separately in both Continuous Assessment (In-Semester) and End-Semester Theory/Practical examinations to pass each course.",
-        "source": "Dibrugarh University Examination Ordinance 2024",
+        "source": "Nivoraya University Examination Ordinance 2024",
         "page": "Clause 8.2, Page 14",
         "confidence": "99.4% Grounded Match",
         "domain": "Examination Regulations",
@@ -28,7 +28,7 @@ INSTITUTIONAL_BENCHMARKS = [
         "keywords": ["মেডিকেল", "উপস্থিতি", "ৰেহাই", "condonation", "attendance", "medical", "75%", "65%", "shortage"],
         "as_answer": "বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিধিমলা অনুসৰি, প্ৰতি ষাণ্মাসিকত পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। চিকিৎসাজনিত জৰুৰী কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) লিখিত অনুমোদন সাপেক্ষে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Condonation) দিয়া হয়, যাৰ ফলত নূন্যতম ৬৫% উপস্থিতি থাকিলে পৰীক্ষাত অৱতীৰ্ণ হোৱাৰ অনুমতি লাভ কৰিব পাৰি।",
         "en_answer": "Under statutory academic ordinances, a minimum of 75% class attendance is mandatory in each semester. A medical condonation of up to 10% is permissible upon recommendation of the Head of the Department (HoD) supported by certified hospital documents, bringing the minimum required attendance down to 65%.",
-        "source": "Dibrugarh University Attendance Regulations 2024",
+        "source": "Nivoraya University Attendance Regulations 2024",
         "page": "Section 4.3, Page 9",
         "confidence": "98.8% Grounded Match",
         "domain": "Academic Ordinances",
@@ -90,7 +90,7 @@ INSTITUTIONAL_BENCHMARKS = [
     {
         "keywords": ["unimitra", "ইউনিমিত্র", "who are you", "আপুনি কোন", "what is unimitra"],
         "as_answer": "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
-        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Dibrugarh University, Gauhati University, etc.).",
+        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Nivoraya University, Gauhati University, etc.).",
         "source": "UniMitra Knowledge Repository",
         "page": "System Overview",
         "confidence": "100% Grounded Match",
@@ -145,7 +145,7 @@ CRITICAL SINGLE-UNIVERSITY & RAG POLICY:
 
 CRITICAL DIRECT ANSWER MANDATE:
 - Answer the user's question directly, concisely, and authoritatively.
-- NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Dibrugarh University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
+- NEVER start your response with repetitive boilerplate self-introductions or persona declarations (e.g. do NOT say "Hello! I am UniMitra, your official intelligent university AI assistant dedicated to supporting students, faculty, and staff across universities in Assam—such as Nivoraya University, Gauhati University, Tezpur University, Assam University, Cotton University, Bodoland University, and others.").
 - Jump straight to the facts, guidance, and answer without preamble, unless the user specifically greets you ("Hi", "Hello") or asks who you are ("Who are you?", "What is UniMitra?").
 
 CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
@@ -159,10 +159,10 @@ CRITICAL FORMATTING MANDATE - NO SPECIAL SYMBOLS (* = / #):
 Your primary instructions:
 1. Provide accurate, clear, professional, and friendly answers to any question asked by students, faculty, or staff.
 2. If statutory institutional documents or circulars are provided in the context, ground your answer on them and provide explicit citations (Document Name, Section/Clause, Page number).
-3. If specific official document chunks are NOT provided in the repository for Our University:
-   - State clearly: "The official notification or ordinance on this specific topic has not yet been published by the university authority."
-   - Provide a comprehensive, accurate, and helpful alternative answer on the topic using general educational and academic knowledge. You can and must answer all questions with high accuracy. Never refuse to answer.
-   - Conclude by stating: "Your requirement has been automatically recorded and forwarded to the university administrator on the Review and Feedback page for official document verification and publication." 
+3. If specific document chunks are NOT provided or the user asks a general query (greetings, academic guidance, study strategies, university life, general procedures, NEP 2020 overview, etc.):
+   - Provide a detailed, helpful, and high-quality response based on established university and academic practices.
+   - You MUST answer ANY relevant question helpfully and authoritatively. Do not refuse to answer.
+   - Mention that for binding legal or final administrative certificates, official confirmation can be obtained from the respective university department or registrar.
 4. Maintain an articulate, polite, and academically rigorous tone.
 """
 
@@ -197,10 +197,6 @@ MANDATORY RULES:
 3. Understand common Assamese expressions written in Roman letters.
 4. Keep the reply friendly, conversational, and helpful, matching the user's speaking style.
 5. If university terms or proper nouns are in English (like "exam", "admit card", "college", "fee", "percentage", "Dispur"), keep them as English loan words in your Romanized Assamese sentence.
-6. If Our University official document is NOT found in the repository:
-   - Clearly state: "Ei bisoyor official notification ba ordinance university authority e etiyaloike publish kora nai."
-   - Provide an accurate and comprehensive alternative answer on the topic using general educational knowledge. Answer all questions helpfully.
-   - Reassure: "Apunar ei requirement review aru official document upload korar babe Review & Feedback page ot admin le automatically send kora hoise."
 
 Examples:
 User: Aji college ot ki ki hol?
@@ -565,7 +561,7 @@ Please formulate a clear, authoritative answer. If statutory context was provide
 
         # 6. Intelligent General Academic Fallback (NEVER refuse to answer general queries)
         general_answer = (
-            f"ডিব্ৰুগড় আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
+            f"নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
             if lang == "as"
             else f"Regarding your inquiry ('{clean_query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest gazettes. UniMitra has recorded your query for continued verification."
         )

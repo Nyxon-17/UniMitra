@@ -102,7 +102,18 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
 
       {/* Scholarships Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map((s) => (
+        {filtered.length === 0 ? (
+          <div className="col-span-full p-10 text-center rounded-3xl bg-white dark:bg-[#141414] border-2 border-dashed border-[#73A5CA]/40">
+            <BanknotesIcon className="w-10 h-10 mx-auto text-[#FF933E] dark:text-[#03C988] mb-2" />
+            <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+              {currentLang === 'as' ? 'কোনো ছাত্ৰবৃত্তি পোৱা নগ’ল' : 'No Scholarships Found'}
+            </h3>
+            <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">
+              {currentLang === 'as' ? 'অনুগ্ৰহ কৰি শ্ৰেণী বা সন্ধান সলনি কৰক।' : 'No scholarship schemes match your search or filter.'}
+            </p>
+          </div>
+        ) : (
+          filtered.map((s) => (
           <div
             key={s.id}
             className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
@@ -159,7 +170,7 @@ export const DashboardScholarships = ({ onNavigateTab, currentLang = 'en' }) => 
               </span>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
     </div>

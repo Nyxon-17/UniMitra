@@ -31,8 +31,8 @@ export const DashboardFacultySaved = ({ onNavigateTab, currentLang = 'en' }) => 
       date: '28 Oct 2026',
       query: 'Can an Associate Professor co-supervise an interdisciplinary PhD candidate from another university department without exceeding the 6-scholar quota?',
       response: 'Yes, an Associate Professor may serve as Co-Supervisor for an interdisciplinary research candidate upon recommendation of the Departmental Research Committee (DRC). In joint supervision, each co-supervisor is allocated a fractional weightage of 0.5 towards their statutory ceiling of 6 registered candidates.',
-      source: 'Dibrugarh University PhD Regulations, Clause 9(d), Page 24',
-      university: 'Dibrugarh University (DU)'
+      source: 'Nivoraya University PhD Regulations, Clause 9(d), Page 24',
+      university: 'Nivoraya University (DU)'
     },
     {
       id: 'CONSULT-03',

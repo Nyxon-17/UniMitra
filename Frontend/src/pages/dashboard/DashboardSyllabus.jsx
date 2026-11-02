@@ -15,23 +15,11 @@ export const DashboardSyllabus = ({
   currentLang = 'en'
 }) => {
   const univProfile = universityService.getProfile();
-  const [selectedUniversity, setSelectedUniversity] = useState('All Universities');
   const [selectedProgram, setSelectedProgram] = useState('BCA');
   const [selectedSemester, setSelectedSemester] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSubject, setExpandedSubject] = useState('BCA-HC-3016');
   const [previewPdfModal, setPreviewPdfModal] = useState(null);
-
-  const universities = [
-    'All Universities',
-    'Gauhati University (GU)',
-    'Dibrugarh University (DU)',
-    'Tezpur University (TU)',
-    'Cotton University (CU)',
-    'Assam University (Silchar)',
-    'Bodoland University (BU)',
-    'Assam Science and Technology University (ASTU)'
-  ];
 
   const programs = [
     { id: 'BCA', label: 'BCA / Computer Applications', asLabel: 'BCA / কম্পিউটাৰ এপ্লিকেচন' },

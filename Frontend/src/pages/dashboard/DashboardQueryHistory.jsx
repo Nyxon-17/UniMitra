@@ -24,8 +24,8 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
     },
     {
       id: 2,
-      query: 'What is the attendance condonation criteria for medical illness at Dibrugarh University?',
-      asQuery: 'ডিব্ৰুগড় বিশ্ববিদ্যালয়ত চিকিৎসা জনিত কাৰণত উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
+      query: 'What is the attendance condonation criteria for medical illness at Nivoraya University?',
+      asQuery: 'নিভৰয়া বিশ্ববিদ্যালয়ত চিকিৎসা জনিত কাৰণত উপস্থিতি ৰেহাইৰ (Condonation) চৰ্ত কি?',
       category: 'Regulations',
       resolvedAnswer: 'Minimum 75% attendance is required. Up to 10% condonation is permissible on registered medical officer recommendation, allowing examination entry at 65% minimum.',
       source: 'DU_Statutory_Attendance_Ordinance.pdf (Page 9, Section 4.3)',
