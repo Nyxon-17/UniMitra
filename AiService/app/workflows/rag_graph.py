@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any, Dict
 from app.services.embedding_service import embedding_service, normalize_assamese_unicode
 from app.services.gemini_service import gemini_service, detect_language_mode
