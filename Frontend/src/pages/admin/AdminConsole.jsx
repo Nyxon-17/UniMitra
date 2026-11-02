@@ -442,39 +442,31 @@ export const AdminConsole = ({
     }
   ]);
 
-  // 7. Student & Faculty Feedback State
-  const [feedbackList, setFeedbackList] = useState([
-    {
-      id: 'FB-01',
-      user: 'Bikash Kalita',
-      role: 'Student (Gauhati University)',
-      query: 'GU CBCS Backlog paper clearance timeframe',
-      rating: 5,
-      type: 'Helpful & Grounded',
-      comments: 'Answer quoted Clause 9.3 directly with page number. Very accurate.',
-      status: 'Reviewed & Resolved'
-    },
-    {
-      id: 'FB-02',
-      user: 'Dr. R. Goswami',
-      role: 'Faculty (Dibrugarh University)',
-      query: 'PhD Co-supervision inter-departmental clearance',
-      rating: 4,
-      type: 'Helpful',
-      comments: 'Accurate citation from 2023 ordinance, helped doctoral committee.',
-      status: 'Reviewed & Resolved'
-    },
-    {
-      id: 'FB-03',
-      user: 'Ananya Sharma',
-      role: 'Student (Tezpur University)',
-      query: 'Hostel mess fee refund policy on semester break',
-      rating: 2,
-      type: 'Missing Information',
-      comments: 'Chatbot lacked exact mess rebate circular for winter vacation.',
-      status: 'Pending Admin Review'
+  // 7. Student & Faculty Feedback & Unpublished Requirement State
+  const [feedbackList, setFeedbackList] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('unimitra_feedback_submissions');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {}
+      }
     }
-  ]);
+    return [];
+  });
+
+  useEffect(() => {
+    const handleFeedbackSync = () => {
+      const stored = localStorage.getItem('unimitra_feedback_submissions');
+      if (stored) {
+        try {
+          setFeedbackList(JSON.parse(stored));
+        } catch {}
+      }
+    };
+    window.addEventListener('unimitra_feedback_updated', handleFeedbackSync);
+    return () => window.removeEventListener('unimitra_feedback_updated', handleFeedbackSync);
+  }, []);
 
   // 8. Users & Roles Management State
   const [users, setUsers] = useState([
@@ -687,6 +679,9 @@ export const AdminConsole = ({
       f.id === id ? { ...f, status: f.status === 'Reviewed & Resolved' ? 'Pending Admin Review' : 'Reviewed & Resolved' } : f
     );
     setFeedbackList(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(updated));
+    }
     triggerToast('Feedback resolution status updated.');
   };
 
@@ -2576,12 +2571,23 @@ export const AdminConsole = ({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-xs font-black text-[#000000] dark:text-[#FFFFFF]">{f.user} ({f.role})</span>
-                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-[#FFE9A9] dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988]">
+                        <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${
+                          f.type?.includes('Unpublished') 
+                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-400' 
+                            : 'bg-[#FFE9A9] dark:bg-[#0A0A0A] border-[#FFCB56] dark:border-[#03C988]'
+                        }`}>
                           {f.type}
                         </span>
                       </div>
-                      <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">Rating: {f.rating}/5 ★</span>
+                      <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">
+                        {f.submittedAt || 'Recent'}
+                      </span>
                     </div>
+                    {f.query && (
+                      <div className="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs">
+                        <strong className="text-[#FF933E] dark:text-[#03C988]">Student Inquiry:</strong> {f.query}
+                      </div>
+                    )}
                     <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed">{f.comments}</p>
 
                     <div className="pt-2 flex items-center justify-between border-t border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40 text-xs">

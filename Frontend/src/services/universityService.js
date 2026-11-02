@@ -414,11 +414,14 @@ class UniversityService {
     return DEFAULT_UNIVERSITY_CONFIG;
   }
 
-  saveConfig(data) {
+  saveConfig(data, notificationInfo = null) {
     try {
       this.data = data;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
+      if (notificationInfo && typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_site_notification', { detail: notificationInfo }));
+      }
     } catch (err) {
       console.error('Error saving university config:', err);
     }
@@ -434,7 +437,15 @@ class UniversityService {
       ...this.data,
       profile: { ...this.data.profile, ...newProfile }
     };
-    this.saveConfig(updated);
+    this.saveConfig(updated, {
+      id: `NOTIF-${Date.now()}`,
+      title: 'New University Regulation Added',
+      asTitle: 'নতুন শৈক্ষিক অধিনিয়ম অন্তৰ্ভুক্ত কৰা হৈছে',
+      message: `"${newReg.title}" added to statutory regulations by Administrator.`,
+      author: 'Administrator',
+      role: 'admin',
+      timestamp: 'Just now'
+    });
     return updated.profile;
   }
 
@@ -664,7 +675,15 @@ class UniversityService {
       ...this.data,
       notices: [newNotice, ...this.data.notices]
     };
-    this.saveConfig(updated);
+    this.saveConfig(updated, {
+      id: `NOTIF-${Date.now()}`,
+      title: 'New Official Circular Published',
+      asTitle: 'নতুন চৰকাৰী অধিসূচনা প্ৰকাশ কৰা হৈছে',
+      message: `"${newNotice.title}" published by University Authority.`,
+      author: 'Administrator',
+      role: 'admin',
+      timestamp: 'Just now'
+    });
     return newNotice;
   }
 

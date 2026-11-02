@@ -36,6 +36,7 @@ import { DashboardFacultyDocuments } from './pages/faculty/DashboardFacultyDocum
 import { DashboardFacultySaved } from './pages/faculty/DashboardFacultySaved';
 import { AdminConsole } from './pages/admin/AdminConsole';
 import { GlobalAiChatWidget } from './components/common/GlobalAiChatWidget';
+import { GlobalNotificationToast } from './components/common/GlobalNotificationToast';
 
 // Smooth Scroll to Top on Route Change
 function ScrollToTop() {
@@ -769,6 +770,8 @@ export function App() {
       />
 
       {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals */}
+      <GlobalNotificationToast currentLang={lang} />
+
       <GlobalAiChatWidget
         currentLang={lang}
         onToggleLang={toggleLanguage}

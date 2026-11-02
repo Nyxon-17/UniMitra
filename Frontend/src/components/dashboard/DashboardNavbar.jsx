@@ -31,7 +31,26 @@ export const DashboardNavbar = ({
   useEffect(() => {
     const handleSync = () => setNotices(universityService.getNotices());
     window.addEventListener('unimitra_university_changed', handleSync);
-    return () => window.removeEventListener('unimitra_university_changed', handleSync);
+    const handleSiteNotif = (e) => {
+      if (e.detail) {
+        setNotices(prev => [
+          {
+            id: e.detail.id || `NOTIF-${Date.now()}`,
+            refNo: e.detail.author || 'NOTICE',
+            title: e.detail.title || 'New University Record',
+            date: e.detail.timestamp || 'Just now',
+            summary: e.detail.message || 'Updated by university authority.',
+            pdfUrl: ''
+          },
+          ...prev
+        ]);
+      }
+    };
+    window.addEventListener('unimitra_site_notification', handleSiteNotif);
+    return () => {
+      window.removeEventListener('unimitra_university_changed', handleSync);
+      window.removeEventListener('unimitra_site_notification', handleSiteNotif);
+    };
   }, []);
 
   useEffect(() => {

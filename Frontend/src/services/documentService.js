@@ -17,145 +17,36 @@ export const INITIAL_CATEGORIES = [
   { id: 'CAT-08', name: 'Campus Facilities & Hostel Bylaws', asName: 'চৌহদ সুবিধা আৰু হোষ্টেল বিধি', code: 'CAMP-HOST', count: 3 }
 ];
 
-export const INITIAL_DOCUMENTS = [
-  {
-    id: 'DOC-NOT-001',
-    title: 'Submission of Examination Forms for Odd Semester Examinations 2024',
-    asTitle: 'অযুগ্ম ষাণ্মাসিক পৰীক্ষা ২০২৪ ৰ পৰীক্ষা ফৰ্ম জমা দিয়াৰ জাননী',
-    university: 'Dibrugarh University (DU)',
-    category: 'Examination & Evaluation Codes',
-    department: 'Office of the Controller of Examinations',
-    academicYear: '2024-2025',
-    publicationDate: '28 October 2024',
-    pages: 1,
-    fileSize: '5.4 KB',
-    fileType: 'PDF',
-    fileName: 'DU_Odd_Sem_Exam_Form_Fillup_2024.pdf',
-    fileUrl: '/notices/DU_Odd_Sem_Exam_Form_Fillup_2024.pdf',
-    chunksCount: 12,
-    uploaderRole: 'Admin',
-    uploaderName: 'Office of the Controller of Examinations',
-    uploaderEmail: 'coe@dibru.ac.in',
-    uploadedAt: '28 Oct 2024, 10:00 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: true,
-    sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
-    sourceUrl: '/notices/DU_Odd_Sem_Exam_Form_Fillup_2024.pdf',
-    summary: 'Online examination portal activation from 1st to 15th November 2024 for Odd Semester UG (CBCS/FYUGP) and PG examinations. Late fine of ₹300 applies up to 20th November.',
-    citation: 'Dibrugarh University Examination Circular Ref. DU/EXAM/NOT/2024/912'
-  },
-  {
-    id: 'DOC-NOT-002',
-    title: 'DUPGET Merit List & Counselling Schedule for PG Admissions 2024-25',
-    asTitle: 'স্নাতকোত্তৰ নামভৰ্তিৰ বাবে DUPGET মেধা তালিকা আৰু কাউন্সেলিং সূচী',
-    university: 'Dibrugarh University (DU)',
-    category: 'Admissions & Eligibility Criteria',
-    department: 'Office of the Academic Registrar',
-    academicYear: '2024-2025',
-    publicationDate: '20 October 2024',
-    pages: 1,
-    fileSize: '5.3 KB',
-    fileType: 'PDF',
-    fileName: 'DU_DUPGET_Admission_Counselling_2024.pdf',
-    fileUrl: '/notices/DU_DUPGET_Admission_Counselling_2024.pdf',
-    chunksCount: 10,
-    uploaderRole: 'Admin',
-    uploaderName: 'Office of the Academic Registrar',
-    uploaderEmail: 'registrar@dibru.ac.in',
-    uploadedAt: '20 Oct 2024, 11:30 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: true,
-    sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-    sourceUrl: '/notices/DU_DUPGET_Admission_Counselling_2024.pdf',
-    summary: 'Subject-wise DUPGET provisional merit list publication and departmental physical counselling schedule with mandatory verification of PRC and original marksheets.',
-    citation: 'Office of the Academic Registrar Notification Ref. DU/ACAD/ADM/2024/441'
-  },
-  {
-    id: 'DOC-NOT-003',
-    title: 'Statutory Regulations on Class Attendance & Medical Condonation (Clause 4.3)',
-    asTitle: 'শ্ৰেণী উপস্থিতি আৰু চিকিৎসা ৰেহাইৰ বিধিমলা (ধাৰা ৪.৩)',
-    university: 'Dibrugarh University (DU)',
-    category: 'University Regulations & Ordinances',
-    department: 'Office of the Dean, Academic Affairs',
-    academicYear: '2024-2025',
-    publicationDate: '02 August 2024',
-    pages: 1,
-    fileSize: '5.3 KB',
-    fileType: 'PDF',
-    fileName: 'DU_Medical_Attendance_Condonation_2024.pdf',
-    fileUrl: '/notices/DU_Medical_Attendance_Condonation_2024.pdf',
-    chunksCount: 14,
-    uploaderRole: 'Admin',
-    uploaderName: 'Office of the Dean, Academic Affairs',
-    uploaderEmail: 'dean_acad@dibru.ac.in',
-    uploadedAt: '02 Aug 2024, 02:15 PM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: true,
-    sha256: 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0',
-    sourceUrl: '/notices/DU_Medical_Attendance_Condonation_2024.pdf',
-    summary: 'Statutory 75% class attendance requirement for End-Semester examinations, with provision for up to 10% medical condonation on verified health grounds endorsed by CMO.',
-    citation: 'Dibrugarh University Academic Regulations Clause 4.3, Ref. DU/ACAD/ATT/2024/108'
-  },
-  {
-    id: 'DOC-NOT-004',
-    title: 'UGC Ishan Uday Special Scholarship Scheme for North Eastern Region (NER) 2024-25',
-    asTitle: 'উত্তৰ-পূব অঞ্চলৰ ছাত্ৰ-ছাত্ৰীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি জাননী',
-    university: 'Dibrugarh University (DU)',
-    category: 'Scholarships & Financial Aid',
-    department: 'Scholarship Cell & Student Welfare Section',
-    academicYear: '2024-2025',
-    publicationDate: '15 October 2024',
-    pages: 1,
-    fileSize: '5.5 KB',
-    fileType: 'PDF',
-    fileName: 'DU_Ishan_Uday_Scholarship_2024.pdf',
-    fileUrl: '/notices/DU_Ishan_Uday_Scholarship_2024.pdf',
-    chunksCount: 16,
-    uploaderRole: 'Admin',
-    uploaderName: 'Coordinator, Scholarship Cell',
-    uploaderEmail: 'scholarship@dibru.ac.in',
-    uploadedAt: '15 Oct 2024, 09:30 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: true,
-    sha256: '5d41402abc4b2a76b9719d911017c592ee5a2a5a5ab8d8e5784a9e59d9c28e8a',
-    sourceUrl: '/notices/DU_Ishan_Uday_Scholarship_2024.pdf',
-    summary: 'Financial support of ₹5,400/month for General UG degree and ₹7,800/month for Technical/Medical degrees for students having NER domicile with parental income below ₹4.5 Lakhs.',
-    citation: 'UGC / Dibrugarh University Scholarship Notification Ref. DU/SCHOL/UGC/2024/67'
-  }
-];
+export const INITIAL_DOCUMENTS = [];
 
 // Read from LocalStorage or initialize
 export const documentService = {
   getDocuments: () => {
-    if (typeof window === 'undefined') return INITIAL_DOCUMENTS;
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
-      return INITIAL_DOCUMENTS;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
     try {
       const parsed = JSON.parse(stored);
-      // Clean legacy dummy test records if found
-      const hasDummy = parsed.some(d => d.id === 'DOC-GU-001' || d.id === 'DOC-FAC-SUB-101' || d.id === 'DOC-UGC-003');
-      if (hasDummy) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
-        return INITIAL_DOCUMENTS;
+      // Clear out all old seeded sample PDFs (DOC-NOT-, DOC-GU-, DOC-FAC-SUB-, DOC-UGC-)
+      const hasOldSeeded = parsed.some(d => d.id?.startsWith('DOC-NOT-') || d.id === 'DOC-GU-001' || d.id === 'DOC-FAC-SUB-101' || d.id === 'DOC-UGC-003');
+      if (hasOldSeeded) {
+        const userUploadedOnly = parsed.filter(d => !d.id?.startsWith('DOC-NOT-') && d.id !== 'DOC-GU-001' && d.id !== 'DOC-FAC-SUB-101' && d.id !== 'DOC-UGC-003');
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userUploadedOnly));
+        return userUploadedOnly;
       }
       return parsed;
     } catch {
-      return INITIAL_DOCUMENTS;
+      return [];
+    }
+  },
+
+  clearAllDocuments: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      window.dispatchEvent(new CustomEvent('unimitra_documents_changed', { detail: [] }));
     }
   },
 
@@ -216,6 +107,19 @@ export const documentService = {
 
     const updated = [newDoc, ...docs];
     documentService.saveDocuments(updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('unimitra_site_notification', {
+        detail: {
+          id: `NOTIF-${Date.now()}`,
+          title: 'New Academic Document Uploaded',
+          asTitle: 'নতুন শৈক্ষিক নথি অন্তৰ্ভুক্ত কৰা হৈছে',
+          message: `"${newDoc.title}" submitted by Faculty (${newDoc.uploaderName || 'Faculty Member'}).`,
+          author: 'Faculty Member',
+          role: 'faculty',
+          timestamp: 'Just now'
+        }
+      }));
+    }
     return newDoc;
   },
 
@@ -254,6 +158,19 @@ export const documentService = {
 
     const updated = [newDoc, ...docs];
     documentService.saveDocuments(updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('unimitra_site_notification', {
+        detail: {
+          id: `NOTIF-${Date.now()}`,
+          title: 'New Academic Document Uploaded',
+          asTitle: 'নতুন শৈক্ষিক নথি অন্তৰ্ভুক্ত কৰা হৈছে',
+          message: `"${newDoc.title}" submitted by Faculty (${newDoc.uploaderName || 'Faculty Member'}).`,
+          author: 'Faculty Member',
+          role: 'faculty',
+          timestamp: 'Just now'
+        }
+      }));
+    }
     return newDoc;
   },
 

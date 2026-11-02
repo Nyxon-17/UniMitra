@@ -1,3 +1,35 @@
+export function logUnpublishedQueryToAdmin(query, answer = '') {
+  try {
+    if (typeof window === 'undefined') return;
+    const feedbackKey = 'unimitra_feedback_submissions';
+    const existing = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+    
+    const qLower = (query || '').toLowerCase().trim();
+    if (!qLower || qLower.length < 3) return;
+    const isDup = existing.slice(0, 10).some(item => (item.query || '').toLowerCase().trim() === qLower);
+    if (isDup) return;
+
+    const newReq = {
+      id: `REQ-${Date.now().toString().slice(-4)}`,
+      user: 'Student / Inquirer',
+      role: 'Student',
+      query: query,
+      type: 'Unpublished Document Requirement',
+      rating: 3,
+      university: universityService.getProfile()?.name || 'Our University',
+      comments: `Information for "${query}" is not published in current repository PDFs. Alternative guidance was provided to user. Requirement automatically forwarded for official document upload.`,
+      submittedAt: 'Just now',
+      status: 'Pending Admin Review'
+    };
+
+    const updated = [newReq, ...existing];
+    localStorage.setItem(feedbackKey, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('unimitra_feedback_updated', { detail: updated }));
+  } catch (err) {
+    console.error('Error logging unpublished query:', err);
+  }
+}
+
 import { detectLanguageModeAdvanced, interpretQuery } from './assameseUnderstanding';
 // Centralized AI Chat & RAG Grounding Service
 // Seamlessly connects React Frontend to Node.js Backend, Python AI Service, & Direct Gemini Model Cascade
@@ -184,6 +216,13 @@ SINGLE-UNIVERSITY & DUAL-SOURCE MANDATE:
 3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate details, comparisons, and academic facts using general educational and web data. Do NOT apply Our University's internal statutory codes to other universities. Mention politely that official statutory records in this portal are dedicated to ${resolvedUnivName}, while other university details are provided via web data.
 4. If the user asks about other universities, answer authoritatively and helpfully using web data. Never refuse to assist.
 
+CRITICAL UNPUBLISHED DOCUMENT & COMPREHENSIVE ANSWER MANDATE:
+You can and MUST answer ALL user questions with maximum accuracy.
+However, if an inquiry regarding Our University (${resolvedUnivName}) is NOT found in the verified repository PDFs:
+Step 1: State clearly that the official notification or statutory ordinance on this specific topic has not yet been published by the university authority. (In Romanized Assamese: "Ei bisoyor official notification ba ordinance university authority e etiyaloike publish kora nai.")
+Step 2: Immediately provide an accurate, helpful, and comprehensive alternative answer on the topic using general educational knowledge so the user's question is completely addressed.
+Step 3: Reassure the user that their requirement has been automatically recorded and forwarded to the university administrator on the Review & Feedback page for official document verification and upload. (In Romanized Assamese: "Apunar ei requirement review aru official document upload korar babe Review & Feedback page ot admin le automatically send kora hoise.")
+
 CRITICAL DIRECT ANSWER MANDATE:
 Answer directly without boilerplate introductions (do NOT start with "Moi UniMitra..."). Jump straight to answering the user's question.
 
@@ -229,6 +268,13 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ২. আমাৰ বিশ্ববিদ্যালয়ৰ (${resolvedAsName}) প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম, পৰীক্ষা বিধি আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
 ৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয়, কটন বিশ্ববিদ্যালয়, দিল্লী বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক বিৱৰণ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব। বুজাই দিয়ক যে এই পৰ্টেলটো আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰতিষ্ঠানিক বিধিৰ বাবে নিৰ্ধাৰিত, কিন্তু অন্যান্য বিশ্ববিদ্যালয়ৰ তথ্য সাধাৰণ ৱেব তথ্যৰ ভিত্তিত দিয়া হৈছে।
 
+অপ্ৰকাশিত নথি আৰু সৰ্বাংগীন উত্তৰৰ কঠোৰ নিৰ্দেশনা (CRITICAL UNPUBLISHED DOCUMENT & ANSWER MANDATE):
+আপুনি ব্যৱহাৰকাৰীৰ সকলো প্ৰশ্নৰ শুদ্ধ আৰু সঠিক উত্তৰ দিব পাৰিব আৰু দিব লাগিব। কোনো প্ৰশ্নৰ উত্তৰ অস্বীকাৰ নকৰিব।
+যদি আমাৰ বিশ্ববিদ্যালয়ৰ কোনো তথ্য সংলগ্ন বা আপলোড কৰা PDF নথিত উপলব্ধ নহয়:
+১. স্পষ্টকৈ জনাওক: "এই বিষয়ৰ আনুষ্ঠানিক অধিসূচনা বা অধিনিয়ম বিশ্ববিদ্যালয় কৰ্তৃপক্ষৰ দ্বাৰা এতিয়ালৈকে প্ৰকাশ কৰা হোৱা নাই।"
+২. লগে লগে সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি বিষয়টোৰ এটা সম্পূৰ্ণ, সঠিক আৰু সহায়ক বিকল্প উত্তৰ বিশদভাৱে দিয়ক।
+৩. ব্যৱহাৰকাৰীক আশ্বস্ত কৰক: "আপোনাৰ এই প্ৰয়োজনীয়তা পৰ্যালোচনা আৰু আনুষ্ঠানিক নথি অন্তৰ্ভুক্তিকৰণৰ বাবে ৰিভিউ আৰু ফীডবেক (Review & Feedback) পৃষ্ঠাত প্ৰশাসকলৈ স্বয়ংক্ৰিয়ভাৱে প্ৰেৰণ কৰা হৈছে।" 
+
 CRITICAL DIRECT ANSWER MANDATE:
 কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
 
@@ -253,6 +299,13 @@ SINGLE-UNIVERSITY & DUAL-SOURCE GROUNDING MANDATE:
 1. This platform is dedicated exclusively to Our University (${resolvedUnivName}).
 2. For questions regarding OUR UNIVERSITY (${resolvedUnivName}): Provide authoritative answers grounded in official statutory academic ordinances, examination bylaws, and institutional vector repository records.
 3. For questions regarding OTHER UNIVERSITIES (e.g. Gauhati University, Tezpur University, Cotton University, Delhi University, etc.): Provide accurate information, comparisons, and academic details using web data and general educational knowledge. Do NOT treat Our University's specific circulars as belonging to other universities. Clarify that while official statutory documents in this portal are anchored to ${resolvedUnivName}, external university information is provided from web data. Never refuse to answer.
+
+CRITICAL UNPUBLISHED DOCUMENT & COMPREHENSIVE ANSWER MANDATE:
+You can and MUST answer ALL user questions with maximum accuracy. Never refuse to answer any query.
+However, if an inquiry regarding Our University (${resolvedUnivName}) is NOT present in the verified repository PDFs:
+Step 1: State clearly: "The official notification or ordinance on this specific topic has not yet been published by the university authority."
+Step 2: Provide an accurate, comprehensive, and helpful alternative answer on the topic using general educational and academic knowledge so the user's question is completely satisfied.
+Step 3: Conclude with: "Your requirement has been automatically recorded and forwarded to the university administrator on the Review & Feedback page for official document verification and publication." 
 
 CRITICAL DIRECT ANSWER MANDATE:
 Answer the user's question directly, concisely, and authoritatively.
@@ -397,12 +450,26 @@ export const chatService = {
       fallbackAnswer = 'Apunar prosnor bistarit tothyo university r academic guideline ot ase.';
     }
 
+    const finalAnswer = stripUnwantedIntro(geminiResult?.answer || localResult?.answer || fallbackAnswer, query);
+    
+    // If response indicates unpublished document, forward requirement to Admin Review & Feedback page
+    const lowerAns = (finalAnswer || '').toLowerCase();
+    if (
+      lowerAns.includes('not yet been published') ||
+      lowerAns.includes('প্ৰকাশ কৰা হোৱা নাই') ||
+      lowerAns.includes('publish kora nai') ||
+      lowerAns.includes('forwarded to the university administrator') ||
+      lowerAns.includes('প্ৰশাসকলৈ স্বয়ংক্ৰিয়ভাৱে প্ৰেৰণ')
+    ) {
+      logUnpublishedQueryToAdmin(query, finalAnswer);
+    }
+
     return {
       success: true,
       fromBackend: false,
       fromAi: false,
       sessionId: sId,
-      answer: stripUnwantedIntro(localResult?.answer || fallbackAnswer, query),
+      answer: finalAnswer,
       source: localResult?.source || `${university?.name || 'Dibrugarh University'} Knowledge Repository`,
       page: localResult?.page || 'Statute Section 14',
       confidence: localResult?.confidence || '98.5% Grounded Match',
