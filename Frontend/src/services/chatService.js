@@ -38,10 +38,19 @@ export function generateSessionId() {
 export function getCurrentUserId() {
   if (typeof window === 'undefined') return 'guest';
   try {
+    const rawInfo = localStorage.getItem('unimitra_student_info');
+    if (rawInfo) {
+      const u = JSON.parse(rawInfo);
+      if (u?.id) return u.id;
+      if (u?._id) return u._id;
+    }
+  } catch {}
+  try {
     const raw = localStorage.getItem('unimitra_user');
     if (raw) {
       const u = JSON.parse(raw);
       if (u?.id) return u.id;
+      if (u?._id) return u._id;
     }
   } catch {}
   return 'guest';
@@ -372,7 +381,7 @@ export const chatService = {
    * Send a query to the AI Assistant
    * Tier 1: Node.js Backend Gateway -> Tier 2: Python AI Service -> Tier 3: Direct Gemini AI Model Cascade -> Tier 4: Local Search
    */
-  async sendQuery({ query, sessionId = null, language = 'en', university = null, signal = null, saveToHistory = true, isVoice = false }) {
+  async sendQuery({ query, sessionId = null, language = 'en', university = null, category = null, domain = null, signal = null, saveToHistory = true, isVoice = false }) {
     if (signal?.aborted) {
       return { success: false, aborted: true };
     }
@@ -391,6 +400,7 @@ export const chatService = {
           sessionId: sId,
           language: mode,
           university: university?.code || university?.name || 'DU',
+          category: category || domain || null,
           saveToHistory: saveToHistory && !isVoice,
           isVoice: Boolean(isVoice)
         })
@@ -473,51 +483,60 @@ export const chatService = {
   },
 
   /**
-   * Retrieve all chat sessions isolated by portal domain (student, faculty, admin)
+   * Retrieve all chat sessions isolated by portal domain (student, faculty, admin) and account (userId)
    */
-  async getSessions(domain = 'student') {
-    try {
-      const res = await fetch(`${CHAT_API}/sessions`, {
-        headers: getAuthHeaders(),
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.data && Array.isArray(json.data)) {
-          const backendSessions = json.data.map(s => ({
-            id: s.id,
-            title: s.title,
-            createdAt: s.createdAt,
-            updatedAt: s.updatedAt,
-            language: s.language,
-            domain: domain,
-            messageCount: s._count?.messages || 0,
-          }));
-          const local = this.getLocalSessions(domain);
-          const combined = [...backendSessions];
-          local.forEach(loc => {
-            if (!combined.some(c => c.id === loc.id)) {
-              combined.push(loc);
-            }
-          });
-          const key = getDomainSessionsKey(domain);
-          localStorage.setItem(key, JSON.stringify(combined.slice(0, 50)));
-          return combined;
+  async getSessions(domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
+    const isGuest = uid === 'guest';
+
+    if (!isGuest) {
+      try {
+        const res = await fetch(`${CHAT_API}/sessions?domain=${domain}`, {
+          headers: getAuthHeaders(),
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.data && Array.isArray(json.data)) {
+            const backendSessions = json.data.map(s => {
+              const displayTitle = s.title?.replace(/^\[(student|faculty|admin)\]\s*/i, '') || s.title;
+              return {
+                id: s.id,
+                title: displayTitle,
+                createdAt: s.createdAt,
+                updatedAt: s.updatedAt,
+                language: s.language,
+                domain: domain,
+                messageCount: s._count?.messages || 0,
+              };
+            });
+            const local = this.getLocalSessions(domain, uid);
+            const combined = [...backendSessions];
+            local.forEach(loc => {
+              if (!combined.some(c => c.id === loc.id)) {
+                combined.push(loc);
+              }
+            });
+            const key = getDomainSessionsKey(domain, uid);
+            localStorage.setItem(key, JSON.stringify(combined.slice(0, 50)));
+            return combined;
+          }
         }
+      } catch {
+        // fallback
       }
-    } catch {
-      // fallback
     }
-    return this.getLocalSessions(domain);
+    return this.getLocalSessions(domain, uid);
   },
 
   /**
-   * Save or update a session in local storage for a specific portal domain
+   * Save or update a session in local storage for a specific portal domain and account
    */
-  saveLocalSession(session, domain = 'student') {
+  saveLocalSession(session, domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain);
-      const sessions = this.getLocalSessions(domain);
+      const key = getDomainSessionsKey(domain, uid);
+      const sessions = this.getLocalSessions(domain, uid);
       const existingIdx = sessions.findIndex(s => s.id === session.id);
       let updated;
       if (existingIdx >= 0) {
@@ -533,29 +552,27 @@ export const chatService = {
     }
   },
 
-  getLocalSessions(domain = 'student') {
+  getLocalSessions(domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain);
+      const key = getDomainSessionsKey(domain, uid);
       const raw = localStorage.getItem(key);
       if (raw) return JSON.parse(raw);
-      if (domain === 'student') {
-        const legacy = localStorage.getItem(LOCAL_SESSIONS_KEY);
-        if (legacy) return JSON.parse(legacy);
-      }
       return [];
     } catch {
       return [];
     }
   },
 
-  deleteSession(sessionId, domain = 'student') {
+  deleteSession(sessionId, domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain);
-      const sessions = this.getLocalSessions(domain).filter(s => s.id !== sessionId);
+      const key = getDomainSessionsKey(domain, uid);
+      const sessions = this.getLocalSessions(domain, uid).filter(s => s.id !== sessionId);
       localStorage.setItem(key, JSON.stringify(sessions));
-      localStorage.removeItem(getDomainMessageKey(sessionId, domain));
-      if (this.getActiveSessionId(domain) === sessionId) {
-        this.setActiveSessionId(null, domain);
+      localStorage.removeItem(getDomainMessageKey(sessionId, domain, uid));
+      if (this.getActiveSessionId(domain, uid) === sessionId) {
+        this.setActiveSessionId(null, domain, uid);
       }
       if (sessionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
         fetch(`${CHAT_API}/sessions/${sessionId}`, {
@@ -570,15 +587,16 @@ export const chatService = {
     }
   },
 
-  clearAllSessions(domain = 'student') {
+  clearAllSessions(domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain);
-      const sessions = this.getLocalSessions(domain);
+      const key = getDomainSessionsKey(domain, uid);
+      const sessions = this.getLocalSessions(domain, uid);
       sessions.forEach(s => {
-        localStorage.removeItem(getDomainMessageKey(s.id, domain));
+        localStorage.removeItem(getDomainMessageKey(s.id, domain, uid));
       });
       localStorage.removeItem(key);
-      localStorage.removeItem(getDomainActiveSessionKey(domain));
+      localStorage.removeItem(getDomainActiveSessionKey(domain, uid));
       return [];
     } catch {
       return [];
@@ -589,37 +607,23 @@ export const chatService = {
     return generateSessionId();
   },
 
-  getSessionMessages(sessionId, domain = 'student') {
+  getSessionMessages(sessionId, domain = 'student', userId = null) {
     if (!sessionId) return null;
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainMessageKey(sessionId, domain);
+      const key = getDomainMessageKey(sessionId, domain, uid);
       const raw = localStorage.getItem(key);
       if (raw) return JSON.parse(raw);
-
-      const legacy = localStorage.getItem(`unimitra_messages_${sessionId}`);
-      if (legacy) return JSON.parse(legacy);
-
-      for (const prefix of ['student', 'faculty', 'admin']) {
-        const alt = localStorage.getItem(`unimitra_messages_${prefix}_${sessionId}`);
-        if (alt) return JSON.parse(alt);
-      }
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('unimitra_messages_') && k.endsWith(sessionId)) {
-          const val = localStorage.getItem(k);
-          if (val) return JSON.parse(val);
-        }
-      }
       return null;
     } catch {
       return null;
     }
   },
 
-  async fetchSessionMessages(sessionId, domain = 'student') {
+  async fetchSessionMessages(sessionId, domain = 'student', userId = null) {
     if (!sessionId) return [];
-    const local = this.getSessionMessages(sessionId, domain);
+    const uid = userId || getCurrentUserId();
+    const local = this.getSessionMessages(sessionId, domain, uid);
     if (local && local.length > 0) return local;
 
     try {
@@ -639,7 +643,7 @@ export const chatService = {
             confidence: m.confidence,
             time: m.time || 'Recently',
           }));
-          this.saveSessionMessages(sessionId, messages, domain);
+          this.saveSessionMessages(sessionId, messages, domain, uid);
           return messages;
         }
       }
@@ -649,34 +653,32 @@ export const chatService = {
     return local || [];
   },
 
-  saveSessionMessages(sessionId, messages, domain = 'student') {
+  saveSessionMessages(sessionId, messages, domain = 'student', userId = null) {
     if (!sessionId || !messages) return;
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainMessageKey(sessionId, domain);
+      const key = getDomainMessageKey(sessionId, domain, uid);
       const str = JSON.stringify(messages);
       localStorage.setItem(key, str);
-      localStorage.setItem(`unimitra_messages_${sessionId}`, str);
     } catch {
       // ignore
     }
   },
 
-  getActiveSessionId(domain = 'student') {
+  getActiveSessionId(domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const val = localStorage.getItem(getDomainActiveSessionKey(domain));
-      if (val) return val;
-      if (domain === 'student') {
-        return localStorage.getItem(ACTIVE_SESSION_ID_KEY) || null;
-      }
-      return null;
+      const val = localStorage.getItem(getDomainActiveSessionKey(domain, uid));
+      return val || null;
     } catch {
       return null;
     }
   },
 
-  setActiveSessionId(id, domain = 'student') {
+  setActiveSessionId(id, domain = 'student', userId = null) {
+    const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainActiveSessionKey(domain);
+      const key = getDomainActiveSessionKey(domain, uid);
       if (id) {
         localStorage.setItem(key, id);
       } else {

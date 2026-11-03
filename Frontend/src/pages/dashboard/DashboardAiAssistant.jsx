@@ -877,6 +877,8 @@ const DashboardAiAssistantInner = ({
         sessionId: activeSessionId,
         language: currentLang,
         university: univProfile,
+        category: domain,
+        domain: domain,
         signal: controller.signal,
         saveToHistory: true,
         isVoice: false

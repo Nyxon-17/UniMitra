@@ -26,10 +26,22 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
     }
 
     if (!session) {
-      const title = query.slice(0, 45) + (query.length > 45 ? '...' : '');
+      let idToUse = null;
+      if (sessionId && isValidUuid(sessionId)) {
+        const existingAny = await prisma.chatSession.findUnique({
+          where: { id: sessionId },
+          select: { id: true },
+        });
+        if (!existingAny) {
+          idToUse = sessionId;
+        }
+      }
+      const rawTitle = query.slice(0, 40) + (query.length > 40 ? '...' : '');
+      const prefix = category ? `[${category.toLowerCase()}] ` : '';
+      const title = `${prefix}${rawTitle}`.slice(0, 250);
       session = await prisma.chatSession.create({
         data: {
-          ...(sessionId && isValidUuid(sessionId) ? { id: sessionId } : {}),
+          ...(idToUse ? { id: idToUse } : {}),
           userId: user.id,
           title,
           language: queryLang || 'en',
@@ -122,10 +134,18 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
 /**
  * Get User Chat Sessions
  */
-export const getSessions = async (userId) => {
+export const getSessions = async (userId, domain = null) => {
   if (!isValidUuid(userId)) return [];
+  const where = { userId };
+  if (domain) {
+    const d = domain.toLowerCase();
+    where.OR = [
+      { title: { startsWith: `[${d}]` } },
+      { NOT: { title: { startsWith: '[' } } },
+    ];
+  }
   return prisma.chatSession.findMany({
-    where: { userId },
+    where,
     include: {
       _count: {
         select: { messages: true },
