@@ -56,9 +56,11 @@ export const Footer = ({ onNavigate, onOpenAuth, currentLang = 'en', isLoggedIn 
               className="flex items-center space-x-3 cursor-pointer" 
               onClick={() => handleNav('home')}
             >
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#73A5CA] to-[#FF933E] dark:from-[#13005A] dark:to-[#00337C] flex items-center justify-center text-white shadow-md border-2 border-[#73A5CA]/40 dark:border-[#03C988]/50">
-                <BuildingLibraryIcon className="w-6 h-6 text-[#000000] dark:text-[#FFFFFF]" />
-              </div>
+              <img 
+                src="/unimitra-emblem.png" 
+                alt="UniMitra Shield" 
+                className="w-10 h-10 object-contain drop-shadow-sm" 
+              />
               <span className="text-2xl font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">
                 Uni<span className="text-[#FF933E] dark:text-[#03C988]">Mitra</span>
               </span>

@@ -93,9 +93,11 @@ export const Navbar = ({
           className="flex items-center space-x-2 sm:space-x-2.5 cursor-pointer select-none shrink-0" 
           onClick={() => handleNav('home')}
         >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-[#73A5CA] via-[#FFCB56] to-[#FF933E] dark:from-[#03C988] dark:to-[#1C82AD] flex items-center justify-center text-white shadow-sm">
-            <BuildingLibraryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-black" />
-          </div>
+          <img 
+            src="/unimitra-emblem.png" 
+            alt="UniMitra Shield" 
+            className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-xs transition-transform duration-200 hover:scale-105" 
+          />
           <div className="flex flex-col">
             <div className="flex items-center space-x-1">
               <span className="text-base sm:text-lg font-black tracking-tight text-[#000000] dark:text-[#FFFFFF]">

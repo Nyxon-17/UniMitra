@@ -124,8 +124,8 @@ export const UniversityHero3D = () => {
             <div className="absolute inset-0 w-full h-10 bg-gradient-to-b from-transparent via-[#55C7B2]/30 to-transparent pointer-events-none animate-scan-beam" />
 
             {/* University Emblem with Ambient Aura */}
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/10 dark:bg-[#55C7B2]/20 flex items-center justify-center mb-1.5 border border-white/20 dark:border-[#55C7B2]/30 backdrop-blur-xs shadow-inner">
-              <BuildingLibraryIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#D4A96A] dark:text-[#55C7B2]" />
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/10 dark:bg-[#55C7B2]/20 flex items-center justify-center mb-1.5 border border-white/20 dark:border-[#55C7B2]/30 backdrop-blur-xs shadow-inner p-1.5">
+              <img src="/unimitra-emblem.png" alt="UniMitra Shield" className="w-full h-full object-contain drop-shadow-sm" />
             </div>
 
             <span className="text-[11px] sm:text-xs font-extrabold tracking-wider text-center text-white font-heading">

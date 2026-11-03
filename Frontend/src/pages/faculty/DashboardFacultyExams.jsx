@@ -39,7 +39,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
       title: 'Continuous Internal Assessment (CIA) & Marks Submission Timelines',
       asTitle: 'আভ্যন্তৰীণ মূল্যায়ন (CIA) নম্বৰ সংৰক্ষণ আৰু দাখিলৰ সময়সীমা',
       ordinance: 'DU/CBCS-DIR/2024/07',
-      university: 'Dibrugarh University (DU)',
+      university: 'Nivoraya University (DU)',
       category: 'Internal Assessment',
       summary: 'Teachers must maintain comprehensive records of sessional tests, assignments, and attendance scores, uploading verified marks to the portal 10 days before end-semester commencement.',
       asSummary: 'শিক্ষকসকলে অন্তিম ষাণ্মাসিক পৰীক্ষা আৰম্ভ হোৱাৰ ১০ দিন পূৰ্বে আভ্যন্তৰীণ মূল্যায়নৰ নম্বৰ প’ৰ্টেলত আপলোড কৰি স্বাক্ষৰিত প্ৰতিলিপি সংৰক্ষণ কৰিব লাগিব।',
@@ -49,7 +49,7 @@ export const DashboardFacultyExams = ({ onNavigateTab, currentLang = 'en', stude
         'Upload verified scores to the institutional examination portal 10 days prior to end-sem exams.',
         'Retain evaluated answer scripts and sessional records in department for minimum 1 academic year.'
       ],
-      citation: 'Dibrugarh University CBCS Evaluation Manual, Rule 6(b), Page 19'
+      citation: 'Nivoraya University CBCS Evaluation Manual, Rule 6(b), Page 19'
     },
     {
       id: 'FAC-EX-03',

@@ -50,7 +50,7 @@ export const GripDotsIcon = ({ className = "w-4 h-4", ...props }) => (
   </svg>
 );
 
-export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentInfo }) => {
+export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentInfo, isLoggedIn = false, onOpenAuth }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -233,8 +233,17 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       // Placed at new position
       setTimeout(() => setIsDragging(false), 50);
     } else {
-      // Normal click/tap -> open assistant
+      // Normal click/tap -> open assistant (Requires authentication)
       setIsDragging(false);
+      if (!isLoggedIn) {
+        if (onOpenAuth) {
+          onOpenAuth('login', studentInfo?.role || 'student');
+        } else {
+          navigate('/auth?mode=login');
+        }
+        return;
+      }
+      cleanupVoiceSession();
       setIsOpen(true);
       setIsMinimized(false);
     }
@@ -244,6 +253,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [speechError, setSpeechError] = useState('');
@@ -253,6 +263,97 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   const audioPlayerRef = useRef(null);
   const currentNavPathRef = useRef(location.pathname);
   const isWidgetMountedRef = useRef(true);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const audioStreamRef = useRef(null);
+  const silenceTimeoutRef = useRef(null);
+  const maxTimeoutRef = useRef(null);
+  const inputQueryRef = useRef(inputQuery);
+  const abortControllerRef = useRef(null);
+
+  const cancelQuery = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+  };
+
+  // Automatic Voice Cleanup: Stops audio, mic tracks, and wipes temporary in-memory transcripts
+  const cleanupVoiceSession = () => {
+    if (audioPlayerRef.current) {
+      try {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      } catch {}
+      audioPlayerRef.current = null;
+    }
+    setIsSpeaking(false);
+    setIsPaused(false);
+
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (audioStreamRef.current) {
+      try {
+        audioStreamRef.current.getTracks().forEach(track => track.stop());
+      } catch {}
+      audioStreamRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+    if (maxTimeoutRef.current) {
+      clearTimeout(maxTimeoutRef.current);
+      maxTimeoutRef.current = null;
+    }
+    audioChunksRef.current = [];
+    setIsListening(false);
+    setIsTranscribing(false);
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+
+    setInputQuery('');
+    setCurrentResult(null);
+    setSpeechError('');
+  };
+
+  const handleClose = () => {
+    cleanupVoiceSession();
+    setIsOpen(false);
+    setIsMinimized(false);
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn && isOpen) {
+      cleanupVoiceSession();
+      setIsOpen(false);
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    const handleLogout = () => {
+      cleanupVoiceSession();
+      setIsOpen(false);
+    };
+    window.addEventListener('unimitra_auth_logout', handleLogout);
+    return () => {
+      window.removeEventListener('unimitra_auth_logout', handleLogout);
+      cleanupVoiceSession();
+    };
+  }, []);
+
+  useEffect(() => {
+    inputQueryRef.current = inputQuery;
+  }, [inputQuery]);
 
   // Viewport Boundary Guard: Ensure open card NEVER overflows outside viewport when opened or contents change
   useEffect(() => {
@@ -288,77 +389,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
   }, [isOpen, isMinimized, currentResult, isListening, loading]);
 
-  // Initialize Web Speech Recognition
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
 
-      recognition.onstart = () => {
-        setIsListening(true);
-        setSpeechError('');
-      };
 
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-        setInputQuery(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        if (event.error !== 'no-speech') {
-          setSpeechError(`Microphone issue: ${event.error}`);
-        }
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-    }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-      if (audioPlayerRef.current) {
-        try { audioPlayerRef.current.pause(); } catch (e) {}
-        audioPlayerRef.current = null;
-      }
-      window.speechSynthesis?.cancel();
-    };
-  }, [currentLang]);
-
-  const fallbackSpeechSynthesis = (cleanText, gender = 'male') => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-    utterance.rate = 1.0;
-    utterance.pitch = gender === 'female' ? 1.08 : 0.88;
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setIsPaused(false);
-    };
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Ultra-Fast Voice Synthesis with TTS-Accelerator and fallback
-  const speakText = async (text, gender = 'male') => {
+  // Google Gemini Voice Synthesis for All Languages (Assamese, English & Code-Mixed)
+  const speakText = async (text, gender = 'female') => {
     stopSpeaking();
 
     const cleanText = text
@@ -389,18 +423,20 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
           URL.revokeObjectURL(audioUrl);
         };
         audio.onerror = () => {
+          setIsSpeaking(false);
+          setIsPaused(false);
           audioPlayerRef.current = null;
           URL.revokeObjectURL(audioUrl);
-          fallbackSpeechSynthesis(cleanText, gender);
         };
         await audio.play();
         return;
       }
     } catch (err) {
-      console.warn('TTS-Accelerator audio notice:', err);
+      console.warn('TTS audio notice:', err);
     }
 
-    fallbackSpeechSynthesis(cleanText, gender);
+    setIsSpeaking(false);
+    setIsPaused(false);
   };
 
   const stopSpeaking = () => {
@@ -410,11 +446,6 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         audioPlayerRef.current.currentTime = 0;
       } catch (e) {}
       audioPlayerRef.current = null;
-    }
-    if ('speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch (e) {}
     }
     setIsSpeaking(false);
     setIsPaused(false);
@@ -467,37 +498,6 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         audioPlayerRef.current.pause();
         setIsPaused(true);
       }
-      return;
-    }
-    if (!('speechSynthesis' in window)) return;
-    if (isPaused) {
-      window.speechSynthesis.resume();
-      setIsPaused(false);
-    } else {
-      window.speechSynthesis.pause();
-      setIsPaused(true);
-    }
-  };
-
-  const toggleListening = () => {
-    if (isSpeaking) {
-      stopSpeaking();
-    }
-
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      if (inputQuery.trim()) {
-        executeVoiceQuery(inputQuery);
-      }
-    } else {
-      setInputQuery('');
-      setSpeechError('');
-      try {
-        recognitionRef.current?.start();
-      } catch {
-        setSpeechError('Microphone permission or speech recognition unavailable.');
-      }
     }
   };
 
@@ -506,16 +506,32 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     const q = queryText || inputQuery;
     if (!q.trim()) return;
 
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
     setIsListening(false);
-    recognitionRef.current?.stop();
+    setIsTranscribing(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
 
     try {
       const res = await chatService.sendQuery({
         query: q,
         language: currentLang,
-        university: univProfile
+        university: univProfile,
+        signal: controller.signal,
+        saveToHistory: false,
+        isVoice: true
       });
+
+      if (!res || res.aborted || controller.signal.aborted) {
+        return;
+      }
 
       const resultObj = {
         question: q,
@@ -527,7 +543,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
       setCurrentResult(resultObj);
       speakText(res.answer, 'female');
-    } catch {
+    } catch (err) {
+      if (err?.name === 'AbortError' || controller.signal.aborted) {
+        return;
+      }
       const match = documentService.query(q, currentLang);
       const univName = univProfile.name || 'My University';
       const answer = match?.answer || (currentLang === 'as' ? `${univName}ৰ তথ্য সংগ্ৰহ কৰা হৈছে।` : 'Information retrieved from knowledge repository.');
@@ -540,10 +559,284 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       });
       speakText(answer, 'female');
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setLoading(false);
       setInputQuery('');
     }
   };
+
+  const stopAudioRecording = () => {
+    return new Promise((resolve) => {
+      const recorder = mediaRecorderRef.current;
+      const finishStream = () => {
+        if (audioStreamRef.current) {
+          try {
+            audioStreamRef.current.getTracks().forEach((t) => t.stop());
+          } catch {}
+          audioStreamRef.current = null;
+        }
+      };
+
+      if (!recorder || recorder.state === 'inactive') {
+        finishStream();
+        const blob = audioChunksRef.current.length > 0
+          ? new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          : null;
+        resolve(blob);
+        return;
+      }
+
+      recorder.onstop = () => {
+        finishStream();
+        const mimeType = recorder?.mimeType || 'audio/webm';
+        const blob = audioChunksRef.current.length > 0
+          ? new Blob(audioChunksRef.current, { type: mimeType })
+          : null;
+        resolve(blob);
+      };
+
+      try {
+        if (recorder.state === 'recording') {
+          try { recorder.requestData(); } catch {}
+        }
+        recorder.stop();
+      } catch {
+        finishStream();
+        resolve(null);
+      }
+    });
+  };
+
+  const cancelListening = () => {
+    if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+    if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
+    setIsListening(false);
+    setIsTranscribing(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch {}
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (audioStreamRef.current) {
+      try {
+        audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      } catch {}
+      audioStreamRef.current = null;
+    }
+    audioChunksRef.current = [];
+  };
+
+  const handleSpeechCaptureFinish = async (forceServerFallback = false) => {
+    if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+    if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
+
+    setIsListening(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+
+    const audioBlob = await stopAudioRecording();
+    const currentQuery = (inputQueryRef.current || '').trim();
+
+    // If pure English speech was recognized cleanly and explicitly in English mode without audio fallback
+    if (currentLang === 'en' && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
+      executeVoiceQuery(currentQuery);
+      return;
+    }
+
+    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
+    // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
+    if (audioBlob && audioBlob.size > 200) {
+      setIsTranscribing(true);
+      setSpeechError('');
+      try {
+        // Always pass 'as' with 'codemix' to Sarvam Saaras V4 to accurately transcribe Assamese & code-mixing
+        const serverTranscript = await chatService.transcribeAudio(audioBlob, 'as', 'codemix');
+        if (serverTranscript && serverTranscript.trim()) {
+          const clean = serverTranscript.trim();
+          setInputQuery(clean);
+          inputQueryRef.current = clean;
+          executeVoiceQuery(clean);
+        } else if (currentQuery) {
+          executeVoiceQuery(currentQuery);
+        } else {
+          setSpeechError(
+            currentLang === 'as'
+              ? 'কোনো বাক্য চিনাক্ত হোৱা নাই। অনুগ্ৰহ কৰি আকৌ কওক।'
+              : 'No speech detected. Please speak into the mic.'
+          );
+          setTimeout(() => setSpeechError(''), 4000);
+        }
+      } catch (err) {
+        console.warn('Sarvam transcription notice:', err);
+        if (currentQuery) {
+          executeVoiceQuery(currentQuery);
+        } else {
+          setSpeechError(
+            currentLang === 'as'
+              ? 'ভইচ চিনাক্তকৰণত সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।'
+              : 'Voice transcription failed. Please try again.'
+          );
+          setTimeout(() => setSpeechError(''), 4000);
+        }
+      } finally {
+        setIsTranscribing(false);
+      }
+    } else if (currentQuery) {
+      executeVoiceQuery(currentQuery);
+    } else {
+      setSpeechError(
+        currentLang === 'as'
+          ? 'কোনো বাক্য চিনাক্ত হোৱা নাই।'
+          : 'No speech detected.'
+      );
+      setTimeout(() => setSpeechError(''), 4000);
+    }
+  };
+
+  const startListening = async () => {
+    if (isSpeaking) {
+      stopSpeaking();
+    }
+    cancelListening();
+    setInputQuery('');
+    inputQueryRef.current = '';
+    setSpeechError('');
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setSpeechError(
+        currentLang === 'as'
+          ? 'আপোনাৰ ব্ৰাউজাৰত মাইক্ৰ’ফোন সুবিধা উপলব্ধ নহয় বা HTTPS প্ৰয়োজন।'
+          : 'Microphone access is not supported by your browser or requires HTTPS.'
+      );
+      return;
+    }
+
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+    } catch (err) {
+      console.warn('Microphone permission error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setSpeechError(
+          currentLang === 'as'
+            ? 'মাইক্ৰ’ফোনৰ অনুমতি নাকচ কৰা হৈছে।'
+            : 'Microphone permission denied.'
+        );
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setSpeechError(
+          currentLang === 'as'
+            ? 'কোনো মাইক্ৰ’ফোন পোৱা নগ’ল।'
+            : 'No microphone found on your device.'
+        );
+      } else {
+        setSpeechError(
+          currentLang === 'as'
+            ? 'মাইক্ৰ’ফোন আৰম্ভ কৰাত সমস্যা হৈছে।'
+            : `Microphone error: ${err.message || 'Unable to open mic'}`
+        );
+      }
+      return;
+    }
+
+    audioChunksRef.current = [];
+    try {
+      const mr = new MediaRecorder(stream);
+      mr.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+      mr.start(100);
+      mediaRecorderRef.current = mr;
+    } catch (mrErr) {
+      console.warn('MediaRecorder init error:', mrErr);
+    }
+
+    setIsListening(true);
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+        recognitionRef.current.start();
+      } catch (err) {
+        console.warn('Recognition start notice:', err);
+      }
+    }
+
+    if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
+    maxTimeoutRef.current = setTimeout(() => {
+      handleSpeechCaptureFinish();
+    }, 30000);
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      handleSpeechCaptureFinish();
+    } else {
+      startListening();
+    }
+  };
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setSpeechError('');
+      };
+
+      recognition.onresult = (event) => {
+        let fullTranscript = '';
+        for (let i = 0; i < event.results.length; ++i) {
+          fullTranscript += event.results[i][0].transcript + ' ';
+        }
+        const cleaned = fullTranscript.trim();
+        if (cleaned) {
+          setInputQuery(cleaned);
+          inputQueryRef.current = cleaned;
+        }
+
+        if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+        silenceTimeoutRef.current = setTimeout(() => {
+          handleSpeechCaptureFinish();
+        }, 5000);
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech recognition notice:', event.error);
+        if (event.error === 'not-allowed') {
+          setSpeechError(
+            currentLang === 'as'
+              ? 'মাইক্ৰ’ফোনৰ অনুমতি নাকচ কৰা হৈছে।'
+              : 'Microphone permission denied.'
+          );
+          cancelListening();
+        }
+        // Do NOT abort MediaRecorder on no-speech or language errors
+      };
+
+      recognition.onend = () => {
+        // Recognition cycle completed; MediaRecorder keeps running
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      cancelListening();
+    };
+  }, [currentLang]);
 
   const quickPrompts = [
     {
@@ -755,12 +1048,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
             {/* Close */}
             <button
               type="button"
-              onClick={() => {
-                stopSpeaking();
-                if (isListening) recognitionRef.current?.stop();
-                setIsOpen(false);
-                setIsMinimized(false);
-              }}
+              onClick={handleClose}
               className="p-1 rounded-full text-[#000000]/50 dark:text-[#FFFFFF]/50 hover:text-black dark:hover:text-white cursor-pointer"
               title="Close"
             >
@@ -883,12 +1171,28 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                   Done Speaking ➔
                 </button>
               </div>
+            ) : isTranscribing ? (
+              <div className="flex flex-col items-center py-3 space-y-2">
+                <SparklesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] animate-spin" />
+                <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
+                  {currentLang === 'as' ? 'AI ভইচ মডেলেৰে কথা পৰীক্ষা কৰা হৈছে...' : 'Transcribing voice query with AI model...'}
+                </span>
+              </div>
             ) : loading ? (
               <div className="flex flex-col items-center py-3 space-y-2">
                 <SparklesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] animate-spin" />
                 <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                  Checking official ordinances...
+                  {currentLang === 'as' ? 'উত্তৰ প্ৰস্তুত কৰা হৈছে...' : 'Checking official ordinances...'}
                 </span>
+                <button
+                  type="button"
+                  onClick={cancelQuery}
+                  className="mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950/60 dark:hover:bg-red-900/80 dark:text-red-300 border border-red-300 dark:border-red-800 transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+                  title="Cancel query"
+                >
+                  <XMarkIcon className="w-3.5 h-3.5" />
+                  <span>{currentLang === 'as' ? 'বাতিল কৰক' : 'Cancel'}</span>
+                </button>
               </div>
             ) : currentResult ? (
               /* Verified Spoken Result View */
@@ -928,12 +1232,12 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                     ) : (
                       <button
                         type="button"
-                        onClick={() => speakText(currentResult.answer, 'male')}
+                        onClick={() => speakText(currentResult.answer, 'female')}
                         className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#FFE9A9]/50 dark:bg-white/10 hover:bg-[#FFE9A9] text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
-                        title="Replay Voice"
+                        title="Listen with Neural Voice"
                       >
                         <SpeakerWaveIcon className="w-3.5 h-3.5 text-[#FF933E] dark:text-[#03C988]" />
-                        <span>Replay</span>
+                        <span>Listen</span>
                       </button>
                     )}
 
@@ -1004,9 +1308,16 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 </div>
 
                 {speechError && (
-                  <p className="text-[10px] text-red-500 font-bold px-2">
-                    {speechError}
-                  </p>
+                  <div className="flex items-center justify-center space-x-2 text-[10px] text-red-500 font-bold px-2">
+                    <span>{speechError}</span>
+                    <button
+                      type="button"
+                      onClick={startListening}
+                      className="underline cursor-pointer hover:text-red-600"
+                    >
+                      {currentLang === 'as' ? 'আকৌ চেষ্টা কৰক (Retry)' : 'Retry'}
+                    </button>
+                  </div>
                 )}
 
                 {/* Quick Voice Chips */}

@@ -1,26 +1,35 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 from pydantic import BaseModel, Field
 
 
-class RagGraphState(BaseModel):
+class RagGraphState(TypedDict):
+    """
+    Typed state representation for LangGraph cognitive agent workflow.
+    """
+    # User Input
     query: str
-    clean_query: str = ""
-    language: str = "en"
-    university_code: Optional[str] = None
-    category_code: Optional[str] = None
-    conversation_history: List[Dict[str, Any]] = Field(default_factory=list)
+    language: str
+    university_code: Optional[str]
+    category_code: Optional[str]
+    conversation_history: List[Dict[str, Any]]
 
-    # Retrieval state
-    query_embedding: List[float] = Field(default_factory=list)
-    retrieved_chunks: List[Dict[str, Any]] = Field(default_factory=list)
-    relevance_passed: bool = False
+    # Linguistic Interpretation & Intent
+    clean_query: str
+    detected_language: str
+    is_romanized: bool
+    is_external_univ: bool
+    context_hint: str
+    search_keywords: List[str]
 
-    # Generation output
-    answer: str = ""
-    source: str = "University Statutory Repository"
-    page: str = "Verified Regulation"
-    confidence: str = "99.0% Grounded Match"
-    domain: str = "Academic Regulations"
-    is_unverified: bool = False
-    citations: List[Dict[str, Any]] = Field(default_factory=list)
+    # Semantic Retrieval State
+    query_vector: List[float]
+    retrieved_chunks: List[Dict[str, Any]]
 
+    # Grounded Synthesis Output
+    answer: str
+    source: str
+    page: str
+    confidence: str
+    domain: str
+    is_unverified: bool
+    citations: List[Dict[str, Any]]

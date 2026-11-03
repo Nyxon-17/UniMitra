@@ -6,6 +6,7 @@ from app.api.chat import router as chat_router
 from app.api.documents import router as documents_router
 from app.api.health import router as health_router
 from app.api.voice import router as voice_router
+from app.api.tts import router as tts_router
 from app.config import settings
 
 # Configure logging
@@ -56,14 +57,15 @@ app.include_router(health_router)
 app.include_router(chat_router)
 app.include_router(documents_router)
 app.include_router(voice_router)
+app.include_router(tts_router)
 
 
-@app.get("/")
-def root():
-    return {
-        "service": settings.APP_NAME,
-        "status": "online",
-        "health_check": "/health",
-        "docs": "/docs",
-    }
+if __name__ == "__main__":
+    import uvicorn
 
+    uvicorn.run(
+        "app.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.ENVIRONMENT == "development",
+    )

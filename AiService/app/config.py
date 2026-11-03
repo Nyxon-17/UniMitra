@@ -25,9 +25,22 @@ class Settings(BaseSettings):
 
     # Generative AI & Embeddings
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3.8-flash"
+    GEMINI_MODEL: str = "gemini-flash-lite-latest"
     EMBEDDING_MODEL: str = "intfloat/multilingual-e5-base"
     EMBEDDING_DIM: int = 768
+
+    # Bakbak Assamese Voice TTS API Key (Litwiz Labs / Raya Voice AI)
+    BAKBAK_API_KEY: str = "eX2lWnCNyy6JtU6KgUhBC4rpE6o8Bluw"
+    BAKBAK_BASE_URL: str = "https://hub.getraya.app/v1"
+    BAKBAK_VOICE_ID: str = "d4e5f6a7-b8c9-4a01-d345-e6f7a8b9c012"
+    BAKBAK_MODEL: str = "standard"
+    BAKBAK_SPEED: float = 1.0
+    BAKBAK_TIMEOUT: float = 30.0
+
+    # Sarvam AI Saaras V4 Speech-to-Text API Key
+    SARVAM_API_KEY: str = ""
+    SARVAM_BASE_URL: str = "https://api.sarvam.ai"
+    SARVAM_STT_MODEL: str = "saaras:v4"
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_PATH),
@@ -37,4 +50,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

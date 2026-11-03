@@ -33,6 +33,8 @@ class DocumentIngestResponse(BaseModel):
     status: str = "Indexed"
     processing_stage: str = "Vector Indexed (100%)"
     duration_seconds: float = 0.0
+    text_content: Optional[str] = None
+    chunks: Optional[List[Dict[str, Any]]] = None
 
 
 class VoiceTranscribeResponse(BaseModel):
@@ -40,6 +42,10 @@ class VoiceTranscribeResponse(BaseModel):
     transcript: str
     language: str
     confidence: float = 0.95
+    provider: Optional[str] = "sarvam_saaras_v4"
+    mode: Optional[str] = "codemix"
+    request_id: Optional[str] = None
+    error: Optional[str] = None
 
 
 class HealthResponse(BaseModel):

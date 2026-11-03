@@ -36,7 +36,6 @@ import { DashboardFacultyDocuments } from './pages/faculty/DashboardFacultyDocum
 import { DashboardFacultySaved } from './pages/faculty/DashboardFacultySaved';
 import { AdminConsole } from './pages/admin/AdminConsole';
 import { GlobalAiChatWidget } from './components/common/GlobalAiChatWidget';
-import { GlobalNotificationToast } from './components/common/GlobalNotificationToast';
 
 // Smooth Scroll to Top on Route Change
 function ScrollToTop() {
@@ -358,6 +357,7 @@ export function App() {
 
     const updatedInfo = {
       ...studentInfo,
+      id: user?.id || user?._id || studentInfo?.id || 'usr-default',
       name: user?.name || user?.fullName || studentInfo.name,
       email: user?.email || studentInfo.email,
       role: formattedRole,
@@ -389,9 +389,32 @@ export function App() {
       console.warn('Logout error:', err);
     }
     setIsLoggedIn(false);
+    setStudentInfo({
+      name: 'Scholar Member',
+      email: 'member@university.ac.in',
+      role: 'Student',
+      department: 'Higher Education Studies'
+    });
     localStorage.removeItem('unimitra_auth_logged_in');
     localStorage.removeItem('unimitra_student_info');
     localStorage.removeItem('unimitra_auth_token');
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (
+          k &&
+          (k.startsWith('unimitra_chat_sessions_guest') ||
+            k.startsWith('unimitra_active_session_guest') ||
+            k.startsWith('unimitra_messages_guest') ||
+            k === 'unimitra_active_session_id' ||
+            k === 'unimitra_chat_sessions_v2')
+        ) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
     navigate('/', { replace: true });
   };
 
@@ -623,6 +646,7 @@ export function App() {
             path="assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_${(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
@@ -634,6 +658,7 @@ export function App() {
             path="faculty-assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_faculty`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
@@ -769,13 +794,17 @@ export function App() {
         onSuccessLogin={handleLoginSuccess}
       />
 
-      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals */}
-      <GlobalNotificationToast currentLang={lang} />
-
+      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals (Requires Login) */}
       <GlobalAiChatWidget
         currentLang={lang}
         onToggleLang={toggleLanguage}
         studentInfo={studentInfo}
+        isLoggedIn={isLoggedIn}
+        onOpenAuth={(mode, role) => {
+          setAuthModalRole(role || 'student');
+          setAuthModalMode(mode || 'login');
+          setAuthModalOpen(true);
+        }}
       />
     </>
   );

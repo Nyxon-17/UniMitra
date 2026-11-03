@@ -1,3 +1,4 @@
+import { authService } from '../../services/authService';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -164,7 +165,7 @@ export const AuthPortal = ({
   // Handle countdown timer for OTP
   useEffect(() => {
     let interval = null;
-    const isOtpStep = step === 'otp' || step === 'login_otp';
+    const isOtpStep = step === 'otp' || step === 'login_otp' || step === 'faculty_reg_otp';
     if (isOtpStep && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
@@ -320,8 +321,8 @@ export const AuthPortal = ({
   // 2. FACULTY MEMBER AUTH HANDLERS
   // =========================================================================
 
-  // Faculty Register: Step 1 (Form submit -> Generate Unique Member ID)
-  const handleFacultyRegSubmit = (e) => {
+  // Faculty Register: Step 1 (Form submit -> Generate Unique Member ID & Send OTP to Member Email)
+  const handleFacultyRegSubmit = async (e) => {
     e.preventDefault();
     if (facultyReg.password !== facultyReg.confirmPassword) {
       setStatus({ loading: false, success: false, message: '', error: 'Passwords do not match.' });
@@ -331,25 +332,86 @@ export const AuthPortal = ({
       setStatus({ loading: false, success: false, message: '', error: 'Password must be at least 6 characters long.' });
       return;
     }
+    if (!facultyReg.memberEmail) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter your Member/Personal email to receive your OTP.' });
+      return;
+    }
 
     setStatus({ loading: true, success: false, message: '', error: null });
 
-    setTimeout(() => {
-      // Generate a unique institutional member ID: UM-FAC- + 4 random digits
-      const randomCode = Math.floor(1000 + Math.random() * 9000);
-      const newMemberId = `UM-FAC-${randomCode}`;
+    try {
+      const res = await authService.registerFaculty({
+        fullName: facultyReg.fullName,
+        officialEmail: facultyReg.officialEmail,
+        memberEmail: facultyReg.memberEmail,
+        facultyId: facultyReg.facultyId,
+        department: facultyReg.department,
+        designation: facultyReg.designation,
+        password: facultyReg.password,
+        preferredLanguage: currentLang,
+      });
+
+      const newMemberId = res.memberId || res.user?.memberId;
       setGeneratedMemberId(newMemberId);
-      
-      // Auto-prefill the login ID field so the member can easily sign in
       setFacultyLogin((prev) => ({ ...prev, memberId: newMemberId }));
 
-      setStatus({ loading: false, success: true, message: '', error: null });
-      setStep('created_id');
-    }, 700);
+      if (res.requiresOtp) {
+        setStatus({
+          loading: false,
+          success: true,
+          message: `A 6-digit OTP code has been sent to your member email: ${facultyReg.memberEmail} (not university email).`,
+          error: null,
+        });
+        setStep('faculty_reg_otp');
+        resetOtp();
+      } else {
+        setStatus({ loading: false, success: true, message: res.message || 'Faculty registered successfully!', error: null });
+        setStep('created_id');
+      }
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Faculty registration failed.',
+      });
+    }
   };
 
-  // Faculty Sign In: Step 1 (Member ID + Password submit -> Trigger OTP)
-  const handleFacultyLoginCredentials = (e) => {
+  const handleVerifyFacultyRegOtp = async (e) => {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length < 6) {
+      setStatus({ loading: false, success: false, message: '', error: 'Please enter all 6 digits of the OTP.' });
+      return;
+    }
+
+    setStatus({ loading: true, success: false, message: '', error: null });
+    try {
+      await authService.verifyFacultyOtp({
+        identifier: generatedMemberId || facultyReg.memberEmail || facultyReg.officialEmail,
+        otp: code,
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: 'Faculty registration verified! Your unique Member ID is generated.',
+        error: null,
+      });
+      setStep('created_id');
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid or expired OTP code.',
+      });
+    }
+  };
+
+  // Faculty Sign In: Step 1 (Member ID + Password submit -> Trigger OTP to Member Email)
+  const handleFacultyLoginCredentials = async (e) => {
     e.preventDefault();
     if (!facultyLogin.memberId || !facultyLogin.password) {
       setStatus({ loading: false, success: false, message: '', error: 'Please provide both your Member ID and Password.' });
@@ -358,16 +420,32 @@ export const AuthPortal = ({
 
     setStatus({ loading: true, success: false, message: '', error: null });
 
-    // Simulate OTP sent to official/registered faculty email
-    setTimeout(() => {
-      setStatus({ loading: false, success: false, message: '', error: null });
+    try {
+      const res = await authService.loginFacultyCredentials({
+        memberId: facultyLogin.memberId,
+        password: facultyLogin.password,
+      });
+
+      setStatus({
+        loading: false,
+        success: true,
+        message: 'Credentials verified. A 6-digit OTP code has been sent to your member email.',
+        error: null,
+      });
       setStep('login_otp');
       resetOtp();
-    }, 600);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid Member ID or password.',
+      });
+    }
   };
 
   // Faculty Sign In: Step 2 (Verify OTP)
-  const handleVerifyFacultyOtp = (e) => {
+  const handleVerifyFacultyOtp = async (e) => {
     e.preventDefault();
     const code = otp.join('');
     if (code.length < 6) {
@@ -377,7 +455,12 @@ export const AuthPortal = ({
 
     setStatus({ loading: true, success: false, message: '', error: null });
 
-    setTimeout(() => {
+    try {
+      const res = await authService.verifyFacultyOtp({
+        identifier: facultyLogin.memberId,
+        otp: code,
+      });
+
       setStatus({
         loading: false,
         success: true,
@@ -389,18 +472,17 @@ export const AuthPortal = ({
 
       setTimeout(() => {
         if (onSuccessLogin) {
-          onSuccessLogin({
-            name: facultyReg.fullName || 'Prof. Faculty Member',
-            email: facultyReg.officialEmail || `${facultyLogin.memberId.toLowerCase()}@unimitra.edu.in`,
-            role: 'Faculty Member',
-            department: facultyReg.department || 'Academic Affairs',
-            designation: facultyReg.designation || 'Faculty Member',
-            memberId: facultyLogin.memberId,
-            facultyId: facultyReg.facultyId || 'FAC-INST'
-          });
+          onSuccessLogin(res.user);
         }
-      }, 800);
-    }, 600);
+      }, 500);
+    } catch (err) {
+      setStatus({
+        loading: false,
+        success: false,
+        message: '',
+        error: err.message || 'Invalid or expired OTP code.',
+      });
+    }
   };
 
   // =========================================================================
@@ -493,8 +575,12 @@ export const AuthPortal = ({
 
         {/* Top Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-gradient-to-tr from-[#6D28D9] to-[#E0D4FD] text-white shadow-md border-2 border-[#FF933E]/50 dark:border-[#03C988]/50/40">
-            <BuildingLibraryIcon className="w-8 h-8 text-[#FAF8FF]" />
+          <div className="inline-flex items-center justify-center">
+            <img 
+              src="/unimitra-logo.png" 
+              alt="UniMitra Logo" 
+              className="h-16 sm:h-20 w-auto object-contain drop-shadow-md mx-auto" 
+            />
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-[#000000] dark:text-[#FFFFFF] tracking-tight">
             Uni<span className="text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]/80">Mitra</span> Institutional Portals
@@ -627,7 +713,7 @@ export const AuthPortal = ({
         <div className="neo-surface rounded-3xl p-6 sm:p-10 shadow-sm">
           
           {/* Sub-Header & Mode Toggle (Only for Student and Faculty) */}
-          {activeRole !== 'admin' && step !== 'created_id' && step !== 'otp' && step !== 'login_otp' && (
+          {activeRole !== 'admin' && step !== 'created_id' && step !== 'otp' && step !== 'login_otp' && step !== 'faculty_reg_otp' && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 mb-6 border-b border-[#73A5CA]/40/40 dark:border-[#1C82AD]/40/40">
               <div>
                 <h2 className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">
@@ -1113,6 +1199,77 @@ export const AuthPortal = ({
               )}
 
               {/* 2B. Faculty Registration: Step 2 (Display Generated Unique Member ID) */}
+              {activeMode === 'register' && step === 'faculty_reg_otp' && (
+                <div className="max-w-lg mx-auto text-center space-y-6">
+                  <div className="w-14 h-14 rounded-3xl bg-[#E0D4FD] dark:bg-[#3B2868] text-[#6D28D9] dark:text-[#E0D4FD] mx-auto flex items-center justify-center font-black shadow-md">
+                    <EnvelopeIcon className="w-8 h-8" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xl sm:text-2xl font-black text-[#000000] dark:text-[#FFFFFF]">
+                      Verify Faculty Member Email
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                      Enter the 6-digit OTP code sent to your member email: <strong className="text-[#6D28D9] dark:text-[#E0D4FD]">{facultyReg.memberEmail}</strong> (not university email).
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleVerifyFacultyRegOtp} className="space-y-6">
+                    <div className="flex justify-center gap-2 sm:gap-3" onPaste={handleOtpPaste}>
+                      {otp.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => (otpRefs.current[idx] = el)}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          className="w-11 h-13 sm:w-12 sm:h-14 text-center font-black text-lg sm:text-xl rounded-2xl border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] outline-none focus:border-[#FF933E]/50 dark:border-[#03C988]/50"
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                      <button
+                        type="button"
+                        onClick={() => setStep('form')}
+                        className="text-[#6D28D9] font-black hover:underline cursor-pointer"
+                      >
+                        Edit Details
+                      </button>
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!canResend) return;
+                            authService.resendOtp({ identifier: generatedMemberId || facultyReg.memberEmail, role: 'faculty' })
+                              .then((r) => {
+                                resetOtp();
+                                setStatus({ loading: false, success: true, message: 'A fresh 6-digit OTP code has been sent to your member email.', error: null });
+                              })
+                              .catch((err) => setStatus({ loading: false, success: false, message: '', error: err.message }));
+                          }}
+                          className="text-[#FF933E] dark:text-[#03C988] font-black hover:underline cursor-pointer"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span>{timer}s remaining</span>
+                      )}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={status.loading}
+                      className="w-full py-4 px-6 rounded-2xl font-black text-xs sm:text-sm text-white bg-[#4C1D95] hover:bg-[#3B2868] transition-all cursor-pointer shadow-md disabled:opacity-50"
+                    >
+                      Verify OTP & Complete Registration
+                    </button>
+                  </form>
+                </div>
+              )}
+
               {activeMode === 'register' && step === 'created_id' && (
                 <div className="max-w-lg mx-auto text-center space-y-6">
                   <div className="w-14 h-14 rounded-3xl bg-[#3B2868] text-[#FAF8FF] mx-auto flex items-center justify-center font-black shadow-md">

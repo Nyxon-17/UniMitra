@@ -178,6 +178,49 @@ body {
   }
 }
 
+@keyframes bot-float {
+  0%, 100% {
+    transform: perspective(600px) translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: perspective(600px) translateY(-3.5px) rotate(1.2deg);
+  }
+}
+
+@keyframes bot-float-turn {
+  0% {
+    transform: perspective(600px) translateY(0px) rotateY(0deg) rotate(0deg);
+  }
+  20% {
+    transform: perspective(600px) translateY(-4px) rotateY(0deg) rotate(1deg);
+  }
+  40% {
+    transform: perspective(600px) translateY(0px) rotateY(0deg) rotate(0deg);
+  }
+  52% {
+    transform: perspective(600px) translateY(-6px) rotateY(180deg) rotate(-1deg);
+  }
+  64% {
+    transform: perspective(600px) translateY(-3px) rotateY(360deg) rotate(0deg);
+  }
+  82% {
+    transform: perspective(600px) translateY(-4px) rotateY(360deg) rotate(1deg);
+  }
+  100% {
+    transform: perspective(600px) translateY(0px) rotateY(360deg) rotate(0deg);
+  }
+}
+
+.animate-bot-float {
+  animation: bot-float-turn 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-style: preserve-3d;
+}
+
+.animate-bot-turn {
+  animation: bot-float-turn 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-style: preserve-3d;
+}
+
 @keyframes scan-beam {
   0% {
     transform: translate3d(0, -120%, 0);

@@ -177,6 +177,7 @@ export const authService = {
   async registerFaculty({
     fullName,
     officialEmail,
+    memberEmail,
     facultyId,
     department,
     designation,
@@ -188,6 +189,7 @@ export const authService = {
       body: JSON.stringify({
         fullName,
         officialEmail,
+    memberEmail,
         facultyId,
         department,
         designation,

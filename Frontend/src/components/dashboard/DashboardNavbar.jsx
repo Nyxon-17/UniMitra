@@ -31,26 +31,7 @@ export const DashboardNavbar = ({
   useEffect(() => {
     const handleSync = () => setNotices(universityService.getNotices());
     window.addEventListener('unimitra_university_changed', handleSync);
-    const handleSiteNotif = (e) => {
-      if (e.detail) {
-        setNotices(prev => [
-          {
-            id: e.detail.id || `NOTIF-${Date.now()}`,
-            refNo: e.detail.author || 'NOTICE',
-            title: e.detail.title || 'New University Record',
-            date: e.detail.timestamp || 'Just now',
-            summary: e.detail.message || 'Updated by university authority.',
-            pdfUrl: ''
-          },
-          ...prev
-        ]);
-      }
-    };
-    window.addEventListener('unimitra_site_notification', handleSiteNotif);
-    return () => {
-      window.removeEventListener('unimitra_university_changed', handleSync);
-      window.removeEventListener('unimitra_site_notification', handleSiteNotif);
-    };
+    return () => window.removeEventListener('unimitra_university_changed', handleSync);
   }, []);
 
   useEffect(() => {
@@ -78,6 +59,12 @@ export const DashboardNavbar = ({
           >
             <MenuIcon className="w-5 h-5" />
           </button>
+
+          <img 
+            src="/unimitra-emblem.png" 
+            alt="UniMitra Emblem" 
+            className="w-7 h-7 object-contain lg:hidden" 
+          />
 
           {/* Institutional Search Bar - Hairline border, subtle ambient focus */}
           <div className="relative w-full hidden sm:block">

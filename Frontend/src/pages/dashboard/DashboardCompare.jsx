@@ -11,13 +11,13 @@ import {
 
 export const DashboardCompare = ({ onNavigateTab, currentLang = 'en' }) => {
   const [univA, setUnivA] = useState('Gauhati University (GU)');
-  const [univB, setUnivB] = useState('Dibrugarh University (DU)');
+  const [univB, setUnivB] = useState('Nivoraya University (DU)');
   const [selectedDiscipline, setSelectedDiscipline] = useState('BCA-DBMS');
   const [selectedSemester, setSelectedSemester] = useState(3);
 
   const universities = [
     'Gauhati University (GU)',
-    'Dibrugarh University (DU)',
+    'Nivoraya University (DU)',
     'Tezpur University (TU)',
     'Cotton University (CU)',
     'Assam University (Silchar)',
