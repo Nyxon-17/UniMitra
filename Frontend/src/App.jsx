@@ -398,6 +398,23 @@ export function App() {
     localStorage.removeItem('unimitra_auth_logged_in');
     localStorage.removeItem('unimitra_student_info');
     localStorage.removeItem('unimitra_auth_token');
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (
+          k &&
+          (k.startsWith('unimitra_chat_sessions_guest') ||
+            k.startsWith('unimitra_active_session_guest') ||
+            k.startsWith('unimitra_messages_guest') ||
+            k === 'unimitra_active_session_id' ||
+            k === 'unimitra_chat_sessions_v2')
+        ) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
     navigate('/', { replace: true });
   };
 

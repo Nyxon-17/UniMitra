@@ -12,7 +12,8 @@ export const query = async (req, res, next) => {
 
 export const getSessions = async (req, res, next) => {
   try {
-    const sessions = await chatService.getSessions(req.user.id);
+    const domain = req.query.domain || null;
+    const sessions = await chatService.getSessions(req.user.id, domain);
     return ApiResponse.success(res, sessions, 'Chat sessions retrieved.');
   } catch (err) {
     next(err);
