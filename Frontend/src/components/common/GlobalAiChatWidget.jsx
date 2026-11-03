@@ -50,7 +50,7 @@ export const GripDotsIcon = ({ className = "w-4 h-4", ...props }) => (
   </svg>
 );
 
-export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentInfo }) => {
+export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentInfo, isLoggedIn = false, onOpenAuth }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -233,8 +233,17 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       // Placed at new position
       setTimeout(() => setIsDragging(false), 50);
     } else {
-      // Normal click/tap -> open assistant
+      // Normal click/tap -> open assistant (Requires authentication)
       setIsDragging(false);
+      if (!isLoggedIn) {
+        if (onOpenAuth) {
+          onOpenAuth('login', studentInfo?.role || 'student');
+        } else {
+          navigate('/auth?mode=login');
+        }
+        return;
+      }
+      cleanupVoiceSession();
       setIsOpen(true);
       setIsMinimized(false);
     }
@@ -269,6 +278,78 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     }
     setLoading(false);
   };
+
+  // Automatic Voice Cleanup: Stops audio, mic tracks, and wipes temporary in-memory transcripts
+  const cleanupVoiceSession = () => {
+    if (audioPlayerRef.current) {
+      try {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      } catch {}
+      audioPlayerRef.current = null;
+    }
+    setIsSpeaking(false);
+    setIsPaused(false);
+
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (audioStreamRef.current) {
+      try {
+        audioStreamRef.current.getTracks().forEach(track => track.stop());
+      } catch {}
+      audioStreamRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+    if (maxTimeoutRef.current) {
+      clearTimeout(maxTimeoutRef.current);
+      maxTimeoutRef.current = null;
+    }
+    audioChunksRef.current = [];
+    setIsListening(false);
+    setIsTranscribing(false);
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+
+    setInputQuery('');
+    setCurrentResult(null);
+    setSpeechError('');
+  };
+
+  const handleClose = () => {
+    cleanupVoiceSession();
+    setIsOpen(false);
+    setIsMinimized(false);
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn && isOpen) {
+      cleanupVoiceSession();
+      setIsOpen(false);
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    const handleLogout = () => {
+      cleanupVoiceSession();
+      setIsOpen(false);
+    };
+    window.addEventListener('unimitra_auth_logout', handleLogout);
+    return () => {
+      window.removeEventListener('unimitra_auth_logout', handleLogout);
+      cleanupVoiceSession();
+    };
+  }, []);
 
   useEffect(() => {
     inputQueryRef.current = inputQuery;
@@ -443,7 +524,9 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         query: q,
         language: currentLang,
         university: univProfile,
-        signal: controller.signal
+        signal: controller.signal,
+        saveToHistory: false,
+        isVoice: true
       });
 
       if (!res || res.aborted || controller.signal.aborted) {
@@ -965,12 +1048,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
             {/* Close */}
             <button
               type="button"
-              onClick={() => {
-                stopSpeaking();
-                if (isListening) recognitionRef.current?.stop();
-                setIsOpen(false);
-                setIsMinimized(false);
-              }}
+              onClick={handleClose}
               className="p-1 rounded-full text-[#000000]/50 dark:text-[#FFFFFF]/50 hover:text-black dark:hover:text-white cursor-pointer"
               title="Close"
             >

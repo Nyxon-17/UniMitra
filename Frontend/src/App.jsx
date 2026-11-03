@@ -357,6 +357,7 @@ export function App() {
 
     const updatedInfo = {
       ...studentInfo,
+      id: user?.id || user?._id || studentInfo?.id || 'usr-default',
       name: user?.name || user?.fullName || studentInfo.name,
       email: user?.email || studentInfo.email,
       role: formattedRole,
@@ -768,11 +769,17 @@ export function App() {
         onSuccessLogin={handleLoginSuccess}
       />
 
-      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals */}
+      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals (Requires Login) */}
       <GlobalAiChatWidget
         currentLang={lang}
         onToggleLang={toggleLanguage}
         studentInfo={studentInfo}
+        isLoggedIn={isLoggedIn}
+        onOpenAuth={(mode, role) => {
+          setAuthModalRole(role || 'student');
+          setAuthModalMode(mode || 'login');
+          setAuthModalOpen(true);
+        }}
       />
     </>
   );

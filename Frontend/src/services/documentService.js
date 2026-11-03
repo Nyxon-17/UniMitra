@@ -102,6 +102,33 @@ export const documentService = {
     return documentService.getDocuments().filter(doc => doc.approvalStatus === 'approved' && doc.status === 'Indexed');
   },
 
+  // Fetch approved documents filtered by category from backend with local fallback
+  getDocumentsByCategory: async (categoryKey = 'SCHOL-AID') => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('unimitra_auth_token') : null;
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/documents?category=${encodeURIComponent(categoryKey)}&limit=100`, { headers });
+      if (res.ok) {
+        const json = await res.json();
+        const items = json.data?.items || json.data || [];
+        if (Array.isArray(items)) {
+          return items;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch category documents from backend:', e);
+    }
+    // Fallback: search local cache
+    const local = documentService.getDocuments();
+    const q = (categoryKey || '').toLowerCase();
+    return local.filter(d => {
+      const cat = (d.category || '').toLowerCase();
+      const code = (d.categoryCode || '').toLowerCase();
+      const title = (d.title || '').toLowerCase();
+      return cat.includes(q) || code.includes(q) || (q.includes('schol') && (cat.includes('schol') || title.includes('schol')));
+    });
+  },
+
   getPendingDocuments: () => {
     return documentService.getDocuments().filter(doc => doc.approvalStatus === 'pending');
   },

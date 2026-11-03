@@ -92,6 +92,10 @@ const DashboardAiAssistantInner = ({
     return 'student';
   }, [portalDomain, studentInfo?.role]);
 
+  const userId = useMemo(() => {
+    return studentInfo?.id || chatService.getCurrentUserId();
+  }, [studentInfo?.id]);
+
   const portalMeta = useMemo(() => {
     if (domain === 'admin') {
       return {
@@ -169,11 +173,11 @@ const DashboardAiAssistantInner = ({
   };
 
   // Chat Sessions & Active Thread State (Strictly isolated by domain: student, faculty, admin)
-  const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain));
-  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain) || chatService.generateSessionId());
+  const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain, userId));
+  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain, userId) || chatService.generateSessionId());
   const [messages, setMessages] = useState(() => {
-    const curId = chatService.getActiveSessionId(domain);
-    const saved = curId ? chatService.getSessionMessages(curId, domain) : null;
+    const curId = chatService.getActiveSessionId(domain, userId);
+    const saved = curId ? chatService.getSessionMessages(curId, domain, userId) : null;
     return saved && saved.length > 0 ? saved : [createInitialGreeting()];
   });
 
@@ -232,37 +236,37 @@ const DashboardAiAssistantInner = ({
   useEffect(() => {
     let isCancelled = false;
     const syncSessions = async () => {
-      const allSessions = await chatService.getSessions(domain);
+      const allSessions = await chatService.getSessions(domain, userId);
       if (!isCancelled && allSessions && allSessions.length > 0) {
         setSessions(allSessions);
       }
 
-      let curId = chatService.getActiveSessionId(domain);
+      let curId = chatService.getActiveSessionId(domain, userId);
       if (!curId && allSessions && allSessions.length > 0) {
         curId = allSessions[0].id;
-        chatService.setActiveSessionId(curId, domain);
+        chatService.setActiveSessionId(curId, domain, userId);
       }
 
       if (curId) {
         setActiveSessionId(curId);
-        const localMsgs = chatService.getSessionMessages(curId, domain);
+        const localMsgs = chatService.getSessionMessages(curId, domain, userId);
         if (!isCancelled && localMsgs && localMsgs.length > 0) {
           setMessages(localMsgs);
         }
 
-        const saved = await chatService.fetchSessionMessages(curId, domain);
+        const saved = await chatService.fetchSessionMessages(curId, domain, userId);
         if (!isCancelled && saved && saved.length > 0) {
           setMessages(saved);
         } else if (!localMsgs || localMsgs.length === 0) {
           if (allSessions && allSessions.length > 0) {
             const sessionWithMsgs = allSessions.find(s => {
-              const m = chatService.getSessionMessages(s.id, domain);
+              const m = chatService.getSessionMessages(s.id, domain, userId);
               return m && m.length > 0;
             });
             if (sessionWithMsgs) {
               setActiveSessionId(sessionWithMsgs.id);
-              chatService.setActiveSessionId(sessionWithMsgs.id, domain);
-              const m = chatService.getSessionMessages(sessionWithMsgs.id, domain);
+              chatService.setActiveSessionId(sessionWithMsgs.id, domain, userId);
+              const m = chatService.getSessionMessages(sessionWithMsgs.id, domain, userId);
               if (m && m.length > 0) setMessages(m);
               return;
             }
@@ -274,7 +278,7 @@ const DashboardAiAssistantInner = ({
       } else {
         const freshId = chatService.generateSessionId();
         setActiveSessionId(freshId);
-        chatService.setActiveSessionId(freshId, domain);
+        chatService.setActiveSessionId(freshId, domain, userId);
         if (!isCancelled) {
           setMessages([createInitialGreeting()]);
         }
@@ -283,7 +287,7 @@ const DashboardAiAssistantInner = ({
 
     syncSessions();
     return () => { isCancelled = true; };
-  }, [domain, currentLang]);
+  }, [domain, currentLang, userId]);
 
   // Handle URL / navigation state prefill query
   useEffect(() => {
@@ -786,10 +790,10 @@ const DashboardAiAssistantInner = ({
     stopSpeaking();
     const newId = chatService.generateSessionId();
     setActiveSessionId(newId);
-    chatService.setActiveSessionId(newId, domain);
+    chatService.setActiveSessionId(newId, domain, userId);
     const greeting = createInitialGreeting();
     setMessages([greeting]);
-    chatService.saveSessionMessages(newId, [greeting], domain);
+    chatService.saveSessionMessages(newId, [greeting], domain, userId);
     setInputQuery('');
     setHistoryDrawerOpen(false);
     setActionAlert(currentLang === 'as' ? `নতুন ${portalMeta.domainLabel} আলোচনা আৰম্ভ কৰা হ’ল` : `New ${portalMeta.domainLabel} chat started`);
@@ -802,14 +806,14 @@ const DashboardAiAssistantInner = ({
     if (!session || !session.id) return;
     stopSpeaking();
     setActiveSessionId(session.id);
-    chatService.setActiveSessionId(session.id, domain);
+    chatService.setActiveSessionId(session.id, domain, userId);
 
-    const immediate = chatService.getSessionMessages(session.id, domain);
+    const immediate = chatService.getSessionMessages(session.id, domain, userId);
     if (immediate && immediate.length > 0) {
       setMessages(immediate);
     }
 
-    const saved = await chatService.fetchSessionMessages(session.id, domain);
+    const saved = await chatService.fetchSessionMessages(session.id, domain, userId);
     if (saved && saved.length > 0) {
       setMessages(saved);
     } else if (!immediate || immediate.length === 0) {
@@ -821,7 +825,7 @@ const DashboardAiAssistantInner = ({
   // Delete a session from this portal domain
   const handleDeleteSession = (e, sessionId) => {
     e.stopPropagation();
-    const updated = chatService.deleteSession(sessionId, domain);
+    const updated = chatService.deleteSession(sessionId, domain, userId);
     setSessions(updated);
     if (activeSessionId === sessionId) {
       handleNewChat();
@@ -872,12 +876,12 @@ const DashboardAiAssistantInner = ({
         domain: domain,
         createdAt: new Date().toISOString()
       };
-      const updatedSessions = chatService.saveLocalSession(newSession, domain);
+      const updatedSessions = chatService.saveLocalSession(newSession, domain, userId);
       setSessions(updatedSessions);
     }
 
     // Immediately persist user's query into local cache
-    chatService.saveSessionMessages(activeSessionId, newMessages, domain);
+    chatService.saveSessionMessages(activeSessionId, newMessages, domain, userId);
 
     try {
       const res = await chatService.sendQuery({
@@ -885,7 +889,9 @@ const DashboardAiAssistantInner = ({
         sessionId: activeSessionId,
         language: currentLang,
         university: univProfile,
-        signal: controller.signal
+        signal: controller.signal,
+        saveToHistory: true,
+        isVoice: false
       });
 
       if (!res || res.aborted || controller.signal.aborted) {
@@ -895,16 +901,16 @@ const DashboardAiAssistantInner = ({
       let targetSessionId = activeSessionId;
       if (res.sessionId && res.sessionId !== activeSessionId) {
         targetSessionId = res.sessionId;
-        chatService.deleteSession(activeSessionId, domain);
+        chatService.deleteSession(activeSessionId, domain, userId);
         setActiveSessionId(targetSessionId);
-        chatService.setActiveSessionId(targetSessionId, domain);
+        chatService.setActiveSessionId(targetSessionId, domain, userId);
         const updated = chatService.saveLocalSession({
           id: targetSessionId,
           title: currentSessionTitle || queryText.slice(0, 36),
           language: currentLang,
           domain: domain,
           createdAt: new Date().toISOString()
-        }, domain);
+        }, domain, userId);
         setSessions(updated);
       }
 
@@ -924,10 +930,10 @@ const DashboardAiAssistantInner = ({
       setMessages(finalMessages);
       
       // Auto-save history automatically for this portal domain
-      chatService.saveSessionMessages(targetSessionId, finalMessages, domain);
+      chatService.saveSessionMessages(targetSessionId, finalMessages, domain, userId);
 
       // Refresh sessions list in background
-      chatService.getSessions(domain).then(updated => {
+      chatService.getSessions(domain, userId).then(updated => {
         if (updated && updated.length > 0) setSessions(updated);
       });
 
