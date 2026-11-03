@@ -68,7 +68,12 @@ export const AdminConsole = ({
     }
   }, [tabParam]);
 
-  const handleTabChange = (tabId) => {
+  const [adminAssistantPrefill, setAdminAssistantPrefill] = useState('');
+
+  const handleTabChange = (tabId, options) => {
+    if (options?.prefillQuery) {
+      setAdminAssistantPrefill(options.prefillQuery);
+    }
     setActiveTab(tabId);
     setSearchParams({ tab: tabId });
     setSidebarOpen(false);
@@ -575,7 +580,19 @@ export const AdminConsole = ({
         }
 
         if (feedbackRes.status === 'fulfilled' && Array.isArray(feedbackRes.value?.data)) {
-          setFeedbackList(feedbackRes.value.data);
+          const backendList = feedbackRes.value.data;
+          const localList = loadStoredFeedback();
+          const combined = [...backendList];
+          localList.forEach(loc => {
+            if (!combined.some(b => b.id === loc.id)) {
+              combined.push(loc);
+            }
+          });
+          const finalList = combined.length > 0 ? combined : loadStoredFeedback();
+          setFeedbackList(finalList);
+          try {
+            localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(finalList));
+          } catch {}
         }
 
         if (usersRes.status === 'fulfilled' && Array.isArray(usersRes.value?.data?.items)) {
@@ -1274,6 +1291,7 @@ export const AdminConsole = ({
                 currentLang={currentLang}
                 studentInfo={studentInfo}
                 portalDomain="admin"
+                prefillQuery={adminAssistantPrefill}
               />
             </div>
           )}
@@ -2900,12 +2918,14 @@ export const AdminConsole = ({
           {/* TAB 8: ADMIN CHAT HISTORY                                           */}
           {/* =================================================================== */}
           {activeTab === 'admin-history' && (
-            <DashboardQueryHistory
-              onNavigateTab={handleTabChange}
-              currentLang={currentLang}
-              portalDomain="admin"
-              studentInfo={{ name: adminCredsForm.name || 'Super Administrator', role: 'Admin' }}
-            />
+            <div className="space-y-6 animate-fade-in">
+              <DashboardQueryHistory
+                onNavigateTab={handleTabChange}
+                currentLang={currentLang}
+                portalDomain="admin"
+                studentInfo={{ name: adminCredsForm.name || 'Super Administrator', role: 'Admin' }}
+              />
+            </div>
           )}
 
           {/* =================================================================== */}

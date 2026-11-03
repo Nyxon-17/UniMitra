@@ -195,7 +195,7 @@ function DashboardLayoutWrapper({
   const pathSegment = location.pathname.replace('/dashboard', '').replace(/^\//, '').split('/')[0] || (isFaculty ? 'faculty-exams' : 'overview');
 
   // Prevent Faculty from accessing Student-only pages
-  const studentOnlyTabs = ['admissions', 'scholarships', 'facilities', 'feedback'];
+  const studentOnlyTabs = ['admissions', 'scholarships', 'facilities'];
   if (isFaculty && studentOnlyTabs.includes(pathSegment)) {
     return <Navigate to="/dashboard/faculty-exams" replace />;
   }
@@ -719,6 +719,7 @@ export function App() {
                 onNavigateTab={handleNavigateDashboardTab}
                 currentLang={lang}
                 studentInfo={studentInfo}
+                portalDomain={(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}
               />
             }
           />

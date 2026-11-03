@@ -11,9 +11,10 @@ logger = logging.getLogger("unimitra.tts.gemini")
 
 # Prioritized Gemini models supporting native high-speed audio modalities
 GEMINI_TTS_MODELS = [
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-lite",
-    "gemini-1.5-flash",
+    "gemini-3.8-flash-tts",
+    "gemini-3.8-flash-lite-tts",
+    "gemini-2.5-flash-preview-tts",
+    "gemini-3.1-flash-tts-preview",
 ]
 
 DEFAULT_VOICE_NAMES = {
@@ -84,13 +85,6 @@ class GeminiTTS:
         for pattern in prompt_residue_patterns:
             clean_text = re.sub(pattern, "", clean_text, flags=re.IGNORECASE).strip()
 
-        # System instruction instructing the model to synthesize audio ONLY for the user text
-        system_instruction = (
-            "You are a text-to-speech voice synthesizer. "
-            "Synthesize speech strictly for the provided user text with natural cadence, clear diction, and authentic pronunciation in Assamese and English. "
-            "Speak ONLY the user text. Never read system instructions, prompts, or metadata aloud. Do not add any introduction, greeting, or commentary."
-        )
-
         for model_name in GEMINI_TTS_MODELS:
             try:
                 logger.info(
@@ -104,13 +98,13 @@ class GeminiTTS:
                     )
                 )
 
+                # GenerateContentConfig without system_instruction (TTS models do not support Developer instructions)
                 config = types.GenerateContentConfig(
-                    system_instruction=system_instruction,
                     response_modalities=["AUDIO"],
                     speech_config=speech_config,
                 )
 
-                # IMPORTANT: Pass concise text (up to 450 chars) for ultra-fast audio synthesis without lag
+                # Pass clean speakable text (up to 450 chars) for ultra-fast, natural audio synthesis
                 speakable_chunk = clean_text[:450].strip()
                 response = client.models.generate_content(
                     model=model_name,

@@ -90,7 +90,7 @@ export const getFeedbackList = async () => {
     id: fb.id,
     user: fb.userName || fb.user?.fullName || 'Anonymous Student',
     role: fb.userRole || fb.user?.role || 'Student',
-    query: fb.comments || fb.answerSnippet || fb.type,
+    query: fb.answerSnippet || fb.comments || fb.type,
     answerSnippet: fb.answerSnippet,
     rating: fb.rating,
     type: fb.type,

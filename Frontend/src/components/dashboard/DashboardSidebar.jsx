@@ -65,6 +65,7 @@ export const DashboardSidebar = ({
     { id: 'regulations', label: 'Academic Regulations & Workload', asLabel: 'শৈক্ষিক নিয়মাৱলী আৰু কৰ্মভাৰ', icon: BuildingLibraryIcon },
     { id: 'faculty-documents', label: 'Authorized Documents', asLabel: 'অনুমোদিত প্ৰতিষ্ঠানিক নথিপত্ৰ', icon: DocumentTextIcon },
     { id: 'history', label: 'Previous Queries', asLabel: 'পূৰ্বৰ বাৰ্তালাপ', icon: ClockIcon },
+    { id: 'feedback', label: 'Submit Feedback', asLabel: 'প্ৰতিক্ৰিয়া প্ৰেৰণ', icon: CheckCircleIcon },
     { id: 'profile', label: 'Faculty Profile', asLabel: 'অধ্যাপক প্ৰফাইল', icon: UserIcon },
   ];
 

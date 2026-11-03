@@ -983,7 +983,20 @@ const DashboardAiAssistantInner = ({
   };
 
   const handleOpenFeedback = (msg) => {
-    setActiveFeedbackMsg(msg);
+    // Find the associated user query in previous messages
+    let foundQuery = msg?.query || msg?.prompt || '';
+    if (!foundQuery && Array.isArray(messages)) {
+      const idx = messages.findIndex(m => m.id === msg.id);
+      if (idx > 0) {
+        for (let i = idx - 1; i >= 0; i--) {
+          if (messages[i].sender === 'user') {
+            foundQuery = messages[i].text;
+            break;
+          }
+        }
+      }
+    }
+    setActiveFeedbackMsg({ ...msg, userQuery: foundQuery });
     setFeedbackRating('helpful');
     setFeedbackComment('');
     setFeedbackModalOpen(true);
@@ -992,29 +1005,64 @@ const DashboardAiAssistantInner = ({
   const handleSubmitFeedback = (e) => {
     e.preventDefault();
     try {
+      const userPrompt = activeFeedbackMsg?.userQuery || activeFeedbackMsg?.query || activeFeedbackMsg?.prompt || 'Institutional AI Assistant Query';
+      const aiSnippet = typeof activeFeedbackMsg?.text === 'string' ? activeFeedbackMsg.text.slice(0, 160) : '';
+
       const stored = localStorage.getItem('unimitra_feedback_submissions');
-      let list = stored ? JSON.parse(stored) : [];
+      let list = [];
+      try {
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) list = parsed;
+        }
+      } catch {}
+
       const newFeedback = {
         id: `FB-${Date.now()}`,
-        user: studentInfo?.name || 'Academic Scholar',
+        user: studentInfo?.name || (domain === 'admin' ? 'Super Administrator' : domain === 'faculty' ? 'Faculty Member' : 'Academic Scholar'),
         role: studentInfo?.role || (domain === 'faculty' ? 'Faculty' : domain === 'admin' ? 'Admin' : 'Student'),
         university: univProfile?.name || 'Nivoraya University',
         type: feedbackRating === 'helpful' ? 'Positive AI Accuracy' : 'Hallucination / Accuracy Issue',
         rating: feedbackRating === 'helpful' ? 5 : 2,
-        query: activeFeedbackMsg?.query || activeFeedbackMsg?.prompt || (typeof activeFeedbackMsg?.text === 'string' ? activeFeedbackMsg.text.slice(0, 100) : 'Institutional Chat Query'),
-        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Marked as helpful and accurate.' : 'Reported as inaccurate or requiring verification.'),
+        query: userPrompt,
+        answerSnippet: aiSnippet,
+        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Marked as helpful and verified citations.' : 'Reported as inaccurate or requiring verification.'),
         submittedAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         status: 'Pending Review'
       };
-      const updatedList = [newFeedback, ...list];
+
+      const updatedList = [newFeedback, ...list.filter(f => f.id !== newFeedback.id)];
       localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(updatedList));
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updatedList }));
       }
+
+      // Asynchronously forward to backend if available
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('unimitra_auth_token') : null;
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        fetch('/api/chat/feedback', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            queryText: newFeedback.query,
+            answerSnippet: newFeedback.answerSnippet,
+            rating: newFeedback.rating,
+            type: newFeedback.type,
+            comments: newFeedback.comments,
+            university: newFeedback.university
+          })
+        }).catch(() => {});
+      } catch {}
+
       setFeedbackModalOpen(false);
       setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া প্ৰশাসকলৈ প্ৰেৰণ কৰা হ’ল!' : 'Feedback submitted to administrator review console!');
       setTimeout(() => setActionAlert(''), 2500);
-    } catch {}
+    } catch (err) {
+      console.warn('Feedback submit error:', err);
+    }
   };
 
   // Group sessions by date

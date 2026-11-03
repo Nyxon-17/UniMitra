@@ -20,63 +20,113 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
   const initialSubmissions = [
     {
       id: 'FB-901',
+      user: 'Academic Scholar',
+      role: 'Student',
       type: 'Outdated Regulation',
       university: 'Nivoraya University (DU)',
       rating: 4,
+      query: 'What is the attendance condonation limit for 2024?',
       comments: 'The syllabus reference for 3rd semester CBCS was accurate, but please update the 2024 revised attendance condonation circular.',
       submittedAt: 'Yesterday',
       status: 'Reviewed & Resolved'
     },
     {
       id: 'FB-902',
+      user: 'Academic Scholar',
+      role: 'Student',
       type: 'Assamese Translation',
       university: 'Gauhati University (GU)',
       rating: 5,
+      query: 'ডিএইচই জলপানিৰ বাবে যোগ্যতাৰ চৰ্ত কি?',
       comments: 'Assamese query understanding was fast and exact for the DHE scholarship eligibility rule. Very helpful.',
       submittedAt: '3 days ago',
-      status: 'Acknowledged'
+      status: 'Reviewed & Resolved'
     }
   ];
 
-  const [submissions, setSubmissions] = useState(() => {
+  const loadSubmissions = () => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('unimitra_feedback_submissions');
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
         } catch {
           // fallback
         }
       }
     }
     return initialSubmissions;
-  });
+  };
+
+  const [submissions, setSubmissions] = useState(() => loadSubmissions());
 
   useEffect(() => {
-    localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(submissions));
-  }, [submissions]);
+    // If not set yet, store initial list
+    if (typeof window !== 'undefined' && !localStorage.getItem('unimitra_feedback_submissions')) {
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(submissions));
+    }
+
+    const handleFeedbackChanged = (e) => {
+      if (e.detail && Array.isArray(e.detail)) {
+        setSubmissions(e.detail);
+      } else {
+        setSubmissions(loadSubmissions());
+      }
+    };
+
+    window.addEventListener('unimitra_feedback_changed', handleFeedbackChanged);
+    return () => window.removeEventListener('unimitra_feedback_changed', handleFeedbackChanged);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!comments.trim()) return;
 
     const newFeedback = {
-      id: `FB-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: `FB-${Date.now()}`,
       user: studentInfo?.name || 'Academic Scholar',
       role: studentInfo?.role || 'Student',
       type: feedbackType,
-      university,
+      university: university || univProfile.name || 'Nivoraya University',
       rating,
-      comments,
-      submittedAt: 'Just now',
-      status: 'Pending Admin Review'
+      query: 'Student Portal Quality & Academic Feedback',
+      comments: comments.trim(),
+      submittedAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      status: 'Pending Review'
     };
 
-    const updated = [newFeedback, ...submissions];
+    const updated = [newFeedback, ...submissions.filter(s => s.id !== newFeedback.id)];
     setSubmissions(updated);
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updated }));
-    }
+
+    try {
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(updated));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updated }));
+      }
+    } catch {}
+
+    // Send to backend API asynchronously
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('unimitra_auth_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      fetch('/api/chat/feedback', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          queryText: newFeedback.query,
+          answerSnippet: newFeedback.comments,
+          rating: newFeedback.rating,
+          type: newFeedback.type,
+          comments: newFeedback.comments,
+          university: newFeedback.university
+        })
+      }).catch(() => {});
+    } catch {}
+
     setComments('');
     setSubmittedAlert(true);
     setTimeout(() => setSubmittedAlert(false), 4000);
@@ -190,33 +240,76 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
 
       {/* Previous Submissions Log */}
       <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-          My Submitted Feedback History
-        </h2>
-
-        <div className="space-y-3">
-          {submissions.map((item) => (
-            <div 
-              key={item.id} 
-              className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 rounded-2xl space-y-2"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
-                    {item.type}
-                  </span>
-                  <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                    {item.university}
-                  </span>
-                </div>
-                <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988] dark:text-[#FFFFFF]">
-                  Status: {item.status}
-                </span>
-              </div>
-              <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{item.comments}</p>
-            </div>
-          ))}
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+            My Submitted Feedback History
+          </h2>
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988] text-[#000000] dark:text-[#FFFFFF]">
+            {submissions.length} Submissions
+          </span>
         </div>
+
+        {submissions.length === 0 ? (
+          <div className="p-8 text-center bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] rounded-2xl border border-dashed border-[#73A5CA]/40">
+            <SparklesIcon className="w-8 h-8 mx-auto text-[#FF933E] dark:text-[#03C988] mb-2" />
+            <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">No Feedback Records Found</h4>
+            <p className="text-xs text-[#000000]/60 dark:text-[#FFFFFF]/60 mt-1">
+              Any feedback you submit via this form or the AI Assistant will appear here with live resolution status.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {submissions.map((item) => (
+              <div 
+                key={item.id} 
+                className="p-4 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 rounded-2xl space-y-2.5 transition-all hover:border-[#FF933E]/50 dark:hover:border-[#03C988]/50"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white/70 dark:bg-white/10 text-[#000000]/80 dark:text-[#FFFFFF]/80 border border-[#73A5CA]/30">
+                      {item.type || 'General'}
+                    </span>
+                    <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                      {item.university || univProfile.name}
+                    </span>
+                    {item.rating && (
+                      <span className="text-xs font-mono font-black text-[#FF933E] dark:text-[#03C988]">
+                        ★ {item.rating}/5
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {item.submittedAt && (
+                      <span className="text-[11px] text-[#000000]/60 dark:text-[#FFFFFF]/60">
+                        {item.submittedAt}
+                      </span>
+                    )}
+                    <span className={`text-[11px] font-black px-2 py-0.5 rounded ${
+                      item.status === 'Reviewed & Resolved'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300'
+                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-300'
+                    }`}>
+                      {item.status || 'Pending Review'}
+                    </span>
+                  </div>
+                </div>
+
+                {item.query && item.query !== 'Student Portal Quality & Academic Feedback' && (
+                  <div className="p-2.5 rounded-xl bg-white/60 dark:bg-white/5 border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-xs">
+                    <span className="font-black text-[#FF933E] dark:text-[#03C988] uppercase text-[10px] block mb-0.5">
+                      Referenced AI Prompt / Query:
+                    </span>
+                    <p className="font-semibold text-[#000000] dark:text-[#FFFFFF] italic">
+                      "{item.query}"
+                    </p>
+                  </div>
+                )}
+
+                <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed">{item.comments}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

@@ -854,12 +854,12 @@ INSTRUCTIONS FOR THIS QUERY:
 
 
 
-        # 3. Model candidate list: Prioritize Google's fastest Gemini 2.0 Flash models for high-speed replies
+        # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
         candidate_models = [
-            settings.GEMINI_MODEL or "gemini-2.0-flash",
-            "gemini-2.0-flash",
-            "gemini-2.0-flash-lite",
-            "gemini-1.5-flash",
+            settings.GEMINI_MODEL or "gemini-3.5-flash",
+            "gemini-3.5-flash",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
             "gemini-flash-latest",
         ]
 

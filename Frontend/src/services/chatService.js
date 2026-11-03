@@ -58,23 +58,20 @@ export function getCurrentUserId() {
 
 export function getDomainSessionsKey(domain = 'student', userId = null) {
   const d = (domain || 'student').toLowerCase();
-  const uid = userId || getCurrentUserId();
   const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
-  return `unimitra_chat_sessions_${uid}_${prefix}`;
+  return `unimitra_chat_sessions_${prefix}`;
 }
 
 export function getDomainActiveSessionKey(domain = 'student', userId = null) {
   const d = (domain || 'student').toLowerCase();
-  const uid = userId || getCurrentUserId();
   const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
-  return `unimitra_active_session_${uid}_${prefix}`;
+  return `unimitra_active_session_${prefix}`;
 }
 
 export function getDomainMessageKey(sessionId, domain = 'student', userId = null) {
   const d = (domain || 'student').toLowerCase();
-  const uid = userId || getCurrentUserId();
   const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
-  return `unimitra_messages_${uid}_${prefix}_${sessionId}`;
+  return `unimitra_messages_${prefix}_${sessionId}`;
 }
 
 export function sanitizeAiResponse(text = '') {
@@ -561,12 +558,14 @@ export const chatService = {
    * Retrieve all chat sessions isolated by portal domain (student, faculty, admin) and account (userId)
    */
   async getSessions(domain = 'student', userId = null) {
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     const isGuest = uid === 'guest';
 
-    if (!isGuest) {
+    if (!isGuest && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uid)) {
       try {
-        const res = await fetch(`${CHAT_API}/sessions?domain=${domain}`, {
+        const res = await fetch(`${CHAT_API}/sessions?domain=${prefix}`, {
           headers: getAuthHeaders(),
           credentials: 'include',
         });
@@ -581,18 +580,18 @@ export const chatService = {
                 createdAt: s.createdAt,
                 updatedAt: s.updatedAt,
                 language: s.language,
-                domain: domain,
+                domain: prefix,
                 messageCount: s._count?.messages || 0,
               };
             });
-            const local = this.getLocalSessions(domain, uid);
+            const local = this.getLocalSessions(prefix, uid);
             const combined = [...backendSessions];
             local.forEach(loc => {
               if (!combined.some(c => c.id === loc.id)) {
                 combined.push(loc);
               }
             });
-            const key = getDomainSessionsKey(domain, uid);
+            const key = getDomainSessionsKey(prefix, uid);
             localStorage.setItem(key, JSON.stringify(combined.slice(0, 50)));
             return combined;
           }
@@ -601,26 +600,33 @@ export const chatService = {
         // fallback
       }
     }
-    return this.getLocalSessions(domain, uid);
+    return this.getLocalSessions(prefix, uid);
   },
 
   /**
-   * Save or update a session in local storage for a specific portal domain and account
+   * Save or update a session in local storage for a specific portal domain
    */
   saveLocalSession(session, domain = 'student', userId = null) {
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain, uid);
-      const sessions = this.getLocalSessions(domain, uid);
+      const key = getDomainSessionsKey(prefix, uid);
+      const sessions = this.getLocalSessions(prefix, uid);
       const existingIdx = sessions.findIndex(s => s.id === session.id);
       let updated;
       if (existingIdx >= 0) {
         updated = [...sessions];
-        updated[existingIdx] = { ...updated[existingIdx], ...session, domain, updatedAt: new Date().toISOString() };
+        updated[existingIdx] = { ...updated[existingIdx], ...session, domain: prefix, updatedAt: new Date().toISOString() };
       } else {
-        updated = [{ ...session, domain, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, ...sessions];
+        updated = [{ ...session, domain: prefix, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, ...sessions];
       }
       localStorage.setItem(key, JSON.stringify(updated.slice(0, 50)));
+
+      // Broadcast history update event across views
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_chat_history_changed', { detail: { domain: prefix, sessionId: session.id } }));
+      }
       return updated;
     } catch {
       return [];
@@ -628,26 +634,75 @@ export const chatService = {
   },
 
   getLocalSessions(domain = 'student', userId = null) {
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
+    const primaryKey = getDomainSessionsKey(prefix, uid);
     try {
-      const key = getDomainSessionsKey(domain, uid);
-      const raw = localStorage.getItem(key);
-      if (raw) return JSON.parse(raw);
-      return [];
+      const raw = localStorage.getItem(primaryKey);
+      let sessions = raw ? JSON.parse(raw) : [];
+
+      // Check legacy/variant keys and merge to ensure zero data loss
+      if (!Array.isArray(sessions) || sessions.length === 0) {
+        const candidateKeys = [
+          `unimitra_chat_sessions_${uid}_${prefix}`,
+          `unimitra_chat_sessions_guest_${prefix}`,
+          `unimitra_chat_sessions_usr-default_${prefix}`,
+          `unimitra_chat_sessions_admin_local_01_${prefix}`,
+        ];
+        // Scan localStorage for any keys matching this prefix
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('unimitra_chat_sessions_') && k.endsWith(`_${prefix}`)) {
+            if (!candidateKeys.includes(k)) candidateKeys.push(k);
+          }
+        }
+        for (const k of candidateKeys) {
+          try {
+            const v = localStorage.getItem(k);
+            if (v) {
+              const parsed = JSON.parse(v);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                sessions = parsed;
+                localStorage.setItem(primaryKey, JSON.stringify(sessions));
+                break;
+              }
+            }
+          } catch {}
+        }
+      }
+
+      // If still empty and student domain, check general unimitra_chat_sessions
+      if ((!sessions || sessions.length === 0) && prefix === 'student') {
+        try {
+          const legacy = localStorage.getItem('unimitra_chat_sessions');
+          if (legacy) {
+            const parsed = JSON.parse(legacy);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              sessions = parsed;
+              localStorage.setItem(primaryKey, JSON.stringify(sessions));
+            }
+          }
+        } catch {}
+      }
+
+      return Array.isArray(sessions) ? sessions : [];
     } catch {
       return [];
     }
   },
 
   deleteSession(sessionId, domain = 'student', userId = null) {
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain, uid);
-      const sessions = this.getLocalSessions(domain, uid).filter(s => s.id !== sessionId);
+      const key = getDomainSessionsKey(prefix, uid);
+      const sessions = this.getLocalSessions(prefix, uid).filter(s => s.id !== sessionId);
       localStorage.setItem(key, JSON.stringify(sessions));
-      localStorage.removeItem(getDomainMessageKey(sessionId, domain, uid));
-      if (this.getActiveSessionId(domain, uid) === sessionId) {
-        this.setActiveSessionId(null, domain, uid);
+      localStorage.removeItem(getDomainMessageKey(sessionId, prefix, uid));
+      if (this.getActiveSessionId(prefix, uid) === sessionId) {
+        this.setActiveSessionId(null, prefix, uid);
       }
       if (sessionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
         fetch(`${CHAT_API}/sessions/${sessionId}`, {
@@ -656,6 +711,9 @@ export const chatService = {
           credentials: 'include',
         }).catch(() => {});
       }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_chat_history_changed', { detail: { domain: prefix, sessionId } }));
+      }
       return sessions;
     } catch {
       return [];
@@ -663,15 +721,29 @@ export const chatService = {
   },
 
   clearAllSessions(domain = 'student', userId = null) {
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(domain, uid);
-      const sessions = this.getLocalSessions(domain, uid);
+      const key = getDomainSessionsKey(prefix, uid);
+      const sessions = this.getLocalSessions(prefix, uid);
       sessions.forEach(s => {
-        localStorage.removeItem(getDomainMessageKey(s.id, domain, uid));
+        localStorage.removeItem(getDomainMessageKey(s.id, prefix, uid));
       });
       localStorage.removeItem(key);
-      localStorage.removeItem(getDomainActiveSessionKey(domain, uid));
+      localStorage.removeItem(getDomainActiveSessionKey(prefix, uid));
+
+      // Also clean any variants
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith(`unimitra_messages_${prefix}_`) || k.startsWith(`unimitra_messages_`) && k.includes(`_${prefix}_`))) {
+          localStorage.removeItem(k);
+        }
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_chat_history_changed', { detail: { domain: prefix } }));
+      }
       return [];
     } catch {
       return [];
@@ -684,11 +756,52 @@ export const chatService = {
 
   getSessionMessages(sessionId, domain = 'student', userId = null) {
     if (!sessionId) return null;
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
+    const primaryKey = getDomainMessageKey(sessionId, prefix, uid);
     try {
-      const key = getDomainMessageKey(sessionId, domain, uid);
-      const raw = localStorage.getItem(key);
+      const raw = localStorage.getItem(primaryKey);
       if (raw) return JSON.parse(raw);
+
+      // Check candidate legacy keys
+      const candidateKeys = [
+        `unimitra_messages_${uid}_${prefix}_${sessionId}`,
+        `unimitra_messages_guest_${prefix}_${sessionId}`,
+        `unimitra_messages_usr-default_${prefix}_${sessionId}`,
+        `unimitra_messages_admin_local_01_${prefix}_${sessionId}`,
+        `unimitra_messages_${sessionId}`,
+      ];
+      for (const k of candidateKeys) {
+        const v = localStorage.getItem(k);
+        if (v) {
+          try {
+            const parsed = JSON.parse(v);
+            if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+              localStorage.setItem(primaryKey, v);
+              return parsed;
+            }
+          } catch {}
+        }
+      }
+
+      // Scan localStorage for any key ending with sessionId
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('unimitra_messages_') && k.endsWith(sessionId)) {
+          const v = localStorage.getItem(k);
+          if (v) {
+            try {
+              const parsed = JSON.parse(v);
+              if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                localStorage.setItem(primaryKey, v);
+                return parsed;
+              }
+            } catch {}
+          }
+        }
+      }
+
       return null;
     } catch {
       return null;
@@ -697,44 +810,55 @@ export const chatService = {
 
   async fetchSessionMessages(sessionId, domain = 'student', userId = null) {
     if (!sessionId) return [];
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
-    const local = this.getSessionMessages(sessionId, domain, uid);
+    const local = this.getSessionMessages(sessionId, prefix, uid);
     if (local && local.length > 0) return local;
 
-    try {
-      const res = await fetch(`${CHAT_API}/sessions/${sessionId}/messages`, {
-        headers: getAuthHeaders(),
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
-          const messages = json.data.map(m => ({
-            id: m.id,
-            sender: m.sender,
-            text: m.text,
-            source: m.source,
-            page: m.page,
-            confidence: m.confidence,
-            time: m.time || 'Recently',
-          }));
-          this.saveSessionMessages(sessionId, messages, domain, uid);
-          return messages;
+    if (isValidUuid(sessionId) && isValidUuid(uid)) {
+      try {
+        const res = await fetch(`${CHAT_API}/sessions/${sessionId}/messages`, {
+          headers: getAuthHeaders(),
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
+            const messages = json.data.map(m => ({
+              id: m.id,
+              sender: m.role === 'assistant' ? 'ai' : (m.sender || 'user'),
+              text: m.content || m.text,
+              source: m.metadata?.source || m.source,
+              page: m.metadata?.page || m.page,
+              confidence: m.metadata?.confidence || m.confidence,
+              time: m.time || (m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'),
+            }));
+            this.saveSessionMessages(sessionId, messages, prefix, uid);
+            return messages;
+          }
         }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
     }
     return local || [];
   },
 
   saveSessionMessages(sessionId, messages, domain = 'student', userId = null) {
     if (!sessionId || !messages) return;
+    const d = (domain || 'student').toLowerCase();
+    const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainMessageKey(sessionId, domain, uid);
+      const key = getDomainMessageKey(sessionId, prefix, uid);
       const str = JSON.stringify(messages);
       localStorage.setItem(key, str);
+
+      // Broadcast event so history and conversation views re-sync
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_chat_history_changed', { detail: { domain: prefix, sessionId } }));
+      }
     } catch {
       // ignore
     }
