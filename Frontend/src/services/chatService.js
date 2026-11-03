@@ -325,7 +325,7 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 1024
+            maxOutputTokens: 400
           }
         })
       });
@@ -673,9 +673,7 @@ export const chatService = {
   },
 
   /**
-   * Synthesize speech using Dual-Engine TTS:
-   * - Assamese -> Bakbak API
-   * - English -> GitHub Open-Source TTS (edge-tts)
+   * Synthesize speech using Google Gemini Native Audio TTS for all languages
    * Client-side audio cache prevents duplicate requests.
    */
   _audioCache: new Map(),
@@ -704,7 +702,7 @@ export const chatService = {
       return this._audioCache.get(cacheKey);
     }
 
-    // 1. Direct call to Python AI Service Dual-Engine TTS endpoint (POST /api/tts/generate)
+    // 1. Direct call to Python AI Service Google Gemini TTS endpoint (POST /api/tts/generate)
     try {
       const response = await fetch(`${AI_SERVICE_URL}/api/tts/generate`, {
         method: 'POST',

@@ -10,12 +10,9 @@ logger = logging.getLogger("unimitra.tts.gemini")
 
 # Prioritized Gemini models supporting native audio modalities
 GEMINI_TTS_MODELS = [
-    "gemini-2.5-flash-preview-tts",
-    "gemini-3.5-flash",
-    "gemini-flash-latest",
-    "gemini-3.8-flash",
-    "gemini-3.1-flash-tts-preview",
     "gemini-3.8-flash-tts",
+    "gemini-2.5-flash-preview-tts",
+    "gemini-3.8-flash-lite-tts",
 ]
 
 DEFAULT_VOICE_NAMES = {
@@ -35,13 +32,15 @@ class GeminiTTS:
 
     def __init__(self):
         self._client: Optional[genai.Client] = None
+        self._current_key: Optional[str] = None
 
     def _get_client(self) -> genai.Client:
-        if not self._client:
-            api_key = getattr(settings, "GEMINI_API_KEY", "")
-            if not api_key:
-                raise ValueError("GEMINI_API_KEY is not configured in AiService/.env")
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY is not configured in AiService/.env")
+        if not self._client or self._current_key != api_key:
             self._client = genai.Client(api_key=api_key)
+            self._current_key = api_key
         return self._client
 
     @staticmethod
@@ -77,9 +76,9 @@ class GeminiTTS:
 
         prompt = (
             "You are an intelligent bilingual university voice assistant. "
-            "Read the following text aloud with natural human cadence, clear pronunciation in Assamese and English. "
+            "Read the following text aloud with natural human cadence, warm expression, clear diction, and authentic pronunciation in Assamese and English. "
             "Speak ONLY the exact words provided. Do not add any greeting, preamble, commentary, or outro:\n\n"
-            f"{clean_text[:3000]}"
+            f"{clean_text[:2500]}"
         )
 
         for model_name in GEMINI_TTS_MODELS:

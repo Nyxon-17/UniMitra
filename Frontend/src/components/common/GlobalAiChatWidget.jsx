@@ -310,7 +310,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
 
 
-  // Dual-Engine Voice Synthesis (Bakbak for Assamese & GitHub edge-tts for English)
+  // Google Gemini Voice Synthesis for All Languages (Assamese, English & Code-Mixed)
   const speakText = async (text, gender = 'female') => {
     stopSpeaking();
 

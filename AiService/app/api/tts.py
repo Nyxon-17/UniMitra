@@ -12,7 +12,7 @@ async def generate_speech_endpoint(req: TTSGenerateRequest):
     """
     Unified Speech Synthesis (TTS) Endpoint:
     - Primary Engine: Google Gemini Native Audio TTS for ALL languages (English, Assamese, Code-Mixed)
-    - Fallbacks: Bakbak API (Assamese) and GitHub edge-tts (English)
+    - Exclusively uses Google Gemini TTS for all voice assistant responses.
     Includes in-memory deduplication caching to minimize external API consumption.
     """
     if not req.text or not req.text.strip():

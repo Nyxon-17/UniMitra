@@ -604,7 +604,7 @@ const DashboardAiAssistantInner = ({
     };
   }, [currentLang, voiceInputLang]);
 
-  // Dual-Engine Speech Synthesis: Bakbak (Assamese) & GitHub Open-Source TTS (English)
+  // Google Gemini Voice Synthesis for All Languages (Assamese, English & Code-Mixed)
   const handleToggleMessageAudio = async (msgId, rawText) => {
     if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) return;
 
