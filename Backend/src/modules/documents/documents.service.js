@@ -4,6 +4,7 @@ import { supabaseAdmin, STORAGE_BUCKETS } from '../../config/supabase.js';
 import { ApiError } from '../../utils/apiError.js';
 import { logger } from '../../config/logger.js';
 import { aiServiceClient } from '../ai/ai.client.js';
+import { env } from '../../config/env.js';
 
 const DEFAULT_CATEGORIES = [
   { id: 'CAT-01', code: 'REG-ORD', name: 'University Regulations & Ordinances', asName: 'বিশ্ববিদ্যালয়ৰ অধিনিয়ম আৰু বিধি', description: 'Statutory university regulations and academic frameworks.', count: 6 },
@@ -21,6 +22,11 @@ const DEFAULT_CATEGORIES = [
  */
 export const formatDocumentResponse = (doc) => {
   if (!doc) return null;
+  const supabaseBase = env.SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
+  let fileUrl = doc.sourceUrl || '';
+  if (!fileUrl && doc.storagePath) {
+    fileUrl = `${supabaseBase}/storage/v1/object/public/${STORAGE_BUCKETS.DOCUMENTS}/${doc.storagePath}`;
+  }
   return {
     id: doc.customId || doc.id,
     uuid: doc.id,
@@ -40,6 +46,8 @@ export const formatDocumentResponse = (doc) => {
     fileType: doc.fileType || 'PDF',
     fileName: doc.fileName || 'document.pdf',
     storagePath: doc.storagePath || '',
+    fileUrl: fileUrl || doc.sourceUrl || '',
+    sourceUrl: doc.sourceUrl || fileUrl || '',
     chunksCount: doc.chunksCount || 0,
     uploaderRole: doc.uploaderRole === 'admin' || doc.uploaderRole === 'super_admin' ? 'Admin' : 'Faculty',
     uploaderName: doc.uploaderName || doc.uploader?.fullName || 'Authorized Official',
@@ -53,7 +61,6 @@ export const formatDocumentResponse = (doc) => {
     processingStage: doc.processingStage || (doc.status === 'Indexed' ? 'Vector Indexed (100%)' : 'Awaiting Processing'),
     ocrApplied: doc.ocrApplied,
     sha256: doc.sha256 || '',
-    sourceUrl: doc.sourceUrl || '',
     summary: doc.summary || '',
     citation: doc.citation || '',
     adminFeedback: doc.adminFeedback || '',

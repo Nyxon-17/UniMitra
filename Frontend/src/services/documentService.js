@@ -79,13 +79,29 @@ export const documentService = {
       const json = await res.json();
       const serverDocs = json.data?.items || json.data || [];
       if (Array.isArray(serverDocs)) {
+        const supabaseBase = import.meta.env?.VITE_SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
+        const formattedServerDocs = serverDocs.map(d => {
+          let fileUrl = d.fileUrl || d.sourceUrl || '';
+          if (!fileUrl && d.storagePath) {
+            fileUrl = `${supabaseBase}/storage/v1/object/public/unimitra-documents/${d.storagePath}`;
+          }
+          return {
+            ...d,
+            fileUrl,
+            sourceUrl: fileUrl || d.sourceUrl || ''
+          };
+        });
         const local = documentService.getDocuments();
         // Merge server docs with local newly added docs
         const serverMap = new Map();
-        serverDocs.forEach(d => serverMap.set(d.id, d));
+        formattedServerDocs.forEach(d => serverMap.set(d.id, d));
         local.forEach(d => {
           if (!serverMap.has(d.id)) {
-            serverMap.set(d.id, d);
+            let fileUrl = d.fileUrl || d.sourceUrl || '';
+            if (!fileUrl && d.storagePath) {
+              fileUrl = `${supabaseBase}/storage/v1/object/public/unimitra-documents/${d.storagePath}`;
+            }
+            serverMap.set(d.id, { ...d, fileUrl, sourceUrl: fileUrl || d.sourceUrl || '' });
           }
         });
         const merged = Array.from(serverMap.values());
@@ -203,6 +219,9 @@ export const documentService = {
           if (resData.data) {
             newDoc.uuid = resData.data.id;
             newDoc.storagePath = resData.data.storagePath;
+            const supabaseBase = import.meta.env?.VITE_SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
+            newDoc.fileUrl = resData.data.fileUrl || `${supabaseBase}/storage/v1/object/public/unimitra-documents/${resData.data.storagePath}`;
+            newDoc.sourceUrl = newDoc.fileUrl;
             documentService.saveDocuments([newDoc, ...docs.filter(d => d.id !== docId)]);
           }
         }
@@ -276,6 +295,9 @@ export const documentService = {
           if (resData.data) {
             newDoc.uuid = resData.data.id;
             newDoc.storagePath = resData.data.storagePath;
+            const supabaseBase = import.meta.env?.VITE_SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
+            newDoc.fileUrl = resData.data.fileUrl || `${supabaseBase}/storage/v1/object/public/unimitra-documents/${resData.data.storagePath}`;
+            newDoc.sourceUrl = newDoc.fileUrl;
             documentService.saveDocuments([newDoc, ...docs.filter(d => d.id !== docId)]);
           }
         }

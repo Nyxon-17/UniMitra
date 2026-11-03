@@ -86,6 +86,9 @@ export const AdminConsole = ({
 
   useEffect(() => {
     syncWithService();
+    documentService.fetchDocumentsFromBackend().then(docs => {
+      if (docs && docs.length > 0) setDocuments(docs);
+    });
     window.addEventListener('unimitra_documents_changed', syncWithService);
     return () => window.removeEventListener('unimitra_documents_changed', syncWithService);
   }, []);
@@ -3272,6 +3275,15 @@ export const AdminConsole = ({
 
             <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
               <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setInspectDocModal(null)}
+                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-[#123C3A]/10 dark:border-[#55C7B2]/20 flex items-center space-x-1 cursor-pointer transition-all mr-1"
+                  title="Back to Documents"
+                >
+                  <ArrowLeftIcon className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
                 <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
                 <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{inspectDocModal.id}</span>
                 <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
@@ -3281,6 +3293,7 @@ export const AdminConsole = ({
               <button
                 onClick={() => setInspectDocModal(null)}
                 className="p-1 rounded-lg text-[#000000]/70 hover:text-[#000000] dark:text-[#FFFFFF]/80 dark:hover:text-[#FFFFFF] cursor-pointer"
+                title="Cancel / Close"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
@@ -3380,26 +3393,101 @@ export const AdminConsole = ({
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2">
-              {(inspectDocModal.fileUrl || inspectDocModal.sourceUrl) ? (
-                <a
-                  href={inspectDocModal.fileUrl || inspectDocModal.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#123C3A] hover:bg-[#1C504E] dark:bg-[#03C988] dark:text-black dark:hover:bg-[#02B377] flex items-center space-x-1.5 cursor-pointer shadow-xs"
-                >
-                  <EyeIcon className="w-4 h-4" />
-                  <span>Open Official PDF</span>
-                </a>
-              ) : <div />}
-              <button
-                type="button"
-                onClick={() => setInspectDocModal(null)}
-                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] cursor-pointer shadow-xs"
-              >
-                Close Inspector
-              </button>
-            </div>
+            {(() => {
+              const resolveDocPdfUrl = (doc) => {
+                if (!doc) return null;
+                if (doc.fileUrl) return doc.fileUrl;
+                if (doc.sourceUrl) return doc.sourceUrl;
+                if (doc.pdfUrl) return doc.pdfUrl;
+                if (doc.storagePath) {
+                  const supabaseBase = import.meta.env?.VITE_SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
+                  return `${supabaseBase}/storage/v1/object/public/unimitra-documents/${doc.storagePath}`;
+                }
+                if (doc.fileName && doc.fileName.endsWith('.pdf')) {
+                  return `/notices/${doc.fileName}`;
+                }
+                return null;
+              };
+              const pdfUrl = resolveDocPdfUrl(inspectDocModal);
+
+              return (
+                <div className="space-y-3 pt-1">
+                  {pdfUrl && (
+                    <div className="w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-gray-100 dark:bg-black/50 shadow-inner">
+                      <iframe
+                        src={`${pdfUrl}#toolbar=0&navpanes=0`}
+                        title={inspectDocModal.title}
+                        className="w-full h-full border-0 rounded-2xl"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
+                    <button
+                      type="button"
+                      onClick={() => setInspectDocModal(null)}
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/20 border border-gray-300 dark:border-gray-700 flex items-center space-x-1.5 cursor-pointer shadow-xs transition-colors"
+                      title="Back to Documents & Approvals"
+                    >
+                      <ArrowLeftIcon className="w-4 h-4" />
+                      <span>Back to Documents</span>
+                    </button>
+
+                    <div className="flex items-center space-x-2">
+                      {pdfUrl ? (
+                        <a
+                          href={pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#123C3A] hover:bg-[#1C504E] dark:bg-[#03C988] dark:text-black dark:hover:bg-[#02B377] flex items-center space-x-2 cursor-pointer shadow-xs transition-all hover:scale-[1.02]"
+                        >
+                          <EyeIcon className="w-4 h-4" />
+                          <span>Open PDF in New Tab</span>
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const w = window.open('', '_blank');
+                            if (w) {
+                              w.document.write(`
+                                <html>
+                                  <head><title>${inspectDocModal.title}</title>
+                                  <style>body{font-family:system-ui,sans-serif;padding:40px;line-height:1.6;color:#1e293b}h1{color:#0f172a;border-bottom:2px solid #e2e8f0;padding-bottom:12px}.meta{background:#f8fafc;padding:16px;border-radius:8px;margin:20px 0;font-size:14px}.content{margin-top:24px;font-size:15px;white-space:pre-wrap}</style>
+                                  </head>
+                                  <body>
+                                    <h1>${inspectDocModal.title}</h1>
+                                    <div class="meta">
+                                      <strong>Document ID:</strong> ${inspectDocModal.id}<br/>
+                                      <strong>Category:</strong> ${inspectDocModal.category}<br/>
+                                      <strong>University:</strong> ${inspectDocModal.university} (${inspectDocModal.department || 'General'})<br/>
+                                      <strong>Status:</strong> ${inspectDocModal.approvalStatus}
+                                    </div>
+                                    <div class="content">${inspectDocModal.content || inspectDocModal.summary || 'Official institutional document record.'}</div>
+                                  </body>
+                                </html>
+                              `);
+                              w.document.close();
+                            }
+                          }}
+                          className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#123C3A] hover:bg-[#1C504E] dark:bg-[#03C988] dark:text-black dark:hover:bg-[#02B377] flex items-center space-x-2 cursor-pointer shadow-xs"
+                        >
+                          <EyeIcon className="w-4 h-4" />
+                          <span>Open Document in New Tab</span>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setInspectDocModal(null)}
+                        className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 cursor-pointer shadow-xs"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
