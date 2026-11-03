@@ -7,6 +7,8 @@ export const querySchema = z.object({
     language: z.string().optional().nullable(),
     university: z.string().optional().nullable(),
     category: z.string().optional().nullable(),
+    saveToHistory: z.boolean().optional().default(true),
+    isVoice: z.boolean().optional().default(false),
   }),
 });
 

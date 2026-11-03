@@ -12,11 +12,13 @@ function isValidUuid(id) {
 /**
  * Handle AI Query execution
  */
-export const handleQuery = async (user, { query, sessionId = null, language = null, university = null, category = null }) => {
+export const handleQuery = async (user, { query, sessionId = null, language = null, university = null, category = null, saveToHistory = true, isVoice = false }) => {
   const queryLang = detectLanguage(query, language);
 
   let session = null;
-  if (user?.id) {
+  const shouldPersist = saveToHistory !== false && !isVoice && Boolean(user?.id);
+
+  if (shouldPersist) {
     if (sessionId && isValidUuid(sessionId)) {
       session = await prisma.chatSession.findFirst({
         where: { id: sessionId, userId: user.id },
@@ -38,7 +40,7 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
 
   // Retrieve prior messages from session for context if available
   let history = [];
-  if (session) {
+  if (session && shouldPersist) {
     const prevMessages = await prisma.chatMessage.findMany({
       where: { sessionId: session.id },
       take: 10,
@@ -59,8 +61,8 @@ export const handleQuery = async (user, { query, sessionId = null, language = nu
     history,
   });
 
-  // If user is authenticated, persist messages to database
-  if (session && user?.id) {
+  // If user is authenticated and persistence is enabled, persist messages to database
+  if (session && user?.id && shouldPersist) {
     await prisma.chatMessage.create({
       data: {
         sessionId: session.id,

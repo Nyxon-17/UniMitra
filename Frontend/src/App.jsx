@@ -357,6 +357,7 @@ export function App() {
 
     const updatedInfo = {
       ...studentInfo,
+      id: user?.id || user?._id || studentInfo?.id || 'usr-default',
       name: user?.name || user?.fullName || studentInfo.name,
       email: user?.email || studentInfo.email,
       role: formattedRole,
@@ -388,6 +389,12 @@ export function App() {
       console.warn('Logout error:', err);
     }
     setIsLoggedIn(false);
+    setStudentInfo({
+      name: 'Scholar Member',
+      email: 'member@university.ac.in',
+      role: 'Student',
+      department: 'Higher Education Studies'
+    });
     localStorage.removeItem('unimitra_auth_logged_in');
     localStorage.removeItem('unimitra_student_info');
     localStorage.removeItem('unimitra_auth_token');
@@ -622,6 +629,7 @@ export function App() {
             path="assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_${(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
@@ -633,6 +641,7 @@ export function App() {
             path="faculty-assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_faculty`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
@@ -768,11 +777,17 @@ export function App() {
         onSuccessLogin={handleLoginSuccess}
       />
 
-      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals */}
+      {/* Global Neomorphic Voice AI Assistant Widget - Accessible in ALL Portals (Requires Login) */}
       <GlobalAiChatWidget
         currentLang={lang}
         onToggleLang={toggleLanguage}
         studentInfo={studentInfo}
+        isLoggedIn={isLoggedIn}
+        onOpenAuth={(mode, role) => {
+          setAuthModalRole(role || 'student');
+          setAuthModalMode(mode || 'login');
+          setAuthModalOpen(true);
+        }}
       />
     </>
   );

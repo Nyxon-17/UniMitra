@@ -77,47 +77,69 @@ export const getDocuments = async ({
   try {
     const where = {};
 
+    const andConditions = [];
+
     if (userRole === 'student') {
-      where.status = 'Indexed';
-      where.approvalStatus = 'approved';
-      where.availableToChatbot = true;
+      andConditions.push({ status: 'Indexed' });
+      andConditions.push({ approvalStatus: 'approved' });
+      andConditions.push({ availableToChatbot: true });
     } else if (status) {
-      where.status = status;
+      andConditions.push({ status });
     }
 
     if (approvalStatus) {
-      where.approvalStatus = approvalStatus;
+      andConditions.push({ approvalStatus });
     }
 
     if (department) {
-      where.department = { contains: department, mode: 'insensitive' };
+      andConditions.push({ department: { contains: department, mode: 'insensitive' } });
     }
 
     if (university && university !== 'All Universities' && university !== 'all') {
-      where.OR = [
-        { university: { code: { equals: university, mode: 'insensitive' } } },
-        { university: { name: { contains: university, mode: 'insensitive' } } },
-        { university: { asName: { contains: university, mode: 'insensitive' } } },
-      ];
+      andConditions.push({
+        OR: [
+          { university: { code: { equals: university, mode: 'insensitive' } } },
+          { university: { name: { contains: university, mode: 'insensitive' } } },
+          { university: { asName: { contains: university, mode: 'insensitive' } } },
+          { universityName: { contains: university, mode: 'insensitive' } },
+        ]
+      });
     }
 
     if (category && category !== 'All Categories' && category !== 'all') {
-      where.category = {
-        OR: [
-          { code: { equals: category, mode: 'insensitive' } },
-          { name: { contains: category, mode: 'insensitive' } },
-        ],
-      };
+      const catConditions = [
+        { category: { code: { equals: category, mode: 'insensitive' } } },
+        { category: { name: { contains: category, mode: 'insensitive' } } },
+        { categoryName: { contains: category, mode: 'insensitive' } },
+      ];
+      if (category.toLowerCase().includes('schol') || category === 'SCHOL-AID') {
+        catConditions.push({ title: { contains: 'Scholarship', mode: 'insensitive' } });
+      } else if (category.toLowerCase().includes('exam') || category === 'EXAM-EVAL') {
+        catConditions.push({ title: { contains: 'Exam', mode: 'insensitive' } });
+        catConditions.push({ title: { contains: 'Topper', mode: 'insensitive' } });
+      } else if (category.toLowerCase().includes('adm') || category === 'ADM-CRIT') {
+        catConditions.push({ title: { contains: 'Admission', mode: 'insensitive' } });
+      } else if (category.toLowerCase().includes('hostel') || category.toLowerCase().includes('camp') || category === 'CAMP-HOST') {
+        catConditions.push({ title: { contains: 'Hostel', mode: 'insensitive' } });
+        catConditions.push({ title: { contains: 'Campus', mode: 'insensitive' } });
+      }
+      andConditions.push({ OR: catConditions });
     }
 
     if (search && search.trim()) {
       const q = search.trim();
-      where.OR = [
-        { title: { contains: q, mode: 'insensitive' } },
-        { asTitle: { contains: q, mode: 'insensitive' } },
-        { summary: { contains: q, mode: 'insensitive' } },
-        { citation: { contains: q, mode: 'insensitive' } },
-      ];
+      andConditions.push({
+        OR: [
+          { title: { contains: q, mode: 'insensitive' } },
+          { asTitle: { contains: q, mode: 'insensitive' } },
+          { summary: { contains: q, mode: 'insensitive' } },
+          { citation: { contains: q, mode: 'insensitive' } },
+        ]
+      });
+    }
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     const skip = (Number(page) - 1) * Number(limit);

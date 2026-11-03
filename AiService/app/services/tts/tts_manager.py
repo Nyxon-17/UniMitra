@@ -17,9 +17,7 @@ class TTSManager:
     Unified Speech Synthesis (TTS) Manager:
     - Primary Engine: Google Gemini Native Audio TTS for ALL languages
       (English, Pure Assamese, Assamese-English code-mixed, and Romanized Assamese).
-    - Resilient Fallbacks:
-      - Bakbak API for Assamese / mixed speech if Gemini TTS is unavailable
-      - GitHub edge-tts for English speech if Gemini TTS is unavailable
+    - Uses Google Gemini TTS exclusively for all voice assistance queries.
     - Credit & Latency Protection:
       - In-memory SHA-256 deduplication cache
       - Zero redundant API calls for cached responses
@@ -81,7 +79,8 @@ class TTSManager:
             provider = f"gemini_{category}_cache"
             return cached_bytes, cached_media, provider, primary_lang
 
-        # 5. Primary Engine: Google Gemini Native Audio TTS for ALL languages
+        # 5. Primary Speech Synthesis Engine: Google Gemini Native Audio TTS for ALL languages
+        # (Pure Assamese, Pure English, Assamese+English Code-mixed, and Romanized Assamese)
         logger.info(f"Synthesizing '{category}' ({primary_lang}) speech using primary Google Gemini TTS...")
         audio_bytes = None
         media_type = "audio/wav"
@@ -94,13 +93,13 @@ class TTSManager:
                 voice_override=voice,
             )
         except Exception as g_err:
-            logger.warning(f"Primary Gemini TTS error: {g_err}. Engaging resilient fallback...")
+            logger.warning(f"Primary Gemini TTS error for '{category}': {g_err}")
             audio_bytes = None
 
-        # 6. Resilient Fallbacks (engaged only if Gemini TTS is unavailable)
+        # 6. Resilient Fallbacks (engaged ONLY if Gemini TTS quota is temporarily exhausted)
         if not audio_bytes:
+            logger.info(f"Gemini TTS unavailable; engaging resilient fallback for '{category}' ({primary_lang})...")
             if category in ("pure_assamese", "assamese_english") or primary_lang == "as":
-                logger.info("Engaging Bakbak Assamese Voice Engine fallback...")
                 try:
                     audio_bytes = await bakbak_tts.synthesize_async(
                         text=clean_text,
@@ -115,7 +114,6 @@ class TTSManager:
                     logger.warning(f"Bakbak fallback notice: {b_err}")
 
             if not audio_bytes:
-                logger.info("Engaging GitHub English TTS fallback...")
                 try:
                     audio_bytes = await english_tts.synthesize_async(
                         text=clean_text,
@@ -129,7 +127,7 @@ class TTSManager:
                     logger.warning(f"GitHub fallback notice: {e_err}")
 
         if not audio_bytes:
-            raise RuntimeError(f"All speech synthesis engines exhausted for category '{category}'.")
+            raise RuntimeError(f"All speech synthesis engines exhausted for category '{category}' ({primary_lang}).")
 
         # 7. Cache result to protect credits and avoid duplicate calls
         self._store_cache(cache_key, audio_bytes, media_type)

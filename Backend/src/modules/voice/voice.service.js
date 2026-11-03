@@ -63,46 +63,11 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
     universityCode: university,
   });
 
-  // 3. Synthesize Speech Audio Output (TTS) using Dual-Engine TTS
+  // 3. Synthesize Speech Audio Output (TTS) using Google Gemini Native Audio TTS
   let audioBase64 = null;
   const audioBytes = await aiServiceClient.synthesizeVoice(ragResult.answer, queryLang, 'female');
   if (audioBytes) {
     audioBase64 = Buffer.from(audioBytes).toString('base64');
-  } else if (queryLang === 'as') {
-    // Direct Bakbak TTS attempt for Assamese with safe symbol sanitization
-    try {
-      const cleanTtsText = (ragResult.answer || '')
-        .replace(/[`~*#=|^\\/{}[\]()"'“”‘’]/g, ' ')
-        .replace(/[:;,–—]/g, ' ')
-        .replace(/\s+-\s+/g, ' ')
-        .replace(/[ \t]{2,}/g, ' ')
-        .slice(0, 3000)
-        .trim();
-      const ttsRes = await axios.post(
-        `${BAKBAK_BASE_URL}/text-to-speech`,
-        {
-          text: cleanTtsText,
-          voice_id: 'd4e5f6a7-b8c9-4a01-d345-e6f7a8b9c012', // Priti
-          language: 'as',
-          model: 'standard',
-          speed: 1.0,
-        },
-        {
-          headers: {
-            'X-API-Key': BAKBAK_API_KEY,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-          timeout: 10000,
-        }
-      );
-      if (ttsRes.status === 200 && ttsRes.data) {
-        const repaired = repairWavBuffer(Buffer.from(ttsRes.data));
-        audioBase64 = repaired.toString('base64');
-      }
-    } catch {
-      // audioBase64 remains null
-    }
   }
 
   return {
@@ -232,46 +197,14 @@ export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', lang
 
 /**
  * 3. Text-to-Speech Synthesis Only
- * Routes through Python AI Service Dual-Engine TTS (Bakbak for Assamese, GitHub edge-tts for English)
+ * Routes through Python AI Service Google Gemini Native Audio TTS for all languages
  */
 export const synthesizeText = async (text, language = 'as', gender = 'female', voice = null) => {
   if (!text) {
     throw ApiError.badRequest('Text is required for speech synthesis.');
   }
 
-  // 1. Try Python AI Service Dual-Engine TTS
+  // Synthesize via Python AI Service Google Gemini TTS
   const audioBytes = await aiServiceClient.synthesizeVoice(text, language, gender, voice);
-  if (audioBytes && audioBytes.length > 50) {
-    return audioBytes;
-  }
-
-  // 2. Direct Bakbak API fallback for Assamese
-  if (language === 'as' || /[\u0980-\u09FF]/.test(text)) {
-    try {
-      const res = await axios.post(
-        `${BAKBAK_BASE_URL}/text-to-speech`,
-        {
-          text: text.slice(0, 3000),
-          voice_id: voice || 'd4e5f6a7-b8c9-4a01-d345-e6f7a8b9c012',
-          language: 'as',
-          model: 'standard',
-        },
-        {
-          headers: {
-            'X-API-Key': BAKBAK_API_KEY,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-          timeout: 10000,
-        }
-      );
-      if (res.status === 200 && res.data && res.data.byteLength > 50) {
-        return repairWavBuffer(Buffer.from(res.data));
-      }
-    } catch (err) {
-      logger.info({ err: err.message }, 'Direct Bakbak TTS notice');
-    }
-  }
-
   return audioBytes;
 };

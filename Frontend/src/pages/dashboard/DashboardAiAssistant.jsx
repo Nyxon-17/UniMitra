@@ -92,6 +92,10 @@ const DashboardAiAssistantInner = ({
     return 'student';
   }, [portalDomain, studentInfo?.role]);
 
+  const userId = useMemo(() => {
+    return studentInfo?.id || chatService.getCurrentUserId();
+  }, [studentInfo?.id]);
+
   const portalMeta = useMemo(() => {
     if (domain === 'admin') {
       return {
@@ -169,11 +173,11 @@ const DashboardAiAssistantInner = ({
   };
 
   // Chat Sessions & Active Thread State (Strictly isolated by domain: student, faculty, admin)
-  const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain));
-  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain) || chatService.generateSessionId());
+  const [sessions, setSessions] = useState(() => chatService.getLocalSessions(domain, userId));
+  const [activeSessionId, setActiveSessionId] = useState(() => chatService.getActiveSessionId(domain, userId) || chatService.generateSessionId());
   const [messages, setMessages] = useState(() => {
-    const curId = chatService.getActiveSessionId(domain);
-    const saved = curId ? chatService.getSessionMessages(curId, domain) : null;
+    const curId = chatService.getActiveSessionId(domain, userId);
+    const saved = curId ? chatService.getSessionMessages(curId, domain, userId) : null;
     return saved && saved.length > 0 ? saved : [createInitialGreeting()];
   });
 
@@ -232,50 +236,38 @@ const DashboardAiAssistantInner = ({
   useEffect(() => {
     let isCancelled = false;
     const syncSessions = async () => {
-      const allSessions = await chatService.getSessions(domain);
-      if (!isCancelled && allSessions && allSessions.length > 0) {
-        setSessions(allSessions);
+      const allSessions = await chatService.getSessions(domain, userId);
+      if (!isCancelled) {
+        setSessions(allSessions || []);
       }
 
-      let curId = chatService.getActiveSessionId(domain);
-      if (!curId && allSessions && allSessions.length > 0) {
-        curId = allSessions[0].id;
-        chatService.setActiveSessionId(curId, domain);
-      }
-
-      if (curId) {
-        setActiveSessionId(curId);
-        const localMsgs = chatService.getSessionMessages(curId, domain);
-        if (!isCancelled && localMsgs && localMsgs.length > 0) {
-          setMessages(localMsgs);
-        }
-
-        const saved = await chatService.fetchSessionMessages(curId, domain);
-        if (!isCancelled && saved && saved.length > 0) {
-          setMessages(saved);
-        } else if (!localMsgs || localMsgs.length === 0) {
-          if (allSessions && allSessions.length > 0) {
-            const sessionWithMsgs = allSessions.find(s => {
-              const m = chatService.getSessionMessages(s.id, domain);
-              return m && m.length > 0;
-            });
-            if (sessionWithMsgs) {
-              setActiveSessionId(sessionWithMsgs.id);
-              chatService.setActiveSessionId(sessionWithMsgs.id, domain);
-              const m = chatService.getSessionMessages(sessionWithMsgs.id, domain);
-              if (m && m.length > 0) setMessages(m);
-              return;
-            }
-          }
-          if (!isCancelled) {
-            setMessages([createInitialGreeting()]);
-          }
-        }
-      } else {
+      if (!allSessions || allSessions.length === 0) {
+        // Every account starts 100% fresh if it has no prior conversations
         const freshId = chatService.generateSessionId();
         setActiveSessionId(freshId);
-        chatService.setActiveSessionId(freshId, domain);
+        chatService.setActiveSessionId(freshId, domain, userId);
         if (!isCancelled) {
+          setMessages([createInitialGreeting()]);
+        }
+        return;
+      }
+
+      let curId = chatService.getActiveSessionId(domain, userId);
+      // Ensure curId belongs to this specific account's sessions
+      if (!curId || !allSessions.some(s => s.id === curId)) {
+        curId = allSessions[0].id;
+        chatService.setActiveSessionId(curId, domain, userId);
+      }
+
+      setActiveSessionId(curId);
+      const saved = await chatService.fetchSessionMessages(curId, domain, userId);
+      if (!isCancelled && saved && saved.length > 0) {
+        setMessages(saved);
+      } else {
+        const localMsgs = chatService.getSessionMessages(curId, domain, userId);
+        if (!isCancelled && localMsgs && localMsgs.length > 0) {
+          setMessages(localMsgs);
+        } else if (!isCancelled) {
           setMessages([createInitialGreeting()]);
         }
       }
@@ -283,7 +275,7 @@ const DashboardAiAssistantInner = ({
 
     syncSessions();
     return () => { isCancelled = true; };
-  }, [domain, currentLang]);
+  }, [domain, currentLang, userId]);
 
   // Handle URL / navigation state prefill query
   useEffect(() => {
@@ -604,7 +596,7 @@ const DashboardAiAssistantInner = ({
     };
   }, [currentLang, voiceInputLang]);
 
-  // Dual-Engine Speech Synthesis: Bakbak (Assamese) & GitHub Open-Source TTS (English)
+  // Google Gemini Voice Synthesis for All Languages (Assamese, English & Code-Mixed)
   const handleToggleMessageAudio = async (msgId, rawText) => {
     if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) return;
 
@@ -786,10 +778,10 @@ const DashboardAiAssistantInner = ({
     stopSpeaking();
     const newId = chatService.generateSessionId();
     setActiveSessionId(newId);
-    chatService.setActiveSessionId(newId, domain);
+    chatService.setActiveSessionId(newId, domain, userId);
     const greeting = createInitialGreeting();
     setMessages([greeting]);
-    chatService.saveSessionMessages(newId, [greeting], domain);
+    chatService.saveSessionMessages(newId, [greeting], domain, userId);
     setInputQuery('');
     setHistoryDrawerOpen(false);
     setActionAlert(currentLang === 'as' ? `নতুন ${portalMeta.domainLabel} আলোচনা আৰম্ভ কৰা হ’ল` : `New ${portalMeta.domainLabel} chat started`);
@@ -802,14 +794,14 @@ const DashboardAiAssistantInner = ({
     if (!session || !session.id) return;
     stopSpeaking();
     setActiveSessionId(session.id);
-    chatService.setActiveSessionId(session.id, domain);
+    chatService.setActiveSessionId(session.id, domain, userId);
 
-    const immediate = chatService.getSessionMessages(session.id, domain);
+    const immediate = chatService.getSessionMessages(session.id, domain, userId);
     if (immediate && immediate.length > 0) {
       setMessages(immediate);
     }
 
-    const saved = await chatService.fetchSessionMessages(session.id, domain);
+    const saved = await chatService.fetchSessionMessages(session.id, domain, userId);
     if (saved && saved.length > 0) {
       setMessages(saved);
     } else if (!immediate || immediate.length === 0) {
@@ -821,7 +813,7 @@ const DashboardAiAssistantInner = ({
   // Delete a session from this portal domain
   const handleDeleteSession = (e, sessionId) => {
     e.stopPropagation();
-    const updated = chatService.deleteSession(sessionId, domain);
+    const updated = chatService.deleteSession(sessionId, domain, userId);
     setSessions(updated);
     if (activeSessionId === sessionId) {
       handleNewChat();
@@ -872,12 +864,12 @@ const DashboardAiAssistantInner = ({
         domain: domain,
         createdAt: new Date().toISOString()
       };
-      const updatedSessions = chatService.saveLocalSession(newSession, domain);
+      const updatedSessions = chatService.saveLocalSession(newSession, domain, userId);
       setSessions(updatedSessions);
     }
 
     // Immediately persist user's query into local cache
-    chatService.saveSessionMessages(activeSessionId, newMessages, domain);
+    chatService.saveSessionMessages(activeSessionId, newMessages, domain, userId);
 
     try {
       const res = await chatService.sendQuery({
@@ -885,7 +877,9 @@ const DashboardAiAssistantInner = ({
         sessionId: activeSessionId,
         language: currentLang,
         university: univProfile,
-        signal: controller.signal
+        signal: controller.signal,
+        saveToHistory: true,
+        isVoice: false
       });
 
       if (!res || res.aborted || controller.signal.aborted) {
@@ -895,16 +889,16 @@ const DashboardAiAssistantInner = ({
       let targetSessionId = activeSessionId;
       if (res.sessionId && res.sessionId !== activeSessionId) {
         targetSessionId = res.sessionId;
-        chatService.deleteSession(activeSessionId, domain);
+        chatService.deleteSession(activeSessionId, domain, userId);
         setActiveSessionId(targetSessionId);
-        chatService.setActiveSessionId(targetSessionId, domain);
+        chatService.setActiveSessionId(targetSessionId, domain, userId);
         const updated = chatService.saveLocalSession({
           id: targetSessionId,
           title: currentSessionTitle || queryText.slice(0, 36),
           language: currentLang,
           domain: domain,
           createdAt: new Date().toISOString()
-        }, domain);
+        }, domain, userId);
         setSessions(updated);
       }
 
@@ -924,10 +918,10 @@ const DashboardAiAssistantInner = ({
       setMessages(finalMessages);
       
       // Auto-save history automatically for this portal domain
-      chatService.saveSessionMessages(targetSessionId, finalMessages, domain);
+      chatService.saveSessionMessages(targetSessionId, finalMessages, domain, userId);
 
       // Refresh sessions list in background
-      chatService.getSessions(domain).then(updated => {
+      chatService.getSessions(domain, userId).then(updated => {
         if (updated && updated.length > 0) setSessions(updated);
       });
 
@@ -1047,28 +1041,34 @@ const DashboardAiAssistantInner = ({
     return groups;
   }, [sessions]);
 
-  // Suggested Quick Prompts tailored specifically for this portal domain
+  // Suggested Quick Prompts tailored specifically with fresh, role-specific data for each account
   const quickPrompts = useMemo(() => {
     if (domain === 'admin') {
       return [
         { label: currentLang === 'as' ? 'কাৰ্যবাহী পৰিষদৰ ক্ষমতা' : 'Executive Council Powers', q: 'What are the statutory powers of the Executive Council under the University Act?' },
         { label: currentLang === 'as' ? 'মহাবিদ্যালয় অধিভুক্তি নিয়ম' : 'College Affiliation Norms', q: 'Explain the regulatory guidelines for fresh college affiliation and inspection.' },
         { label: currentLang === 'as' ? 'উত্তৰবহী সংৰক্ষণ সময়' : 'Answer Script Retention', q: 'What is the mandatory preservation period for evaluated answer scripts?' },
-        { label: currentLang === 'as' ? 'শিক্ষক ৰষ্টাৰ নিয়মাৱলী' : 'Faculty Roster Rules', q: 'What are the statutory bylaws for faculty roster and promotional seniority?' }
+        { label: currentLang === 'as' ? 'শিক্ষক ৰষ্টাৰ নিয়মাৱলী' : 'Faculty Roster Rules', q: 'What are the statutory bylaws for faculty roster and promotional seniority?' },
+        { label: currentLang === 'as' ? 'অনুশাসন আৰু ৰেগিং প্ৰতিৰোধ' : 'Disciplinary & Anti-Ragging', q: 'What are the statutory procedures for student misconduct and exam malpractice?' },
+        { label: currentLang === 'as' ? 'নথিপত্ৰ অনুক্ৰমণিকা স্থিতি' : 'Ingestion & Index Status', q: 'What is the current status of indexed institutional documents in the university knowledge base?' }
       ];
     } else if (domain === 'faculty') {
       return [
         { label: currentLang === 'as' ? 'প্ৰশ্নকাকত মডাৰেচন নিয়ম' : 'Paper Moderation Bylaws', q: 'What are the statutory guidelines for question paper setting and moderation?' },
         { label: currentLang === 'as' ? 'উপস্থিতি ৰেহাই (মেডিকেল)' : 'Medical Attendance Limit', q: 'What is the attendance condonation limit for medical reasons in semester exams?' },
         { label: currentLang === 'as' ? 'শৈক্ষিক কৰ্মভাৰ নিৰ্দেশনা' : 'Weekly Teaching Workload', q: 'What is the prescribed weekly teaching workload for professors and assistant professors?' },
-        { label: currentLang === 'as' ? 'কৰ্তব্য ছুটি (Duty Leave)' : 'Duty Leave Regulations', q: 'Explain duty leave entitlement for attending academic conferences and exam evaluation.' }
+        { label: currentLang === 'as' ? 'কৰ্তব্য ছুটি (Duty Leave)' : 'Duty Leave Regulations', q: 'Explain duty leave entitlement for attending academic conferences and exam evaluation.' },
+        { label: currentLang === 'as' ? 'চি.এ.এছ. পদোন্নতি নীতি' : 'CAS Promotion & API Norms', q: 'What are the UGC Career Advancement Scheme PBAS/API criteria for promotion?' },
+        { label: currentLang === 'as' ? 'পিএইচ.ডি. নিৰ্দেশনা কোটা' : 'PhD Supervision Quotas', q: 'What is the permissible doctoral scholar supervision quota per faculty rank?' }
       ];
     } else {
       return [
-        { label: currentLang === 'as' ? 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ' : 'Passing Marks & CGPA', q: 'What is the minimum passing marks and CGPA requirement?' },
+        { label: currentLang === 'as' ? 'পৰীক্ষাত উত্তীৰ্ণ নম্বৰ' : 'Passing Marks & CGPA', q: 'What is the minimum passing marks and CGPA requirement under the CBCS regulations?' },
         { label: currentLang === 'as' ? 'উপস্থিতি নিয়ম (৭৫%)' : 'Attendance Criteria (75%)', q: 'What is the minimum attendance required to sit for semester examinations?' },
-        { label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation Fee (Rs. 350)', q: 'Explain the fees and process for answer sheet re-evaluation.' },
-        { label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Scholarship', q: 'Eligibility and required documents for Ishan Uday scholarship?' }
+        { label: currentLang === 'as' ? 'পুনৰ মূল্যায়ন মাচুল' : 'Re-evaluation Fee & Process', q: 'Explain the fees and process for answer sheet re-evaluation.' },
+        { label: currentLang === 'as' ? 'ঈশান উদয় জলপানি' : 'Ishan Uday Scholarship', q: 'Eligibility and required documents for Ishan Uday and state scholarships?' },
+        { label: currentLang === 'as' ? 'বেক আৰু উন্নতি পৰীক্ষা' : 'Backlog & Improvement Rules', q: 'What are the rules and maximum chances for appearing in backlog or improvement examinations?' },
+        { label: currentLang === 'as' ? 'হোষ্টেল আৱণ্টনৰ নিয়ম' : 'Hostel Allotment & Curfew', q: 'What are the distance criteria and rules for university hostel allotment?' }
       ];
     }
   }, [domain, currentLang]);

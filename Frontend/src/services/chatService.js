@@ -35,24 +35,37 @@ export function generateSessionId() {
   });
 }
 
-export function getDomainSessionsKey(domain = 'student') {
-  const d = (domain || 'student').toLowerCase();
-  if (d.includes('admin')) return 'unimitra_chat_sessions_admin';
-  if (d.includes('faculty')) return 'unimitra_chat_sessions_faculty';
-  return 'unimitra_chat_sessions_student';
+export function getCurrentUserId() {
+  if (typeof window === 'undefined') return 'guest';
+  try {
+    const raw = localStorage.getItem('unimitra_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (u?.id) return u.id;
+    }
+  } catch {}
+  return 'guest';
 }
 
-export function getDomainActiveSessionKey(domain = 'student') {
+export function getDomainSessionsKey(domain = 'student', userId = null) {
   const d = (domain || 'student').toLowerCase();
-  if (d.includes('admin')) return 'unimitra_active_session_admin';
-  if (d.includes('faculty')) return 'unimitra_active_session_faculty';
-  return 'unimitra_active_session_student';
-}
-
-export function getDomainMessageKey(sessionId, domain = 'student') {
-  const d = (domain || 'student').toLowerCase();
+  const uid = userId || getCurrentUserId();
   const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
-  return `unimitra_messages_${prefix}_${sessionId}`;
+  return `unimitra_chat_sessions_${uid}_${prefix}`;
+}
+
+export function getDomainActiveSessionKey(domain = 'student', userId = null) {
+  const d = (domain || 'student').toLowerCase();
+  const uid = userId || getCurrentUserId();
+  const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
+  return `unimitra_active_session_${uid}_${prefix}`;
+}
+
+export function getDomainMessageKey(sessionId, domain = 'student', userId = null) {
+  const d = (domain || 'student').toLowerCase();
+  const uid = userId || getCurrentUserId();
+  const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
+  return `unimitra_messages_${uid}_${prefix}_${sessionId}`;
 }
 
 export function sanitizeAiResponse(text = '') {
@@ -325,7 +338,7 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 1024
+            maxOutputTokens: 400
           }
         })
       });
@@ -359,11 +372,11 @@ export const chatService = {
    * Send a query to the AI Assistant
    * Tier 1: Node.js Backend Gateway -> Tier 2: Python AI Service -> Tier 3: Direct Gemini AI Model Cascade -> Tier 4: Local Search
    */
-  async sendQuery({ query, sessionId = null, language = 'en', university = null, signal = null }) {
+  async sendQuery({ query, sessionId = null, language = 'en', university = null, signal = null, saveToHistory = true, isVoice = false }) {
     if (signal?.aborted) {
       return { success: false, aborted: true };
     }
-    const sId = sessionId || `session-${Date.now()}`;
+    const sId = isVoice ? null : (sessionId || generateSessionId());
     const mode = detectLanguageMode(query, language);
 
     // 1. Attempt Backend Gateway Call
@@ -377,7 +390,9 @@ export const chatService = {
           query,
           sessionId: sId,
           language: mode,
-          university: university?.code || university?.name || 'DU'
+          university: university?.code || university?.name || 'DU',
+          saveToHistory: saveToHistory && !isVoice,
+          isVoice: Boolean(isVoice)
         })
       });
 
@@ -673,9 +688,7 @@ export const chatService = {
   },
 
   /**
-   * Synthesize speech using Dual-Engine TTS:
-   * - Assamese -> Bakbak API
-   * - English -> GitHub Open-Source TTS (edge-tts)
+   * Synthesize speech using Google Gemini Native Audio TTS for all languages
    * Client-side audio cache prevents duplicate requests.
    */
   _audioCache: new Map(),
@@ -704,7 +717,7 @@ export const chatService = {
       return this._audioCache.get(cacheKey);
     }
 
-    // 1. Direct call to Python AI Service Dual-Engine TTS endpoint (POST /api/tts/generate)
+    // 1. Direct call to Python AI Service Google Gemini TTS endpoint (POST /api/tts/generate)
     try {
       const response = await fetch(`${AI_SERVICE_URL}/api/tts/generate`, {
         method: 'POST',

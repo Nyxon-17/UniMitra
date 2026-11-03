@@ -248,7 +248,7 @@ Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${understanding.normalizedQuery}${contextNote}` }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
+          generationConfig: { temperature: 0.3, maxOutputTokens: 400 }
         })
       });
       if (res.ok) {

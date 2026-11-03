@@ -60,6 +60,12 @@ export const DashboardNavbar = ({
             <MenuIcon className="w-5 h-5" />
           </button>
 
+          <img 
+            src="/unimitra-emblem.png" 
+            alt="UniMitra Emblem" 
+            className="w-7 h-7 object-contain lg:hidden" 
+          />
+
           {/* Institutional Search Bar - Hairline border, subtle ambient focus */}
           <div className="relative w-full hidden sm:block">
             <SearchIcon className="w-4 h-4 text-[#123C3A]/60 dark:text-[#55C7B2]/70 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
