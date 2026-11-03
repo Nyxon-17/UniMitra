@@ -330,6 +330,10 @@ class AssameseUnderstandingLayer:
 
         # High sensitivity detection for Romanized Assamese
         total_words = len(words)
+        if requested_lang in ("as", "as_script"):
+            return "as_script", False
+        if requested_lang == "as_roman":
+            return "as_roman", True
         if assamese_matches >= 1:
             if (
                 assamese_matches >= 2 or
@@ -337,11 +341,6 @@ class AssameseUnderstandingLayer:
                 (assamese_matches / total_words) >= 0.2
             ):
                 return "as_roman", True
-
-        if requested_lang == "as_roman":
-            return "as_roman", True
-        if requested_lang in ("as", "as_script"):
-            return "as_script", False
 
         return "en", False
 

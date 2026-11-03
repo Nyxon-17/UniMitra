@@ -879,9 +879,11 @@ export const AdminConsole = ({
           {/* Sidebar Brand Header */}
           <div className="p-5 border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] flex items-center justify-center font-black shadow-xs">
-                <BuildingLibraryIcon className="w-6 h-6 text-white dark:text-[#000000]" />
-              </div>
+              <img 
+                src="/unimitra-emblem.png" 
+                alt="UniMitra Shield" 
+                className="w-10 h-10 object-contain drop-shadow-xs" 
+              />
               <div>
                 <div className="flex items-center space-x-1.5">
                   <span className="text-xl font-black text-[#000000] dark:text-[#FFFFFF]">

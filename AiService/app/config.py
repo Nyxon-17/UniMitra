@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     BAKBAK_BASE_URL: str = "https://hub.getraya.app/v1"
     BAKBAK_VOICE_ID: str = "d4e5f6a7-b8c9-4a01-d345-e6f7a8b9c012"
     BAKBAK_MODEL: str = "standard"
+    BAKBAK_SPEED: float = 1.0
+    BAKBAK_TIMEOUT: float = 30.0
+
+    # Sarvam AI Saaras V4 Speech-to-Text API Key
+    SARVAM_API_KEY: str = ""
+    SARVAM_BASE_URL: str = "https://api.sarvam.ai"
+    SARVAM_STT_MODEL: str = "saaras:v4"
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_PATH),

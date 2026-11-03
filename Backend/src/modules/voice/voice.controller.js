@@ -39,6 +39,7 @@ export const transcribe = async (req, res, next) => {
   try {
     const file = req.file;
     const language = req.body.language || 'as';
+    const mode = req.body.mode || 'codemix';
 
     if (!file) {
       return res.status(400).json({
@@ -47,7 +48,7 @@ export const transcribe = async (req, res, next) => {
       });
     }
 
-    const result = await voiceService.transcribeAudio(file.buffer, file.mimetype, language);
+    const result = await voiceService.transcribeAudio(file.buffer, file.mimetype, language, mode);
     return ApiResponse.success(res, result, 'Audio transcribed successfully.');
   } catch (err) {
     next(err);

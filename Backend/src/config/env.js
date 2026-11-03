@@ -1,7 +1,14 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from cwd as well as Backend root
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const envSchema = z.object({
   PORT: z.string().default('5000').transform(Number),
@@ -18,6 +25,16 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:5173,http://localhost:3000'),
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
   BAKBAK_API_KEY: z.string().default('eX2lWnCNyy6JtU6KgUhBC4rpE6o8Bluw'),
+  SARVAM_API_KEY: z.string().default('sk_rpxvjns7_HBb8Pp89bNVWzfv4mCWpSlkC'),
+  SARVAM_BASE_URL: z.string().default('https://api.sarvam.ai'),
+  // Brevo SMTP Config
+  SMTP_HOST: z.string().default('smtp-relay.brevo.com'),
+  SMTP_PORT: z.string().default('587').transform(Number),
+  SMTP_SECURE: z.union([z.string(), z.boolean()]).default('false').transform(val => val === true || val === 'true'),
+  SMTP_USER: z.string().optional().default(''),
+  SMTP_PASS: z.string().optional().default(''),
+  SENDER_EMAIL: z.string().optional().default('yourappmail.co@gmail.com'),
+  EMAIL_FROM: z.string().optional().default('"UniMitra" <yourappmail.co@gmail.com>'),
 });
 
 const parseEnv = () => {

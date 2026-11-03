@@ -59,6 +59,12 @@ export const LoadingSpinnerIcon = ({ className = "w-3 h-3", ...props }) => (
   </svg>
 );
 
+export const ExclamationCircleIcon = ({ className = "w-3.5 h-3.5", ...props }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+  </svg>
+);
+
 /**
  * UniMitra Bilingual AI Assistant
  * 
@@ -180,6 +186,7 @@ const DashboardAiAssistantInner = ({
 
   // Voice Chat States
   const [isListening, setIsListening] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(false);
   const [voiceError, setVoiceError] = useState('');
@@ -206,6 +213,20 @@ const DashboardAiAssistantInner = ({
   const isMountedRef = useRef(true);
   const speakTimeoutRef = useRef(null);
   const currentNavPathRef = useRef(location.pathname);
+  const wasVoiceQueryRef = useRef(false);
+  const silenceTimerRef = useRef(null);
+  const maxRecordingTimerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const audioStreamRef = useRef(null);
+  const [voiceInputLang, setVoiceInputLang] = useState('auto');
+  const [voiceMode, setVoiceMode] = useState('codemix'); // 'codemix' | 'transcribe' | 'translit'
+  const inputQueryRef = useRef(inputQuery);
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    inputQueryRef.current = inputQuery;
+  }, [inputQuery]);
 
   // Load saved sessions on mount and sync whenever domain or language changes
   useEffect(() => {
@@ -291,14 +312,250 @@ const DashboardAiAssistantInner = ({
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  // Speech Recognition Setup
+  const stopAudioRecording = () => {
+    return new Promise((resolve) => {
+      const recorder = mediaRecorderRef.current;
+      const finishStream = () => {
+        if (audioStreamRef.current) {
+          try {
+            audioStreamRef.current.getTracks().forEach((t) => t.stop());
+          } catch {}
+          audioStreamRef.current = null;
+        }
+      };
+
+      if (!recorder || recorder.state === 'inactive') {
+        finishStream();
+        const blob = audioChunksRef.current.length > 0
+          ? new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          : null;
+        resolve(blob);
+        return;
+      }
+
+      recorder.onstop = () => {
+        finishStream();
+        const mimeType = recorder?.mimeType || 'audio/webm';
+        const blob = audioChunksRef.current.length > 0
+          ? new Blob(audioChunksRef.current, { type: mimeType })
+          : null;
+        resolve(blob);
+      };
+
+      try {
+        if (recorder.state === 'recording') {
+          try { recorder.requestData(); } catch {}
+        }
+        recorder.stop();
+      } catch {
+        finishStream();
+        resolve(null);
+      }
+    });
+  };
+
+  const cancelListening = () => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    if (maxRecordingTimerRef.current) clearTimeout(maxRecordingTimerRef.current);
+    setIsListening(false);
+    setIsTranscribing(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch {}
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (audioStreamRef.current) {
+      try {
+        audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      } catch {}
+      audioStreamRef.current = null;
+    }
+    audioChunksRef.current = [];
+  };
+
+  const handleSpeechCaptureFinish = async (forceServerFallback = false) => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    if (maxRecordingTimerRef.current) clearTimeout(maxRecordingTimerRef.current);
+
+    setIsListening(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+
+    const audioBlob = await stopAudioRecording();
+
+    const currentQuery = (inputQueryRef.current || '').trim();
+    const isPureEnglish = voiceInputLang === 'en' && currentLang === 'en';
+
+    // If pure English speech was already recognized cleanly by the browser and no audio fallback needed
+    if (isPureEnglish && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
+      setTimeout(() => textareaRef.current?.focus(), 50);
+      return;
+    }
+
+    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
+    // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
+    if (audioBlob && audioBlob.size > 200) {
+      setIsTranscribing(true);
+      setVoiceError('');
+      try {
+        const targetLang = (voiceInputLang === 'en' && currentLang === 'en') ? 'en' : 'as';
+        const targetMode = targetLang === 'en' ? 'transcribe' : voiceMode;
+        const serverTranscript = await chatService.transcribeAudio(audioBlob, targetLang, targetMode);
+        if (serverTranscript && serverTranscript.trim()) {
+          const clean = serverTranscript.trim();
+          setInputQuery(clean);
+          inputQueryRef.current = clean;
+          setTimeout(() => textareaRef.current?.focus(), 50);
+        } else if (currentQuery) {
+          setInputQuery(currentQuery);
+          inputQueryRef.current = currentQuery;
+          setTimeout(() => textareaRef.current?.focus(), 50);
+        } else {
+          setVoiceError(
+            currentLang === 'as'
+              ? 'কোনো বাক্য চিনাক্ত হোৱা নাই। অনুগ্ৰহ কৰি আকৌ কওক।'
+              : 'No speech detected. Please speak into the mic.'
+          );
+          setTimeout(() => setVoiceError(''), 4000);
+        }
+      } catch (err) {
+        console.warn('Sarvam transcription notice:', err);
+        if (currentQuery) {
+          setInputQuery(currentQuery);
+          inputQueryRef.current = currentQuery;
+          setTimeout(() => textareaRef.current?.focus(), 50);
+        } else {
+          setVoiceError(
+            currentLang === 'as'
+              ? 'ভইচ চিনাক্তকৰণত সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।'
+              : 'Voice transcription failed. Please try again.'
+          );
+          setTimeout(() => setVoiceError(''), 4000);
+        }
+      } finally {
+        setIsTranscribing(false);
+      }
+    } else if (currentQuery) {
+      setInputQuery(currentQuery);
+      inputQueryRef.current = currentQuery;
+      setTimeout(() => textareaRef.current?.focus(), 50);
+    } else {
+      setVoiceError(
+        currentLang === 'as'
+          ? 'কোনো বাক্য চিনাক্ত হোৱা নাই।'
+          : 'No speech detected.'
+      );
+      setTimeout(() => setVoiceError(''), 4000);
+    }
+  };
+
+  const startListening = async () => {
+    cancelListening();
+    setInputQuery('');
+    inputQueryRef.current = '';
+    setVoiceError('');
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setVoiceError(
+        currentLang === 'as'
+          ? 'আপোনাৰ ব্ৰাউজাৰত মাইক্ৰ’ফোন সুবিধা উপলব্ধ নহয় বা HTTPS প্ৰয়োজন।'
+          : 'Microphone access is not supported by your browser or requires HTTPS.'
+      );
+      return;
+    }
+
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+    } catch (err) {
+      console.warn('Microphone permission error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setVoiceError(
+          currentLang === 'as'
+            ? 'মাইক্ৰ’ফোনৰ অনুমতি নাকচ কৰা হৈছে। ব্ৰাউজাৰ ছেটিংছত মাইকৰ অনুমতি দিয়ক।'
+            : 'Microphone permission denied. Please allow microphone access in browser settings.'
+        );
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setVoiceError(
+          currentLang === 'as'
+            ? 'কোনো মাইক্ৰ’ফোন পোৱা নগ’ল। অনুগ্ৰহ কৰি মাইক সংযোগ পৰীক্ষা কৰক।'
+            : 'No microphone found on your device. Please connect a microphone.'
+        );
+      } else {
+        setVoiceError(
+          currentLang === 'as'
+            ? 'মাইক্ৰ’ফোন আৰম্ভ কৰাত সমস্যা হৈছে।'
+            : `Microphone error: ${err.message || 'Unable to open microphone'}`
+        );
+      }
+      return;
+    }
+
+    audioChunksRef.current = [];
+    try {
+      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+      const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      mr.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+      mr.start(100);
+      mediaRecorderRef.current = mr;
+    } catch (mrErr) {
+      console.warn('MediaRecorder init error:', mrErr);
+    }
+
+    setIsListening(true);
+
+    if (recognitionRef.current) {
+      try {
+        const targetLang = voiceInputLang === 'as' 
+          ? 'bn-IN' 
+          : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
+        recognitionRef.current.lang = targetLang;
+        recognitionRef.current.start();
+      } catch (err) {
+        console.warn('Recognition start notice:', err);
+      }
+    }
+
+    // Comfortable 30 seconds recording window
+    if (maxRecordingTimerRef.current) clearTimeout(maxRecordingTimerRef.current);
+    maxRecordingTimerRef.current = setTimeout(() => {
+      handleSpeechCaptureFinish();
+    }, 30000);
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      handleSpeechCaptureFinish();
+    } else {
+      startListening();
+    }
+  };
+
+  // Speech Recognition Setup: Continuous listening, plenty of time to speak, bilingual Assamese/English support
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = false;
+      recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+
+      const targetLang = voiceInputLang === 'as' 
+        ? 'bn-IN' 
+        : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
+      try {
+        recognition.lang = targetLang;
+      } catch {
+        recognition.lang = 'en-IN';
+      }
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -306,45 +563,46 @@ const DashboardAiAssistantInner = ({
       };
 
       recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-        setInputQuery(transcript);
+        let fullTranscript = '';
+        for (let i = 0; i < event.results.length; ++i) {
+          fullTranscript += event.results[i][0].transcript + ' ';
+        }
+        const cleaned = fullTranscript.trim();
+        if (cleaned) {
+          setInputQuery(cleaned);
+          inputQueryRef.current = cleaned;
+        }
+
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = setTimeout(() => {
+          handleSpeechCaptureFinish();
+        }, 5000);
       };
 
       recognition.onerror = (event) => {
-        console.warn('Speech recognition error:', event.error);
-        setIsListening(false);
-        setVoiceError('Microphone not recognized or permission denied.');
-        setTimeout(() => setVoiceError(''), 4000);
+        console.warn('Speech recognition notice:', event.error);
+        if (event.error === 'not-allowed') {
+          setVoiceError(
+            currentLang === 'as' 
+              ? 'মাইক্ৰ’ফোনৰ অনুমতি নাকচ কৰা হৈছে।' 
+              : 'Microphone permission denied.'
+          );
+          cancelListening();
+        }
+        // Do NOT abort MediaRecorder on no-speech or language errors
       };
 
       recognition.onend = () => {
-        setIsListening(false);
+        // Recognition cycle completed; MediaRecorder keeps recording until user finishes
       };
 
       recognitionRef.current = recognition;
     }
-  }, [currentLang]);
 
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
-      alert('Speech Recognition is not supported in this browser. Please use Chrome or Edge.');
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
-        recognitionRef.current.start();
-      } catch (err) {
-        console.error('Recognition error:', err);
-      }
-    }
-  };
+    return () => {
+      cancelListening();
+    };
+  }, [currentLang, voiceInputLang]);
 
   // Dual-Engine Speech Synthesis: Bakbak (Assamese) & GitHub Open-Source TTS (English)
   const handleToggleMessageAudio = async (msgId, rawText) => {
@@ -570,12 +828,26 @@ const DashboardAiAssistantInner = ({
     }
   };
 
+  const cancelQuery = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+  };
+
   // Execute query connected to backend and database
   const executeQuery = async (queryText) => {
     if (!queryText.trim() || loading) return;
 
     stopSpeaking();
     setHistoryDrawerOpen(false); // Ensure history is hidden during conversation
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userMessage = {
       id: Date.now(),
@@ -612,8 +884,13 @@ const DashboardAiAssistantInner = ({
         query: queryText,
         sessionId: activeSessionId,
         language: currentLang,
-        university: univProfile
+        university: univProfile,
+        signal: controller.signal
       });
+
+      if (!res || res.aborted || controller.signal.aborted) {
+        return;
+      }
 
       let targetSessionId = activeSessionId;
       if (res.sessionId && res.sessionId !== activeSessionId) {
@@ -654,12 +931,18 @@ const DashboardAiAssistantInner = ({
         if (updated && updated.length > 0) setSessions(updated);
       });
 
-      if (voiceOutputEnabled) {
-        setTimeout(() => speakText(aiResponse.text, 'female'), 200);
+      if (wasVoiceQueryRef.current || voiceOutputEnabled) {
+        wasVoiceQueryRef.current = false;
+        setTimeout(() => speakText(aiResponse.text, 'female'), 250);
       }
     } catch (err) {
-      console.error('Chat error:', err);
+      if (err?.name !== 'AbortError' && !controller.signal.aborted) {
+        console.error('Chat error:', err);
+      }
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setLoading(false);
     }
   };
@@ -1113,29 +1396,7 @@ const DashboardAiAssistantInner = ({
           </div>
         )}
 
-        {/* Active Listening Banner */}
-        {isListening && (
-          <div className="px-4 py-2 bg-[#8B5CF6]/10 dark:bg-[#22D3EE]/10 border-b border-[#8B5CF6]/30 dark:border-[#22D3EE]/30 flex items-center justify-between shrink-0">
-            <div className="flex items-center space-x-2.5 truncate mr-2">
-              <VoiceAssistantLogo className="w-5 h-5 shrink-0" isListening={true} isSpeaking={false} />
-              <span className="text-xs font-semibold text-[#8B5CF6] dark:text-[#22D3EE] truncate">
-                Listening in {currentLang === 'as' ? 'Assamese' : 'English'}... Speak now!
-              </span>
-            </div>
-            <button
-              onClick={toggleListening}
-              className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B5CF6] text-white hover:bg-[#7C3AED] dark:bg-[#22D3EE] dark:text-[#16181A] dark:hover:bg-[#06B6D4] cursor-pointer shadow-xs shrink-0"
-            >
-              Done
-            </button>
-          </div>
-        )}
 
-        {voiceError && (
-          <div className="px-4 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-medium border-b border-red-200 dark:border-red-900/50 shrink-0">
-            {voiceError}
-          </div>
-        )}
 
         {/* Suggested Quick Question Chips */}
         <div className="px-3 py-1.5 bg-[#E9F0ED]/50 dark:bg-[#142426]/50 border-b border-[#123C3A]/8 dark:border-[#55C7B2]/10 flex items-center space-x-1.5 overflow-x-auto no-scrollbar scroll-smooth shrink-0">
@@ -1320,16 +1581,27 @@ const DashboardAiAssistantInner = ({
             </div>
           ))}
 
-          {/* Thinking / Loading Animation */}
+          {/* Thinking / Loading Animation with Cancel Query Button */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
               <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center shrink-0">
                 <VoiceAssistantLogo className="w-7 h-7 sm:w-8 sm:h-8" isSpeaking={true} animated={true} />
               </div>
-              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4]">
-                {currentLang === 'as' 
-                  ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী পৰীক্ষা কৰি থকা হৈছে...` 
-                  : `Retrieving verified statutory records from ${univProfile.name} knowledge base...`}
+              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4] flex items-center justify-between gap-3 shadow-xs">
+                <span>
+                  {currentLang === 'as' 
+                    ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী পৰীক্ষা কৰি থকা হৈছে...` 
+                    : `Retrieving verified statutory records from ${univProfile.name} knowledge base...`}
+                </span>
+                <button
+                  type="button"
+                  onClick={cancelQuery}
+                  className="px-2 py-0.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-[11px] font-bold border border-red-300 dark:border-red-800/40 cursor-pointer transition-colors shrink-0 flex items-center space-x-1"
+                  title="Cancel response generation"
+                >
+                  <StopIcon className="w-3 h-3 text-red-500" />
+                  <span>{currentLang === 'as' ? 'বন্ধ কৰক' : 'Cancel'}</span>
+                </button>
               </div>
             </div>
           )}
@@ -1342,6 +1614,95 @@ const DashboardAiAssistantInner = ({
           onSubmit={handleSend} 
           className="p-2 sm:p-3 bg-[#F7F6F0]/90 dark:bg-[#16181A]/90 backdrop-blur-md border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 shrink-0"
         >
+          {/* Active Listening & Bilingual Voice Mode Indicator Banner */}
+          {isListening && (
+            <div className="mb-2 px-3 py-2 rounded-xl bg-gradient-to-r from-[#8B5CF6]/15 to-[#22D3EE]/15 border border-[#22D3EE]/30 flex flex-wrap items-center justify-between gap-2 text-xs text-[#123C3A] dark:text-[#DCE8E4]">
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block" />
+                <span className="font-semibold">
+                  {currentLang === 'as' 
+                    ? 'মাইক্ৰ’ফোন সক্ৰিয়: অসমীয়া বা ইংৰাজীত কওক (স্বাভাৱিকভাৱে কওক)...' 
+                    : 'Recording: Speak in Assamese or English (Take your time)...'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-1.5">
+                <button
+                  type="button"
+                  onClick={() => setVoiceInputLang(prev => prev === 'as' ? 'en' : 'as')}
+                  className="px-2 py-1 rounded-lg bg-white/80 dark:bg-black/50 border border-black/10 dark:border-white/10 text-[11px] font-semibold hover:bg-white dark:hover:bg-black cursor-pointer"
+                  title="Switch Speech Recognition Language"
+                >
+                  {voiceInputLang === 'as' ? 'অসমীয়া' : (voiceInputLang === 'en' ? 'English' : 'Auto')}
+                </button>
+                {voiceInputLang !== 'en' && (
+                  <button
+                    type="button"
+                    onClick={() => setVoiceMode(prev => prev === 'codemix' ? 'transcribe' : (prev === 'transcribe' ? 'translit' : 'codemix'))}
+                    className="px-2 py-1 rounded-lg bg-white/80 dark:bg-black/50 border border-black/10 dark:border-white/10 text-[11px] font-semibold hover:bg-white dark:hover:bg-black cursor-pointer"
+                    title="Switch Output Mode (Code-Mix, Native Script, Romanized)"
+                  >
+                    {voiceMode === 'codemix' ? 'Code-Mix' : (voiceMode === 'transcribe' ? 'অসমীয়া' : 'Romanized')}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleSpeechCaptureFinish()}
+                  className="px-2.5 py-1 rounded-lg bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-[11px] font-bold cursor-pointer transition-colors shadow-xs"
+                >
+                  {currentLang === 'as' ? 'সম্পন্ন (Done)' : 'Done'}
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelListening}
+                  className="px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-700 dark:text-gray-300 text-[11px] font-semibold cursor-pointer transition-colors"
+                >
+                  {currentLang === 'as' ? 'বাতিল' : 'Cancel'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Fallback Server-Side AI Transcription Processing State */}
+          {isTranscribing && (
+            <div className="mb-2 px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40 flex items-center justify-between gap-2 text-xs text-purple-800 dark:text-purple-200">
+              <div className="flex items-center space-x-2">
+                <LoadingSpinnerIcon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span className="font-semibold">
+                  {currentLang === 'as' 
+                    ? 'AI ভইচ মডেলেৰে কথা পৰীক্ষা কৰা হৈছে (Transcribing speech with AI)...' 
+                    : 'Transcribing speech with AI model...'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Voice Input Notice / Error Banner with Retry */}
+          {voiceError && (
+            <div className="mb-2 px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 flex items-center justify-between gap-2 text-xs text-red-700 dark:text-red-300">
+              <div className="flex items-center space-x-1.5 truncate">
+                <ExclamationCircleIcon className="w-3.5 h-3.5 shrink-0 text-red-500" />
+                <span className="truncate">{voiceError}</span>
+              </div>
+              <div className="flex items-center space-x-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={startListening}
+                  className="text-[11px] font-bold underline hover:opacity-80 cursor-pointer"
+                >
+                  {currentLang === 'as' ? 'আকৌ চেষ্টা কৰক (Retry)' : 'Retry'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVoiceError('')}
+                  className="p-0.5 rounded text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 cursor-pointer"
+                  title="Dismiss"
+                >
+                  <XMarkIcon className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#142426]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 px-2.5 sm:px-3 py-1.5 flex items-center gap-2 focus-within:border-[#123C3A] dark:focus-within:border-[#55C7B2] focus-within:ring-1 focus-within:ring-[#123C3A]/10 dark:focus-within:ring-[#55C7B2]/20 transition-all">
             
             {/* Microphone Voice Toggle */}
@@ -1379,16 +1740,29 @@ const DashboardAiAssistantInner = ({
               className="flex-1 bg-transparent text-xs sm:text-sm text-[#273B45] dark:text-[#DCE8E4] placeholder-[#273B45]/45 dark:placeholder-[#879B99] outline-none resize-none leading-relaxed py-1 max-h-24 font-sans"
             />
 
-            {/* Send Trigger Button */}
-            <button
-              type="submit"
-              disabled={!inputQuery.trim() || loading}
-              className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
-              aria-label="Send Query"
-            >
-              <SendIcon className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
-            </button>
+            {/* Send or Cancel Trigger Button */}
+            {loading ? (
+              <button
+                type="button"
+                onClick={cancelQuery}
+                className="px-3.5 sm:px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/50 dark:hover:bg-red-900/50 border border-red-300 dark:border-red-800/40 text-red-600 dark:text-red-400 text-xs font-bold cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0"
+                title="Stop query generation"
+                aria-label="Cancel Query"
+              >
+                <StopIcon className="w-3.5 h-3.5 text-red-500" />
+                <span className="hidden xs:inline">{currentLang === 'as' ? 'বন্ধ কৰক' : 'Cancel'}</span>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!inputQuery.trim()}
+                className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all shadow-xs flex items-center space-x-1.5 shrink-0 font-heading"
+                aria-label="Send Query"
+              >
+                <SendIcon className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">{currentLang === 'as' ? 'প্ৰেৰণ' : 'Send'}</span>
+              </button>
+            )}
           </div>
           <p className="text-[10px] text-center text-[#627680] dark:text-[#879B99] pt-1">
             {currentLang === 'as' 

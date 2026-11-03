@@ -77,16 +77,17 @@ class AiServiceClient {
   /**
    * Send audio to Python STT (Speech-to-Text)
    */
-  async transcribeAudio(audioBuffer, language = 'as', mimeType = 'audio/webm') {
+  async transcribeAudio(audioBuffer, language = 'as', mimeType = 'audio/webm', mode = 'codemix') {
     try {
       const form = new FormData();
       form.append('language', language);
+      form.append('mode', mode);
       form.append('audio', audioBuffer, {
         filename: 'voice_input.webm',
         contentType: mimeType,
       });
 
-      const res = await this.client.post('/api/ai/voice/transcribe', form, {
+      const res = await this.client.post('/api/voice/transcribe', form, {
         headers: {
           ...form.getHeaders(),
           'X-Internal-Secret': this.secret,

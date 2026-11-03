@@ -1,0 +1,128 @@
+[
+  {
+    "test_id": 1,
+    "test_phrase": "mur hostel r bikhoye kowa",
+    "spoken_input": "মোৰ হোষ্টেলৰ বিষয়ে কোৱা",
+    "audio_format": "audio/wav",
+    "mode": "codemix",
+    "raw_response": {
+      "success": true,
+      "transcript": "মোৰ hostel-ৰ বিষয়ে।",
+      "language_code": "as-IN",
+      "mode": "codemix",
+      "request_id": "20261102_6905becb-6c89-42df-915d-0f0fabdbc63e",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "মোৰ hostel-ৰ বিষয়ে।",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 2,
+    "test_phrase": "tumi kun hoi",
+    "spoken_input": "তুমি কোন হয়",
+    "audio_format": "audio/wav",
+    "mode": "transcribe",
+    "raw_response": {
+      "success": true,
+      "transcript": "তুমি কোন হয়?",
+      "language_code": "as-IN",
+      "mode": "transcribe",
+      "request_id": "20261102_f3ed4c55-56a7-40ba-9f8a-decd2df71289",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "তুমি কোন হয়?",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 3,
+    "test_phrase": "moi college jam",
+    "spoken_input": "মই কলেজ যাম",
+    "audio_format": "audio/wav",
+    "mode": "transcribe",
+    "raw_response": {
+      "success": true,
+      "transcript": "মই কলেজ যাম।",
+      "language_code": "as-IN",
+      "mode": "transcribe",
+      "request_id": "20261102_5f1597e6-744b-4b87-b8a1-2a356eedfa79",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "মই কলেজ যাম।",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 4,
+    "test_phrase": "aji ghrt e asu",
+    "spoken_input": "আজি ঘৰতে আছোঁ",
+    "audio_format": "audio/wav",
+    "mode": "transcribe",
+    "raw_response": {
+      "success": true,
+      "transcript": "আজি ঘৰতে আছোঁ।",
+      "language_code": "as-IN",
+      "mode": "transcribe",
+      "request_id": "20261102_83527a7c-36f5-4ace-8774-6bb590f71819",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "আজি ঘৰতে আছোঁ।",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 5,
+    "test_phrase": "Assamese Unicode speech",
+    "spoken_input": "নিভৰয়া বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?",
+    "audio_format": "audio/wav",
+    "mode": "transcribe",
+    "raw_response": {
+      "success": true,
+      "transcript": "নিভৰা বিশ্ববিদ্যালয়ৰ পৰা উত্তীৰ্ণ নম্বৰ কিমান লাগে?",
+      "language_code": "as-IN",
+      "mode": "transcribe",
+      "request_id": "20261102_1c934b15-8830-4ade-9b61-2957b19f50cb",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "নিভৰা বিশ্ববিদ্যালয়ৰ পৰা উত্তীৰ্ণ নম্বৰ কিমান লাগে?",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 6,
+    "test_phrase": "Assamese-English mixed speech",
+    "spoken_input": "Moi university admission process janibo bisaru",
+    "audio_format": "audio/wav",
+    "mode": "codemix",
+    "raw_response": {
+      "success": true,
+      "transcript": "মই university admission process জানিব বিচাৰো।",
+      "language_code": "as-IN",
+      "mode": "codemix",
+      "request_id": "20261102_ccf06ee0-abb4-49a6-9288-6e576012b5f0",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "মই university admission process জানিব বিচাৰো।",
+    "preserves_meaning": true
+  },
+  {
+    "test_id": 7,
+    "test_phrase": "Normal English speech",
+    "spoken_input": "Tell me about the university hostel fee and semester examination.",
+    "audio_format": "audio/mp3",
+    "mode": "transcribe",
+    "raw_response": {
+      "success": true,
+      "transcript": "Tell me about the university hostel fee and semester examination.",
+      "language_code": "en-IN",
+      "mode": "transcribe",
+      "request_id": "20261102_94180404-7906-42d8-b679-ea6a06b9a94f",
+      "provider": "sarvam_saaras_v4",
+      "error": null
+    },
+    "final_transcript": "Tell me about the university hostel fee and semester examination.",
+    "preserves_meaning": true
+  }
+]

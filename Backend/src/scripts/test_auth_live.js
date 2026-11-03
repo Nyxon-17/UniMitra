@@ -49,7 +49,7 @@ server.listen(0, async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         identifier: testStudentEmail,
-        otp: '123456',
+        otp: regJson.data?.devOtp || '123456',
       }),
     });
     const studentOtpJson = await studentOtpRes.json();
@@ -162,7 +162,7 @@ server.listen(0, async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         identifier: facultyMemberId,
-        otp: '123456', // Dev fallback / active OTP
+        otp: facLoginJson.data?.devOtp || '123456',
       }),
     });
 
@@ -197,7 +197,7 @@ server.listen(0, async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         identifier: 'admin@unimitra.edu.in',
-        otp: '123456',
+        otp: adminLoginJson.data?.devOtp || '123456',
       }),
     });
 
