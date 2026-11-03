@@ -1314,13 +1314,14 @@ const DashboardAiAssistantInner = ({
             </button>
 
             {/* AI Assistant Logo */}
-            <div className="shrink-0 flex items-center justify-center">
-              <VoiceAssistantLogo 
-                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10" 
-                isSpeaking={isSpeaking}
-                isListening={isListening}
-                animated={true}
-              />
+            <div className="shrink-0 flex items-center justify-center relative group">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center relative">
+                <img 
+                  src="/unimitra-bot.webp" 
+                  alt="UniMitra Assistant Logo" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                />
+              </div>
             </div>
 
             <div className="min-w-0 leading-tight">
@@ -1438,7 +1439,11 @@ const DashboardAiAssistantInner = ({
                 {/* AI Header with Logo inside the bubble */}
                 {msg.sender === 'ai' && (
                   <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
-                    <VoiceAssistantLogo className="w-5 h-5 shrink-0" animated={false} />
+                    <img 
+                      src="/unimitra-bot.webp" 
+                      alt="AI Logo" 
+                      className="w-5 h-5 shrink-0 object-contain rounded-full select-none hover:[transform:perspective(400px)_rotateY(360deg)] transition-transform duration-700 cursor-pointer"
+                    />
                     <span className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
                       {univProfile.name || 'UniMitra'} AI
                     </span>
