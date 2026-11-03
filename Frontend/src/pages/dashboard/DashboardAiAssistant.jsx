@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { chatService } from '../../services/chatService';
+import { detectLanguageModeAdvanced } from '../../services/assameseUnderstanding';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { 
   SendIcon, 
@@ -230,6 +231,10 @@ const DashboardAiAssistantInner = ({
 
   useEffect(() => {
     inputQueryRef.current = inputQuery;
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
   }, [inputQuery]);
 
   // Load saved sessions on mount and sync whenever domain or language changes
@@ -383,11 +388,11 @@ const DashboardAiAssistantInner = ({
     // If pure English speech was already recognized cleanly by the browser and no audio fallback needed
     if (isPureEnglish && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
       setTimeout(() => textareaRef.current?.focus(), 50);
+      executeQuery(currentQuery);
       return;
     }
 
-    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
-    // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
+    // Process audio using Sarvam AI Saaras V4 STT (with Gemini 3.8 Flash fallback)
     if (audioBlob && audioBlob.size > 200) {
       setIsTranscribing(true);
       setVoiceError('');
@@ -395,15 +400,21 @@ const DashboardAiAssistantInner = ({
         const targetLang = (voiceInputLang === 'en' && currentLang === 'en') ? 'en' : 'as';
         const targetMode = targetLang === 'en' ? 'transcribe' : voiceMode;
         const serverTranscript = await chatService.transcribeAudio(audioBlob, targetLang, targetMode);
-        if (serverTranscript && serverTranscript.trim()) {
-          const clean = serverTranscript.trim();
+        const resolvedText = (serverTranscript && serverTranscript.trim()) || (targetLang === 'en' ? currentQuery : '');
+        if (resolvedText) {
+          const clean = resolvedText.trim();
           setInputQuery(clean);
           inputQueryRef.current = clean;
+
+          // First detect the language:
+          const detectedMode = detectLanguageModeAdvanced(clean);
+          const isEnglish = detectedMode === 'en';
+          const detectedLang = isEnglish ? 'en' : 'as';
+          if (currentLang !== detectedLang) {
+            setCurrentLang(detectedLang);
+          }
           setTimeout(() => textareaRef.current?.focus(), 50);
-        } else if (currentQuery) {
-          setInputQuery(currentQuery);
-          inputQueryRef.current = currentQuery;
-          setTimeout(() => textareaRef.current?.focus(), 50);
+          executeQuery(clean);
         } else {
           setVoiceError(
             currentLang === 'as'
@@ -414,10 +425,12 @@ const DashboardAiAssistantInner = ({
         }
       } catch (err) {
         console.warn('Sarvam transcription notice:', err);
-        if (currentQuery) {
-          setInputQuery(currentQuery);
-          inputQueryRef.current = currentQuery;
+        const fallbackQuery = (voiceInputLang === 'en' && currentLang === 'en') ? currentQuery : '';
+        if (fallbackQuery) {
+          setInputQuery(fallbackQuery);
+          inputQueryRef.current = fallbackQuery;
           setTimeout(() => textareaRef.current?.focus(), 50);
+          executeQuery(fallbackQuery);
         } else {
           setVoiceError(
             currentLang === 'as'
@@ -429,10 +442,11 @@ const DashboardAiAssistantInner = ({
       } finally {
         setIsTranscribing(false);
       }
-    } else if (currentQuery) {
+    } else if (isPureEnglish && currentQuery) {
       setInputQuery(currentQuery);
       inputQueryRef.current = currentQuery;
       setTimeout(() => textareaRef.current?.focus(), 50);
+      executeQuery(currentQuery);
     } else {
       setVoiceError(
         currentLang === 'as'
@@ -507,10 +521,12 @@ const DashboardAiAssistantInner = ({
 
     if (recognitionRef.current) {
       try {
-        const targetLang = voiceInputLang === 'as' 
-          ? 'bn-IN' 
-          : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
-        recognitionRef.current.lang = targetLang;
+        const targetLang = (voiceInputLang === 'en' || currentLang === 'en') ? 'en-IN' : 'as-IN';
+        try {
+          recognitionRef.current.lang = targetLang;
+        } catch {
+          recognitionRef.current.lang = 'bn-IN';
+        }
         recognitionRef.current.start();
       } catch (err) {
         console.warn('Recognition start notice:', err);
@@ -540,13 +556,11 @@ const DashboardAiAssistantInner = ({
       recognition.continuous = true;
       recognition.interimResults = true;
 
-      const targetLang = voiceInputLang === 'as' 
-        ? 'bn-IN' 
-        : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
+      const targetLang = (voiceInputLang === 'en' || currentLang === 'en') ? 'en-IN' : 'as-IN';
       try {
         recognition.lang = targetLang;
       } catch {
-        recognition.lang = 'en-IN';
+        recognition.lang = 'bn-IN';
       }
 
       recognition.onstart = () => {
@@ -561,6 +575,7 @@ const DashboardAiAssistantInner = ({
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
+          // Immediately show real-time recognized words as user speaks
           setInputQuery(cleaned);
           inputQueryRef.current = cleaned;
         }
@@ -629,8 +644,10 @@ const DashboardAiAssistantInner = ({
     setTtsErrorMessage('');
 
     try {
-      // Send the exact final Gemini response without rewriting or modifying
-      const audioUrl = await chatService.synthesizeVoiceAudio(rawText, currentLang, 'female');
+      // First detect language from the response text: English output -> English voice, Assamese output -> Assamese voice
+      const hasAssamese = /[\u0980-\u09FF]/.test(rawText) || detectLanguageModeAdvanced(rawText) !== 'en';
+      const speechLang = hasAssamese ? 'as' : 'en';
+      const audioUrl = await chatService.synthesizeVoiceAudio(rawText, speechLang, 'female');
       if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) {
         setTtsState('idle');
         setPlayingMessageId(null);
@@ -872,10 +889,14 @@ const DashboardAiAssistantInner = ({
     chatService.saveSessionMessages(activeSessionId, newMessages, domain, userId);
 
     try {
+      const detectedMode = detectLanguageModeAdvanced(queryText);
+      const isEnglish = detectedMode === 'en';
+      const queryLanguage = isEnglish ? 'en' : (detectedMode === 'as_roman' ? 'as_roman' : 'as');
+
       const res = await chatService.sendQuery({
         query: queryText,
         sessionId: activeSessionId,
-        language: currentLang,
+        language: queryLanguage,
         university: univProfile,
         category: domain,
         domain: domain,

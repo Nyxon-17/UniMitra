@@ -792,7 +792,7 @@ class UniversityService {
     if (!query || typeof query !== 'string') return null;
 
     const lower = query.toLowerCase().trim();
-    const isAssamese = lang === 'as' || /[\u0980-\u09FF]/.test(query);
+    const isAssamese = lang === 'as' || lang === 'as_script' || lang === 'as_roman' || /[\u0980-\u09FF]/.test(query);
 
     const uName = this.data.profile?.name || 'Nivoraya University';
     const uAsName = this.data.profile?.asName || 'নিভৰয়া বিশ্ববিদ্যালয়';

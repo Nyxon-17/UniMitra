@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { documentService } from '../../services/documentService';
 import { chatService } from '../../services/chatService';
+import { detectLanguageModeAdvanced } from '../../services/assameseUnderstanding';
 import { 
   SparklesIcon, 
   XMarkIcon, 
@@ -392,7 +393,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
 
   // Google Gemini Voice Synthesis for All Languages (Assamese, English & Code-Mixed)
-  const speakText = async (text, gender = 'female') => {
+  const speakText = async (text, gender = 'female', languageHint = null) => {
     stopSpeaking();
 
     const cleanText = text
@@ -407,7 +408,10 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     setIsPaused(false);
 
     try {
-      const audioUrl = await chatService.synthesizeVoiceAudio(cleanText, currentLang, gender);
+      // First detect language from the text: English output -> English voice, Assamese output -> Assamese voice
+      const hasAssamese = /[\u0980-\u09FF]/.test(cleanText) || detectLanguageModeAdvanced(cleanText) !== 'en';
+      const targetLang = languageHint || (hasAssamese ? 'as' : 'en');
+      const audioUrl = await chatService.synthesizeVoiceAudio(cleanText, targetLang, gender);
       if (!isWidgetMountedRef.current || currentNavPathRef.current !== location.pathname) {
         if (audioUrl) URL.revokeObjectURL(audioUrl);
         setIsSpeaking(false);
@@ -502,7 +506,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
   };
 
   // Execute query via Live Backend & Database with grounded fallback
-  const executeVoiceQuery = async (queryText) => {
+  const executeVoiceQuery = async (queryText, explicitMode = null) => {
     const q = queryText || inputQuery;
     if (!q.trim()) return;
 
@@ -519,10 +523,23 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       try { recognitionRef.current.stop(); } catch {}
     }
 
+    // FIRST DETECT THE LANGUAGE OF WHAT THE USER SPOKE:
+    // If the user speaks English -> answer and speech must be English.
+    // If the user speaks Assamese -> answer and speech must be Assamese.
+    const detectedMode = explicitMode || detectLanguageModeAdvanced(q);
+    const isEnglish = detectedMode === 'en';
+    const queryLang = isEnglish ? 'en' : (detectedMode === 'as_roman' ? 'as_roman' : 'as');
+    const speechLang = isEnglish ? 'en' : 'as';
+
+    // Synchronize UI language with the detected spoken language
+    if (currentLang !== speechLang) {
+      setCurrentLang(speechLang);
+    }
+
     try {
       const res = await chatService.sendQuery({
         query: q,
-        language: currentLang,
+        language: queryLang,
         university: univProfile,
         signal: controller.signal,
         saveToHistory: false,
@@ -542,14 +559,14 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       };
 
       setCurrentResult(resultObj);
-      speakText(res.answer, 'female');
+      speakText(res.answer, 'female', speechLang);
     } catch (err) {
       if (err?.name === 'AbortError' || controller.signal.aborted) {
         return;
       }
-      const match = documentService.query(q, currentLang);
+      const match = documentService.query(q, speechLang);
       const univName = univProfile.name || 'My University';
-      const answer = match?.answer || (currentLang === 'as' ? `${univName}ৰ তথ্য সংগ্ৰহ কৰা হৈছে।` : 'Information retrieved from knowledge repository.');
+      const answer = match?.answer || (speechLang === 'as' ? `${univName}ৰ তথ্য সংগ্ৰহ কৰা হৈছে।` : 'Information retrieved from knowledge repository.');
       setCurrentResult({
         question: q,
         answer,
@@ -557,7 +574,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         page: match?.page || 'Clause 4',
         confidence: '96% Match'
       });
-      speakText(answer, 'female');
+      speakText(answer, 'female', speechLang);
     } finally {
       if (abortControllerRef.current === controller) {
         abortControllerRef.current = null;
@@ -641,27 +658,28 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
     const audioBlob = await stopAudioRecording();
     const currentQuery = (inputQueryRef.current || '').trim();
 
-    // If pure English speech was recognized cleanly and explicitly in English mode without audio fallback
-    if (currentLang === 'en' && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
-      executeVoiceQuery(currentQuery);
+    // If pure speech was recognized cleanly and explicitly without audio fallback
+    if (currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
+      const detectedMode = detectLanguageModeAdvanced(currentQuery);
+      executeVoiceQuery(currentQuery, detectedMode);
       return;
     }
 
-    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
     // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
     if (audioBlob && audioBlob.size > 200) {
       setIsTranscribing(true);
       setSpeechError('');
       try {
-        // Always pass 'as' with 'codemix' to Sarvam Saaras V4 to accurately transcribe Assamese & code-mixing
-        const serverTranscript = await chatService.transcribeAudio(audioBlob, 'as', 'codemix');
-        if (serverTranscript && serverTranscript.trim()) {
-          const clean = serverTranscript.trim();
+        // Accurately transcribe Assamese and Assamese-English code-mixed speech using Sarvam Saaras V4
+        const sttLang = currentLang === 'en' ? 'en' : 'as';
+        const serverTranscript = await chatService.transcribeAudio(audioBlob, sttLang, 'codemix');
+        const resolvedText = (serverTranscript && serverTranscript.trim()) || (sttLang === 'en' ? currentQuery : '');
+        if (resolvedText) {
+          const clean = resolvedText.trim();
           setInputQuery(clean);
           inputQueryRef.current = clean;
-          executeVoiceQuery(clean);
-        } else if (currentQuery) {
-          executeVoiceQuery(currentQuery);
+          const detectedMode = detectLanguageModeAdvanced(clean);
+          executeVoiceQuery(clean, detectedMode);
         } else {
           setSpeechError(
             currentLang === 'as'
@@ -673,7 +691,8 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       } catch (err) {
         console.warn('Sarvam transcription notice:', err);
         if (currentQuery) {
-          executeVoiceQuery(currentQuery);
+          const detectedMode = detectLanguageModeAdvanced(currentQuery);
+          executeVoiceQuery(currentQuery, detectedMode);
         } else {
           setSpeechError(
             currentLang === 'as'
@@ -686,7 +705,8 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         setIsTranscribing(false);
       }
     } else if (currentQuery) {
-      executeVoiceQuery(currentQuery);
+      const detectedMode = detectLanguageModeAdvanced(currentQuery);
+      executeVoiceQuery(currentQuery, detectedMode);
     } else {
       setSpeechError(
         currentLang === 'as'
@@ -761,7 +781,12 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
 
     if (recognitionRef.current) {
       try {
-        recognitionRef.current.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+        const targetLang = currentLang === 'en' ? 'en-IN' : 'as-IN';
+        try {
+          recognitionRef.current.lang = targetLang;
+        } catch {
+          recognitionRef.current.lang = 'bn-IN';
+        }
         recognitionRef.current.start();
       } catch (err) {
         console.warn('Recognition start notice:', err);
@@ -789,7 +814,11 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = currentLang === 'as' ? 'bn-IN' : 'en-IN';
+      try {
+        recognition.lang = currentLang === 'en' ? 'en-IN' : 'as-IN';
+      } catch {
+        recognition.lang = 'bn-IN';
+      }
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -803,6 +832,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
+          // Immediately display spoken words in real time as user speaks
           setInputQuery(cleaned);
           inputQueryRef.current = cleaned;
         }
@@ -1154,13 +1184,21 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                   <span className="w-1.5 bg-[#FF933E] dark:bg-[#03C988] rounded-full audio-bar-5" />
                 </div>
 
-                <div className="text-center space-y-1">
+                <div className="text-center space-y-1.5 w-full flex flex-col items-center">
                   <span className="text-xs font-black text-[#FF933E] dark:text-[#03C988] animate-pulse">
                     {currentLang === 'as' ? 'শুনো আছে... কওক' : 'Listening... Speak now'}
                   </span>
-                  <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 italic max-w-[280px] truncate px-2">
-                    {inputQuery || (currentLang === 'as' ? 'আপোনাৰ শৈক্ষিক প্ৰশ্ন কওক...' : 'Say your question...')}
-                  </p>
+                  <div className="w-full max-w-[290px] min-h-[42px] max-h-24 overflow-y-auto px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-left transition-all">
+                    {inputQuery ? (
+                      <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-semibold leading-relaxed">
+                        {inputQuery}
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-[#000000]/40 dark:text-[#FFFFFF]/40 italic">
+                        {currentLang === 'as' ? 'আপোনাৰ প্ৰশ্ন কওক (অসমীয়া বা ইংৰাজী)...' : 'Speak your question (Assamese or English)...'}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <button
@@ -1204,7 +1242,7 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 </div>
 
                 {/* Spoken Response text */}
-                <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-black/5 dark:border-white/5 max-h-36 overflow-y-auto">
+                <div className="p-3 rounded-2xl bg-white/60 dark:bg-black/30 border border-black/5 dark:border-white/5 max-h-64 sm:max-h-80 overflow-y-auto">
                   <p className="text-xs text-[#000000] dark:text-[#FFFFFF] leading-relaxed font-medium">
                     {currentResult.answer}
                   </p>

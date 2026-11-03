@@ -2,20 +2,30 @@ import io
 import re
 import wave
 import logging
-from typing import Optional
+from typing import Optional, List
 from google import genai
 from google.genai import types
 from app.config import settings
 
 logger = logging.getLogger("unimitra.tts.gemini")
 
+# Assamese script Unicode block: U+0980 to U+09FF
+ASSAMESE_SCRIPT_REGEX = re.compile(r"[\u0980-\u09FF]")
+
 # Prioritized Gemini models supporting native high-speed audio modalities
-GEMINI_TTS_MODELS = [
-    "gemini-3.8-flash-tts",
-    "gemini-3.8-flash-lite-tts",
-    "gemini-2.5-flash-preview-tts",
-    "gemini-3.1-flash-tts-preview",
-]
+def get_gemini_tts_models() -> List[str]:
+    configured = (getattr(settings, "GEMINI_TTS_MODEL", "") or "").strip()
+    candidates = [
+        configured,
+        "gemini-3.8-flash-tts",
+        "gemini-3.8-flash-lite-tts",
+        "gemini-2.5-flash-preview-tts",
+        "gemini-3.1-flash-tts-preview",
+        "gemini-2.0-flash",
+        "gemini-2.5-flash",
+    ]
+    seen = set()
+    return [m for m in candidates if m and not (m in seen or seen.add(m))]
 
 DEFAULT_VOICE_NAMES = {
     "female": "Kore",
@@ -23,6 +33,22 @@ DEFAULT_VOICE_NAMES = {
     "male": "Puck",
     "male_alt": "Fenrir",
 }
+
+
+def resolve_voice_name(gender: str = "female", voice_override: Optional[str] = None) -> str:
+    if voice_override and voice_override.strip():
+        return voice_override.strip()
+    norm_gender = (gender or "female").strip().lower()
+    configured_voice = (getattr(settings, "GEMINI_TTS_VOICE", "") or "").strip()
+    if norm_gender in ("female", "woman", "girl"):
+        return configured_voice or DEFAULT_VOICE_NAMES["female"]
+    elif norm_gender in ("female_alt", "alt_female"):
+        return DEFAULT_VOICE_NAMES["female_alt"]
+    elif norm_gender in ("male", "man", "boy"):
+        return DEFAULT_VOICE_NAMES["male"]
+    elif norm_gender in ("male_alt", "alt_male"):
+        return DEFAULT_VOICE_NAMES["male_alt"]
+    return configured_voice or DEFAULT_VOICE_NAMES["female"]
 
 
 class GeminiTTS:
@@ -64,8 +90,8 @@ class GeminiTTS:
         timeout: float = 25.0,
     ) -> Optional[bytes]:
         """
-        Synthesizes Assamese + English speech using Gemini native audio output.
-        Returns WAV audio bytes.
+        Synthesizes crystal-clear Assamese and multilingual speech using Google Gemini native audio output.
+        Returns standard WAV audio bytes.
         """
         if not text or not text.strip():
             return None
@@ -73,8 +99,7 @@ class GeminiTTS:
         clean_text = text.strip()
         client = self._get_client()
 
-        norm_gender = (gender or "female").strip().lower()
-        selected_voice = voice_override or DEFAULT_VOICE_NAMES.get(norm_gender, "Kore")
+        selected_voice = resolve_voice_name(gender, voice_override)
 
         # Strip any accidental prompt metadata, system instructions, or boilerplate intros from the speakable text
         prompt_residue_patterns = [
@@ -85,10 +110,27 @@ class GeminiTTS:
         for pattern in prompt_residue_patterns:
             clean_text = re.sub(pattern, "", clean_text, flags=re.IGNORECASE).strip()
 
-        for model_name in GEMINI_TTS_MODELS:
+        # Import phonetic normalizer and audio text cleaners
+        try:
+            from app.services.tts.language_router import language_router
+            clean_text = language_router.clean_text_for_speech(clean_text)
+            if ASSAMESE_SCRIPT_REGEX.search(clean_text):
+                clean_text = language_router.normalize_assamese_for_tts(clean_text)
+        except Exception as norm_err:
+            logger.debug(f"Assamese phonetic normalization skipped: {norm_err}")
+
+        # Choose natural sentence/word boundary for speakable chunk up to ~450 characters
+        if len(clean_text) > 450:
+            last_space = clean_text.rfind(" ", 0, 450)
+            speakable_chunk = clean_text[:last_space].strip() if last_space > 200 else clean_text[:450].strip()
+        else:
+            speakable_chunk = clean_text
+
+        models = get_gemini_tts_models()
+        for model_name in models:
             try:
                 logger.info(
-                    f"Gemini TTS Attempt: model={model_name}, voice={selected_voice}, chars={len(clean_text)}"
+                    f"Gemini TTS Attempt: model={model_name}, voice={selected_voice}, chars={len(speakable_chunk)}"
                 )
                 speech_config = types.SpeechConfig(
                     voice_config=types.VoiceConfig(
@@ -104,8 +146,6 @@ class GeminiTTS:
                     speech_config=speech_config,
                 )
 
-                # Pass clean speakable text (up to 450 chars) for ultra-fast, natural audio synthesis
-                speakable_chunk = clean_text[:450].strip()
                 response = client.models.generate_content(
                     model=model_name,
                     contents=speakable_chunk,

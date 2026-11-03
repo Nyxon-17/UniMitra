@@ -11,9 +11,10 @@ logger = logging.getLogger("unimitra.stt")
 
 # Prioritized Gemini multimodal models for speech audio fallback
 GEMINI_STT_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-flash-lite-latest",
+    "gemini-3-flash-preview",
+    "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
+    "gemini-flash-latest",
 ]
 
 
@@ -28,7 +29,7 @@ class SpeechToTextService:
         self,
         audio_bytes: bytes,
         mime_type: str = "audio/webm",
-        language: str = "as",
+        language: str = "as-IN",
         mode: str = "codemix",
         filename: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -39,7 +40,7 @@ class SpeechToTextService:
             return {
                 "success": False,
                 "transcript": "",
-                "language": language or "as",
+                "language": language or "as-IN",
                 "confidence": 0.0,
                 "provider": "empty",
                 "error": "Audio recording is empty or too short.",

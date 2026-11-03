@@ -18,7 +18,7 @@ ALLOWED_AUDIO_EXTENSIONS = {".webm", ".wav", ".mp3", ".ogg", ".opus", ".m4a", ".
 @router.post("/api/ai/voice/transcribe", response_model=VoiceTranscribeResponse)
 async def transcribe_voice(
     audio: UploadFile = File(...),
-    language: str = Form("as"),
+    language: str = Form("as-IN"),
     mode: str = Form("codemix"),
     _auth: bool = Depends(verify_internal_secret),
 ):

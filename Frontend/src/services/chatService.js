@@ -12,10 +12,10 @@ const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
 const GEMINI_CANDIDATES = [
-  'gemini-flash-lite-latest',
+  'gemini-3-flash-preview',
   'gemini-3.5-flash-lite',
-  'gemini-3.1-flash-lite',
-  'gemini-2.5-flash'
+  'gemini-3.8-flash',
+  'gemini-flash-latest',
 ];
 
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
@@ -342,15 +342,15 @@ Always be polite, professional, and clear. Respond in English.`;
               parts: [
                 {
                   text: documentContext
-                    ? `${systemPrompt}\n\nOFFICIAL INSTITUTIONAL PDF DOCUMENT GROUNDING (ACTUAL TEXT FROM UPLOADED PDF):\n${documentContext}\n\nCRITICAL MANDATE: Answer the user's question using the exact facts, numbers, dates, rules, and details from the uploaded PDF document above. Cite the document name.\n\nUser Question: ${cleanQuery}`
-                    : `${systemPrompt}\n\nUser Question: ${cleanQuery}`
+                    ? `${systemPrompt}\n\nOFFICIAL INSTITUTIONAL PDF DOCUMENT GROUNDING (ACTUAL TEXT FROM UPLOADED PDF):\n${documentContext}\n\nCRITICAL MANDATE: Answer using the exact facts, numbers, dates, rules, and details from the uploaded PDF document above. Cite the document name.\nLANGUAGE MANDATE: Output MUST be in ${mode === 'as_roman' ? 'Romanized Assamese (Assamese written using English alphabet)' : (mode === 'as_script' ? 'Standard Assamese Script (অসমীয়া লিপি)' : 'English')}.\n\nUser Question: ${cleanQuery}`
+                    : `${systemPrompt}\n\nLANGUAGE MANDATE: Output MUST be in ${mode === 'as_roman' ? 'Romanized Assamese (Assamese written using English alphabet)' : (mode === 'as_script' ? 'Standard Assamese Script (অসমীয়া লিপি)' : 'English')}.\n\nUser Question: ${cleanQuery}`
                 }
               ]
             }
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 400
+            maxOutputTokens: 2048
           }
         })
       });
@@ -481,18 +481,24 @@ export const chatService = {
       if (response.ok) {
         const data = await response.json();
         if (data?.success && data?.data) {
-          return {
-            success: true,
-            fromBackend: true,
-            fromAi: true,
-            sessionId: data.data.sessionId || sId,
-            answer: stripUnwantedIntro(data.data.answer || data.data.text, query),
-            source: data.data.source || `${university?.name || 'Nivoraya University'} Gazette`,
-            page: data.data.page || data.data.clause || 'Verified Regulation',
-            confidence: data.data.confidence || '99.4% Verified Match',
-            isUnverified: data.data.isUnverified || false,
-            citations: data.data.citations || []
-          };
+          const rawAns = (data.data.answer || data.data.text || '').trim();
+          const isGenericGuidance = data.data.source === 'UniMitra Academic Guidance' && 
+            (rawAns.includes('সাধাৰণ কাৰ্যপ্ৰণালী') || rawAns.includes('departmental coordinator'));
+          // Only accept backend answer if it is a real comprehensive grounded answer
+          if (!isGenericGuidance && rawAns.length > 50) {
+            return {
+              success: true,
+              fromBackend: true,
+              fromAi: true,
+              sessionId: data.data.sessionId || sId,
+              answer: stripUnwantedIntro(rawAns, query),
+              source: data.data.source || `${university?.name || 'Nivoraya University'} Gazette`,
+              page: data.data.page || data.data.clause || 'Verified Regulation',
+              confidence: data.data.confidence || '99.4% Verified Match',
+              isUnverified: data.data.isUnverified || false,
+              citations: data.data.citations || []
+            };
+          }
         }
       }
     } catch (e) {
@@ -910,8 +916,11 @@ export const chatService = {
     cleanText = cleanText.replace(/[`~*#=|^\\/{}[\]()"'“”‘’]/g, ' ').replace(/[:;,–—]/g, ' ').replace(/\s+-\s+/g, ' ');
     cleanText = cleanText.replace(/[ \t]{2,}/g, ' ').trim();
 
-    const hasAssamese = /[\u0980-\u09FF]/.test(cleanText);
-    const resolvedLang = (language && language !== 'auto') ? language : (hasAssamese ? 'as' : 'en');
+    // Detect speech language from the speakable text: Assamese -> 'as', English -> 'en'
+    const hasAssameseChars = /[\u0980-\u09FF]/.test(cleanText);
+    const textLangMode = detectLanguageMode(cleanText);
+    const isAssameseText = hasAssameseChars || textLangMode === 'as_script' || textLangMode === 'as_roman';
+    const resolvedLang = (language === 'en' && !hasAssameseChars) ? 'en' : (isAssameseText ? 'as' : 'en');
 
     const cacheKey = `${cleanText}_${resolvedLang}_${gender}_${speed || 1.0}`;
     if (this._audioCache.has(cacheKey)) {
@@ -954,7 +963,7 @@ export const chatService = {
         headers: getAuthHeaders(),
         body: JSON.stringify({
           text: cleanText,
-          language,
+          language: resolvedLang,
           gender: gender || 'female',
           voice,
           speed: speed || 1.0,
@@ -982,9 +991,10 @@ export const chatService = {
    */
   async transcribeAudio(audioBlob, language = 'as', mode = 'codemix') {
     if (!audioBlob) return null;
+    const resolvedLang = (language === 'en' || language === 'en-IN') ? 'en' : 'as';
     const formData = new FormData();
     formData.append('audio', audioBlob, 'voice_query.webm');
-    formData.append('language', language || 'as');
+    formData.append('language', resolvedLang);
     formData.append('mode', mode || 'codemix');
 
     // 1. Direct call to Python AI Service (Port 8000) - Official Sarvam Saaras V4 endpoint
@@ -1058,7 +1068,7 @@ export const chatService = {
         if (base64Audio) {
           const cleanMime = (audioBlob.type || 'audio/webm').split(';')[0].trim();
           const gRes = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

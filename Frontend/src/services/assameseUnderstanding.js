@@ -89,7 +89,13 @@ export const ROMANIZED_ASSAMESE_LEXICON = new Set([
   'gao', 'gaon', 'shohor', 'nohor', 'rasta',
   'paani', 'gaakheer', 'saah', 'chai', 'saani', 'bhaat',
   'bohi', 'kitap', 'kolom', 'routine',
-  'axomiya', 'asomiya', 'asom', 'assam', 'sosa', 'misa'
+  'axomiya', 'asomiya', 'asom', 'assam', 'sosa', 'misa',
+  'r', 'or', 'ot', 't', 'karone', 'karne', 'bhabe', 'babe', 'subidha',
+  'masul', 'maasul', 'fee', 'fees', 'khuju', 'khuja', 'hudhi', 'hudhisu',
+  'hudhibo', 'hudhibone', 'hudhok', 'hudha', 'janibo', 'janisane',
+  'bujai', 'bujaba', 'bujabo', 'bhitort', 'bahirot', 'majot',
+  'bisoy', 'bisoye', 'bisoyot', 'neki', 'aseneki', 'asenki', 'hoboneki',
+  'jon', 'khon', 'khan', 'tu', 'ta', 'bor', 'bilak'
 ]);
 
 export const ROMANIZED_PHRASES = [
@@ -100,7 +106,9 @@ export const ROMANIZED_PHRASES = [
   'mur exam', 'kali ase', 'aji ase', 'ketiya hobo', 'buji pua nai', 'buji napalu',
   'buji pua', 'bujisu moi', 'pass mark', 'minimum marks', 'admission ketiya',
   'form fillup', 'fee kiman', 'result ketiya', 'help kora', 'muk kuwa',
-  'mok kuwa', 'jana ase', 'lagibo ne', 'in assamese', 'in axomiya', 'in asomiya'
+  'mok kuwa', 'jana ase', 'lagibo ne', 'in assamese', 'in axomiya', 'in asomiya',
+  'kene koi', 'kenekoi', 'ketiya hobo', 'ki hobo', 'kot ase', 'ki ase', 'kune pabo',
+  'kiman lagibo', 'muk lagibo', 'mur babe', 'mur karone', 'hostel r', 'exam r', 'admission r', 'rules ki'
 ];
 
 export function expandAbbreviations(text = '') {
@@ -122,40 +130,57 @@ export function expandAbbreviations(text = '') {
 }
 
 export function detectLanguageModeAdvanced(text = '', requestedLang = 'en') {
-  if (!text) {
-    return requestedLang === 'as_roman' ? 'as_roman' : (requestedLang === 'as' ? 'as_script' : 'en');
+  if (!text || !text.trim()) {
+    return requestedLang === 'as_roman' ? 'as_roman' : (requestedLang === 'as' || requestedLang === 'as_script' ? 'as_script' : 'en');
   }
 
+  // 1. Assamese script check (বাংলা-অসমীয়া লিপি)
   if (/[\u0980-\u09FF]/.test(text)) {
     return 'as_script';
   }
 
   const lower = text.toLowerCase();
+
+  // 2. Explicit request inside text
   if (lower.includes('assamese script') || lower.includes('in assamese script') || lower.includes('অসমীয়া লিপি')) {
     return 'as_script';
   }
+  if (lower.includes('in romanized assamese') || lower.includes('in english alphabet') || lower.includes('romanized assamese')) {
+    return 'as_roman';
+  }
 
+  // 3. Multi-word phrase triggers
   for (const p of ROMANIZED_PHRASES) {
     if (lower.includes(p)) {
       return 'as_roman';
     }
   }
 
+  // 4. Token & Morphological Suffix Match
   const words = lower.match(/[a-zA-Z]+/g) || [];
   if (!words.length) return 'en';
 
   const expanded = words.map(w => ABBREVIATION_MAP[w] || w);
-  const assameseMatches = expanded.filter(w => ROMANIZED_ASSAMESE_LEXICON.has(w)).length;
-  const total = words.length;
-
-  if (assameseMatches >= 1) {
-    if (assameseMatches >= 2 || total <= 3 || (assameseMatches / total) >= 0.2) {
-      return 'as_roman';
+  let assameseMatches = 0;
+  for (const w of expanded) {
+    if (ROMANIZED_ASSAMESE_LEXICON.has(w)) {
+      assameseMatches++;
+    } else if (w.length > 3) {
+      if (
+        w.endsWith('or') || w.endsWith('ot') ||
+        w.endsWith('khon') || w.endsWith('khan') ||
+        w.endsWith('bilak') || w.endsWith('neki') ||
+        w.endsWith('hobone') || w.endsWith('lagibo')
+      ) {
+        assameseMatches++;
+      }
     }
   }
 
-  if (requestedLang === 'as_roman') return 'as_roman';
-  if (requestedLang === 'as' || requestedLang === 'as_script') return 'as_script';
+  if (assameseMatches >= 1) {
+    return 'as_roman';
+  }
+
   return 'en';
 }
 

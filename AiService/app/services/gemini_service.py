@@ -658,11 +658,18 @@ class GeminiService:
 
         clean_query = normalize_assamese_unicode(understanding.normalized_query)
 
-        lang = target_language or understanding.language_mode
-
-        if understanding.is_romanized and not target_language:
-
-            lang = "as_roman" 
+        # Strict input-driven language matching:
+        # 1. User input in Romanized Assamese (English alphabet) -> 'as_roman'
+        # 2. User input in Assamese script -> 'as'
+        # 3. User input in English -> 'en'
+        if understanding.is_romanized:
+            lang = "as_roman"
+        elif understanding.language_mode in ("as", "as_script"):
+            lang = "as"
+        elif understanding.language_mode == "en":
+            lang = "en"
+        else:
+            lang = target_language or "en" 
 
 
 
@@ -736,7 +743,7 @@ class GeminiService:
 
                         retrieved_chunks = [{
 
-                            "content": benchmark["as_answer"] if lang == "as" else benchmark["en_answer"],
+                            "content": benchmark["as_answer"] if lang in ("as", "as_script") else benchmark["en_answer"],
 
                             "document_id": "benchmark-statutory-clause",
 
@@ -807,59 +814,43 @@ class GeminiService:
 
 
         # 2. Build Prompt
-
         if lang == "as_roman":
-
             system_instruction = ROMANIZED_ASSAMESE_SYSTEM_PROMPT
-
-            output_lang_label = "Romanized Assamese (Assamese language in English alphabet - NO Assamese script)"
-
+            output_lang_label = "Romanized Assamese (Assamese words written using English alphabet letters - NO Assamese script)"
+            lang_mandate = "MANDATORY LANGUAGE: The user asked in Romanized Assamese (Assamese language in English alphabet). You MUST respond strictly in Romanized Assamese (write Assamese words using Latin/English alphabet). Do NOT use Assamese script. Do NOT translate to English."
         elif lang in ("as", "as_script"):
-
             system_instruction = ASSAMESE_SYSTEM_PROMPT
-
-            output_lang_label = "Assamese (প্ৰমিত অসমীয়া লিপি)"
-
+            output_lang_label = "Assamese (বিশুদ্ধ প্ৰমিত অসমীয়া লিপি)"
+            lang_mandate = "MANDATORY LANGUAGE: The user asked in Assamese script. You MUST respond strictly and completely in Standard Assamese script (বিশুদ্ধ প্ৰমিত অসমীয়া লিপি). End sentences with Assamese daari ('।'). Do NOT write in English."
         else:
-
             system_instruction = ENGLISH_SYSTEM_PROMPT
-
             output_lang_label = "English"
-
-
+            lang_mandate = "MANDATORY LANGUAGE: The user asked in English. You MUST respond strictly and authoritatively in English. Do NOT write in Assamese script or Romanized Assamese."
 
         context_hint_line = f"\nUnderstood Input Context: {understanding.context_hint}\n" if (understanding.context_hint and lang == "as_roman") else ""
 
         user_prompt = f"""Target Output Language: {output_lang_label}
+{lang_mandate}
 
 User Question: {clean_query}{context_hint_line}
 
-
-
 Statutory Institutional Context Chunks:
-
 {full_context if full_context else '[NO DIRECT DOCUMENT CHUNKS AVAILABLE - ANSWER USING ACADEMIC AND UNIVERSITY KNOWLEDGE]'}
 
-
-
 INSTRUCTIONS FOR THIS QUERY:
-
-1. Understand the user's exact need. If they ask for specific ranks, positions, or entities (e.g. "2nd topper", "second rank", "merit list", "passing criteria", "minimum attendance"), carefully examine the document chunks and tables above.
-
-2. If the context contains a merit list, table, or list of scores/ranks, pinpoint the exact record requested (e.g. Rank 2 for "2nd topper") and state their name, roll number, score, and rank directly.
-
-3. Formulate a direct, accurate, and authoritative answer without preamble or boilerplate introduction. Cite the document title and page/clause.
-
+1. STRICT LANGUAGE MATCHING: {lang_mandate}
+2. Direct Answer: Formulate a direct, accurate, and authoritative answer without preamble or boilerplate introduction. Cite the document title and page/clause.
+3. If the user asks for specific ranks, positions, or entities (e.g. "2nd topper", "second rank", "merit list", "passing criteria", "minimum attendance"), carefully examine the document chunks and tables above, and pinpoint the exact record requested.
 4. UNIVERSITY DOMAIN CONSTRAINT: Check if the user question is related to university, academics, exams, syllabus, admissions, scholarships, hostels, or campus administration. If the user question is completely outside the university or academic domain (e.g., cooking recipes, movies, external politics, jokes, or non-academic chit-chat), politely decline to answer, stating that UniMitra is strictly dedicated to answering university and academic inquiries."""
 
 
 
         # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
         candidate_models = [
-            settings.GEMINI_MODEL or "gemini-3.5-flash",
-            "gemini-3.5-flash",
-            "gemini-3.8-flash",
+            settings.GEMINI_MODEL or "gemini-3-flash-preview",
+            "gemini-3-flash-preview",
             "gemini-3.5-flash-lite",
+            "gemini-3.8-flash",
             "gemini-flash-latest",
         ]
 
@@ -875,13 +866,13 @@ INSTRUCTIONS FOR THIS QUERY:
 
             client = genai.Client(
                 api_key=settings.GEMINI_API_KEY,
-                http_options=types.HttpOptions(timeout=8000),
+                http_options=types.HttpOptions(timeout=25000),
             )
             config = types.GenerateContentConfig(
                 system_instruction=system_instruction,
                 temperature=0.15,
                 top_p=0.9,
-                max_output_tokens=320,
+                max_output_tokens=2048,
             )
 
 
@@ -988,7 +979,7 @@ INSTRUCTIONS FOR THIS QUERY:
 
             return {
 
-                "answer": matched_benchmark["as_answer"] if lang == "as" else matched_benchmark["en_answer"],
+                "answer": matched_benchmark["as_answer"] if lang in ("as", "as_script") else matched_benchmark["en_answer"],
 
                 "source": matched_benchmark["source"],
 
@@ -1046,7 +1037,7 @@ INSTRUCTIONS FOR THIS QUERY:
 
                 f"বিশ্ববিদ্যালয়ৰ প্ৰাসংগিক অধিনিয়ম আৰু বৈধ নথিপত্ৰ অনুসৰি:\n{content}"
 
-                if lang == "as"
+                if lang in ("as", "as_script")
 
                 else f"According to official university statutory records:\n{content}"
 
@@ -1080,7 +1071,7 @@ INSTRUCTIONS FOR THIS QUERY:
 
             f"নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ সাধাৰণ শৈক্ষিক নীতি অনুসৰি, আপোনাৰ প্ৰশ্নটো ('{clean_query}') বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ চৰকাৰী প্ৰতিলিপিৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ ৱেবচাইট বা পৰীক্ষা নিয়নন্ত্ৰকৰ শাখাৰ লগত যোগাযোগ কৰক।"
 
-            if lang == "as"
+            if lang in ("as", "as_script")
 
             else f"Regarding your inquiry ('{clean_query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest gazettes. UniMitra has recorded your query for continued verification."
 

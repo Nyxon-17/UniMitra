@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AuroraBackground } from '../../components/common/AuroraBackground';
 import { DashboardAiAssistant } from '../dashboard/DashboardAiAssistant';
-import { DashboardQueryHistory } from '../dashboard/DashboardQueryHistory';
 import { documentService, resolveDocPdfUrl, INITIAL_CATEGORIES } from '../../services/documentService';
 import { universityService } from '../../services/universityService';
 import { pdfStorage } from '../../services/pdfStorage';
@@ -55,7 +54,7 @@ export const AdminConsole = ({
   const tabParam = searchParams.get('tab');
 
   // Administrator Management Tabs (Single University Master Config + Operations)
-  const validTabs = ['admin-assistant', 'univ-details', 'admin-credentials', 'repository', 'upload', 'categories', 'feedback', 'admin-history'];
+  const validTabs = ['admin-assistant', 'univ-details', 'admin-credentials', 'repository', 'upload', 'categories', 'feedback'];
   const [activeTab, setActiveTab] = useState(
     tabParam && validTabs.includes(tabParam) ? tabParam : 'univ-details'
   );
@@ -113,13 +112,6 @@ export const AdminConsole = ({
   // 0. Single-University Master Configuration State
   const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
   const [profileForm, setProfileForm] = useState(() => ({ ...universityService.getProfile() }));
-  const [univRegulations, setUnivRegulations] = useState(() => universityService.getRegulations());
-  const [univExaminations, setUnivExaminations] = useState(() => universityService.getExaminations());
-  const [univProgrammes, setUnivProgrammes] = useState(() => universityService.getProgrammes());
-  const [univScholarships, setUnivScholarships] = useState(() => universityService.getScholarships());
-  const [univAdmissions, setUnivAdmissions] = useState(() => universityService.getAdmissions());
-  const [univFacilities, setUnivFacilities] = useState(() => universityService.getFacilities());
-  const [univNotices, setUnivNotices] = useState(() => universityService.getNotices());
 
   // Super Administrator Master Credentials State (Editable in Admin Console)
   const [adminCredsForm, setAdminCredsForm] = useState(() => authService.getSuperAdminCredentials());
@@ -173,61 +165,10 @@ export const AdminConsole = ({
     }
   };
 
-  // Active sub-section within the University Master Details tab
-  const [univSection, setUnivSection] = useState('profile');
-  // 'profile' | 'regulations' | 'examinations' | 'programmes' | 'scholarships' | 'admissions' | 'facilities' | 'notices' | 'test-scenarios'
-
-  // Modal for Adding University Domain Items
-  const [univAddModalOpen, setUnivAddModalOpen] = useState(false);
-  const [univAddModalDomain, setUnivAddModalDomain] = useState('regulations');
-  const [newItemForm, setNewItemForm] = useState({
-    title: '',
-    asTitle: '',
-    name: '',
-    asName: '',
-    category: '',
-    ordinanceNo: '',
-    summary: '',
-    asSummary: '',
-    details: '',
-    citation: '',
-    sourceDoc: '',
-    amount: '',
-    provider: '',
-    type: '',
-    eligibility: '',
-    asEligibility: '',
-    deadline: '',
-    intake: 60,
-    department: '',
-    level: 'Postgraduate',
-    code: '',
-    duration: '2 Years',
-    capacity: '',
-    location: '',
-    timings: '',
-    head: '',
-    rules: '',
-    asRules: '',
-    dates: '',
-    fee: '',
-    portalUrl: '',
-    refNo: '',
-    date: '',
-    isUrgent: false
-  });
-
   const syncUnivState = () => {
     const prof = universityService.getProfile();
     setUnivProfile(prof);
     setProfileForm({ ...prof });
-    setUnivRegulations(universityService.getRegulations());
-    setUnivExaminations(universityService.getExaminations());
-    setUnivProgrammes(universityService.getProgrammes());
-    setUnivScholarships(universityService.getScholarships());
-    setUnivAdmissions(universityService.getAdmissions());
-    setUnivFacilities(universityService.getFacilities());
-    setUnivNotices(universityService.getNotices());
   };
 
   useEffect(() => {
@@ -255,179 +196,6 @@ export const AdminConsole = ({
         setConfirmPopup(null);
       }
     });
-  };
-
-  // Open Add Item Modal
-  const handleOpenAddUnivModal = (domain) => {
-    setUnivAddModalDomain(domain);
-    setNewItemForm({
-      title: '',
-      asTitle: '',
-      name: '',
-      asName: '',
-      category: '',
-      ordinanceNo: '',
-      summary: '',
-      asSummary: '',
-      details: '',
-      citation: '',
-      sourceDoc: '',
-      amount: '',
-      provider: '',
-      type: '',
-      eligibility: '',
-      asEligibility: '',
-      deadline: '',
-      intake: 60,
-      department: '',
-      level: 'Postgraduate',
-      code: '',
-      duration: '2 Years',
-      capacity: '',
-      location: '',
-      timings: '',
-      head: '',
-      rules: '',
-      asRules: '',
-      dates: '',
-      fee: '',
-      portalUrl: '',
-      refNo: '',
-      date: '',
-      isUrgent: false
-    });
-    setUnivAddModalOpen(true);
-  };
-
-  // Submit New University Domain Item
-  const handleSubmitNewUnivItem = (e) => {
-    e.preventDefault();
-    if (univAddModalDomain === 'regulations') {
-      universityService.addRegulation({
-        title: newItemForm.title,
-        asTitle: newItemForm.asTitle || newItemForm.title,
-        category: newItemForm.category || 'Academic Regulations',
-        ordinanceNo: newItemForm.ordinanceNo,
-        summary: newItemForm.summary,
-        asSummary: newItemForm.asSummary || newItemForm.summary,
-        citation: newItemForm.citation,
-        sourceDoc: newItemForm.sourceDoc
-      });
-      triggerToast('New Academic Regulation successfully added to knowledge base.');
-    } else if (univAddModalDomain === 'examinations') {
-      universityService.addExamination({
-        title: newItemForm.title,
-        asTitle: newItemForm.asTitle || newItemForm.title,
-        category: newItemForm.category || 'Examination Guidelines',
-        ordinanceNo: newItemForm.ordinanceNo,
-        summary: newItemForm.summary,
-        asSummary: newItemForm.asSummary || newItemForm.summary,
-        details: newItemForm.details,
-        citation: newItemForm.citation,
-        sourceDoc: newItemForm.sourceDoc
-      });
-      triggerToast('New Examination Ordinance added to knowledge base.');
-    } else if (univAddModalDomain === 'programmes') {
-      universityService.addProgramme({
-        name: newItemForm.name || newItemForm.title,
-        asName: newItemForm.asName || newItemForm.name || newItemForm.title,
-        level: newItemForm.level,
-        code: newItemForm.code,
-        department: newItemForm.department,
-        duration: newItemForm.duration,
-        intake: Number(newItemForm.intake) || 60,
-        eligibility: newItemForm.eligibility,
-        asEligibility: newItemForm.asEligibility || newItemForm.eligibility
-      });
-      triggerToast('Academic Programme indexed into university offerings.');
-    } else if (univAddModalDomain === 'scholarships') {
-      universityService.addScholarship({
-        name: newItemForm.name || newItemForm.title,
-        asName: newItemForm.asName || newItemForm.name || newItemForm.title,
-        provider: newItemForm.provider,
-        type: newItemForm.type || 'Institutional Grant',
-        amount: newItemForm.amount,
-        eligibility: newItemForm.eligibility,
-        asEligibility: newItemForm.asEligibility || newItemForm.eligibility,
-        deadline: newItemForm.deadline,
-        sourceDoc: newItemForm.sourceDoc
-      });
-      triggerToast('Scholarship scheme registered and active for AI retrieval.');
-    } else if (univAddModalDomain === 'admissions') {
-      universityService.addAdmission({
-        title: newItemForm.title,
-        asTitle: newItemForm.asTitle || newItemForm.title,
-        category: newItemForm.category || 'General Admissions',
-        dates: newItemForm.dates,
-        fee: newItemForm.fee,
-        eligibility: newItemForm.eligibility,
-        asEligibility: newItemForm.asEligibility || newItemForm.eligibility,
-        portalUrl: newItemForm.portalUrl,
-        steps: newItemForm.details ? newItemForm.details.split('\n') : ['Online registration', 'Document verification']
-      });
-      triggerToast('Admission Procedure published to student portal.');
-    } else if (univAddModalDomain === 'facilities') {
-      universityService.addFacility({
-        name: newItemForm.name || newItemForm.title,
-        asName: newItemForm.asName || newItemForm.name || newItemForm.title,
-        category: newItemForm.category || 'Campus Facility',
-        capacity: newItemForm.capacity,
-        location: newItemForm.location,
-        timings: newItemForm.timings,
-        head: newItemForm.head,
-        rules: newItemForm.rules,
-        asRules: newItemForm.asRules || newItemForm.rules
-      });
-      triggerToast('Campus facility details saved.');
-    } else if (univAddModalDomain === 'notices') {
-      const pdfPath = newItemForm.portalUrl || newItemForm.sourceDoc || '';
-      universityService.addNotice({
-        title: newItemForm.title,
-        asTitle: newItemForm.asTitle || newItemForm.title,
-        department: newItemForm.department || 'Administrative Section',
-        refNo: newItemForm.refNo || ('DU/NOT/' + new Date().getFullYear() + '/' + Math.floor(Math.random() * 800 + 100)),
-        date: newItemForm.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        summary: newItemForm.summary,
-        asSummary: newItemForm.asSummary || newItemForm.summary,
-        isUrgent: newItemForm.isUrgent || false,
-        pdfUrl: pdfPath
-      });
-      if (pdfPath) {
-        documentService.uploadAdminDocument({
-          title: newItemForm.title,
-          asTitle: newItemForm.asTitle || newItemForm.title,
-          university: univProfile.name || 'Nivoraya University (DU)',
-          category: 'University Regulations & Ordinances',
-          department: newItemForm.department || 'Administrative Section',
-          academicYear: '2024-2025',
-          sourceUrl: pdfPath,
-          summary: newItemForm.summary,
-          citation: newItemForm.refNo || 'Official University Notice',
-          fileName: pdfPath.split('/').pop(),
-          fileType: 'PDF',
-          fileSize: '5.4 KB',
-          pages: 1,
-          chunksCount: 12,
-          ocrApplied: true
-        });
-      }
-      triggerToast('Official Notice published, vectorized and active across all portals.');
-    }
-    setUnivAddModalOpen(false);
-  };
-
-  // Delete University Domain Item
-  const handleDeleteUnivItem = (domain, id) => {
-    if (window.confirm('Delete this record from the active university repository?')) {
-      if (domain === 'regulations') universityService.deleteRegulation(id);
-      else if (domain === 'examinations') universityService.deleteExamination(id);
-      else if (domain === 'programmes') universityService.deleteProgramme(id);
-      else if (domain === 'scholarships') universityService.deleteScholarship(id);
-      else if (domain === 'admissions') universityService.deleteAdmission(id);
-      else if (domain === 'facilities') universityService.deleteFacility(id);
-      else if (domain === 'notices') universityService.deleteNotice(id);
-      triggerToast('Record removed from university knowledge repository.');
-    }
   };
 
   // 2. Upload Document Form State with File Dropzone
@@ -718,6 +486,7 @@ export const AdminConsole = ({
       confirmColor: 'bg-red-600 hover:bg-red-700 text-white',
       onConfirm: () => {
         documentService.deleteDocument(id);
+        setDocuments(documentService.getDocuments());
         triggerToast('Document deleted from institutional repository.');
         setConfirmPopup(null);
       }
@@ -1041,7 +810,6 @@ export const AdminConsole = ({
     { id: 'upload', label: 'Upload & Ingest PDF', asLabel: 'PDF নথিপত্ৰ আপলোড', icon: CloudArrowUpIcon },
     { id: 'categories', label: 'Category Taxonomy', asLabel: 'শ্ৰেণীবিভাজন ব্যৱস্থাপনা', icon: FunnelIcon, count: categories.length },
     { id: 'feedback', label: 'Review Feedback', asLabel: 'সঁহাৰি আৰু মূল্যায়ন', icon: CheckCircleIcon, badge: feedbackList.filter(f => f.status !== 'Reviewed & Resolved').length },
-    { id: 'admin-history', label: 'Admin Chat History', asLabel: 'প্ৰশাসনিক বাৰ্তালাপ ইতিহাস', icon: ClockIcon },
   ];
 
   return (
@@ -1316,7 +1084,7 @@ export const AdminConsole = ({
                     {univProfile.name} ({univProfile.asName})
                   </h2>
                   <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                    Administrator command center to add, update, and manage all university regulations, examinations, academic programmes, scholarships, admission criteria, and campus facilities.
+                    Administrator command center to view and configure university profile settings, statutory identity, and governance.
                   </p>
                 </div>
 
@@ -1340,42 +1108,9 @@ export const AdminConsole = ({
                 </div>
               </div>
 
-              {/* Sub-Navigation Pill Rail */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {[
-                  { id: 'profile', label: 'University Profile', asLabel: 'প্ৰতিষ্ঠানৰ পৰিচয়' },
-                  { id: 'regulations', label: 'Regulations & Ordinances', asLabel: 'অধিসূচনা আৰু বিধি', count: univRegulations.length },
-                  { id: 'examinations', label: 'Examinations & Evaluation', asLabel: 'পৰীক্ষা আৰু মূল্যায়ন', count: univExaminations.length },
-                  { id: 'programmes', label: 'Academic Programmes', asLabel: 'পাঠ্যক্ৰম আৰু ডিগ্ৰী', count: univProgrammes.length },
-                  { id: 'scholarships', label: 'Scholarships & Grants', asLabel: 'ছাত্ৰবৃত্তি আৰু অনুদান', count: univScholarships.length },
-                  { id: 'admissions', label: 'Admission Procedures', asLabel: 'ভৰ্তি প্ৰক্ৰিয়া', count: univAdmissions.length },
-                  { id: 'facilities', label: 'Campus Facilities', asLabel: 'চৌহদৰ সুবিধা', count: univFacilities.length },
-                  { id: 'notices', label: 'Official Notices', asLabel: 'চৰকাৰী জাননী', count: univNotices.length },
-                  { id: 'test-scenarios', label: 'Benchmark Test Scenarios (3 AS + 3 EN)', asLabel: 'পৰীক্ষামূলক প্ৰশ্নাৱলী' }
-                ].map((subTab) => (
-                  <button
-                    key={subTab.id}
-                    onClick={() => setUnivSection(subTab.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer transition-all flex items-center space-x-1.5 ${univSection === subTab.id
-                        ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-xs'
-                        : 'bg-white dark:bg-[#141414] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30'
-                      }`}
-                  >
-                    <span>{currentLang === 'as' ? subTab.asLabel : subTab.label}</span>
-                    {subTab.count !== undefined && (
-                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${univSection === subTab.id ? 'bg-black/20 text-white dark:text-black' : 'bg-[#FFE9A9] dark:bg-[#0A0A0A]'
-                        }`}>
-                        {subTab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              {/* Sub-Section 1: University Profile */}
-              {univSection === 'profile' && (
-                <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-6">
-                  <div className="flex items-center justify-between border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
+              {/* University Profile */}
+              <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-6">
+                <div className="flex items-center justify-between border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
                     <div>
                       <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
                         University Master Identity & Governance
@@ -1563,583 +1298,6 @@ export const AdminConsole = ({
                     </button>
                   </div>
                 </div>
-              )}
-
-              {/* Sub-Section 2: Academic Regulations & Ordinances */}
-              {univSection === 'regulations' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Academic Regulations & Statutory Ordinances ({univRegulations.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        Attendance criteria, credit framework, and code of conduct used by the RAG knowledge base.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('regulations')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add New Regulation</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univRegulations.map((reg) => (
-                      <div
-                        key={reg.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
-                            {reg.ordinanceNo}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('regulations', reg.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete regulation"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {reg.title}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {reg.asTitle}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 line-clamp-3">
-                          {reg.summary}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between text-[11px] font-mono">
-                          <span className="text-[#000000]/60 dark:text-[#FFFFFF]/60 truncate">
-                            {reg.citation}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 3: Examinations & Evaluation Guidelines */}
-              {univSection === 'examinations' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Examinations & Evaluation Guidelines ({univExaminations.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        Passing marks, script re-evaluation, backlog policies, and evaluation guidelines.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('examinations')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add Examination Guideline</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univExaminations.map((exam) => (
-                      <div
-                        key={exam.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
-                            {exam.category} • {exam.ordinanceNo}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('examinations', exam.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete exam ordinance"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {exam.title}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {exam.asTitle}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                          {exam.summary}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-[11px] font-mono text-[#000000]/60 dark:text-[#FFFFFF]/60">
-                          Citation: {exam.citation}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 4: Academic Programmes */}
-              {univSection === 'programmes' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Academic Programmes & Degrees ({univProgrammes.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        UG, PG, and Ph.D. degrees, course codes, departments, intake, and eligibility criteria.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('programmes')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add Degree Programme</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univProgrammes.map((prog) => (
-                      <div
-                        key={prog.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
-                            {prog.level} • {prog.code}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('programmes', prog.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete programme"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {prog.name}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {prog.asName}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                          <strong>Department:</strong> {prog.department} | <strong>Intake:</strong> {prog.intake} seats | <strong>Duration:</strong> {prog.duration}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Eligibility:</strong> {prog.eligibility}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 5: Scholarships & Financial Aid */}
-              {univSection === 'scholarships' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Scholarships & Financial Aid Schemes ({univScholarships.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        State (Assam DHE), Central (UGC Ishan Uday), and reserved category student scholarship norms.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('scholarships')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add Scholarship Scheme</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univScholarships.map((schol) => (
-                      <div
-                        key={schol.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
-                            {schol.type}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('scholarships', schol.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete scholarship"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {schol.name}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {schol.asName}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                          <strong>Amount:</strong> {schol.amount} | <strong>Deadline:</strong> {schol.deadline}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Eligibility Criteria:</strong> {schol.eligibility}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 6: Admission Procedures */}
-              {univSection === 'admissions' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Admission Procedures & Guidelines ({univAdmissions.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        PG NUPGET entrance test and Samarth e-Gov FYUGP admission workflows.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('admissions')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add Admission Procedure</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univAdmissions.map((adm) => (
-                      <div
-                        key={adm.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
-                            {adm.category}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('admissions', adm.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete admission"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {adm.title}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {adm.asTitle}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                          <strong>Timeline:</strong> {adm.dates} | <strong>Fee:</strong> {adm.fee}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 space-y-1">
-                          <span className="text-[11px] font-bold text-[#000000] dark:text-[#FFFFFF] block">Procedure Checklist:</span>
-                          <ul className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70 list-disc pl-4 space-y-0.5">
-                            {(adm.steps || []).map((st, i) => (
-                              <li key={i}>{st}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 7: Campus Facilities & Hostels */}
-              {univSection === 'facilities' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Campus Facilities & Hostels ({univFacilities.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        Halls of residence, central library, sports complex, and emergency health clinics.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('facilities')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Add Facility / Hostel</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {univFacilities.map((fac) => (
-                      <div
-                        key={fac.id}
-                        className="p-5 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
-                            {fac.category}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteUnivItem('facilities', fac.id)}
-                            className="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
-                            title="Delete facility"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                          {fac.name}
-                        </h4>
-                        <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
-                          {fac.asName}
-                        </p>
-                        <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                          <strong>Capacity:</strong> {fac.capacity} | <strong>Timings:</strong> {fac.timings}
-                        </p>
-                        <div className="pt-2 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30 text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Rules & Bylaws:</strong> {fac.rules}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 8: Official University Notices */}
-              {univSection === 'notices' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                        Official University Notices & Gazettes ({univNotices.length})
-                      </h3>
-                      <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                        Official circulars, examination form deadlines, and holiday announcements.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleOpenAddUnivModal('notices')}
-                      className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1.5"
-                    >
-                      <DocumentPlusIcon className="w-4 h-4" />
-                      <span>Publish New Notice</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {univNotices.map((not) => (
-                      <div
-                        key={not.id}
-                        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-2">
-                            {not.isUrgent && (
-                              <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-red-500 text-white animate-pulse">
-                                Urgent
-                              </span>
-                            )}
-                            <span className="text-[10px] font-bold text-[#FF933E] dark:text-[#03C988]">
-                              {not.refNo}
-                            </span>
-                            <span className="text-[10px] text-[#000000]/50 dark:text-[#FFFFFF]/50">
-                              • {not.date}
-                            </span>
-                          </div>
-                          <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">
-                            {not.title}
-                          </h4>
-                          <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                            {not.summary}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center space-x-2 shrink-0">
-                          {not.pdfUrl && (
-                            <a
-                              href={not.pdfUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="px-3 py-1.5 rounded-xl bg-[#FFE9A9]/50 dark:bg-[#0A0A0A] border border-[#FF933E] dark:border-[#03C988] text-[#FF933E] dark:text-[#03C988] hover:bg-[#FF933E] hover:text-white dark:hover:bg-[#03C988] dark:hover:text-black font-black text-xs transition-all flex items-center space-x-1 cursor-pointer"
-                            >
-                              <EyeIcon className="w-3.5 h-3.5" />
-                              <span>View PDF</span>
-                            </a>
-                          )}
-                          <button
-                            onClick={() => handleDeleteUnivItem('notices', not.id)}
-                            className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer shrink-0"
-                            title="Delete notice"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-Section 9: Benchmark Test Scenarios Evaluation Center */}
-              {univSection === 'test-scenarios' && (
-                <div className="neo-surface rounded-3xl p-6 shadow-sm space-y-6">
-                  <div className="space-y-1 border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
-                    <span className="px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[10px] font-black uppercase text-[#000000] dark:text-[#FFFFFF]">
-                      Problem Statement Mandate (Item 5)
-                    </span>
-                    <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
-                      Bilingual RAG Test Scenarios (3 in Assamese + 3 in English)
-                    </h3>
-                    <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                      The problem statement specifies demonstrating at least three meaningful test scenarios in Assamese and three in English, including at least one that tests language-specific behaviour.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* 3 Assamese Scenarios */}
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988] flex items-center space-x-1.5">
-                        <span>🟢 3 Assamese Test Scenarios</span>
-                      </h4>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                          Test 1 • Academic Regulations & Passing Criteria
-                        </span>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "নিভৰয়া বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ পৰীক্ষাত উত্তীৰ্ণ হ'বলৈ নূন্যতম নম্বৰ কিমান লাগে?"
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> DU_Exam_Ordinances_2024.pdf (Clause 8.2)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("নিভৰয়া বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ পৰীক্ষাত উত্তীৰ্ণ হ'বলৈ নূন্যতম নম্বৰ কিমান লাগে?"))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                          Test 2 • Attendance & Medical Condonation
-                        </span>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "মেডিকেল কাৰণত শ্ৰেণীৰ উপস্থিতি কিমান শতাংশলৈ ৰেহাই (Condonation) পোৱা যায়?"
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> NU_Attendance_Regulations_2024.pdf (Section 4.3)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("মেডিকেল কাৰণত শ্ৰেণীৰ উপস্থিতি কিমান শতাংশলৈ ৰেহাই (Condonation) পোৱা যায়?"))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <div className="flex items-center space-x-1.5">
-                          <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                            Test 3 • Language-Specific Behaviour
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-amber-500 text-white text-[9px] font-black">
-                            Colloquial Terminology
-                          </span>
-                        </div>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "ঈশান উদয় জলপানি (Ishan Uday Scholarship) পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব আৰু পাৰিবাৰিক আয়ৰ সীমা কিমান?"
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> Assam_DHE_Scholarship_Norms_2024.pdf (Section 3.1)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("ঈশান উদয় জলপানি (Ishan Uday Scholarship) পাবলৈ কি কি প্ৰমাণপত্ৰ লাগিব আৰু পাৰিবাৰিক আয়ৰ সীমা কিমান?"))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* 3 English Scenarios */}
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase text-[#FF933E] dark:text-[#03C988] flex items-center space-x-1.5">
-                        <span>🔵 3 English Test Scenarios</span>
-                      </h4>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                          Test 1 • Examination & Attendance Norms
-                        </span>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "What is the minimum attendance required to appear in the end-semester examinations, and what is the medical condonation limit?"
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> NU_Attendance_Regulations_2024.pdf (Section 4.3)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("What is the minimum attendance required to appear in the end-semester examinations, and what is the medical condonation limit?"))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                          Test 2 • Evaluation & Script Re-checking
-                        </span>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "Explain the procedure, fee, and timeline for answer script re-evaluation after examination results."
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> NU_ReEvaluation_Norms.pdf (Clause 14.1)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("Explain the procedure, fee, and timeline for answer script re-evaluation after examination results."))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-2">
-                        <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988]">
-                          Test 3 • Facilities & Hostel Accommodation
-                        </span>
-                        <p className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                          "What are the eligibility criteria, reservation quotas, and documents required for university hostel accommodation?"
-                        </p>
-                        <p className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                          <strong>Grounded Source:</strong> NU_Hostel_Bylaws_2024.pdf (Clause 7.2)
-                        </p>
-                        <button
-                          onClick={() => navigate('/dashboard/chat?q=' + encodeURIComponent("What are the eligibility criteria, reservation quotas, and documents required for university hostel accommodation?"))}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs flex items-center space-x-1"
-                        >
-                          <span>Execute in Chatbot</span>
-                          <ArrowRightIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
           )}
@@ -2231,10 +1389,18 @@ export const AdminConsole = ({
                     {documents.length > 0 && (
                       <button
                         onClick={() => {
-                          if (window.confirm('Are you sure you want to delete all documents from the repository?')) {
-                            const empty = documentService.clearAllDocuments();
-                            setDocuments(empty);
-                          }
+                          setConfirmPopup({
+                            title: 'Clear Entire Repository',
+                            message: 'Are you sure you want to permanently delete all documents from the repository? This action cannot be undone.',
+                            confirmText: 'Clear All Documents',
+                            confirmColor: 'bg-red-600 hover:bg-red-700 text-white',
+                            onConfirm: () => {
+                              const empty = documentService.clearAllDocuments();
+                              setDocuments(empty);
+                              triggerToast('All documents permanently cleared from repository.');
+                              setConfirmPopup(null);
+                            }
+                          });
                         }}
                         className="px-3 py-2 rounded-xl border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-100 cursor-pointer"
                       >
@@ -2734,16 +1900,47 @@ export const AdminConsole = ({
           {/* TAB 3: MANAGE DOCUMENT CATEGORIES                                   */}
           {/* =================================================================== */}
           {activeTab === 'categories' && (
-            <div className="space-y-6">
-              <div className="neo-surface rounded-3xl p-6 shadow-xs">
-                <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF] mb-4">
-                  Add New Document Category to Taxonomy
+            <div className="space-y-6 animate-fade-in">
+              {/* Header Overview Card */}
+              <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase tracking-wider">
+                    <FunnelIcon className="w-5 h-5" />
+                    <span>Knowledge Base Taxonomy & Classification</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF]">
+                    Category Taxonomy & Ingested Document Data
+                  </h2>
+                  <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                    Live hierarchical taxonomy linking all admin-uploaded and approved institutional PDFs directly into RAG search sectors.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="px-4 py-2.5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988] text-center">
+                    <span className="text-[10px] uppercase font-black text-[#FF933E] dark:text-[#03C988] block">Taxonomy Nodes</span>
+                    <span className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">{categories.length}</span>
+                  </div>
+                  <div className="px-4 py-2.5 rounded-2xl bg-[#FFE9A9]/30 dark:bg-[#0A0A0A] border border-[#FFCB56] dark:border-[#03C988] text-center">
+                    <span className="text-[10px] uppercase font-black text-[#FF933E] dark:text-[#03C988] block">Classified PDFs</span>
+                    <span className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">
+                      {categories.reduce((acc, c) => acc + (c.documents?.length || c.count || 0), 0)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add New Category Form */}
+              <div className="neo-surface rounded-3xl p-6 shadow-xs space-y-3">
+                <h3 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF] flex items-center gap-2">
+                  <DocumentPlusIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988]" />
+                  <span>Register New Category in Taxonomy</span>
                 </h3>
                 <form onSubmit={handleAddCategory} className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
                     required
-                    placeholder="Category Name (e.g. Hostels & Welfare)"
+                    placeholder="Category Name (e.g. Hostels & Welfare Guidelines)"
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
@@ -2753,42 +1950,129 @@ export const AdminConsole = ({
                     placeholder="Code (e.g. WELFARE)"
                     value={newCatCode}
                     onChange={(e) => setNewCatCode(e.target.value)}
-                    className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+                    className="w-full sm:w-36 px-3.5 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none uppercase"
                   />
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] cursor-pointer shadow-xs"
+                    className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] cursor-pointer shadow-xs whitespace-nowrap"
                   >
                     Create Category
                   </button>
                 </form>
               </div>
 
-              {/* Category Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {categories.map((c) => (
-                  <div
-                    key={c.id}
-                    className="p-5 rounded-2xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center justify-between shadow-xs"
-                  >
-                    <div>
-                      <span className="text-[10px] font-mono font-bold text-[#FF933E] dark:text-[#03C988] uppercase">{c.code}</span>
-                      <h4 className="text-sm font-black text-[#000000] dark:text-[#FFFFFF]">{c.name}</h4>
-                      <span className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 font-semibold">{c.count} Documents Ingested</span>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteCategory(c.id)}
-                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg cursor-pointer"
-                      title="Delete Category"
+              {/* Category Cards with Ingested Admin Uploaded PDF Data */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {categories.map((c) => {
+                  const catDocs = c.documents || documents.filter(d => (d.category || '').toLowerCase().trim() === (c.name || '').toLowerCase().trim());
+                  return (
+                    <div
+                      key={c.id || c.code}
+                      className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#141414] border-2 border-[#73A5CA]/40 dark:border-[#1C82AD]/40 space-y-4 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
                     >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                      {/* Category Header */}
+                      <div className="flex items-start justify-between gap-3 border-b border-[#73A5CA]/20 dark:border-[#1C82AD]/20 pb-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-black uppercase bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#FFCB56] dark:border-[#03C988]">
+                              {c.code}
+                            </span>
+                            <span className="text-[11px] font-black text-[#FF933E] dark:text-[#03C988]">
+                              {catDocs.length} {catDocs.length === 1 ? 'PDF Document' : 'PDF Documents'}
+                            </span>
+                          </div>
+                          <h4 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
+                            {c.name}
+                          </h4>
+                          {c.asName && c.asName !== c.name && (
+                            <p className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
+                              {c.asName}
+                            </p>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteCategory(c.id)}
+                          className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl cursor-pointer shrink-0 transition-colors"
+                          title="Delete Category"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Ingested Document Data from Admin Uploaded PDFs */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase text-[#000000]/60 dark:text-[#FFFFFF]/60 tracking-wider">
+                          <span>Attached Institutional PDFs ({catDocs.length})</span>
+                          {catDocs.length > 0 && (
+                            <span className="text-[#03C988] font-bold">● Active in AI RAG</span>
+                          )}
+                        </div>
+
+                        {catDocs.length > 0 ? (
+                          <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                            {catDocs.map((doc) => (
+                              <div
+                                key={doc.id || doc.uuid}
+                                className="p-3.5 rounded-2xl bg-[#FFE9A9]/15 dark:bg-[#0A0A0A] border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 flex items-center justify-between gap-3 hover:bg-[#FFE9A9]/30 dark:hover:bg-[#1E1E1E] transition-all"
+                              >
+                                <div className="min-w-0 flex-1 space-y-0.5">
+                                  <div className="flex items-center space-x-1.5">
+                                    <DocumentTextIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
+                                    <h5 className="text-xs font-black text-[#000000] dark:text-[#FFFFFF] truncate" title={doc.title}>
+                                      {doc.title}
+                                    </h5>
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-x-2 text-[10px] text-[#000000]/60 dark:text-[#FFFFFF]/60">
+                                    <span>{doc.date || doc.publicationDate || 'Ingested'}</span>
+                                    <span>•</span>
+                                    <span>{doc.fileSize || 'PDF'}</span>
+                                    {doc.department && (
+                                      <>
+                                        <span>•</span>
+                                        <span className="truncate max-w-[120px]">{doc.department}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleInspectDoc(doc)}
+                                  className="px-3 py-1.5 rounded-xl text-[11px] font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] cursor-pointer shadow-xs whitespace-nowrap flex items-center space-x-1 shrink-0"
+                                  title="Open & View PDF in New Tab"
+                                >
+                                  <EyeIcon className="w-3.5 h-3.5" />
+                                  <span>View PDF</span>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-2xl bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] border border-dashed border-[#73A5CA]/40 text-center space-y-2">
+                            <p className="text-xs text-[#000000]/60 dark:text-[#FFFFFF]/60">
+                              No PDFs uploaded under this category yet.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setUploadFormData(prev => ({ ...prev, category: c.name }));
+                                handleTabChange('upload');
+                              }}
+                              className="px-3 py-1.5 rounded-xl text-[11px] font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:text-black cursor-pointer shadow-xs inline-flex items-center space-x-1"
+                            >
+                              <CloudArrowUpIcon className="w-3.5 h-3.5" />
+                              <span>Upload PDF to {c.code}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
-
 
           {/* =================================================================== */}
           {/* TAB 7: REVIEW FEEDBACK                                              */}
@@ -2916,20 +2200,6 @@ export const AdminConsole = ({
 
           {/* =================================================================== */}
           {/* TAB 8: ADMIN CHAT HISTORY                                           */}
-          {/* =================================================================== */}
-          {activeTab === 'admin-history' && (
-            <div className="space-y-6 animate-fade-in">
-              <DashboardQueryHistory
-                onNavigateTab={handleTabChange}
-                currentLang={currentLang}
-                portalDomain="admin"
-                studentInfo={{ name: adminCredsForm.name || 'Super Administrator', role: 'Admin' }}
-              />
-            </div>
-          )}
-
-          {/* =================================================================== */}
-          {/* TAB 9: SUPER ADMIN CREDENTIALS & SECURITY                           */}
           {/* =================================================================== */}
           {activeTab === 'admin-credentials' && (
             <div className="max-w-3xl mx-auto neo-surface rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 animate-fade-in">
@@ -3062,324 +2332,6 @@ export const AdminConsole = ({
 
         </main>
       </div>
-
-      {/* Universal Add University Item Modal */}
-      {univAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[#F7F6F0] dark:bg-[#16181A] text-[#273B45] dark:text-[#DCE8E4] border border-[#123C3A]/10 dark:border-[#55C7B2]/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-up">
-            <div className="flex items-center justify-between border-b border-[#73A5CA]/30 dark:border-[#1C82AD]/30 pb-3">
-              <div>
-                <span className="text-[10px] font-black uppercase text-[#FF933E] dark:text-[#03C988] block">
-                  Add to Active University Repository
-                </span>
-                <h3 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] capitalize">
-                  New {univAddModalDomain === 'regulations' ? 'Academic Regulation' : univAddModalDomain === 'examinations' ? 'Examination Guideline' : univAddModalDomain === 'programmes' ? 'Degree Programme' : univAddModalDomain === 'scholarships' ? 'Scholarship Scheme' : univAddModalDomain === 'admissions' ? 'Admission Procedure' : univAddModalDomain === 'facilities' ? 'Campus Facility' : 'Official Notice'}
-                </h3>
-              </div>
-              <button
-                onClick={() => setUnivAddModalOpen(false)}
-                className="p-1.5 rounded-lg text-[#000000]/60 dark:text-[#FFFFFF]/60 hover:text-black cursor-pointer"
-              >
-                <XMarkIcon className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmitNewUnivItem} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                    Title / Name (English) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newItemForm.title || newItemForm.name || ''}
-                    onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value, name: e.target.value })}
-                    placeholder="e.g. CBCS Minimum Passing Criteria"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                    শীৰ্ষক / নাম (অসমীয়া) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newItemForm.asTitle || newItemForm.asName || ''}
-                    onChange={(e) => setNewItemForm({ ...newItemForm, asTitle: e.target.value, asName: e.target.value })}
-                    placeholder="e.g. স্নাতক উত্তীৰ্ণ হোৱাৰ নূন্যতম চৰ্ত"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Conditional Domain Fields */}
-              {(univAddModalDomain === 'regulations' || univAddModalDomain === 'examinations') && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Ordinance / Ref Number
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.ordinanceNo || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, ordinanceNo: e.target.value })}
-                      placeholder="e.g. NU/AC/ORD/2024/22"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Classification Category
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.category || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, category: e.target.value })}
-                      placeholder="e.g. Attendance & Ordinances"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {univAddModalDomain === 'programmes' && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Degree Level
-                    </label>
-                    <select
-                      value={newItemForm.level || 'Postgraduate'}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, level: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    >
-                      <option value="Undergraduate">Undergraduate (UG)</option>
-                      <option value="Postgraduate">Postgraduate (PG)</option>
-                      <option value="Doctoral">Doctoral (Ph.D.)</option>
-                      <option value="Diploma">Diploma / Certificate</option>
-                    </select>
-
-                    {documents.length > 0 && (
-                      <button
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete all documents from the repository?')) {
-                            const empty = documentService.clearAllDocuments();
-                            setDocuments(empty);
-                          }
-                        }}
-                        className="px-3 py-2 rounded-xl border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-100 cursor-pointer"
-                      >
-                        Clear Repository
-                      </button>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Course Code
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.code || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, code: e.target.value })}
-                      placeholder="e.g. MTECH-CSE"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Intake Seats
-                    </label>
-                    <input
-                      type="number"
-                      value={newItemForm.intake || 60}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, intake: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {univAddModalDomain === 'scholarships' && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Award Amount
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.amount || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, amount: e.target.value })}
-                      placeholder="e.g. ₹5,400 per month"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Provider / Funding Agency
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.provider || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, provider: e.target.value })}
-                      placeholder="e.g. UGC / DHE Assam"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                      Application Deadline
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemForm.deadline || ''}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, deadline: e.target.value })}
-                      placeholder="e.g. 31st December"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {univAddModalDomain === 'notices' && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                        Notice Reference Number
-                      </label>
-                      <input
-                        type="text"
-                        value={newItemForm.refNo || ''}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, refNo: e.target.value })}
-                        placeholder="e.g. DU/EXAM/NOT/2024/912"
-                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                        Issuing Date
-                      </label>
-                      <input
-                        type="text"
-                        value={newItemForm.date || ''}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, date: e.target.value })}
-                        placeholder="e.g. 28 October 2024"
-                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                        PDF File Path / URL
-                      </label>
-                      <input
-                        type="text"
-                        value={newItemForm.portalUrl || newItemForm.sourceDoc || ''}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, portalUrl: e.target.value, sourceDoc: e.target.value })}
-                        placeholder="/notices/DU_Odd_Sem_Exam_Form_Fillup_2024.pdf"
-                        className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2 pt-1">
-                    <input
-                      type="checkbox"
-                      id="noticeUrgentCheckbox"
-                      checked={Boolean(newItemForm.isUrgent)}
-                      onChange={(e) => setNewItemForm({ ...newItemForm, isUrgent: e.target.checked })}
-                      className="rounded border-gray-300 text-[#FF933E] focus:ring-[#FF933E]"
-                    />
-                    <label htmlFor="noticeUrgentCheckbox" className="text-xs font-bold text-red-600 dark:text-red-400 cursor-pointer">
-                      Mark as Urgent Institutional Alert (Highlight with Red Badge)
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                  Summary / Provisions (English) *
-                </label>
-                <textarea
-                  rows={2}
-                  required
-                  value={newItemForm.summary || newItemForm.eligibility || newItemForm.rules || ''}
-                  onChange={(e) => setNewItemForm({ ...newItemForm, summary: e.target.value, eligibility: e.target.value, rules: e.target.value })}
-                  placeholder="Executive summary or statutory rules..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                  সাৰাংশ / নিয়মসমূহ (অসমীয়া)
-                </label>
-                <textarea
-                  rows={2}
-                  value={newItemForm.asSummary || newItemForm.asEligibility || newItemForm.asRules || ''}
-                  onChange={(e) => setNewItemForm({ ...newItemForm, asSummary: e.target.value, asEligibility: e.target.value, asRules: e.target.value })}
-                  placeholder="অসমীয়াত সাৰাংশ বা চৰ্তসমূহ..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                    Citation / Source Document
-                  </label>
-                  <input
-                    type="text"
-                    value={newItemForm.citation || newItemForm.sourceDoc || ''}
-                    onChange={(e) => setNewItemForm({ ...newItemForm, citation: e.target.value, sourceDoc: e.target.value })}
-                    placeholder="e.g. DU Academic Ordinance Clause 4.3"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#000000] dark:text-[#FFFFFF] mb-1">
-                    Department / Location / Portal Link
-                  </label>
-                  <input
-                    type="text"
-                    value={newItemForm.department || newItemForm.location || newItemForm.portalUrl || ''}
-                    onChange={(e) => setNewItemForm({ ...newItemForm, department: e.target.value, location: e.target.value, portalUrl: e.target.value })}
-                    placeholder="e.g. Academic Council / https://nivoraya.ac.in"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-[#000000] dark:text-[#FFFFFF] outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-[#73A5CA]/30 dark:border-[#1C82AD]/30">
-                <button
-                  type="button"
-                  onClick={() => setUnivAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70 hover:text-black cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl font-black text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] dark:text-black cursor-pointer shadow-xs"
-                >
-                  Index & Save Record
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Administrator Action Confirmation Popup Modal */}
       {confirmPopup && (

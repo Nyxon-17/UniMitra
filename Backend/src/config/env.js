@@ -30,6 +30,7 @@ const envSchema = z.object({
   BAKBAK_API_KEY: z.string().default('eX2lWnCNyy6JtU6KgUhBC4rpE6o8Bluw'),
   SARVAM_API_KEY: z.string().default('sk_rpxvjns7_HBb8Pp89bNVWzfv4mCWpSlkC'),
   SARVAM_BASE_URL: z.string().default('https://api.sarvam.ai'),
+  GEMINI_API_KEY: z.string().default(''),
   // Brevo SMTP Config
   SMTP_HOST: z.string().default('smtp-relay.brevo.com'),
   SMTP_PORT: z.string().default('587').transform(Number),

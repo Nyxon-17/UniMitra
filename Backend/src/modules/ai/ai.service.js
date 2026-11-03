@@ -29,41 +29,53 @@ const STATUTORY_BENCHMARKS = [
  * Detect language: Assamese or English
  */
 export const ROMANIZED_ASSAMESE_WORDS = new Set([
-  'aji', 'kali', 'ahibor', 'ketiya', 'kot', 'ki', 'kio', 'kioba', 'kenekua', 'kenekuwa', 'kenedore',
-  'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'he', 'hehot',
+  'aji', 'kali', 'ahibor', 'ketiya', 'ketia', 'ketiyaba', 'kot', 'kote', 'ki', 'kio', 'kioba', 'kiba', 'kenekua', 'kenekuwa', 'kenedore', 'kenekoi', 'keneka', 'keneke',
+  'kiman', 'kimanta', 'kun', 'kune', 'kunjon', 'kunta', 'kuntu',
+  'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'tair', 'he', 'hehot', 'teu',
   'ami', 'amar', 'amie', 'eitu', 'heitu', 'ei', 'hei', 'eta', 'duita', 'bhal', 'kotha', 'khobor',
-  'asa', 'asu', 'ase', 'asil', 'asila', 'asilo', 'asise', 'nai', 'nohoy', 'hobo', 'hoi', 'hol', 'hola', 'hole',
-  'korim', 'kora', 'kore', 'korisa', 'korisu', 'kori', 'koribo', 'lagibo', 'lage', 'bisaru', 'bisare', 'bisara',
-  'jau', 'jaba', 'gole', 'gol', 'aisu', 'aha', 'ahibo', 'kuwa', 'kua', 'kobo', 'koise', 'koi', 'de', 'diya',
-  'dibo', 'pam', 'paba', 'pale', 'paisu', 'paiso', 'parim', 'pariba', 'pare', 'sau', 'soa', 'saise',
-  'dhonnobad', 'namaskar', 'dada', 'baideu', 'bhaity', 'pora', 'loi', 'logot', 'homoy', 'somoy', 'dore', 'nisina'
+  'asa', 'asu', 'ase', 'asil', 'asila', 'asilo', 'asise', 'asene', 'aseneki', 'asenki', 'nai', 'nohoy', 'nahoi', 'hobo', 'hobone', 'hoboneki', 'hoi', 'hol', 'hola', 'hole', 'hoise',
+  'korim', 'kora', 'kore', 'korisa', 'korisu', 'kori', 'koribo', 'koriboloi', 'lagibo', 'lage', 'lagisil', 'bisaru', 'bisare', 'bisara', 'bisarisu', 'khuju', 'khuja',
+  'jau', 'jaba', 'jam', 'gole', 'gol', 'aisu', 'aha', 'ahibo', 'ahibone', 'kuwa', 'kua', 'kobo', 'koise', 'koi', 'de', 'diya',
+  'dibo', 'pam', 'paba', 'pale', 'paisu', 'paiso', 'pabo', 'parim', 'pariba', 'pare', 'sau', 'soa', 'saise', 'sabo', 'sabole',
+  'jana', 'janu', 'jane', 'janibo', 'janisane', 'buji', 'bujisu', 'bujilu', 'bujai',
+  'hudhi', 'hudhisu', 'hudhibo', 'hudhok',
+  'karone', 'karne', 'bhabe', 'babe', 'subidha', 'masul', 'maasul', 'fees', 'fee',
+  'dhonnobad', 'namaskar', 'dada', 'baideu', 'bhaity', 'pora', 'loi', 'logot', 'homoy', 'somoy', 'dore', 'nisina',
+  'r', 'or', 'ot', 't', 'neki', 'ne', 'axomiya', 'asomiya'
 ]);
 
 export const ROMANIZED_ASSAMESE_PHRASES = [
   'ki ki', 'ki hol', 'ki khobor', 'kenekua asa', 'kenekuwa asa', 'bhal asu', 'bhal ne', 'ketiya hobo',
   'lagibo ne', 'bisaru', 'bonabo bisaru', 'koribo bisaru', 'jana ase', 'mok kuwa', 'muk kuwa', 'or capital ki',
   'college ot', 'exam ot', 'bhal kotha', 'in assamese', 'in axomiya', 'in asomiya', 'assamese please',
-  'axomiya', 'asomiya'
+  'axomiya', 'asomiya', 'kene koi', 'kenekoi', 'ketiya hobo', 'ki hobo', 'kot ase', 'ki ase', 'kune pabo',
+  'kiman lagibo', 'muk lagibo', 'mur babe', 'mur karone', 'hostel r', 'exam r', 'admission r', 'rules ki'
 ];
 
 /**
- * Detect language mode:
- * 'as_script' -> Assamese Unicode script
- * 'as_roman'  -> Romanized Assamese (English alphabet)
- * 'en'        -> English
+ * Detect language mode strictly driven by the user's actual input:
+ * 'as_script' -> User wrote in Assamese Unicode script
+ * 'as_roman'  -> User wrote in Assamese using English/Latin alphabet
+ * 'en'        -> User wrote in English
  */
 export const detectLanguageMode = (text = '', requestedLang = null) => {
-  if (requestedLang === 'as_roman') return 'as_roman';
-  if (requestedLang === 'as_script') return 'as_script';
+  if (!text || !text.trim()) {
+    if (requestedLang === 'as_roman') return 'as_roman';
+    if (requestedLang === 'as' || requestedLang === 'as_script') return 'as_script';
+    return 'en';
+  }
 
-  // 1. Assamese script
-  if (/[\u0980-\u09FF]/.test(text || '')) return 'as_script';
+  // 1. Assamese Unicode script check
+  if (/[\u0980-\u09FF]/.test(text)) return 'as_script';
 
-  const lower = (text || '').toLowerCase();
+  const lower = text.toLowerCase();
 
-  // 2. Explicit request for Assamese script
+  // 2. Explicit request inside text
   if (lower.includes('assamese script') || lower.includes('in assamese script') || lower.includes('অসমীয়া লিপি')) {
     return 'as_script';
+  }
+  if (lower.includes('in romanized assamese') || lower.includes('in english alphabet') || lower.includes('romanized assamese')) {
+    return 'as_roman';
   }
 
   // 3. Romanized phrase triggers
@@ -73,14 +85,29 @@ export const detectLanguageMode = (text = '', requestedLang = null) => {
     }
   }
 
-  // 4. Token-based match
+  // 4. Token & Morphological Suffix Match
   const words = lower.match(/[a-zA-Z]+/g) || [];
-  const assameseCount = words.filter(w => ROMANIZED_ASSAMESE_WORDS.has(w)).length;
-  if (assameseCount >= 1 && (assameseCount >= 2 || words.length <= 4 || assameseCount / Math.max(1, words.length) >= 0.2)) {
-    return 'as_roman';
+  if (!words.length) return 'en';
+
+  let assameseCount = 0;
+  for (const w of words) {
+    if (ROMANIZED_ASSAMESE_WORDS.has(w)) {
+      assameseCount++;
+    } else if (w.length > 3) {
+      if (
+        w.endsWith('or') || w.endsWith('ot') ||
+        w.endsWith('khon') || w.endsWith('khan') ||
+        w.endsWith('bilak') || w.endsWith('neki') ||
+        w.endsWith('hobone') || w.endsWith('lagibo')
+      ) {
+        assameseCount++;
+      }
+    }
   }
 
-  if (requestedLang === 'as') return 'as_script';
+  if (assameseCount >= 1) {
+    return 'as_roman';
+  }
 
   return 'en';
 };
@@ -134,7 +161,7 @@ export function stripUnwantedIntro(answer = '', query = '') {
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODELS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
+const GEMINI_MODELS = ['gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
 
 export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Nivoraya University') {
   const understanding = interpretQuery(query, mode);
@@ -254,7 +281,7 @@ If the user asks ANY question unrelated to universities, higher education, or ac
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${understanding.normalizedQuery}${contextNote}` }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 400 }
+          generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
         })
       });
       if (res.ok) {
@@ -295,8 +322,9 @@ export const resolveGroundedQuery = async ({
   categoryCode = null,
   history = [],
 }) => {
-  const understanding = interpretQuery(query, userLanguage);
-  const lang = userLanguage || understanding.languageMode;
+  const lang = detectLanguageMode(query, userLanguage);
+  const isAssamese = lang === 'as' || lang === 'as_script' || lang === 'as_roman' || /[\u0980-\u09FF]/.test(query);
+  const understanding = interpretQuery(query, lang);
   const normalizedQuery = understanding.normalizedQuery.toLowerCase().trim();
 
   // If query is about an external university, bypass our statutory DB/benchmarks and query Gemini web data
@@ -360,7 +388,7 @@ export const resolveGroundedQuery = async ({
 
       if (titleMatch || summaryMatch) {
         return {
-          answer: lang === 'as' && doc.asTitle 
+          answer: isAssamese 
             ? `প্ৰাতিষ্ঠানিক অধিনিয়ম অনুসৰি: ${doc.asTitle}। সাৰাংশ: ${doc.summary}`
             : `According to statutory repository document: ${doc.title}. Summary: ${doc.summary}`,
           source: doc.university?.name || doc.universityName || 'University Statutory Knowledge Base',
@@ -390,8 +418,26 @@ export const resolveGroundedQuery = async ({
       return normalizedQuery.includes(kwLower);
     });
     if (hasMatch) {
+      if (lang === 'as_roman') {
+        try {
+          const romanizedAnswer = await queryGeminiDirectBackend(query, 'as_roman', universityCode);
+          if (romanizedAnswer) {
+            return {
+              answer: romanizedAnswer,
+              source: benchmark.source,
+              page: benchmark.page,
+              confidence: benchmark.confidence,
+              domain: benchmark.domain,
+              language: 'as_roman',
+              isUnverified: false,
+            };
+          }
+        } catch (e) {
+          // fall through
+        }
+      }
       return {
-        answer: stripUnwantedIntro(lang === 'as' ? benchmark.asAnswer : benchmark.enAnswer, query),
+        answer: stripUnwantedIntro(isAssamese ? benchmark.asAnswer : benchmark.enAnswer, query),
         source: benchmark.source,
         page: benchmark.page,
         confidence: benchmark.confidence,
@@ -421,7 +467,7 @@ export const resolveGroundedQuery = async ({
   }
 
     // 4. Intelligent academic fallback
-  const helpfulAnswer = lang === 'as'
+  const helpfulAnswer = isAssamese
     ? `নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম অনুসৰি, আপোনাৰ প্ৰশ্নটো ('${query}') প্ৰাসংগিক বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ পৰ্টেল বা পৰীক্ষা শাখাৰ জাননী পৰীক্ষা কৰক।`
     : `Regarding your inquiry ('${query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest circulars.`;
 

@@ -109,7 +109,12 @@ ROMANIZED_ASSAMESE_LEXICON: Set[str] = set([
     "gao", "gaon", "shohor", "nohor", "rasta",
     "paani", "gaakheer", "saah", "chai", "saani", "bhaat",
     "bohi", "kitap", "kolom", "routine",
-    "axomiya", "asomiya", "asom", "assam", "sosa", "misa"
+    "axomiya", "asomiya", "asom", "assam", "sosa", "misa",
+    "r", "or", "ot", "t", "karone", "karne", "bhabe", "babe", "subidha",
+    "masul", "maasul", "fee", "fees", "khuju", "khuja", "hudhi", "hudhisu",
+    "hudhibo", "hudhibone", "hudhok", "hudha", "janibo", "janisane",
+    "bujai", "bujaba", "bujabo", "bhitort", "bahirot", "majot",
+    "bisoy", "bisoye", "bisoyot", "neki", "aseneki", "asenki", "hoboneki"
 ])
 
 # Multi-word Romanized Assamese trigger phrases
@@ -300,47 +305,55 @@ class AssameseUnderstandingLayer:
     def detect_language(cls, text: str, requested_lang: str = "en") -> Tuple[str, bool]:
         """
         Accurately identifies if the input is Assamese Unicode Script, Romanized Assamese, or English.
+        The user's actual question determines the output mode:
+        - If user input is in English -> English ('en')
+        - If user input is in Assamese script -> Assamese ('as_script')
+        - If user input is in Assamese written in English alphabets -> Romanized Assamese ('as_roman')
         Returns: (language_mode, is_romanized)
         """
-        if not text:
-            mode = "as_script" if requested_lang in ("as", "as_script") else "en"
+        if not text or not text.strip():
+            mode = "as_script" if requested_lang in ("as", "as_script") else ("as_roman" if requested_lang == "as_roman" else "en")
             return mode, mode == "as_roman"
 
-        # 1. Assamese Unicode Script Check
+        # 1. Assamese Unicode Script Check (বাংলা-অসমীয়া লিপি)
         if any("\u0980" <= c <= "\u09ff" for c in text):
             return "as_script", False
 
         lower = text.lower()
+        # 2. Explicit request in text
         if "assamese script" in lower or "in assamese script" in lower or "অসমীয়া লিপি" in lower:
             return "as_script", False
+        if "in romanized assamese" in lower or "in english alphabet" in lower or "romanized assamese" in lower:
+            return "as_roman", True
 
-        # 2. Check Romanized Phrases
+        # 3. Check Romanized Phrases
         for p in ROMANIZED_PHRASES:
             if p in lower:
                 return "as_roman", True
 
-        # 3. Check Words against Lexicon & Expanded tokens
+        # 4. Check Words against Lexicon & Expanded tokens & Morphological Suffixes
         words = re.findall(r'[a-zA-Z]+', lower)
         if not words:
             return "en", False
 
         # Normalize words through abbreviation map
         expanded_words = [ABBREVIATION_MAP.get(w, w) for w in words]
-        assamese_matches = sum(1 for w in expanded_words if w in ROMANIZED_ASSAMESE_LEXICON)
+        assamese_matches = 0
+        for w in expanded_words:
+            if w in ROMANIZED_ASSAMESE_LEXICON:
+                assamese_matches += 1
+            elif len(w) > 3:
+                # Common Assamese morphological endings attached to English roots (e.g. examor, hostelot)
+                if (
+                    w.endswith("or") or w.endswith("ot") or
+                    w.endswith("khon") or w.endswith("khan") or
+                    w.endswith("bilak") or w.endswith("neki") or
+                    w.endswith("hobone") or w.endswith("lagibo")
+                ):
+                    assamese_matches += 1
 
-        # High sensitivity detection for Romanized Assamese
-        total_words = len(words)
-        if requested_lang in ("as", "as_script"):
-            return "as_script", False
-        if requested_lang == "as_roman":
-            return "as_roman", True
         if assamese_matches >= 1:
-            if (
-                assamese_matches >= 2 or
-                total_words <= 3 or
-                (assamese_matches / total_words) >= 0.2
-            ):
-                return "as_roman", True
+            return "as_roman", True
 
         return "en", False
 

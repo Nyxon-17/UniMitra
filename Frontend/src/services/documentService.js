@@ -8,7 +8,39 @@ import { pdfStorage } from './pdfStorage';
 
 const STORAGE_KEY = 'unimitra_institutional_documents';
 const CATEGORIES_KEY = 'unimitra_document_categories';
+const DELETED_DOCS_KEY = 'unimitra_deleted_document_ids';
+const INITIALIZED_KEY = 'unimitra_docs_initialized';
 const API_BASE = import.meta.env?.VITE_API_URL || 'http://localhost:5000/api/v1';
+
+const getDeletedDocIds = () => {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_DOCS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    }
+  } catch {}
+  return new Set();
+};
+
+const markDocDeleted = (id) => {
+  if (!id || typeof window === 'undefined') return;
+  try {
+    const deleted = getDeletedDocIds();
+    deleted.add(id);
+    localStorage.setItem(DELETED_DOCS_KEY, JSON.stringify(Array.from(deleted)));
+  } catch {}
+};
+
+const unmarkDocDeleted = (id) => {
+  if (!id || typeof window === 'undefined') return;
+  try {
+    const deleted = getDeletedDocIds();
+    deleted.delete(id);
+    localStorage.setItem(DELETED_DOCS_KEY, JSON.stringify(Array.from(deleted)));
+  } catch {}
+};
 
 const getAuthHeaders = () => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('unimitra_auth_token') : null;
@@ -146,45 +178,74 @@ export const INITIAL_DOCUMENTS = [
 
 export const documentService = {
   getDocuments: () => {
-    if (typeof window === 'undefined') return INITIAL_DOCUMENTS;
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
-      return INITIAL_DOCUMENTS;
+    const deleted = getDeletedDocIds();
+
+    if (stored === null) {
+      // First-time setup ONLY if storage key has NEVER been created
+      const hasInit = localStorage.getItem(INITIALIZED_KEY);
+      if (!hasInit) {
+        localStorage.setItem(INITIALIZED_KEY, 'true');
+        const initial = INITIAL_DOCUMENTS.filter(d => !deleted.has(d.id));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+        return initial;
+      }
+      return [];
     }
+
     try {
       const parsed = JSON.parse(stored);
-      const cleaned = Array.isArray(parsed) ? parsed.filter(d => 
+      if (!Array.isArray(parsed)) return [];
+
+      // Filter out any explicitly deleted IDs
+      const filtered = parsed.filter(d => 
+        d && 
+        !deleted.has(d.id) && 
+        (!d.uuid || !deleted.has(d.uuid)) &&
         !d.id?.startsWith('DOC-NOT-') && 
         !d.id?.startsWith('DOC-GU-') && 
         !d.id?.startsWith('DOC-FAC-SUB-') && 
         !d.id?.startsWith('DOC-UGC-') &&
         !d.id?.startsWith('DOC-DU-')
-      ) : [];
-      if (cleaned.length === 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
-        return INITIAL_DOCUMENTS;
+      );
+
+      // NEVER restore INITIAL_DOCUMENTS when the user has deleted all items!
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
       }
-      if (cleaned.length !== parsed.length) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
-      }
-      return cleaned;
+      return filtered;
     } catch {
-      return INITIAL_DOCUMENTS;
+      return [];
     }
   },
 
   clearAllDocuments: () => {
     if (typeof window === 'undefined') return [];
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      const docs = documentService.getDocuments();
+      docs.forEach(d => {
+        if (d.id) markDocDeleted(d.id);
+        if (d.uuid) markDocDeleted(d.uuid);
+      });
+      // Mark all default demo IDs as deleted so they NEVER reappear
+      INITIAL_DOCUMENTS.forEach(d => {
+        if (d.id) markDocDeleted(d.id);
+      });
+    } catch {}
+
+    localStorage.setItem(INITIALIZED_KEY, 'true');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     window.dispatchEvent(new CustomEvent('unimitra_documents_changed', { detail: [] }));
     return [];
   },
 
   saveDocuments: (docs) => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
-    window.dispatchEvent(new CustomEvent('unimitra_documents_changed', { detail: docs }));
+    const safeDocs = Array.isArray(docs) ? docs : [];
+    localStorage.setItem(INITIALIZED_KEY, 'true');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(safeDocs));
+    window.dispatchEvent(new CustomEvent('unimitra_documents_changed', { detail: safeDocs }));
   },
 
   // Asynchronously fetch documents from the backend database (Supabase PostgreSQL)
@@ -197,24 +258,27 @@ export const documentService = {
       const json = await res.json();
       const serverDocs = json.data?.items || json.data || [];
       if (Array.isArray(serverDocs)) {
+        const deleted = getDeletedDocIds();
         const supabaseBase = import.meta.env?.VITE_SUPABASE_URL || 'https://kbrhnwyxyiiifmwpfnfm.supabase.co';
-        const formattedServerDocs = serverDocs.map(d => {
-          let fileUrl = d.fileUrl || d.sourceUrl || '';
-          if (!fileUrl && d.storagePath) {
-            fileUrl = `${supabaseBase}/storage/v1/object/public/unimitra-documents/${d.storagePath}`;
-          }
-          return {
-            ...d,
-            fileUrl,
-            sourceUrl: fileUrl || d.sourceUrl || ''
-          };
-        });
+        const formattedServerDocs = serverDocs
+          .filter(d => !deleted.has(d.id) && (!d.uuid || !deleted.has(d.uuid)))
+          .map(d => {
+            let fileUrl = d.fileUrl || d.sourceUrl || '';
+            if (!fileUrl && d.storagePath) {
+              fileUrl = `${supabaseBase}/storage/v1/object/public/unimitra-documents/${d.storagePath}`;
+            }
+            return {
+              ...d,
+              fileUrl,
+              sourceUrl: fileUrl || d.sourceUrl || ''
+            };
+          });
         const local = documentService.getDocuments();
         // Merge server docs with local newly added docs
         const serverMap = new Map();
         formattedServerDocs.forEach(d => serverMap.set(d.id, d));
         local.forEach(d => {
-          if (!serverMap.has(d.id)) {
+          if (!serverMap.has(d.id) && !deleted.has(d.id) && (!d.uuid || !deleted.has(d.uuid))) {
             let fileUrl = d.fileUrl || d.sourceUrl || '';
             if (!fileUrl && d.storagePath) {
               fileUrl = `${supabaseBase}/storage/v1/object/public/unimitra-documents/${d.storagePath}`;
@@ -279,6 +343,8 @@ export const documentService = {
   uploadFacultyDocument: async (docData, file = null) => {
     const docs = documentService.getDocuments();
     const docId = docData.id || `DOC-FAC-${Date.now().toString().slice(-4)}`;
+    unmarkDocDeleted(docId);
+    if (docData.uuid) unmarkDocDeleted(docData.uuid);
 
     let localBlobUrl = docData.fileUrl || '';
     if (file && typeof window !== 'undefined' && window.URL) {
@@ -373,6 +439,8 @@ export const documentService = {
   uploadAdminDocument: async (docData, file = null) => {
     const docs = documentService.getDocuments();
     const docId = docData.id || `DOC-ADM-${Date.now().toString().slice(-4)}`;
+    unmarkDocDeleted(docId);
+    if (docData.uuid) unmarkDocDeleted(docData.uuid);
 
     let localBlobUrl = docData.fileUrl || '';
     if (file && typeof window !== 'undefined' && window.URL) {
@@ -555,9 +623,16 @@ export const documentService = {
 
   // Admin Action: Permanently delete
   deleteDocument: async (docId) => {
+    if (!docId) return;
+    markDocDeleted(docId);
+
     const docs = documentService.getDocuments();
     const targetDoc = docs.find(d => d.id === docId);
-    const updated = docs.filter(doc => doc.id !== docId);
+    if (targetDoc?.uuid) {
+      markDocDeleted(targetDoc.uuid);
+    }
+
+    const updated = docs.filter(doc => doc.id !== docId && (!targetDoc?.uuid || doc.uuid !== targetDoc.uuid));
     documentService.saveDocuments(updated);
 
     const backendId = targetDoc?.uuid || docId;
@@ -573,22 +648,62 @@ export const documentService = {
 
   // Categories
   getCategories: () => {
-    if (typeof window === 'undefined') return INITIAL_CATEGORIES;
-    try {
-      const stored = localStorage.getItem(CATEGORIES_KEY);
-      if (!stored) {
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(INITIAL_CATEGORIES));
-        return INITIAL_CATEGORIES;
-      }
-      const parsed = JSON.parse(stored);
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(INITIAL_CATEGORIES));
-        return INITIAL_CATEGORIES;
-      }
-      return parsed;
-    } catch {
-      return INITIAL_CATEGORIES;
+    let baseCats = INITIAL_CATEGORIES;
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(CATEGORIES_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            baseCats = parsed;
+          }
+        }
+      } catch {}
     }
+
+    // Attach data from admin uploaded and repository PDFs
+    let docs = [];
+    try {
+      docs = documentService.getDocuments() || [];
+    } catch {}
+
+    // Auto-discover categories from uploaded documents if not already in taxonomy
+    const knownNames = new Set(baseCats.map(c => (c.name || '').toLowerCase().trim()));
+    const discoveredCats = [];
+
+    docs.forEach(doc => {
+      const catName = doc.category?.trim();
+      if (catName && !knownNames.has(catName.toLowerCase())) {
+        knownNames.add(catName.toLowerCase());
+        const code = doc.categoryCode || catName.toUpperCase().replace(/[^A-Z0-9]+/g, '-').slice(0, 10);
+        discoveredCats.push({
+          id: `CAT-${(baseCats.length + discoveredCats.length + 1).toString().padStart(2, '0')}`,
+          name: catName,
+          asName: doc.asCategory || catName,
+          code: code,
+          count: 0
+        });
+      }
+    });
+
+    const allCats = [...baseCats, ...discoveredCats];
+
+    return allCats.map(c => {
+      const matchingDocs = docs.filter(d => {
+        if (!d.category) return false;
+        const dCat = d.category.toLowerCase().trim();
+        const cName = (c.name || '').toLowerCase().trim();
+        const cCode = (c.code || '').toLowerCase().trim();
+        const dCode = (d.categoryCode || '').toLowerCase().trim();
+        return dCat === cName || (cCode && (dCat === cCode || dCode === cCode));
+      });
+
+      return {
+        ...c,
+        count: matchingDocs.length,
+        documents: matchingDocs
+      };
+    });
   },
 
   saveCategories: (cats) => {
