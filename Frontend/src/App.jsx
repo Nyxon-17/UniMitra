@@ -389,6 +389,12 @@ export function App() {
       console.warn('Logout error:', err);
     }
     setIsLoggedIn(false);
+    setStudentInfo({
+      name: 'Scholar Member',
+      email: 'member@university.ac.in',
+      role: 'Student',
+      department: 'Higher Education Studies'
+    });
     localStorage.removeItem('unimitra_auth_logged_in');
     localStorage.removeItem('unimitra_student_info');
     localStorage.removeItem('unimitra_auth_token');
@@ -623,6 +629,7 @@ export function App() {
             path="assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_${(studentInfo?.role || '').toLowerCase().includes('faculty') ? 'faculty' : 'student'}`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}
@@ -634,6 +641,7 @@ export function App() {
             path="faculty-assistant"
             element={
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'anon'}_faculty`}
                 currentLang={lang}
                 prefillQuery={assistantPrefill}
                 studentInfo={studentInfo}

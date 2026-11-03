@@ -36,6 +36,7 @@ import {
 } from '../../components/common/Icons';
 
 export const AdminConsole = ({
+  studentInfo = { name: 'Institutional Administrator', role: 'Admin' },
   onExit,
   currentLang = 'en',
   onToggleLang,
@@ -1070,8 +1071,9 @@ export const AdminConsole = ({
           {activeTab === 'admin-assistant' && (
             <div className="h-[calc(100vh-140px)] min-h-[620px] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-[#73A5CA]/30 dark:border-[#1C82AD]/30 bg-white/40 dark:bg-black/30 backdrop-blur-md animate-fade-in">
               <DashboardAiAssistant
+                key={`${studentInfo?.id || 'admin'}_admin`}
                 currentLang={currentLang}
-                studentInfo={{ name: 'Institutional Administrator', role: 'Admin' }}
+                studentInfo={studentInfo}
                 portalDomain="admin"
               />
             </div>
