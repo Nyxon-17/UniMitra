@@ -74,6 +74,9 @@ export const DashboardFeedback = ({ currentLang = 'en', studentInfo }) => {
 
     const updated = [newFeedback, ...submissions];
     setSubmissions(updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updated }));
+    }
     setComments('');
     setSubmittedAlert(true);
     setTimeout(() => setSubmittedAlert(false), 4000);

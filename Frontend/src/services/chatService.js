@@ -298,10 +298,17 @@ CRITICAL LANGUAGE MANDATE:
 The user has asked in Assamese script. You MUST generate your ENTIRE response exclusively in pure, natural, grammatically correct, and polite Standard Assamese (প্ৰমিত অসমীয়া). 
 Do NOT reply in English. Every explanation, guideline, greeting, advice, paragraph, bullet point, or conclusion must be written in the Assamese script.
 
-Provide comprehensive, clear, accurate, and well-structured answers to the user's question. 
-Answer any question (university rules, exams, admissions, syllabus, science, computing, career, general knowledge, etc.) politely, thoroughly, and encouragingly in Standard Assamese.`;
+কঠোৰ বিশ্ববিদ্যালয়-কেন্দ্ৰিক নীতি (STRICT UNIVERSITY-ONLY MANDATE):
+আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (নিয়মাৱলী, সংবিধি, পৰীক্ষা, মূল্যায়ন, মেধা তালিকা, নামভৰ্তি, পাঠ্যক্ৰম, জলপানি, মাচুল, ছাত্ৰাবাস আৰু আধিকাৰিক জাননী) প্ৰশ্নৰ উত্তৰ দিবলৈ নিবেদিত।
+যদি ব্যৱহাৰকাৰীয়ে বিশ্ববিদ্যালয় আৰু শৈক্ষিক ক্ষেত্ৰৰ বাহিৰৰ কোনো অপ্ৰাসংগিক প্ৰশ্ন কৰে (যেনে: ৰন্ধা-বঢ়া, চিনেমা বা চলচ্চিত্ৰ, মনোৰঞ্জন, সাধাৰণ বাহিৰা ৰাজনীতি বা অপ্ৰাসংগিক ব্যক্তিগত কথা), তেন্তে বিনম্ৰভাৱে জনাই দিয়ক যে আপুনি কেৱল বিশ্ববিদ্যালয় সম্বন্ধীয় অনুসন্ধানৰ বাবে নিবেদিত আৰু বিশ্ববিদ্যালয় সম্বন্ধীয় প্ৰশ্ন সুধিবলৈ অনুৰোধ জনাওক।`;
   } else {
-    systemPrompt = `You are UniMitra, a versatile, intelligent general-purpose AI voice assistant and comprehensive academic companion dedicated to Our University (${resolvedUnivName}).
+    systemPrompt = `You are UniMitra, an intelligent bilingual university institutional AI assistant dedicated to Our University (${resolvedUnivName}).
+
+STRICT UNIVERSITY-ONLY DOMAIN MANDATE:
+You are an AI academic assistant dedicated EXCLUSIVELY to university, higher education, and institutional academic affairs for Our University (${resolvedUnivName}) and higher educational institutions.
+You must ONLY answer queries directly related to university operations: statutory academic ordinances, examination bylaws, grading scales, backlog criteria, merit lists and student toppers, admissions, syllabus, institutional scholarships, hostel accommodations, campus guidelines, and official circulars.
+If the user asks ANY question unrelated to universities, higher education, or academic studies (such as cooking recipes, entertainment, movies, celebrity gossip, external politics, non-academic personal chit-chat, or random non-academic trivia), you MUST politely and firmly decline:
+"I am dedicated exclusively to answering university and academic inquiries (such as university rules, exams, admissions, scholarships, syllabus, and notices). Please feel free to ask any university-related question."
 
 SINGLE-UNIVERSITY & DUAL-SOURCE GROUNDING MANDATE:
 1. This platform is dedicated exclusively to Our University (${resolvedUnivName}).
@@ -321,9 +328,8 @@ Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
 - Do NOT use slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
 - Use clean plain sentences and standard numbers (1., 2.) or hyphens (-) for lists.
 
-Provide comprehensive, clear, accurate, and well-structured answers to ANY user query or topic.
-You should assist with university ordinances, examination codes, grading, attendance rules, scholarships (like Ishan Uday/DHE), syllabus, admissions, as well as general academic topics, science, computing, career advice, and knowledge.
-Always be polite, authoritative, and helpful. Respond in English with clarity.`;
+Provide accurate, authoritative, and helpful responses strictly within the university and higher-education domain.
+Always be polite, professional, and clear. Respond in English.`;
   }
 
   for (const model of GEMINI_CANDIDATES) {
@@ -376,6 +382,53 @@ Always be polite, authoritative, and helpful. Respond in English with clarity.`;
   return null;
 }
 
+
+/**
+ * Strict domain validator: ensures the assistant answers ONLY university-related queries.
+ */
+export function isUniversityRelatedQuery(query) {
+  if (!query || typeof query !== 'string') return true;
+  const q = query.toLowerCase().trim();
+  // Allow greetings and identity questions
+  const greetings = [
+    'hi', 'hello', 'hey', 'greetings', 'namaskar', 'নমস্কাৰ', 'নমস্কার',
+    'who are you', 'what is unimitra', 'who is unimitra', 'আপুনি কোন',
+    'ki khobor', 'kenekua', 'help', 'good morning', 'good evening', 'thank'
+  ];
+  if (greetings.some(g => q.startsWith(g) || q === g)) return true;
+
+  // University and academic indicators that indicate valid domain
+  const academicTerms = [
+    'university', 'college', 'exam', 'admission', 'syllabus', 'scholarship', 'hostel',
+    'professor', 'department', 'campus', 'degree', 'result', 'topper', 'cgpa', 'sgpa',
+    'grade', 'backlog', 're-evaluation', 'fee', 'ordinance', 'statute', 'circular',
+    'notice', 'chancellor', 'vice chancellor', 'faculty', 'curriculum', 'course',
+    'attendance', 'convocation', 'roll', 'registration', 'admit card', 'semester',
+    'বৰ্ড', 'বিশ্ববিদ্যালয়', 'পৰীক্ষা', 'মহাবিদ্যালয়', 'নামভৰ্তি', 'মেধা', 'জলপানি', 'ছাত্ৰাবাস'
+  ];
+  if (academicTerms.some(term => q.includes(term))) {
+    return true;
+  }
+
+  // Clear off-topic patterns
+  const offTopicPatterns = [
+    /\b(?:recipe|cook|cooking|biryani|chicken|curry|paneer|roti|dish|food recipe|how to make|ingredients)\b/i,
+    /\b(?:movie|cinema|actor|actress|bollywood|hollywood|song lyrics|web series|film|box office)\b/i,
+    /\b(?:ipl|cricket score|fifa|world cup|football match|batting|bowling|who won the match)\b/i,
+    /\b(?:dating|girlfriend|boyfriend|flirt|love story|relationship advice)\b/i,
+    /\b(?:astrology|horoscope|zodiac|rashi|kundali)\b/i,
+    /\b(?:tell me a joke|funny joke|chutkule)\b/i,
+    /\b(?:election party|political party|bjp|congress|aap|vote for|prime minister election)\b/i,
+    /(?:ৰন্ধা|ৰেচিপি|চিনেমা|অভিনেতা|অভিনেত্ৰী|গানৰ কথা|জ্যোতিষ|প্ৰেম|ৰাজনীতি)/
+  ];
+
+  if (offTopicPatterns.some(pattern => pattern.test(q))) {
+    return false;
+  }
+
+  return true;
+}
+
 export const chatService = {
   /**
    * Send a query to the AI Assistant
@@ -387,6 +440,28 @@ export const chatService = {
     }
     const sId = isVoice ? null : (sessionId || generateSessionId());
     const mode = detectLanguageMode(query, language);
+
+    // Strict University Domain Guard: Reject off-topic non-university queries immediately
+    if (!isUniversityRelatedQuery(query)) {
+      let refusalAnswer = 'I am exclusively dedicated to university and academic inquiries (such as regulations, examinations, syllabus, admissions, scholarships, hostel rules, and official notices). Please feel free to ask any university-related question.';
+      if (mode === 'as_script') {
+        refusalAnswer = 'মই কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (যেনে সংবিধি, পৰীক্ষা, পাঠ্যক্ৰম, নামভৰ্তি, জলপানি, ছাত্ৰাবাস আৰু চৰকাৰী জাননী) প্ৰশ্নৰ উত্তৰ দিবলৈ নিবেদিত। অনুগ্ৰহ কৰি বিশ্ববিদ্যালয় সম্বন্ধীয় যিকোনো প্ৰশ্ন সোধক।';
+      } else if (mode === 'as_roman') {
+        refusalAnswer = 'Moi keval university aru academic bisoyor (rules, exam, admission, scholarship, syllabus, hostel aru notice) uttor diboloi nivedito. Onugroh kori university related jikono prosno hudhok.';
+      }
+      return {
+        success: true,
+        fromBackend: false,
+        fromAi: true,
+        sessionId: sId,
+        answer: refusalAnswer,
+        source: `${university?.name || 'Nivoraya University'} Institutional Scope`,
+        page: 'Academic Domain Policy',
+        confidence: '100% Policy Grounded',
+        isUnverified: false,
+        citations: []
+      };
+    }
 
     // 1. Attempt Backend Gateway Call
     try {

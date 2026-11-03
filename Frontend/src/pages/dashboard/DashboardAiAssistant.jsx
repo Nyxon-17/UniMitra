@@ -994,17 +994,25 @@ const DashboardAiAssistantInner = ({
     try {
       const stored = localStorage.getItem('unimitra_feedback_submissions');
       let list = stored ? JSON.parse(stored) : [];
-      list.push({
+      const newFeedback = {
         id: `FB-${Date.now()}`,
-        user: studentInfo?.name || 'Member',
-        university: univProfile.name,
+        user: studentInfo?.name || 'Academic Scholar',
+        role: studentInfo?.role || (domain === 'faculty' ? 'Faculty' : domain === 'admin' ? 'Admin' : 'Student'),
+        university: univProfile?.name || 'Nivoraya University',
+        type: feedbackRating === 'helpful' ? 'Positive AI Accuracy' : 'Hallucination / Accuracy Issue',
         rating: feedbackRating === 'helpful' ? 5 : 2,
-        comments: feedbackComment,
-        submittedAt: new Date().toISOString()
-      });
-      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
+        query: activeFeedbackMsg?.query || activeFeedbackMsg?.prompt || (typeof activeFeedbackMsg?.text === 'string' ? activeFeedbackMsg.text.slice(0, 100) : 'Institutional Chat Query'),
+        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Marked as helpful and accurate.' : 'Reported as inaccurate or requiring verification.'),
+        submittedAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        status: 'Pending Review'
+      };
+      const updatedList = [newFeedback, ...list];
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(updatedList));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updatedList }));
+      }
       setFeedbackModalOpen(false);
-      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া জমা দিয়া হ’ল!' : 'Feedback submitted!');
+      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া প্ৰশাসকলৈ প্ৰেৰণ কৰা হ’ল!' : 'Feedback submitted to administrator review console!');
       setTimeout(() => setActionAlert(''), 2500);
     } catch {}
   };

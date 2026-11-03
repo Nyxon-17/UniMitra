@@ -1,13 +1,13 @@
 import { universityService } from '../../services/universityService';
 import { useState, useEffect, useRef } from 'react';
-import { 
-  BuildingLibraryIcon, 
-  DocumentTextIcon, 
-  ShieldCheckIcon, 
-  SearchIcon, 
-  EyeIcon, 
-  SparklesIcon, 
-  ArrowRightIcon, 
+import {
+  BuildingLibraryIcon,
+  DocumentTextIcon,
+  ShieldCheckIcon,
+  SearchIcon,
+  EyeIcon,
+  SparklesIcon,
+  ArrowRightIcon,
   CheckCircleIcon,
   XMarkIcon,
   CloudArrowUpIcon,
@@ -15,21 +15,64 @@ import {
   FunnelIcon,
   ArrowPathIcon
 } from '../../components/common/Icons';
-import { documentService } from '../../services/documentService';
+import { documentService, resolveDocPdfUrl, INITIAL_CATEGORIES } from '../../services/documentService';
+import { pdfStorage } from '../../services/pdfStorage';
 
 export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', studentInfo }) => {
   const univProfile = universityService.getProfile();
   // Navigation tabs: 'repository' | 'upload' | 'my-submissions'
   const [activeTab, setActiveTab] = useState('repository');
-  const [documents, setDocuments] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [documents, setDocuments] = useState(() => documentService.getDocuments());
+  const [categories, setCategories] = useState(() => documentService.getCategories());
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedUniv, setSelectedUniv] = useState('All');
-  const [activeModalDoc, setActiveModalDoc] = useState(null);
   const [toastAlert, setToastAlert] = useState('');
+
+  const handleInspectDoc = async (doc) => {
+    try {
+      // 1. Check in-memory uploaded blob cache
+      if (typeof window !== 'undefined' && window.__uploadedPdfBlobs) {
+        const memUrl = (doc.id && window.__uploadedPdfBlobs.get(doc.id)) ||
+          (doc.uuid && window.__uploadedPdfBlobs.get(doc.uuid)) ||
+          (doc.fileName && window.__uploadedPdfBlobs.get(doc.fileName));
+        if (memUrl) {
+          window.open(memUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      }
+
+      // 2. Check IndexedDB persistent storage for actual uploaded PDF file
+      let fileBlob = await pdfStorage.getPdf(doc.id);
+      if (!fileBlob && doc.uuid) fileBlob = await pdfStorage.getPdf(doc.uuid);
+      if (!fileBlob && doc.fileName) fileBlob = await pdfStorage.getPdf(doc.fileName);
+
+      if (fileBlob) {
+        const blobUrl = URL.createObjectURL(fileBlob);
+        if (typeof window !== 'undefined') {
+          window.__uploadedPdfBlobs = window.__uploadedPdfBlobs || new Map();
+          if (doc.id) window.__uploadedPdfBlobs.set(doc.id, blobUrl);
+          if (doc.uuid) window.__uploadedPdfBlobs.set(doc.uuid, blobUrl);
+          if (doc.fileName) window.__uploadedPdfBlobs.set(doc.fileName, blobUrl);
+        }
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      // 3. Fallback to direct URL or static institutional PDF
+      const url = resolveDocPdfUrl(doc);
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (e) {
+      const fallbackUrl = resolveDocPdfUrl(doc);
+      if (fallbackUrl) {
+        window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
 
   // Upload Form State
   const fileInputRef = useRef(null);
@@ -61,11 +104,18 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
     loadDocs();
     const handleUpdate = () => loadDocs();
     window.addEventListener('unimitra_documents_changed', handleUpdate);
-    return () => window.removeEventListener('unimitra_documents_changed', handleUpdate);
+    window.addEventListener('unimitra_categories_changed', handleUpdate);
+    return () => {
+      window.removeEventListener('unimitra_documents_changed', handleUpdate);
+      window.removeEventListener('unimitra_categories_changed', handleUpdate);
+    };
   }, []);
 
   const triggerToast = (msg) => {
     setToastAlert(msg);
+    if (window.showUniMitraToast) {
+      window.showUniMitraToast(msg, 'success');
+    }
     setTimeout(() => setToastAlert(''), 4000);
   };
 
@@ -106,14 +156,32 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
     }
 
     setSelectedFile(file);
-    // Pre-fill titles if empty
+    // Pre-fill titles and smart category detection if possible
     const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-    if (!uploadFormData.title) {
-      setUploadFormData(prev => ({
-        ...prev,
-        title: cleanName.charAt(0).toUpperCase() + cleanName.slice(1)
-      }));
+    const nameLower = file.name.toLowerCase();
+
+    let detectedCategory = '';
+    if (nameLower.includes('scholarship') || nameLower.includes('fellowship') || nameLower.includes('grant') || nameLower.includes('aid')) {
+      detectedCategory = 'Scholarships & Financial Aid';
+    } else if (nameLower.includes('exam') || nameLower.includes('topper') || nameLower.includes('result') || nameLower.includes('grade') || nameLower.includes('evaluation')) {
+      detectedCategory = 'Examination & Evaluation Codes';
+    } else if (nameLower.includes('admission') || nameLower.includes('counsel') || nameLower.includes('eligib') || nameLower.includes('entrance') || nameLower.includes('merit')) {
+      detectedCategory = 'Admissions & Eligibility Criteria';
+    } else if (nameLower.includes('hostel') || nameLower.includes('mess') || nameLower.includes('campus') || nameLower.includes('residential')) {
+      detectedCategory = 'Campus Facilities & Hostel Bylaws';
+    } else if (nameLower.includes('syllabus') || nameLower.includes('curriculum') || nameLower.includes('course')) {
+      detectedCategory = 'Syllabus & Curriculum Frameworks';
+    } else if (nameLower.includes('research') || nameLower.includes('phd') || nameLower.includes('doctoral')) {
+      detectedCategory = 'Research & Doctoral Supervision';
+    } else if (nameLower.includes('cas') || nameLower.includes('promotion') || nameLower.includes('faculty')) {
+      detectedCategory = 'CAS Promotion & Faculty API Norms';
     }
+
+    setUploadFormData(prev => ({
+      ...prev,
+      title: (!prev.title || prev.title.trim() === '') ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : prev.title,
+      category: detectedCategory || prev.category || 'Syllabus & Curriculum Frameworks'
+    }));
   };
 
   // Submit and simulate OCR / parsing
@@ -142,22 +210,39 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       setProcessingStage('3. Recursive semantic chunking (512-token windows with 50-token overlap)...');
     }, 1200);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setUploadProgress(100);
       setProcessingStage('4. Dispatching to Administrator Approval Queue for knowledge clearance...');
-      
+
       const fileExt = selectedFile.name.split('.').pop().toUpperCase();
       const fileSizeStr = (selectedFile.size / (1024 * 1024)).toFixed(1) + ' MB';
       const estimatedPages = Math.max(1, Math.round(selectedFile.size / (60 * 1024)));
+      const docId = `DOC-FAC-${Date.now().toString().slice(-4)}`;
+
+      let localBlobUrl = '';
+      if (selectedFile && typeof window !== 'undefined') {
+        try {
+          localBlobUrl = URL.createObjectURL(selectedFile);
+          await pdfStorage.savePdf(docId, selectedFile);
+          await pdfStorage.savePdf(selectedFile.name, selectedFile);
+          window.__uploadedPdfBlobs = window.__uploadedPdfBlobs || new Map();
+          window.__uploadedPdfBlobs.set(docId, localBlobUrl);
+          window.__uploadedPdfBlobs.set(selectedFile.name, localBlobUrl);
+        } catch (err) {
+          console.warn('Faculty storage notice:', err);
+        }
+      }
 
       documentService.uploadFacultyDocument({
-        id: `DOC-FAC-${Date.now().toString().slice(-4)}`,
+        id: docId,
         title: uploadFormData.title,
         asTitle: uploadFormData.asTitle || uploadFormData.title,
         university: uploadFormData.university,
         category: uploadFormData.category,
         department: uploadFormData.department,
         academicYear: uploadFormData.academicYear,
+        fileUrl: localBlobUrl || '',
+        sourceUrl: localBlobUrl || '',
         summary: uploadFormData.summary || 'Academic syllabus / departmental notice submitted by authorized university faculty member.',
         citation: uploadFormData.citation || `${uploadFormData.university} Faculty Submission Ref. ${new Date().getFullYear()}`,
         fileName: selectedFile.name,
@@ -192,11 +277,11 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
   // Filter approved/authorized repository docs
   const authorizedDocs = documents.filter(d => d.approvalStatus === 'approved' && d.status === 'Indexed');
-  
+
   const filteredAuthorizedDocs = authorizedDocs.filter(doc => {
     const matchCat = selectedCategory === 'All' || doc.category === selectedCategory;
     const matchUniv = selectedUniv === 'All' || doc.university.includes(selectedUniv);
-    const matchSearch = !searchQuery.trim() || 
+    const matchSearch = !searchQuery.trim() ||
       doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (doc.asTitle && doc.asTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
       doc.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -209,7 +294,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
   return (
     <div className="space-y-6">
-      
+
       {/* Faculty Quick Access Hub */}
       <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -263,13 +348,13 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
             </button>
 
             <button
-              onClick={() => onNavigateTab && onNavigateTab('faculty-saved')}
+              onClick={() => onNavigateTab && onNavigateTab('history')}
               className="p-3 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] hover:bg-[#FFCB56]/30 text-left transition-all cursor-pointer group"
-              title="Saved Conversations"
+              title="Query History"
             >
-              <ShieldCheckIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
-              <div className="text-[11px] font-black text-[#000000] dark:text-[#FFFFFF]">Saved</div>
-              <div className="text-[9px] text-[#000000]/70 dark:text-[#FFFFFF]/70">Research Records</div>
+              <ClockIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988] mb-1 group-hover:scale-110 transition-transform" />
+              <div className="text-[11px] font-black text-[#000000] dark:text-[#FFFFFF]">History</div>
+              <div className="text-[9px] text-[#000000]/70 dark:text-[#FFFFFF]/70">Query Archive</div>
             </button>
           </div>
         </div>
@@ -286,11 +371,10 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
         <div className="mt-6 pt-4 border-t border-[#73A5CA]/40 dark:border-[#1C82AD]/40 flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab('repository')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-              activeTab === 'repository'
-                ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-            }`}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${activeTab === 'repository'
+              ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
+              : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+              }`}
           >
             <BuildingLibraryIcon className="w-4 h-4" />
             <span>Authorized Institutional Repository ({authorizedDocs.length})</span>
@@ -298,11 +382,10 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
           <button
             onClick={() => setActiveTab('upload')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-              activeTab === 'upload'
-                ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-            }`}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${activeTab === 'upload'
+              ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
+              : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+              }`}
           >
             <CloudArrowUpIcon className="w-4 h-4" />
             <span>Upload Academic Document (PDF / DOCX)</span>
@@ -310,11 +393,10 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
 
           <button
             onClick={() => setActiveTab('my-submissions')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-              activeTab === 'my-submissions'
-                ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
-                : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
-            }`}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center space-x-2 ${activeTab === 'my-submissions'
+              ? 'bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] shadow-sm'
+              : 'bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] border border-[#73A5CA]/40 dark:border-[#1C82AD]/40'
+              }`}
           >
             <ClockIcon className="w-4 h-4" />
             <span>My Submissions & Approval Tracker ({facultySubmissions.length})</span>
@@ -348,11 +430,13 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]"
+                className="px-3 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
               >
-                <option value="All">All Categories</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.name}>{c.name}</option>
+                <option value="All" className="bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100">All Categories</option>
+                {(categories && categories.length > 0 ? categories : INITIAL_CATEGORIES).map((c) => (
+                  <option key={c.id || c.code || c.name} value={c.name} className="bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100">
+                    {c.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -368,69 +452,70 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               </div>
             ) : (
               filteredAuthorizedDocs.map((doc) => (
-              <div 
-                key={doc.id}
-                className="neo-surface rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
-                      {doc.category}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">
-                      {doc.id}
-                    </span>
+                <div
+                  key={doc.id}
+                  className="neo-surface rounded-3xl p-6 shadow-sm space-y-4 flex flex-col justify-between hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-black uppercase text-[#000000]/80 dark:text-[#FFFFFF]/80">
+                        {doc.category}
+                      </span>
+                      <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">
+                        {doc.id}
+                      </span>
+                    </div>
+
+                    <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] leading-snug">
+                      {currentLang === 'as' && doc.asTitle ? doc.asTitle : doc.title}
+                    </h2>
+
+                    <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
+                      {doc.summary}
+                    </p>
+
+                    <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                        <span>Authority: {doc.university}</span>
+                        <span>{doc.pages} Pages ({doc.chunksCount} chunks)</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-[#FF933E] dark:text-[#03C988] truncate">
+                        Source: {doc.fileName || doc.title}
+                      </div>
+                    </div>
                   </div>
 
-                  <h2 className="text-base sm:text-lg font-black text-[#000000] dark:text-[#FFFFFF] leading-snug">
-                    {currentLang === 'as' && doc.asTitle ? doc.asTitle : doc.title}
-                  </h2>
-
-                  <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
-                    {doc.summary}
-                  </p>
-
-                  <div className="p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40/60 dark:border-[#1C82AD]/40 space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                      <span>Authority: {doc.university}</span>
-                      <span>{doc.pages} Pages ({doc.chunksCount} chunks)</span>
+                  <div className="pt-3 border-t border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40/50 flex items-center justify-between gap-2">
+                    <div className="flex items-center space-x-1.5 text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
+                      <ShieldCheckIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
+                      <span className="truncate max-w-[180px]" title={doc.citation}>
+                        {doc.citation}
+                      </span>
                     </div>
-                    <div className="text-[11px] font-mono text-[#FF933E] dark:text-[#03C988] truncate">
-                      Source: {doc.fileName || doc.title}
+
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => handleInspectDoc(doc)}
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30 text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
+                        title="Open authentic PDF in new tab"
+                      >
+                        <EyeIcon className="w-3.5 h-3.5" />
+                        <span>Inspect</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab && onNavigateTab('assistant', { prefillQuery: `What are the official provisions and citations in: ${doc.title}?` })}
+                        className="px-3 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] transition-all cursor-pointer shadow-xs flex items-center space-x-1"
+                      >
+                        <span>Ask AI</span>
+                        <ArrowRightIcon className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="pt-3 border-t border-[#73A5CA]/40/50 dark:border-[#1C82AD]/40/50 flex items-center justify-between gap-2">
-                  <div className="flex items-center space-x-1.5 text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/80">
-                    <ShieldCheckIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] shrink-0" />
-                    <span className="truncate max-w-[180px]" title={doc.citation}>
-                      {doc.citation}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => setActiveModalDoc(doc)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/30 text-[#000000] dark:text-[#FFFFFF] cursor-pointer flex items-center space-x-1"
-                    >
-                      <EyeIcon className="w-3.5 h-3.5" />
-                      <span>Inspect</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onNavigateTab && onNavigateTab('assistant', { prefillQuery: `What are the official provisions and citations in: ${doc.title}?` })}
-                      className="px-3 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] text-white dark:text-[#000000] hover:bg-[#E87A24] transition-all cursor-pointer shadow-xs flex items-center space-x-1"
-                    >
-                      <span>Ask AI</span>
-                      <ArrowRightIcon className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )))}
+              )))}
           </div>
         </div>
       )}
@@ -440,7 +525,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
       {/* =================================================================== */}
       {activeTab === 'upload' && (
         <div className="neo-surface rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          
+
           <div className="border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-4">
             <div className="flex items-center space-x-2 text-[#FF933E] dark:text-[#03C988] font-black text-xs uppercase tracking-wider">
               <CloudArrowUpIcon className="w-5 h-5" />
@@ -461,34 +546,33 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
               <strong className="block font-black uppercase text-[11px] text-[#FF933E] dark:text-[#03C988] mb-0.5">
                 Institutional Quality & Verification Clearance
               </strong>
-              In accordance with university regulations, documents uploaded by faculty members enter the 
-              <span className="font-bold underline mx-1">Administrator Review Queue</span>. 
+              In accordance with university regulations, documents uploaded by faculty members enter the
+              <span className="font-bold underline mx-1">Administrator Review Queue</span>.
               Once reviewed and approved by the System Administrator, the document is vectorized and becomes actively queryable by students through the bilingual AI chatbot.
             </div>
           </div>
 
           <form onSubmit={handleUploadSubmit} className="space-y-6">
-            
+
             {/* Drag & Drop File Zone */}
             <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`p-8 border-2 border-dashed rounded-3xl text-center cursor-pointer transition-all ${
-                isDragging 
-                  ? 'border-[#FF933E] bg-[#FFE9A9]/40 scale-[1.01]' 
-                  : selectedFile 
-                    ? 'border-[#03C988] bg-[#03C988]/10' 
-                    : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] hover:border-[#FF933E]'
-              }`}
+              className={`p-8 border-2 border-dashed rounded-3xl text-center cursor-pointer transition-all ${isDragging
+                ? 'border-[#FF933E] bg-[#FFE9A9]/40 scale-[1.01]'
+                : selectedFile
+                  ? 'border-[#03C988] bg-[#03C988]/10'
+                  : 'border-[#73A5CA] dark:border-[#1C82AD] bg-[#FFE9A9]/10 dark:bg-[#0A0A0A] hover:border-[#FF933E]'
+                }`}
             >
-              <input 
-                ref={fileInputRef} 
-                type="file" 
-                accept=".pdf,.docx,.txt" 
-                onChange={handleFileChange} 
-                className="hidden" 
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.docx,.txt"
+                onChange={handleFileChange}
+                className="hidden"
               />
 
               <div className="w-14 h-14 rounded-2xl bg-[#FFE9A9] dark:bg-[#0A0A0A] text-[#FF933E] dark:text-[#03C988] mx-auto flex items-center justify-center font-black mb-3 shadow-xs">
@@ -578,10 +662,12 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                 <select
                   value={uploadFormData.category}
                   onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
                 >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
+                  {(categories && categories.length > 0 ? categories : INITIAL_CATEGORIES).map((c) => (
+                    <option key={c.id || c.code || c.name} value={c.name} className="bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100">
+                      {c.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -636,7 +722,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-[#FF933E] dark:bg-[#03C988] transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
@@ -692,70 +778,70 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
                     </tr>
                   ) : (
                     facultySubmissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-[#FFE9A9]/10 dark:hover:bg-[#13005A]/40 transition-colors">
-                      <td className="p-4">
-                        <span className="font-mono text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold block">{sub.id}</span>
-                        <span className="font-black text-sm">{sub.title}</span>
-                        <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block">{sub.fileName} • {sub.fileSize}</span>
-                      </td>
+                      <tr key={sub.id} className="hover:bg-[#FFE9A9]/10 dark:hover:bg-[#13005A]/40 transition-colors">
+                        <td className="p-4">
+                          <span className="font-mono text-[10px] text-[#FF933E] dark:text-[#03C988] font-bold block">{sub.id}</span>
+                          <span className="font-black text-sm">{sub.title}</span>
+                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block">{sub.fileName} • {sub.fileSize}</span>
+                        </td>
 
-                      <td className="p-4">
-                        <span className="font-bold block">{sub.university}</span>
-                        <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">{sub.department}</span>
-                      </td>
+                        <td className="p-4">
+                          <span className="font-bold block">{sub.university}</span>
+                          <span className="text-[11px] text-[#000000]/70 dark:text-[#FFFFFF]/70">{sub.department}</span>
+                        </td>
 
-                      <td className="p-4">
-                        <span className="font-bold">{sub.pages} Pages</span>
-                        <span className="text-[10px] text-[#FF933E] dark:text-[#03C988] block">{sub.chunksCount} chunks (512-t)</span>
-                      </td>
+                        <td className="p-4">
+                          <span className="font-bold">{sub.pages} Pages</span>
+                          <span className="text-[10px] text-[#FF933E] dark:text-[#03C988] block">{sub.chunksCount} chunks (512-t)</span>
+                        </td>
 
-                      <td className="p-4">
-                        {sub.approvalStatus === 'approved' ? (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800">
-                            <CheckCircleIcon className="w-3.5 h-3.5" />
-                            <span>Approved & Indexed</span>
-                          </span>
-                        ) : sub.approvalStatus === 'rejected' ? (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800">
-                            <XMarkIcon className="w-3.5 h-3.5" />
-                            <span>Revision Needed</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                            <ClockIcon className="w-3.5 h-3.5 animate-pulse" />
-                            <span>Pending Admin Review</span>
-                          </span>
-                        )}
-                        {sub.adminFeedback && (
-                          <p className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1 italic">
-                            Note: {sub.adminFeedback}
-                          </p>
-                        )}
-                      </td>
+                        <td className="p-4">
+                          {sub.approvalStatus === 'approved' ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800">
+                              <CheckCircleIcon className="w-3.5 h-3.5" />
+                              <span>Approved & Indexed</span>
+                            </span>
+                          ) : sub.approvalStatus === 'rejected' ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800">
+                              <XMarkIcon className="w-3.5 h-3.5" />
+                              <span>Revision Needed</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                              <ClockIcon className="w-3.5 h-3.5 animate-pulse" />
+                              <span>Pending Admin Review</span>
+                            </span>
+                          )}
+                          {sub.adminFeedback && (
+                            <p className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1 italic">
+                              Note: {sub.adminFeedback}
+                            </p>
+                          )}
+                        </td>
 
-                      <td className="p-4">
-                        {sub.availableToChatbot ? (
-                          <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#03C988]/20 text-[#03C988] border border-[#03C988]/40">
-                            Active in Chatbot
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            Blocked until Clearance
-                          </span>
-                        )}
-                      </td>
+                        <td className="p-4">
+                          {sub.availableToChatbot ? (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#03C988]/20 text-[#03C988] border border-[#03C988]/40">
+                              Active in Chatbot
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                              Blocked until Clearance
+                            </span>
+                          )}
+                        </td>
 
-                      <td className="p-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setActiveModalDoc(sub)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/20 text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  )))}
+                        <td className="p-4 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setActiveModalDoc(sub)}
+                            className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 hover:bg-[#FFE9A9]/20 text-[#000000] dark:text-[#FFFFFF] cursor-pointer"
+                          >
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    )))}
                 </tbody>
               </table>
             </div>
@@ -763,79 +849,7 @@ export const DashboardFacultyDocuments = ({ onNavigateTab, currentLang = 'en', s
         </div>
       )}
 
-      {/* Inspect Document Modal */}
-      {activeModalDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="neo-surface rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#73A5CA]/40 dark:border-[#1C82AD]/40 pb-3">
-              <div className="flex items-center space-x-2">
-                <DocumentTextIcon className="w-5 h-5 text-[#FF933E] dark:text-[#03C988]" />
-                <span className="text-xs font-mono font-bold text-[#FF933E] dark:text-[#03C988]">{activeModalDoc.id}</span>
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-[#FFE9A9] dark:bg-[#0A0A0A]">
-                  {activeModalDoc.approvalStatus}
-                </span>
-              </div>
-              <button
-                onClick={() => setActiveModalDoc(null)}
-                className="p-1 rounded-lg text-[#000000]/70 hover:text-[#000000] dark:text-[#FFFFFF]/80 dark:hover:text-[#FFFFFF] cursor-pointer"
-              >
-                <XMarkIcon className="w-5 h-5" />
-              </button>
-            </div>
 
-            <h3 className="text-lg font-black text-[#000000] dark:text-[#FFFFFF]">{activeModalDoc.title}</h3>
-            
-            <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 leading-relaxed">
-              {activeModalDoc.summary}
-            </p>
-
-            <div className="grid grid-cols-2 gap-3 p-3 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 text-xs">
-              <div>
-                <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">University & Dept:</span>
-                <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{activeModalDoc.university} ({activeModalDoc.department})</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">File Information:</span>
-                <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{activeModalDoc.fileName} • {activeModalDoc.pages} Pages</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">Vector Ingestion:</span>
-                <span className="font-black text-[#FF933E] dark:text-[#03C988]">{activeModalDoc.chunksCount} Chunks (Bilingual BGE-M3)</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#000000]/70 dark:text-[#FFFFFF]/70 block font-bold">Submitted By:</span>
-                <span className="font-black text-[#000000] dark:text-[#FFFFFF]">{activeModalDoc.uploaderName}</span>
-              </div>
-            </div>
-
-            <div className="p-3 bg-[#E0D4FD]/25 dark:bg-[#0A0A0A] rounded-xl text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80">
-              <strong>Institutional Citation:</strong> {activeModalDoc.citation}
-            </div>
-
-            {activeModalDoc.sha256 && (
-              <div className="text-[10px] font-mono text-[#000000]/60 dark:text-[#FFFFFF]/60 truncate">
-                SHA-256: {activeModalDoc.sha256}
-              </div>
-            )}
-
-            <div className="flex justify-end space-x-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const doc = activeModalDoc;
-                  setActiveModalDoc(null);
-                  if (onNavigateTab) {
-                    onNavigateTab('assistant', { prefillQuery: `Explain the detailed provisions and guidelines in: ${doc.title}` });
-                  }
-                }}
-                className="px-4 py-2 rounded-xl text-xs font-black text-white bg-[#FF933E] dark:bg-[#03C988] dark:text-[#000000] hover:bg-[#E87A24] cursor-pointer shadow-xs"
-              >
-                Ask Assistant About This Document
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

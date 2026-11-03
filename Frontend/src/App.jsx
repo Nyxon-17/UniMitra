@@ -36,6 +36,7 @@ import { DashboardFacultyDocuments } from './pages/faculty/DashboardFacultyDocum
 import { DashboardFacultySaved } from './pages/faculty/DashboardFacultySaved';
 import { AdminConsole } from './pages/admin/AdminConsole';
 import { GlobalAiChatWidget } from './components/common/GlobalAiChatWidget';
+import { GlobalPopupNotification } from './components/common/GlobalPopupNotification';
 
 // Smooth Scroll to Top on Route Change
 function ScrollToTop() {
@@ -200,7 +201,7 @@ function DashboardLayoutWrapper({
   }
 
   // Prevent Student from accessing Faculty-only pages
-  const facultyOnlyTabs = ['faculty-exams', 'faculty-documents', 'faculty-saved'];
+  const facultyOnlyTabs = ['faculty-exams', 'faculty-documents'];
   if (!isFaculty && facultyOnlyTabs.includes(pathSegment)) {
     return <Navigate to="/dashboard/overview" replace />;
   }
@@ -717,6 +718,7 @@ export function App() {
               <DashboardQueryHistory
                 onNavigateTab={handleNavigateDashboardTab}
                 currentLang={lang}
+                studentInfo={studentInfo}
               />
             }
           />
@@ -760,12 +762,7 @@ export function App() {
           />
           <Route
             path="faculty-saved"
-            element={
-              <DashboardFacultySaved
-                onNavigateTab={handleNavigateDashboardTab}
-                currentLang={lang}
-              />
-            }
+            element={<Navigate to="/dashboard/history" replace />}
           />
           <Route
             path="profile"
@@ -806,6 +803,9 @@ export function App() {
           setAuthModalOpen(true);
         }}
       />
+
+      {/* Global Interactive Popup & Toast Notification Center */}
+      <GlobalPopupNotification />
     </>
   );
 }

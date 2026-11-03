@@ -10,19 +10,30 @@ import {
 } from '../../components/common/Icons';
 import { chatService } from '../../services/chatService';
 
-export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => {
+export const DashboardQueryHistory = ({ 
+  onNavigateTab, 
+  currentLang = 'en',
+  studentInfo = { role: 'Student' },
+  portalDomain = null
+}) => {
   const [searchFilter, setSearchFilter] = useState('');
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const domain = portalDomain || (
+    studentInfo?.role?.toLowerCase().includes('admin') ? 'admin' :
+    studentInfo?.role?.toLowerCase().includes('faculty') ? 'faculty' : 'student'
+  );
+  const userId = studentInfo?.id || chatService.getCurrentUserId();
 
   useEffect(() => {
     const loadDynamicHistory = async () => {
       setLoading(true);
       try {
-        const sessions = await chatService.getSessions('student');
+        const sessions = await chatService.getSessions(domain, userId);
         const items = [];
-        for (const s of (sessions || []).slice(0, 30)) {
-          const msgs = await chatService.fetchSessionMessages(s.id, 'student');
+        for (const s of (sessions || []).slice(0, 50)) {
+          const msgs = await chatService.fetchSessionMessages(s.id, domain, userId);
           if (msgs && msgs.length > 0) {
             for (let i = 0; i < msgs.length; i++) {
               if (msgs[i].sender === 'user') {
@@ -33,7 +44,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
                   sessionId: s.id,
                   query: userQ,
                   asQuery: userQ,
-                  category: s.title ? s.title.slice(0, 30) : 'Academic Consultation',
+                  category: s.title ? s.title.slice(0, 35) : (domain === 'admin' ? 'Executive Governance' : domain === 'faculty' ? 'Faculty Consultation' : 'Academic Consultation'),
                   resolvedAnswer: nextAi?.text || 'Resolved institutional query.',
                   source: nextAi?.source || 'UniMitra Knowledge Base',
                   timestamp: msgs[i].time || (s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'Recent'),
@@ -51,7 +62,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
       }
     };
     loadDynamicHistory();
-  }, []);
+  }, [domain, userId]);
 
   const filteredHistory = historyList.filter((item) => {
     const q = searchFilter.toLowerCase().trim();
@@ -67,16 +78,44 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
   const handleDelete = (id, sessionId) => {
     setHistoryList(prev => prev.filter(item => item.id !== id));
     if (sessionId) {
-      chatService.deleteSession(sessionId, 'student');
+      chatService.deleteSession(sessionId, domain, userId);
     }
   };
 
   const handleClearAll = () => {
-    if (window.confirm('Clear all recorded query history?')) {
-      chatService.clearAllSessions('student');
+    if (window.showUniMitraConfirm) {
+      window.showUniMitraConfirm({
+        title: currentLang === 'as' ? 'ইতিহাস মচি পেলাওক' : 'Clear Query History',
+        message: currentLang === 'as' ? 'আপুনি সকলো প্ৰশ্নোত্তৰ ইতিহাস স্থায়ীভাৱে মচিব বিচাৰেনে?' : 'Clear all recorded query history from this portal?',
+        confirmText: currentLang === 'as' ? 'সকলো মচক' : 'Clear All',
+        confirmColor: 'bg-red-600 hover:bg-red-700 text-white',
+        onConfirm: () => {
+          chatService.clearAllSessions(domain, userId);
+          setHistoryList([]);
+          if (window.showUniMitraToast) {
+            window.showUniMitraToast(currentLang === 'as' ? 'ইতিহাস সফলতাৰে মচি পেলোৱা হ’ল' : 'Query history cleared successfully', 'success');
+          }
+        }
+      });
+    } else {
+      chatService.clearAllSessions(domain, userId);
       setHistoryList([]);
     }
   };
+
+  const domainTitle = domain === 'admin'
+    ? (currentLang === 'as' ? 'প্ৰশাসনিক বাৰ্তালাপ ইতিহাস' : 'Administrator Governance AI History')
+    : domain === 'faculty'
+      ? (currentLang === 'as' ? 'অধ্যাপক AI প্ৰশ্নোত্তৰ ইতিহাস' : 'Faculty Academic AI Query History')
+      : (currentLang === 'as' ? 'মোৰ প্ৰশ্নোত্তৰ ইতিহাস' : 'Student Institutional Query History');
+
+  const domainSubtitle = domain === 'admin'
+    ? 'Isolated chat history for institutional governance, circular verification, and statutory oversight.'
+    : domain === 'faculty'
+      ? 'Isolated chat history for curriculum moderation, examination bylaws, and departmental directives.'
+      : (currentLang === 'as'
+        ? 'পূৰ্বতে সোধা বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা আৰু ছাত্ৰবৃত্তিৰ প্ৰশ্ন আৰু প্ৰমাণিত সমাধানসমূহ পুনৰ পৰীক্ষা কৰক।'
+        : 'Review your previously resolved institutional queries, citations, and grounded gazette sources.');
 
   return (
     <div className="space-y-6">
@@ -90,12 +129,10 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
               <span>Query Interaction History</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#000000] dark:text-[#FFFFFF]">
-              {currentLang === 'as' ? 'মোৰ প্ৰশ্নোত্তৰ ইতিহাস' : 'Institutional Query History'}
+              {domainTitle}
             </h1>
             <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 max-w-2xl leading-relaxed">
-              {currentLang === 'as'
-                ? 'পূৰ্বতে সোধা বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা আৰু ছাত্ৰবৃত্তিৰ প্ৰশ্ন আৰু প্ৰমাণিত সমাধানসমূহ পুনৰ পৰীক্ষা কৰক।'
-                : 'Review your previously resolved institutional queries, citations, and grounded gazette sources.'}
+              {domainSubtitle}
             </p>
           </div>
 
@@ -109,7 +146,7 @@ export const DashboardQueryHistory = ({ onNavigateTab, currentLang = 'en' }) => 
               </button>
             )}
             <button
-              onClick={() => onNavigateTab('assistant')}
+              onClick={() => onNavigateTab(domain === 'admin' ? 'admin-assistant' : 'assistant')}
               className="flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-all cursor-pointer shadow-xs hover:shadow-md"
             >
               <SparklesIcon className="w-3.5 h-3.5 text-[#FAF8FF]" />

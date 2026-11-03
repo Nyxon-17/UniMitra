@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { universityService } from '../../services/universityService';
+import { documentService, resolveDocPdfUrl } from '../../services/documentService';
+import { pdfStorage } from '../../services/pdfStorage';
 import { 
   BuildingLibraryIcon, 
   SearchIcon, 
@@ -9,7 +11,8 @@ import {
   ClipboardDocumentCheckIcon, 
   ChevronDownIcon,
   ShieldCheckIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  EyeIcon
 } from '../../components/common/Icons';
 
 export const DashboardRegulations = ({ 
@@ -17,35 +20,94 @@ export const DashboardRegulations = ({
   currentLang = 'en'
 }) => {
   const [univProfile, setUnivProfile] = useState(() => universityService.getProfile());
-  const [regulationsList, setRegulationsList] = useState(() => universityService.getRegulations());
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [regulationsList, setRegulationsList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedDoc, setExpandedDoc] = useState(null);
+
+  const loadRegulations = () => {
+    setUnivProfile(universityService.getProfile());
+    const all = documentService.getDocuments();
+    // Filter institutional regulations & statutory circulars
+    const regs = all.filter(d => {
+      const cat = (d.category || '').toLowerCase();
+      const title = (d.title || '').toLowerCase();
+      const fn = (d.fileName || '').toLowerCase();
+      const isReg = cat.includes('regulat') || 
+                    cat.includes('ordinan') || 
+                    cat.includes('syllabus') || 
+                    cat.includes('curriculum') || 
+                    cat.includes('attendance') ||
+                    title.includes('ordinance') || 
+                    title.includes('regulation') || 
+                    title.includes('attendance') || 
+                    title.includes('syllabus') || 
+                    fn.includes('attendance') || 
+                    fn.includes('ordinance');
+      return isReg && (d.approvalStatus === 'approved' || d.status === 'Indexed' || d.uploaderRole === 'Admin');
+    });
+    setRegulationsList(regs);
+  };
 
   useEffect(() => {
-    const handleSync = () => {
-      setUnivProfile(universityService.getProfile());
-      setRegulationsList(universityService.getRegulations());
-    };
+    loadRegulations();
+    const handleSync = () => loadRegulations();
+    window.addEventListener('unimitra_documents_changed', handleSync);
     window.addEventListener('unimitra_university_changed', handleSync);
-    return () => window.removeEventListener('unimitra_university_changed', handleSync);
+    return () => {
+      window.removeEventListener('unimitra_documents_changed', handleSync);
+      window.removeEventListener('unimitra_university_changed', handleSync);
+    };
   }, []);
 
-  const categories = [
-    'All',
-    'Attendance & Ordinances',
-    'Curriculum & Degree Framework',
-    'Student Welfare & Discipline',
-    'Faculty Governance'
-  ];
+  const handleInspectDoc = async (doc) => {
+    try {
+      if (typeof window !== 'undefined' && window.__uploadedPdfBlobs) {
+        const memUrl = (doc.id && window.__uploadedPdfBlobs.get(doc.id)) ||
+                       (doc.uuid && window.__uploadedPdfBlobs.get(doc.uuid)) ||
+                       (doc.fileName && window.__uploadedPdfBlobs.get(doc.fileName));
+        if (memUrl) {
+          window.open(memUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      }
+
+      let fileBlob = await pdfStorage.getPdf(doc.id);
+      if (!fileBlob && doc.uuid) fileBlob = await pdfStorage.getPdf(doc.uuid);
+      if (!fileBlob && doc.fileName) fileBlob = await pdfStorage.getPdf(doc.fileName);
+
+      if (fileBlob) {
+        const blobUrl = URL.createObjectURL(fileBlob);
+        if (typeof window !== 'undefined') {
+          window.__uploadedPdfBlobs = window.__uploadedPdfBlobs || new Map();
+          if (doc.id) window.__uploadedPdfBlobs.set(doc.id, blobUrl);
+          if (doc.uuid) window.__uploadedPdfBlobs.set(doc.uuid, blobUrl);
+          if (doc.fileName) window.__uploadedPdfBlobs.set(doc.fileName, blobUrl);
+        }
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      const url = resolveDocPdfUrl(doc);
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      const fallbackUrl = resolveDocPdfUrl(doc);
+      if (fallbackUrl) {
+        window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
 
   const filteredRegulations = regulationsList.filter((reg) => {
-    const matchCat = selectedCategory === 'All' || reg.category === selectedCategory;
-    const matchSearch = !searchQuery.trim() || 
-      reg.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (reg.asTitle && reg.asTitle.includes(searchQuery)) ||
-      reg.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      (reg.title && reg.title.toLowerCase().includes(q)) ||
+      (reg.asTitle && reg.asTitle.includes(q)) ||
+      (reg.summary && reg.summary.toLowerCase().includes(q)) ||
+      (reg.department && reg.department.toLowerCase().includes(q)) ||
+      (reg.citation && reg.citation.toLowerCase().includes(q))
+    );
   });
 
   return (
@@ -79,41 +141,21 @@ export const DashboardRegulations = ({
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Category Selector */}
-          <div>
-            <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-              Regulation Domain
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
-            >
-              {categories.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
-          </div>
+      {/* Search Bar */}
+      <div className="neo-surface rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:w-96">
+          <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search clauses, ordinances, attendance rules..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
+          />
+        </div>
 
-          {/* Keyword Search */}
-          <div>
-            <label className="block text-xs font-black text-[#000000] dark:text-[#FFFFFF] mb-1">
-              Search Clauses & Ordinances
-            </label>
-            <div className="relative">
-              <SearchIcon className="w-4 h-4 text-[#FF933E] dark:text-[#03C988] absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Attendance, condonation, credit..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-xs font-bold text-[#000000] dark:text-[#FFFFFF] outline-none"
-              />
-            </div>
-          </div>
+        <div className="px-4 py-2 rounded-xl text-xs font-bold border border-[#73A5CA]/40 dark:border-[#1C82AD]/40 bg-[#FFE9A9]/20 dark:bg-[#0A0A0A] text-[#000000] dark:text-[#FFFFFF]">
+          {regulationsList.length} Verified Statutory Document{regulationsList.length !== 1 ? 's' : ''}
         </div>
       </div>
 
@@ -125,14 +167,14 @@ export const DashboardRegulations = ({
             <h3 className="text-base font-black text-[#000000] dark:text-[#FFFFFF]">
               {currentLang === 'as' ? 'কোনো বিধিবদ্ধ নিয়মাৱলী পোৱা নগ’ল' : 'No Statutory Regulations Found'}
             </h3>
-            <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1">
-              {currentLang === 'as' ? 'অনুগ্ৰহ কৰি আন বিভাগ বা অনুসন্ধান শব্দ বাছনি কৰক।' : 'No statutory ordinances match the selected category or search filter.'}
+            <p className="text-xs text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-1 max-w-md mx-auto">
+              {currentLang === 'as' 
+                ? 'প্ৰশাসকে পৰৱৰ্তী অধিনিয়মৰ PDF আপলোড কৰিলে এই পৃষ্ঠাত স্বয়ংক্ৰিয়ভাৱে প্ৰদৰ্শিত হ’ব।' 
+                : 'As soon as new official regulation or ordinance PDFs are uploaded by administrators, they will automatically appear here.'}
             </p>
           </div>
         ) : (
-          filteredRegulations.map((reg) => {
-          const isExpanded = expandedDoc === reg.id;
-          return (
+          filteredRegulations.map((reg) => (
             <div
               key={reg.id}
               className="neo-surface rounded-3xl p-5 sm:p-6 shadow-xs hover:border-[#FF933E] dark:hover:border-[#03C988] transition-all space-y-4"
@@ -140,7 +182,7 @@ export const DashboardRegulations = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-[#000000] dark:text-[#FFFFFF]">
-                    {reg.ordinanceNo || 'Statutory Ordinance'}
+                    {reg.department || reg.id}
                   </span>
                   <span className="text-xs font-bold text-[#FF933E] dark:text-[#03C988]">
                     {reg.category}
@@ -166,7 +208,7 @@ export const DashboardRegulations = ({
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-[#000000]/70 dark:text-[#FFFFFF]/80 mt-2 leading-relaxed">
-                  {currentLang === 'as' && reg.asSummary ? reg.asSummary : reg.summary}
+                  {reg.summary}
                 </p>
               </div>
 
@@ -176,14 +218,18 @@ export const DashboardRegulations = ({
                   <span>Citation: {reg.citation}</span>
                 </div>
 
-                <div className="flex items-center space-x-1 text-[11px] text-[#03C988] font-bold">
-                  <ShieldCheckIcon className="w-3.5 h-3.5" />
-                  <span>Grounded Knowledge Base</span>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => handleInspectDoc(reg)}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-black bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] cursor-pointer shadow-xs flex items-center space-x-1.5 transition-all"
+                >
+                  <EyeIcon className="w-3.5 h-3.5" />
+                  <span>Inspect Official PDF</span>
+                </button>
               </div>
             </div>
-          );
-        }))}
+          ))
+        )}
       </div>
 
     </div>

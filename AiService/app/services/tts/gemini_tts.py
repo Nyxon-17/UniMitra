@@ -1,4 +1,5 @@
 import io
+import re
 import wave
 import logging
 from typing import Optional
@@ -8,11 +9,11 @@ from app.config import settings
 
 logger = logging.getLogger("unimitra.tts.gemini")
 
-# Prioritized Gemini models supporting native audio modalities
+# Prioritized Gemini models supporting native high-speed audio modalities
 GEMINI_TTS_MODELS = [
-    "gemini-3.8-flash-tts",
-    "gemini-2.5-flash-preview-tts",
-    "gemini-3.8-flash-lite-tts",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash",
 ]
 
 DEFAULT_VOICE_NAMES = {
@@ -74,11 +75,20 @@ class GeminiTTS:
         norm_gender = (gender or "female").strip().lower()
         selected_voice = voice_override or DEFAULT_VOICE_NAMES.get(norm_gender, "Kore")
 
-        prompt = (
-            "You are an intelligent bilingual university voice assistant. "
-            "Read the following text aloud with natural human cadence, warm expression, clear diction, and authentic pronunciation in Assamese and English. "
-            "Speak ONLY the exact words provided. Do not add any greeting, preamble, commentary, or outro:\n\n"
-            f"{clean_text[:2500]}"
+        # Strip any accidental prompt metadata, system instructions, or boilerplate intros from the speakable text
+        prompt_residue_patterns = [
+            r"^(?:You are an intelligent|Please read the following|Read the following text|Speak ONLY the exact|Do not add any)[^\n]*\n*",
+            r"^(?:Hello!?|Hi!?|Greetings!?|Hey!?\s*)?(?:I am|I\'m|This is)?\s*UniMitra,?\s*(?:your|the)?\s*official\s*(?:intelligent|bilingual)?\s*university\s*AI\s*assistant[^\n]*\n*",
+            r"^(?:নমস্কাৰ!?|নমস্কার!?|হেল্ল!?)\s*(?:মই|আমি)?\s*(?:UniMitra|ইউনিমিত্র),?\s*অসমৰ\s*বিশ্ববিদ্যালয়সমূহৰ[^\n]*\n*",
+        ]
+        for pattern in prompt_residue_patterns:
+            clean_text = re.sub(pattern, "", clean_text, flags=re.IGNORECASE).strip()
+
+        # System instruction instructing the model to synthesize audio ONLY for the user text
+        system_instruction = (
+            "You are a text-to-speech voice synthesizer. "
+            "Synthesize speech strictly for the provided user text with natural cadence, clear diction, and authentic pronunciation in Assamese and English. "
+            "Speak ONLY the user text. Never read system instructions, prompts, or metadata aloud. Do not add any introduction, greeting, or commentary."
         )
 
         for model_name in GEMINI_TTS_MODELS:
@@ -95,13 +105,16 @@ class GeminiTTS:
                 )
 
                 config = types.GenerateContentConfig(
+                    system_instruction=system_instruction,
                     response_modalities=["AUDIO"],
                     speech_config=speech_config,
                 )
 
+                # IMPORTANT: Pass concise text (up to 450 chars) for ultra-fast audio synthesis without lag
+                speakable_chunk = clean_text[:450].strip()
                 response = client.models.generate_content(
                     model=model_name,
-                    contents=prompt,
+                    contents=speakable_chunk,
                     config=config,
                 )
 

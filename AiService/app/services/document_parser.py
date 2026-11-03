@@ -26,57 +26,105 @@ class DocumentParser:
     def parse_pdf(file_bytes: bytes) -> Tuple[List[Dict[str, Any]], bool]:
         """
         Extracts pages, text, and tables from PDF bytes.
-        Prioritizes pdfplumber for high-fidelity table extraction (topper lists, results, rankings),
-        with robust fallbacks to pypdfium2, PyPDF2, and PyMuPDF.
+        Prioritizes pymupdf (PyMuPDF) for high-fidelity text and native table extraction
+        (topper lists, results, rankings), with resilient fallbacks to pdfplumber, pypdfium2, and PyPDF2.
         Returns: (list_of_pages, is_scanned_flag)
         """
         pages = []
         is_scanned = True
         total_chars = 0
 
-        # Method 1: pdfplumber (best for tables, merit lists, structured text)
+        # Method 1: PyMuPDF (pymupdf) - high-performance standard in virtualenv with native table support
         try:
-            import pdfplumber
-            with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-                for page_idx, page in enumerate(pdf.pages):
-                    raw_text = page.extract_text() or ""
-                    
-                    # Extract tables (e.g. topper lists, rank tables, student results)
-                    try:
-                        tables = page.extract_tables() or []
-                        table_blocks = []
-                        for tbl in tables:
-                            rows = []
-                            for r in tbl:
-                                cells = [str(c or "").strip() for c in r if c is not None]
-                                if any(cells):
-                                    rows.append(" | ".join(cells))
-                            if rows:
-                                table_blocks.append("\n".join(rows))
-                        if table_blocks:
-                            raw_text += "\n\n[Structured Table / Merit Data]:\n" + "\n\n".join(table_blocks)
-                    except Exception as te:
-                        logger.debug(f"Table extraction notice: {te}")
+            import pymupdf
+            doc = pymupdf.open(stream=file_bytes, filetype="pdf")
+            pages = []
+            total_chars = 0
+            for page_idx in range(len(doc)):
+                page = doc[page_idx]
+                raw_text = page.get_text("text") or ""
 
-                    cleaned_text = normalize_assamese_unicode(raw_text)
-                    char_count = len(cleaned_text.strip())
-                    total_chars += char_count
+                # Extract tables (e.g. topper lists, rank tables, student results)
+                try:
+                    tabs = page.find_tables()
+                    table_blocks = []
+                    for tab in tabs:
+                        extracted = tab.extract()
+                        rows = []
+                        for r in extracted:
+                            cells = [str(c or "").strip() for c in r if c is not None]
+                            if any(cells):
+                                rows.append(" | ".join(cells))
+                        if rows:
+                            table_blocks.append("\n".join(rows))
+                    if table_blocks:
+                        raw_text += "\n\n[Structured Table / Merit Data]:\n" + "\n\n".join(table_blocks)
+                except Exception as te:
+                    logger.debug(f"PyMuPDF table extraction notice: {te}")
 
-                    pages.append({
-                        "page_number": page_idx + 1,
-                        "text": cleaned_text,
-                        "char_count": char_count,
-                    })
+                cleaned_text = normalize_assamese_unicode(raw_text)
+                char_count = len(cleaned_text.strip())
+                total_chars += char_count
 
-                if len(pages) > 0 and (total_chars / len(pages)) > 50:
-                    is_scanned = False
-                if pages and total_chars > 0:
-                    logger.info(f"pdfplumber parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
-                    return pages, is_scanned
+                pages.append({
+                    "page_number": page_idx + 1,
+                    "text": cleaned_text,
+                    "char_count": char_count,
+                })
+            doc.close()
+
+            if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                is_scanned = False
+            if pages and total_chars > 0:
+                logger.info(f"PyMuPDF parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
+                return pages, is_scanned
         except Exception as e:
-            logger.info(f"pdfplumber parser notice: {e}. Attempting pypdfium2 fallback.")
+            logger.debug(f"PyMuPDF parser notice: {e}. Attempting fallback parsers.")
 
-        # Method 2: pypdfium2 (ultra-fast C++ PDFium)
+        # Method 2: pdfplumber fallback (if installed)
+        if not pages or total_chars == 0:
+            try:
+                import pdfplumber
+                with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+                    pages = []
+                    total_chars = 0
+                    for page_idx, page in enumerate(pdf.pages):
+                        raw_text = page.extract_text() or ""
+                        try:
+                            tables = page.extract_tables() or []
+                            table_blocks = []
+                            for tbl in tables:
+                                rows = []
+                                for r in tbl:
+                                    cells = [str(c or "").strip() for c in r if c is not None]
+                                    if any(cells):
+                                        rows.append(" | ".join(cells))
+                                if rows:
+                                    table_blocks.append("\n".join(rows))
+                            if table_blocks:
+                                raw_text += "\n\n[Structured Table / Merit Data]:\n" + "\n\n".join(table_blocks)
+                        except Exception as te:
+                            logger.debug(f"Table extraction notice: {te}")
+
+                        cleaned_text = normalize_assamese_unicode(raw_text)
+                        char_count = len(cleaned_text.strip())
+                        total_chars += char_count
+
+                        pages.append({
+                            "page_number": page_idx + 1,
+                            "text": cleaned_text,
+                            "char_count": char_count,
+                        })
+
+                    if len(pages) > 0 and (total_chars / len(pages)) > 50:
+                        is_scanned = False
+                    if pages and total_chars > 0:
+                        logger.info(f"pdfplumber parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
+                        return pages, is_scanned
+            except Exception as e:
+                logger.debug(f"pdfplumber parser notice: {e}")
+
+        # Method 3: pypdfium2 fallback
         if not pages or total_chars == 0:
             try:
                 import pypdfium2
@@ -102,9 +150,9 @@ class DocumentParser:
                     logger.info(f"pypdfium2 parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
                     return pages, is_scanned
             except Exception as e:
-                logger.info(f"pypdfium2 parser notice: {e}. Attempting PyPDF2 fallback.")
+                logger.debug(f"pypdfium2 parser notice: {e}")
 
-        # Method 3: PyPDF2 fallback
+        # Method 4: PyPDF2 fallback
         if not pages or total_chars == 0:
             try:
                 import PyPDF2
@@ -128,32 +176,7 @@ class DocumentParser:
                     logger.info(f"PyPDF2 parsed {len(pages)} pages ({total_chars} chars, scanned={is_scanned})")
                     return pages, is_scanned
             except Exception as e:
-                logger.error(f"PyPDF2 parser error: {e}")
-
-        # Method 4: fitz / PyMuPDF if ever installed
-        if not pages or total_chars == 0:
-            try:
-                import fitz
-                doc = fitz.open(stream=file_bytes, filetype="pdf")
-                pages = []
-                total_chars = 0
-                for page_idx in range(len(doc)):
-                    page = doc[page_idx]
-                    raw_text = page.get_text("text") or ""
-                    cleaned_text = normalize_assamese_unicode(raw_text)
-                    char_count = len(cleaned_text.strip())
-                    total_chars += char_count
-
-                    pages.append({
-                        "page_number": page_idx + 1,
-                        "text": cleaned_text,
-                        "char_count": char_count,
-                    })
-                doc.close()
-                if len(pages) > 0 and (total_chars / len(pages)) > 50:
-                    is_scanned = False
-            except Exception as e:
-                logger.error(f"fitz parser error: {e}")
+                logger.debug(f"PyPDF2 parser notice: {e}")
 
         return pages, is_scanned
 
