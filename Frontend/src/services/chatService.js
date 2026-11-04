@@ -12,11 +12,11 @@ const AI_SERVICE_URL = import.meta.env?.VITE_AI_SERVICE_URL || 'http://localhost
 const GEMINI_API_KEY = import.meta.env?.VITE_GEMINI_API_KEY || '';
 
 const GEMINI_CANDIDATES = [
-  'gemini-3-flash-preview',
-  'gemini-3.1-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-3.5-flash-lite',
   'gemini-3.5-flash',
-  'gemini-3.8-flash',
   'gemini-flash-latest',
+  'gemini-3.8-flash',
 ];
 
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';

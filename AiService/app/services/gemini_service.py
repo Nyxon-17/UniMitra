@@ -1,3 +1,4 @@
+import time
 import concurrent.futures
 
 
@@ -1471,14 +1472,13 @@ INSTRUCTIONS FOR THIS QUERY:
         # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
 
         candidate_models = [
-        "gemini-3.5-flash",
+        "gemini-flash-lite-latest",
         "gemini-3.5-flash-lite",
+        settings.GEMINI_MODEL or "gemini-flash-lite-latest",
         "gemini-flash-latest",
-        settings.GEMINI_MODEL or "gemini-3.5-flash",
+        "gemini-3.5-flash",
         "gemini-3.8-flash",
-        "gemini-flash-latest",
         "gemini-3.1-flash-lite",
-        "gemini-3-flash-preview",
         ]
 
 
@@ -2089,14 +2089,13 @@ INSTRUCTIONS FOR THIS QUERY:
 
         client = genai.Client(api_key=settings.GEMINI_API_KEY)
         candidate_models = [
-        "gemini-3.5-flash",
+        "gemini-flash-lite-latest",
         "gemini-3.5-flash-lite",
+        settings.GEMINI_MODEL or "gemini-flash-lite-latest",
         "gemini-flash-latest",
-        settings.GEMINI_MODEL or "gemini-3.5-flash",
+        "gemini-3.5-flash",
         "gemini-3.8-flash",
-        "gemini-flash-latest",
         "gemini-3.1-flash-lite",
-        "gemini-3-flash-preview",
         ]
         unique_models = []
         for m in candidate_models:
@@ -2119,16 +2118,22 @@ Original English Text:
             max_output_tokens=4096,
         )
         for model_name in unique_models:
-            try:
-                resp = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=config,
-                )
-                if resp and resp.text:
-                    return resp.text.strip()
-            except Exception as e:
-                logger.warning(f"Translation with model {model_name} failed: {e}. Trying next...")
+            for attempt in range(2):
+                try:
+                    resp = client.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config=config,
+                    )
+                    if resp and resp.text:
+                        return resp.text.strip()
+                except Exception as e:
+                    err_str = str(e)
+                    if ("503" in err_str or "UNAVAILABLE" in err_str) and attempt == 0:
+                        time.sleep(0.4)
+                        continue
+                    logger.info(f"Translation notice for model {model_name}: {e}. Trying next candidate...")
+                    break
         return None
 
     @classmethod
@@ -2189,14 +2194,13 @@ English text blocks to translate:
             if settings.GEMINI_API_KEY:
                 client = genai.Client(api_key=settings.GEMINI_API_KEY)
                 candidate_models = [
-                "gemini-3.5-flash",
+                "gemini-flash-lite-latest",
                 "gemini-3.5-flash-lite",
+                settings.GEMINI_MODEL or "gemini-flash-lite-latest",
                 "gemini-flash-latest",
-                settings.GEMINI_MODEL or "gemini-3.5-flash",
+                "gemini-3.5-flash",
                 "gemini-3.8-flash",
-                "gemini-flash-latest",
                 "gemini-3.1-flash-lite",
-                "gemini-3-flash-preview",
                 ]
                 unique_models = []
                 for m in candidate_models:
@@ -2208,26 +2212,37 @@ English text blocks to translate:
                     max_output_tokens=4096,
                 )
                 for model_name in unique_models:
-                    try:
-                        resp = client.models.generate_content(
-                            model=model_name,
-                            contents=batch_prompt,
-                            config=config,
-                        )
-                        if resp and resp.text:
-                            raw_out = resp.text.strip()
-                            parts = re.split(r'<<<CHUNK \d+>>>', raw_out)
-                            parsed = [p.strip() for p in parts if p.strip()]
-                            if len(parsed) == len(batch):
-                                translated_batch_texts = parsed
-                                break
-                            elif len(parsed) > 0:
-                                while len(parsed) < len(batch):
-                                    parsed.append(batch[len(parsed)].get("content", ""))
-                                translated_batch_texts = parsed[:len(batch)]
-                                break
-                    except Exception as err:
-                        logger.warning(f"Batch translation with {model_name} failed: {err}")
+                    matched = False
+                    for attempt in range(2):
+                        try:
+                            resp = client.models.generate_content(
+                                model=model_name,
+                                contents=batch_prompt,
+                                config=config,
+                            )
+                            if resp and resp.text:
+                                raw_out = resp.text.strip()
+                                parts = re.split(r'<<<CHUNK \d+>>>', raw_out)
+                                parsed = [p.strip() for p in parts if p.strip()]
+                                if len(parsed) == len(batch):
+                                    translated_batch_texts = parsed
+                                    matched = True
+                                    break
+                                elif len(parsed) > 0:
+                                    while len(parsed) < len(batch):
+                                        parsed.append(batch[len(parsed)].get("content", ""))
+                                    translated_batch_texts = parsed[:len(batch)]
+                                    matched = True
+                                    break
+                        except Exception as err:
+                            err_str = str(err)
+                            if ("503" in err_str or "UNAVAILABLE" in err_str) and attempt == 0:
+                                time.sleep(0.4)
+                                continue
+                            logger.info(f"Batch translation notice for {model_name}: {err}. Falling over...")
+                            break
+                    if matched:
+                        break
 
             # Fallback if batch translation failed
             if not translated_batch_texts:
