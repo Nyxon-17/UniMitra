@@ -767,11 +767,11 @@ class GeminiService:
 
         citations = []
 
-        # Token Optimization: Cap to top 3 chunks, max 500 chars each
-        for i, chunk in enumerate(retrieved_chunks[:3]):
+        # Context Chunks: Include up to 8 chunks, max 2000 chars each for comprehensive RAG grounding
+        for i, chunk in enumerate(retrieved_chunks[:8]):
 
             raw_c = chunk.get("content", "").strip()
-            content = raw_c[:500] + ("..." if len(raw_c) > 500 else "")
+            content = raw_c[:2000] + ("..." if len(raw_c) > 2000 else "")
 
             doc_id = str(chunk.get("document_id", ""))
 
@@ -847,10 +847,10 @@ INSTRUCTIONS FOR THIS QUERY:
 
         # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
         candidate_models = [
-            settings.GEMINI_MODEL or "gemini-3-flash-preview",
-            "gemini-3-flash-preview",
+            settings.GEMINI_MODEL or "gemini-3.1-flash-lite",
+            "gemini-3.1-flash-lite",
+            "gemini-3.1-flash-lite-preview",
             "gemini-3.5-flash-lite",
-            "gemini-3.8-flash",
             "gemini-flash-latest",
         ]
 
@@ -1029,17 +1029,19 @@ INSTRUCTIONS FOR THIS QUERY:
 
                 }
 
-            top_chunk = retrieved_chunks[0]
-
-            content = top_chunk.get("content", "").strip()
+            combined_chunks_text = "\n\n".join(
+                f"[{c.get('metadata', {}).get('title') or 'Statutory Record'}, Page {c.get('page_number', '1')}]:\n{c.get('content', '').strip()}"
+                for c in retrieved_chunks[:4]
+                if c.get("content")
+            )
 
             answer_text = (
 
-                f"বিশ্ববিদ্যালয়ৰ প্ৰাসংগিক অধিনিয়ম আৰু বৈধ নথিপত্ৰ অনুসৰি:\n{content}"
+                f"বিশ্ববিদ্যালয়ৰ প্ৰাসংগিক অধিনিয়ম আৰু বৈধ নথিপত্ৰ অনুসৰি:\n\n{combined_chunks_text}"
 
                 if lang in ("as", "as_script")
 
-                else f"According to official university statutory records:\n{content}"
+                else f"According to official university statutory records and uploaded documents:\n\n{combined_chunks_text}"
 
             )
 

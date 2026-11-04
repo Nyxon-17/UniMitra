@@ -161,7 +161,7 @@ export function stripUnwantedIntro(answer = '', query = '') {
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODELS = ['gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
+const GEMINI_MODELS = ['gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
 
 export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Nivoraya University') {
   const understanding = interpretQuery(query, mode);

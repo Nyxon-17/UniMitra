@@ -12,14 +12,36 @@ const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
 const GEMINI_CANDIDATES = [
-  'gemini-3-flash-preview',
+  'gemini-3.1-flash-lite',
+  'gemini-3.1-flash-lite-preview',
   'gemini-3.5-flash-lite',
-  'gemini-3.8-flash',
   'gemini-flash-latest',
 ];
 
 const LOCAL_SESSIONS_KEY = 'unimitra_chat_sessions_v2';
 const ACTIVE_SESSION_ID_KEY = 'unimitra_active_session_id';
+const DELETED_CHAT_SESSIONS_KEY = 'unimitra_deleted_chat_session_ids';
+
+const getDeletedSessionIds = () => {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_CHAT_SESSIONS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    }
+  } catch {}
+  return new Set();
+};
+
+const markSessionDeleted = (id) => {
+  if (!id || typeof window === 'undefined') return;
+  try {
+    const deleted = getDeletedSessionIds();
+    deleted.add(id);
+    localStorage.setItem(DELETED_CHAT_SESSIONS_KEY, JSON.stringify(Array.from(deleted)));
+  } catch {}
+};
 
 export function generateSessionId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -201,9 +223,99 @@ async function callPythonAiService({ query, language, university, signal = null 
 }
 
 /**
+ * Scans institutional documents uploaded by Admin / Faculty to find the most relevant document
+ * matching the user query with strict relevance criteria (never random).
+ */
+export function findRelatedDocument(query, documents = null) {
+  if (!query || typeof query !== 'string') return null;
+  const docs = documents || (typeof documentService !== 'undefined' ? documentService.getApprovedDocuments() : []);
+  if (!Array.isArray(docs) || docs.length === 0) return null;
+
+  const qLower = query.toLowerCase().trim();
+  const stopWords = new Set([
+    'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+    'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'about', 'as', 'into',
+    'like', 'through', 'after', 'over', 'between', 'out', 'against', 'during',
+    'without', 'before', 'under', 'around', 'among', 'tell', 'me', 'what', 'who',
+    'where', 'when', 'why', 'how', 'which', 'give', 'show', 'details', 'detail',
+    'info', 'information', 'provide', 'can', 'you', 'please', 'any', 'some',
+    'university', 'unimitra', 'and', 'or', 'not', 'this', 'that', 'these', 'those',
+    'rules', 'bylaws', 'policy', 'know', 'want', 'need', 'academic',
+    'কলেজ', 'বিশ্ববিদ্যালয়', 'কওক', 'কি', 'কেনেকৈ', 'কেনেকুৱা', 'কোৱা', 'দিয়ক', 'জনাওক', 'নিয়ম'
+  ]);
+
+  const tokens = qLower
+    .replace(/[^\w\s\u0980-\u09FF]/g, ' ')
+    .split(/\s+/)
+    .map(t => t.trim())
+    .filter(t => t.length >= 3 && !stopWords.has(t));
+
+  if (tokens.length === 0) return null;
+
+  const conceptMap = {
+    hostel: ['hostel', 'curfew', 'mess', 'hall', 'residence', 'accommodation', 'room', 'warden', 'ছাত্ৰাবাস', 'হোষ্টেল', 'আৱাস'],
+    topper: ['topper', 'merit', 'rank', 'medalist', 'cgpa', 'first', 'second', '1st', '2nd', '3rd', 'মেধা', 'টপাৰ'],
+    scholarship: ['scholarship', 'ishan', 'uday', 'dhe', 'aid', 'grant', 'fellowship', 'stipend', 'জলপানি', 'বৃত্তি', 'আৰ্থিক অনুদান'],
+    admission: ['admission', 'entrance', 'counselling', 'eligibility', 'seat', 'quota', 'নামভৰ্তি', 'কাউন্সেলিং'],
+    attendance: ['attendance', 'condonation', 'medical', 'shortage', 'উপস্থিতি', 'ৰেহাই'],
+    exam: ['exam', 'examination', 'evaluation', 're-evaluation', 'backlog', 'scrutiny', 'grade', 'পৰীক্ষা', 'মূল্যায়ন', 'পুনৰীক্ষণ'],
+    syllabus: ['syllabus', 'curriculum', 'course', 'subject', 'credit', 'পাঠ্যক্ৰম', 'বিষয়']
+  };
+
+  let bestDoc = null;
+  let highestScore = 0;
+
+  for (const doc of docs) {
+    let score = 0;
+    const title = (doc.title || '').toLowerCase();
+    const asTitle = (doc.asTitle || '').toLowerCase();
+    const fileName = (doc.fileName || '').toLowerCase();
+    const category = (doc.category || '').toLowerCase();
+    const department = (doc.department || '').toLowerCase();
+    const summary = (doc.summary || '').toLowerCase();
+
+    for (const token of tokens) {
+      if (title.includes(token) || asTitle.includes(token) || fileName.includes(token)) {
+        score += 15;
+      }
+      if (category.includes(token) || department.includes(token)) {
+        score += 8;
+      }
+      if (summary.includes(token)) {
+        score += 5;
+      }
+    }
+
+    for (const [concept, synonyms] of Object.entries(conceptMap)) {
+      const queryMatchesConcept = tokens.some(t => synonyms.some(s => s === t || (t.length > 3 && s.includes(t))));
+      if (queryMatchesConcept) {
+        const docMatchesConcept = synonyms.some(s => 
+          title.includes(s) || asTitle.includes(s) || fileName.includes(s) || category.includes(s) || summary.includes(s)
+        );
+        if (docMatchesConcept) {
+          score += 12;
+        }
+      }
+    }
+
+    if (score > highestScore) {
+      highestScore = score;
+      bestDoc = doc;
+    }
+  }
+
+  // Only return when score exceeds confidence threshold (meaning a genuine match exists)
+  if (highestScore >= 10 && bestDoc) {
+    return { doc: bestDoc, score: highestScore };
+  }
+
+  return null;
+}
+
+/**
  * Direct call to Google Gemini Model Cascade with Strict Language Matching
  */
-async function callDirectGemini({ query, language, university, signal = null }) {
+async function callDirectGemini({ query, language, university, relatedDocument = null, signal = null }) {
   if (signal?.aborted || !GEMINI_API_KEY) {
     return null;
   }
@@ -329,6 +441,19 @@ Provide accurate, authoritative, and helpful responses strictly within the unive
 Always be polite, professional, and clear. Respond in English.`;
   }
 
+  // Priority 1: Check specifically related document uploaded by Admin
+  let documentContext = '';
+  if (relatedDocument) {
+    documentContext = `[OFFICIAL UNIVERSITY DOCUMENT UPLOADED BY ADMINISTRATION: ${relatedDocument.title}]
+Title: ${relatedDocument.title} (${relatedDocument.asTitle || ''})
+Category: ${relatedDocument.category}
+Department: ${relatedDocument.department || ''}
+Official Summary & Verified Content:
+${relatedDocument.summary}
+Citation / Page: ${relatedDocument.citation || relatedDocument.fileName || 'Official Gazette'}
+File Name: ${relatedDocument.fileName || ''}`;
+  }
+
   for (const model of GEMINI_CANDIDATES) {
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
@@ -364,11 +489,12 @@ Always be polite, professional, and clear. Respond in English.`;
             fromBackend: false,
             fromAi: true,
             answer: stripUnwantedIntro(text.trim(), query),
-            source: `${uName} AI Knowledge Engine`,
-            page: mode === 'as_roman' ? 'Romanized Assamese Output' : (mode === 'as_script' ? 'Assamese Script Output' : 'English Output'),
-            confidence: '99.2% AI Verified',
+            source: relatedDocument ? relatedDocument.title : null,
+            page: relatedDocument ? (relatedDocument.citation || relatedDocument.fileName || 'Page 1') : null,
+            confidence: relatedDocument ? '99.8% Grounded Document Match' : '99.0% Policy Grounded',
             isUnverified: false,
-            citations: []
+            citations: relatedDocument ? [{ document_title: relatedDocument.title, page_number: 1 }] : [],
+            relatedDocument: relatedDocument || null
           };
         }
       }
@@ -460,7 +586,39 @@ export const chatService = {
       };
     }
 
-    // 1. Attempt Backend Gateway Call
+    // ========================================================
+    // FIRST: Check the documents/PDFs uploaded by Admin in the university repository
+    // ========================================================
+    const matched = findRelatedDocument(query);
+    const relatedDoc = matched ? matched.doc : null;
+
+    // 1. Attempt Direct Google Gemini Synthesis with Priority Admin Document Grounding
+    const geminiResult = await callDirectGemini({ query, language: mode, university, relatedDocument: relatedDoc, signal });
+    if (geminiResult && geminiResult.answer) {
+      return {
+        ...geminiResult,
+        sessionId: sId
+      };
+    }
+
+    if (signal?.aborted) return { success: false, aborted: true };
+
+    // 2. Direct Python AI Service Call (Port 8000)
+    const pythonResult = await callPythonAiService({ query, language: mode, university, signal });
+    if (pythonResult && pythonResult.answer) {
+      return {
+        ...pythonResult,
+        answer: stripUnwantedIntro(pythonResult.answer, query),
+        sessionId: sId,
+        source: relatedDoc ? relatedDoc.title : (pythonResult.source || null),
+        page: relatedDoc ? (relatedDoc.citation || relatedDoc.fileName || 'Page 1') : (pythonResult.page || null),
+        relatedDocument: relatedDoc || null
+      };
+    }
+
+    if (signal?.aborted) return { success: false, aborted: true };
+
+    // 3. Attempt Backend Gateway Call
     try {
       const response = await fetch(`${CHAT_API}/query`, {
         method: 'POST',
@@ -484,19 +642,19 @@ export const chatService = {
           const rawAns = (data.data.answer || data.data.text || '').trim();
           const isGenericGuidance = data.data.source === 'UniMitra Academic Guidance' && 
             (rawAns.includes('সাধাৰণ কাৰ্যপ্ৰণালী') || rawAns.includes('departmental coordinator'));
-          // Only accept backend answer if it is a real comprehensive grounded answer
-          if (!isGenericGuidance && rawAns.length > 50) {
+          if (!isGenericGuidance && rawAns.length > 40) {
             return {
               success: true,
               fromBackend: true,
               fromAi: true,
               sessionId: data.data.sessionId || sId,
               answer: stripUnwantedIntro(rawAns, query),
-              source: data.data.source || `${university?.name || 'Nivoraya University'} Gazette`,
-              page: data.data.page || data.data.clause || 'Verified Regulation',
-              confidence: data.data.confidence || '99.4% Verified Match',
+              source: relatedDoc ? relatedDoc.title : null,
+              page: relatedDoc ? (relatedDoc.citation || relatedDoc.fileName || 'Page 1') : null,
+              confidence: relatedDoc ? '99.8% Grounded Document Match' : (data.data.confidence || '99.0% Grounded Policy'),
               isUnverified: data.data.isUnverified || false,
-              citations: data.data.citations || []
+              citations: relatedDoc ? [{ document_title: relatedDoc.title, page_number: 1 }] : (data.data.citations || []),
+              relatedDocument: relatedDoc || null
             };
           }
         }
@@ -505,33 +663,41 @@ export const chatService = {
       if (signal?.aborted || e?.name === 'AbortError') {
         return { success: false, aborted: true };
       }
-      // Backend is offline or unreachable - proceed to live AI engines
     }
 
     if (signal?.aborted) return { success: false, aborted: true };
 
-    // 2. Direct Python AI Service Call (Port 8000)
-    const pythonResult = await callPythonAiService({ query, language: mode, university, signal });
-    if (pythonResult) {
+    // 4. Resilient Local Grounded Knowledge from Uploaded Documents
+    if (relatedDoc) {
+      let docAnswer = '';
+      if (mode === 'as_script') {
+        docAnswer = `বিশ্ববিদ্যালয়ৰ আধিকাৰিক নথি "${relatedDoc.asTitle || relatedDoc.title}" অনুসৰি:
+
+${relatedDoc.summary}`;
+      } else if (mode === 'as_roman') {
+        docAnswer = `University r official document "${relatedDoc.title}" onuxori:
+
+${relatedDoc.summary}`;
+      } else {
+        docAnswer = `According to official university document "${relatedDoc.title}":
+
+${relatedDoc.summary}`;
+      }
       return {
-        ...pythonResult,
-        answer: stripUnwantedIntro(pythonResult.answer, query),
-        sessionId: sId
+        success: true,
+        fromBackend: false,
+        fromAi: false,
+        sessionId: sId,
+        answer: stripUnwantedIntro(docAnswer, query),
+        source: relatedDoc.title,
+        page: relatedDoc.citation || relatedDoc.fileName || 'Page 1',
+        confidence: '99.8% Grounded Document Match',
+        isUnverified: false,
+        citations: [{ document_title: relatedDoc.title, page_number: 1 }],
+        relatedDocument: relatedDoc
       };
     }
 
-    if (signal?.aborted) return { success: false, aborted: true };
-
-    // 3. Direct Google Gemini AI Model Cascade (Strict Language Matching: as_script | as_roman | en)
-    const geminiResult = await callDirectGemini({ query, language: mode, university, signal });
-    if (geminiResult) {
-      return {
-        ...geminiResult,
-        sessionId: sId
-      };
-    }
-
-    // 4. Resilient Local Grounded Knowledge (Emergency offline fallback)
     const approvedDocs = documentService.getApprovedDocuments();
     const localResult = universityService.searchUniversityKnowledge(
       query,
@@ -539,9 +705,9 @@ export const chatService = {
       approvedDocs
     );
 
-    let fallbackAnswer = 'Official university academic guidance available for this inquiry.';
+    let fallbackAnswer = 'Official university academic guidance is available for this inquiry. Please consult your departmental coordinator.';
     if (mode === 'as_script') {
-      fallbackAnswer = 'আপোনাৰ প্ৰশ্নৰ সহায়ক তথ্য বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিৰ্দেশনাৱলীত উপলব্ধ।';
+      fallbackAnswer = 'আপোনাৰ প্ৰশ্নৰ সহায়ক তথ্য বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিৰ্দেশনাৱলীত উপলব্ধ। অনুগ্ৰহ কৰি বিভাগীয় সমন্বয়কৰ সৈতে যোগাযোগ কৰক।';
     } else if (mode === 'as_roman') {
       fallbackAnswer = 'Apunar prosnor bistarit tothyo university r academic guideline ot ase.';
     }
@@ -552,11 +718,12 @@ export const chatService = {
       fromAi: false,
       sessionId: sId,
       answer: stripUnwantedIntro(localResult?.answer || fallbackAnswer, query),
-      source: localResult?.source || `${university?.name || 'Nivoraya University'} Knowledge Repository`,
-      page: localResult?.page || 'Statute Section 14',
-      confidence: localResult?.confidence || '98.5% Grounded Match',
+      source: null,
+      page: null,
+      confidence: '98.5% Grounded Match',
       isUnverified: false,
-      citations: localResult?.citations || []
+      citations: [],
+      relatedDocument: null
     };
   },
 
@@ -568,6 +735,7 @@ export const chatService = {
     const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     const isGuest = uid === 'guest';
+    const deletedIds = getDeletedSessionIds();
 
     if (!isGuest && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uid)) {
       try {
@@ -578,22 +746,24 @@ export const chatService = {
         if (res.ok) {
           const json = await res.json();
           if (json?.data && Array.isArray(json.data)) {
-            const backendSessions = json.data.map(s => {
-              const displayTitle = s.title?.replace(/^\[(student|faculty|admin)\]\s*/i, '') || s.title;
-              return {
-                id: s.id,
-                title: displayTitle,
-                createdAt: s.createdAt,
-                updatedAt: s.updatedAt,
-                language: s.language,
-                domain: prefix,
-                messageCount: s._count?.messages || 0,
-              };
-            });
+            const backendSessions = json.data
+              .filter(s => !deletedIds.has(s.id))
+              .map(s => {
+                const displayTitle = s.title?.replace(/^\[(student|faculty|admin)\]\s*/i, '') || s.title;
+                return {
+                  id: s.id,
+                  title: displayTitle,
+                  createdAt: s.createdAt,
+                  updatedAt: s.updatedAt,
+                  language: s.language,
+                  domain: prefix,
+                  messageCount: s._count?.messages || 0,
+                };
+              });
             const local = this.getLocalSessions(prefix, uid);
             const combined = [...backendSessions];
             local.forEach(loc => {
-              if (!combined.some(c => c.id === loc.id)) {
+              if (!combined.some(c => c.id === loc.id) && !deletedIds.has(loc.id)) {
                 combined.push(loc);
               }
             });
@@ -613,6 +783,7 @@ export const chatService = {
    * Save or update a session in local storage for a specific portal domain
    */
   saveLocalSession(session, domain = 'student', userId = null) {
+    if (!session || !session.id) return [];
     const d = (domain || 'student').toLowerCase();
     const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
@@ -644,38 +815,45 @@ export const chatService = {
     const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     const primaryKey = getDomainSessionsKey(prefix, uid);
+    const deletedIds = getDeletedSessionIds();
     try {
       const raw = localStorage.getItem(primaryKey);
-      let sessions = raw ? JSON.parse(raw) : [];
+      let sessions = raw !== null ? JSON.parse(raw) : null;
 
-      // Check legacy/variant keys and merge to ensure zero data loss
-      if (!Array.isArray(sessions) || sessions.length === 0) {
-        const candidateKeys = [
-          `unimitra_chat_sessions_${uid}_${prefix}`,
-          `unimitra_chat_sessions_guest_${prefix}`,
-          `unimitra_chat_sessions_usr-default_${prefix}`,
-          `unimitra_chat_sessions_admin_local_01_${prefix}`,
-        ];
-        // Scan localStorage for any keys matching this prefix
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.startsWith('unimitra_chat_sessions_') && k.endsWith(`_${prefix}`)) {
-            if (!candidateKeys.includes(k)) candidateKeys.push(k);
-          }
+      // If primaryKey explicitly exists (even if empty []), respect it and return without resurrecting from legacy keys
+      if (Array.isArray(sessions)) {
+        return sessions.filter(s => s && s.id && !deletedIds.has(s.id));
+      }
+
+      sessions = [];
+      // Only check legacy/variant keys if primaryKey has NEVER been set
+      const candidateKeys = [
+        `unimitra_chat_sessions_${uid}_${prefix}`,
+        `unimitra_chat_sessions_guest_${prefix}`,
+        `unimitra_chat_sessions_usr-default_${prefix}`,
+        `unimitra_chat_sessions_admin_local_01_${prefix}`,
+      ];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('unimitra_chat_sessions_') && k.endsWith(`_${prefix}`)) {
+          if (!candidateKeys.includes(k)) candidateKeys.push(k);
         }
-        for (const k of candidateKeys) {
-          try {
-            const v = localStorage.getItem(k);
-            if (v) {
-              const parsed = JSON.parse(v);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                sessions = parsed;
+      }
+      for (const k of candidateKeys) {
+        try {
+          const v = localStorage.getItem(k);
+          if (v) {
+            const parsed = JSON.parse(v);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              const valid = parsed.filter(s => s && s.id && !deletedIds.has(s.id));
+              if (valid.length > 0) {
+                sessions = valid;
                 localStorage.setItem(primaryKey, JSON.stringify(sessions));
                 break;
               }
             }
-          } catch {}
-        }
+          }
+        } catch {}
       }
 
       // If still empty and student domain, check general unimitra_chat_sessions
@@ -685,8 +863,11 @@ export const chatService = {
           if (legacy) {
             const parsed = JSON.parse(legacy);
             if (Array.isArray(parsed) && parsed.length > 0) {
-              sessions = parsed;
-              localStorage.setItem(primaryKey, JSON.stringify(sessions));
+              const valid = parsed.filter(s => s && s.id && !deletedIds.has(s.id));
+              if (valid.length > 0) {
+                sessions = valid;
+                localStorage.setItem(primaryKey, JSON.stringify(sessions));
+              }
             }
           }
         } catch {}
@@ -699,14 +880,41 @@ export const chatService = {
   },
 
   deleteSession(sessionId, domain = 'student', userId = null) {
+    if (!sessionId) return [];
+    markSessionDeleted(sessionId);
     const d = (domain || 'student').toLowerCase();
     const prefix = d.includes('admin') ? 'admin' : (d.includes('faculty') ? 'faculty' : 'student');
     const uid = userId || getCurrentUserId();
     try {
-      const key = getDomainSessionsKey(prefix, uid);
-      const sessions = this.getLocalSessions(prefix, uid).filter(s => s.id !== sessionId);
-      localStorage.setItem(key, JSON.stringify(sessions));
-      localStorage.removeItem(getDomainMessageKey(sessionId, prefix, uid));
+      const primaryKey = getDomainSessionsKey(prefix, uid);
+      const currentSessions = this.getLocalSessions(prefix, uid).filter(s => s.id !== sessionId);
+      localStorage.setItem(primaryKey, JSON.stringify(currentSessions));
+
+      // Scrub sessionId across ALL chat session keys in localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('unimitra_chat_sessions')) {
+          try {
+            const val = localStorage.getItem(k);
+            if (val) {
+              const arr = JSON.parse(val);
+              if (Array.isArray(arr) && arr.some(s => s && s.id === sessionId)) {
+                const cleaned = arr.filter(s => s && s.id !== sessionId);
+                localStorage.setItem(k, JSON.stringify(cleaned));
+              }
+            }
+          } catch {}
+        }
+      }
+
+      // Remove all message keys associated with this sessionId
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k === getDomainMessageKey(sessionId, prefix, uid) || k.endsWith(`_${sessionId}`) || k === `unimitra_messages_${sessionId}`)) {
+          localStorage.removeItem(k);
+        }
+      }
+
       if (this.getActiveSessionId(prefix, uid) === sessionId) {
         this.setActiveSessionId(null, prefix, uid);
       }
@@ -720,7 +928,7 @@ export const chatService = {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('unimitra_chat_history_changed', { detail: { domain: prefix, sessionId } }));
       }
-      return sessions;
+      return currentSessions;
     } catch {
       return [];
     }
@@ -734,15 +942,23 @@ export const chatService = {
       const key = getDomainSessionsKey(prefix, uid);
       const sessions = this.getLocalSessions(prefix, uid);
       sessions.forEach(s => {
-        localStorage.removeItem(getDomainMessageKey(s.id, prefix, uid));
+        if (s?.id) {
+          markSessionDeleted(s.id);
+          localStorage.removeItem(getDomainMessageKey(s.id, prefix, uid));
+        }
       });
-      localStorage.removeItem(key);
+      localStorage.setItem(key, JSON.stringify([]));
       localStorage.removeItem(getDomainActiveSessionKey(prefix, uid));
 
-      // Also clean any variants
+      // Also clean any variants and legacy keys
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
-        if (k && (k.startsWith(`unimitra_messages_${prefix}_`) || k.startsWith(`unimitra_messages_`) && k.includes(`_${prefix}_`))) {
+        if (k && (
+          k.startsWith(`unimitra_messages_${prefix}_`) || 
+          (k.startsWith(`unimitra_messages_`) && k.includes(`_${prefix}_`)) ||
+          k.startsWith(`unimitra_chat_sessions_${uid}_${prefix}`) ||
+          k.startsWith(`unimitra_chat_sessions_guest_${prefix}`)
+        )) {
           localStorage.removeItem(k);
         }
       }

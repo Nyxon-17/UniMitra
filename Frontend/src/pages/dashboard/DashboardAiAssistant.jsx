@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { chatService } from '../../services/chatService';
+import { resolveDocPdfUrl } from '../../services/documentService';
+import { pdfStorage } from '../../services/pdfStorage';
 import { detectLanguageModeAdvanced } from '../../services/assameseUnderstanding';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { 
@@ -16,6 +18,12 @@ import {
   DocumentDuplicateIcon,
   ChatBubbleIcon
 } from '../../components/common/Icons';
+
+export const ArrowTopRightOnSquareIcon = ({ className = "w-3.5 h-3.5", ...props }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+  </svg>
+);
 
 export const PlusIcon = ({ className = "w-4 h-4", ...props }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} {...props}>
@@ -183,6 +191,47 @@ const DashboardAiAssistantInner = ({
   });
 
   const [inputQuery, setInputQuery] = useState(prefillQuery || '');
+
+  const handleOpenDocPdf = async (doc) => {
+    if (!doc) return;
+    try {
+      if (typeof window !== 'undefined' && window.__uploadedPdfBlobs) {
+        const memUrl = (doc.id && window.__uploadedPdfBlobs.get(doc.id)) ||
+                       (doc.uuid && window.__uploadedPdfBlobs.get(doc.uuid)) ||
+                       (doc.fileName && window.__uploadedPdfBlobs.get(doc.fileName));
+        if (memUrl) {
+          window.open(memUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      }
+
+      let fileBlob = await pdfStorage.getPdf(doc.id);
+      if (!fileBlob && doc.uuid) fileBlob = await pdfStorage.getPdf(doc.uuid);
+      if (!fileBlob && doc.fileName) fileBlob = await pdfStorage.getPdf(doc.fileName);
+
+      if (fileBlob) {
+        const blobUrl = URL.createObjectURL(fileBlob);
+        if (typeof window !== 'undefined') {
+          window.__uploadedPdfBlobs = window.__uploadedPdfBlobs || new Map();
+          if (doc.id) window.__uploadedPdfBlobs.set(doc.id, blobUrl);
+          if (doc.uuid) window.__uploadedPdfBlobs.set(doc.uuid, blobUrl);
+          if (doc.fileName) window.__uploadedPdfBlobs.set(doc.fileName, blobUrl);
+        }
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      const url = resolveDocPdfUrl(doc);
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      const fallbackUrl = resolveDocPdfUrl(doc);
+      if (fallbackUrl) {
+        window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
   const [loading, setLoading] = useState(false);
   
   // History is HIDDEN by default during conversation
@@ -934,6 +983,7 @@ const DashboardAiAssistantInner = ({
         confidence: res.confidence,
         isUnverified: res.isUnverified,
         citations: res.citations,
+        relatedDocument: res.relatedDocument || null,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -1182,6 +1232,24 @@ const DashboardAiAssistantInner = ({
           </div>
 
           <div className="flex items-center space-x-1">
+            {/* Clear All History Button */}
+            {sessions.length > 0 && (
+              <button
+                onClick={() => {
+                  const confirmMsg = currentLang === 'as' ? 'আপুনি সকলো আলোচনা ইতিহাস মচিব বিচাৰে নেকি?' : 'Are you sure you want to clear all chat history?';
+                  if (window.confirm(confirmMsg)) {
+                    chatService.clearAllSessions(domain, userId);
+                    setSessions([]);
+                    handleNewChat();
+                  }
+                }}
+                className="p-1.5 rounded-lg text-[#273B45]/70 dark:text-[#DCE8E4]/70 hover:text-red-500 hover:bg-red-500/10 cursor-pointer transition-colors"
+                title={currentLang === 'as' ? 'সকলো ইতিহাস মচক' : 'Clear All History'}
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            )}
+
             {/* New Chat Button inside drawer */}
             <button
               onClick={handleNewChat}
@@ -1237,7 +1305,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                           title="Delete Chat"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
@@ -1271,7 +1339,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1304,7 +1372,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1337,7 +1405,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1529,33 +1597,54 @@ const DashboardAiAssistantInner = ({
 
                 <p className="whitespace-pre-line">{msg.text}</p>
 
-                {/* Grounded Citation Card (AI Message) */}
-                {msg.sender === 'ai' && msg.source && (
-                  <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2.5">
+                {/* Attached Related Document (Provided ONLY when an authentic matching document exists - never random) */}
+                {msg.sender === 'ai' && msg.relatedDocument && (
+                  <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
                       <div className="flex items-center space-x-1.5">
                         <ShieldCheckIcon className="w-3.5 h-3.5 text-[#55C7B2] shrink-0" />
-                        <span className="font-semibold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
-                          Grounded Institutional Citation
+                        <span className="font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                          {currentLang === 'as' ? 'প্ৰাসংগিক সংলগ্ন নথি' : 'Attached Institutional Document'}
                         </span>
                       </div>
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2] border border-[#55C7B2]/30">
-                        {msg.confidence || '99.4% Verified Match'}
+                        {msg.confidence || (currentLang === 'as' ? '১০০% প্ৰাসংগিক' : '100% Grounded')}
                       </span>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#16181A]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                      <div className="flex items-center space-x-1.5 min-w-0">
-                        <DocumentTextIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
-                        <span className="font-semibold text-[#273B45] dark:text-[#DCE8E4] truncate">
-                          {msg.source}
-                        </span>
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-[#E9F0ED]/80 dark:bg-[#16181A]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                      <div className="flex items-start space-x-2.5 min-w-0">
+                        <div className="p-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 shrink-0">
+                          <DocumentTextIcon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] truncate">
+                            {currentLang === 'as' && msg.relatedDocument.asTitle ? msg.relatedDocument.asTitle : msg.relatedDocument.title}
+                          </p>
+                          <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-[#627680] dark:text-[#879B99]">
+                            <span className="truncate max-w-[150px]">{msg.relatedDocument.category || 'Official Document'}</span>
+                            {msg.relatedDocument.department && (
+                              <>
+                                <span>•</span>
+                                <span className="truncate max-w-[120px]">{msg.relatedDocument.department}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-sans font-bold shrink-0 self-start sm:self-auto border border-[#123C3A]/8 dark:border-[#55C7B2]/15">
-                        {msg.page || 'Clause 4'}
-                      </span>
-                    </div>
 
+                      {/* Open / View PDF Action Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenDocPdf(msg.relatedDocument)}
+                        className="flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-[11px] font-bold transition-all shadow-xs cursor-pointer shrink-0"
+                        title={currentLang === 'as' ? 'নথিখন খোলক (PDF)' : 'Open Document PDF'}
+                      >
+                        <DocumentTextIcon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{currentLang === 'as' ? 'নথি খোলক (PDF)' : 'View PDF'}</span>
+                        <ArrowTopRightOnSquareIcon className="w-3 h-3 shrink-0 opacity-80" />
+                      </button>
+                    </div>
                   </div>
                 )}
 
