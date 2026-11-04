@@ -138,6 +138,23 @@ export function sanitizeAiResponse(text = '') {
   // Replace remaining slashes (/) with 'or' / 'বা'
   const hasAssamese = /[\u0980-\u09FF]/.test(cleaned);
   const orWord = hasAssamese ? ' বা ' : ' or ';
+  if (hasAssamese) {
+    cleaned = cleaned.replace(/বৃত্তিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/বৃত্তি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/জলপানিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/জলপানি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকৰ\b/g, 'ছেমিষ্টাৰৰ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকত\b/g, 'ছেমিষ্টাৰত');
+    cleaned = cleaned.replace(/ষাণ্মাসিক\b/g, 'ছেমিষ্টাৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসৰ\b/g, 'হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসত\b/g, 'হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰাবাস\b/g, 'হোষ্টেল');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসৰ\b/g, 'ছোৱালী হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসত\b/g, 'ছোৱালী হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাস\b/g, 'ছোৱালী হোষ্টেল');
+    cleaned = cleaned.replace(/সময়সূচীৰ\b/g, 'ৰুটিনৰ');
+    cleaned = cleaned.replace(/সময়সূচী\b/g, 'ৰুটিন');
+  }
   cleaned = cleaned.replace(/\s*\/\s*/g, orWord);
   cleaned = cleaned.replace(/\//g, ' ');
   // Restore URLs
@@ -223,8 +240,8 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ২. আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
 ৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক উত্তৰ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব।
 
-পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
-কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
+সম্পূৰ্ণ আৰু বিশদ উত্তৰৰ নিৰ্দেশনা (CRITICAL COMPREHENSIVE ANSWER MANDATE):
+প্ৰশ্নৰ বিশদ, সম্পূৰ্ণ আৰু নিখুঁত উত্তৰ প্ৰদান কৰক যাতে কোনো গুৰুত্বপূৰ্ণ নিয়ম বা তথ্য বাদ নপৰে। কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
 
 বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
 আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
@@ -246,6 +263,8 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
 কঠোৰ বিশ্ববিদ্যালয়-কেন্দ্ৰিক নীতি (STRICT UNIVERSITY-ONLY MANDATE):
 আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (নিয়মাৱলী, সংবিধি, পৰীক্ষা, মূল্যায়ন, মেধা তালিকা, নামভৰ্তি, পাঠ্যক্ৰম, জলপানি, মাচুল, ছাত্ৰাবাস আৰু আধিকাৰিক জাননী) প্ৰশ্নৰ উত্তৰ দিবলৈ নিবেদিত।
+প্ৰচলিত আৰু আধুনিক প্রাতিষ্ঠানিক শব্দাৱলী (PREFERRED MODERN VOCABULARY): ছাত্ৰ-ছাত্ৰী আৰু বিশ্ববিদ্যালয়ৰ দৈনন্দিন প্ৰচলিত আধুনিক শব্দ ব্যৱহাৰ কৰক: 'বৃত্তি' বা 'জলপানি'ৰ সলনি সদায় 'স্কলাৰশ্বিপ' (Scholarship) ব্যৱহাৰ কৰক; 'ষাণ্মাসিক'ৰ সলনি 'ছেমিষ্টাৰ' (Semester); 'সময়সূচী'ৰ সলনি 'পৰীক্ষাৰ ৰুটিন / ৰুটিন' (Exam Routine); 'ছাত্ৰাবাস'ৰ সলনি 'হোষ্টেল' (Hostel); 'প্ৰৱেশ'ৰ সলনি 'এডমিশ্বন / নামভৰ্তি' (Admission); আৰু 'উপস্থিতি'ৰ লগতে 'এটেনডেন্স' (Attendance) ব্যৱহাৰ কৰক।
+
 যদি ব্যৱহাৰকাৰীয়ে বিশ্ববিদ্যালয় আৰু শৈক্ষিক ক্ষেত্ৰৰ বাহিৰৰ কোনো অপ্ৰাসংগিক প্ৰশ্ন কৰে (যেনে: ৰন্ধা-বঢ়া, চিনেমা, মনোৰঞ্জন, সাধাৰণ ৰাজনীতি বা অপ্ৰাসংগিক ব্যক্তিগত কথা), তেন্তে বিনম্ৰভাৱে জনাই দিয়ক যে আপুনি কেৱল বিশ্ববিদ্যালয় সম্বন্ধীয় অনুসন্ধানৰ বাবে নিবেদিত আৰু শৈক্ষিক প্ৰশ্ন সুধিবলৈ অনুৰোধ জনাওক।`;
   } else {
     systemPrompt = `You are UniMitra, a versatile, intelligent general-purpose AI voice assistant and comprehensive academic companion.
@@ -281,7 +300,7 @@ If the user asks ANY question unrelated to universities, higher education, or ac
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${understanding.normalizedQuery}${contextNote}` }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
+          generationConfig: { temperature: 0.3, maxOutputTokens: 4096 }
         })
       });
       if (res.ok) {

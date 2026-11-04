@@ -1,4 +1,4 @@
-import { detectLanguageModeAdvanced, interpretQuery } from './assameseUnderstanding.js';
+import { detectLanguageModeAdvanced, interpretQuery, canonicalizeInputTerms } from './assameseUnderstanding.js';
 // Centralized AI Chat & RAG Grounding Service
 // Seamlessly connects React Frontend to Node.js Backend, Python AI Service, & Direct Gemini Model Cascade
 // Supports: Assamese Script, Romanized Assamese (English letters), and English
@@ -118,6 +118,24 @@ export function sanitizeAiResponse(text = '') {
   // Replace remaining slashes (/) with 'or' / 'বা'
   const hasAssamese = /[\u0980-\u09FF]/.test(cleaned);
   const orWord = hasAssamese ? ' বা ' : ' or ';
+  if (hasAssamese) {
+    // Standardize modern campus terms: use 'স্কলাৰশ্বিপ' instead of 'বৃত্তি' or 'জলপানি'
+    cleaned = cleaned.replace(/বৃত্তিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/বৃত্তি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/জলপানিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/জলপানি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকৰ\b/g, 'ছেমিষ্টাৰৰ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকত\b/g, 'ছেমিষ্টাৰত');
+    cleaned = cleaned.replace(/ষাণ্মাসিক\b/g, 'ছেমিষ্টাৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসৰ\b/g, 'হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসত\b/g, 'হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰাবাস\b/g, 'হোষ্টেল');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসৰ\b/g, 'ছোৱালী হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসত\b/g, 'ছোৱালী হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাস\b/g, 'ছোৱালী হোষ্টেল');
+    cleaned = cleaned.replace(/সময়সূচীৰ\b/g, 'ৰুটিনৰ');
+    cleaned = cleaned.replace(/সময়সূচী\b/g, 'ৰুটিন');
+  }
   cleaned = cleaned.replace(/\s*\/\s*/g, orWord);
   cleaned = cleaned.replace(/\//g, ' ');
   // Restore URLs
@@ -276,7 +294,7 @@ export function findRelatedDocument(query, documents = null) {
   if (!Array.isArray(docs) || docs.length === 0) return null;
 
   // Normalize spelling variations for Nivoraya in Assamese
-  let qNormalized = query.toLowerCase().trim()
+  let qNormalized = canonicalizeInputTerms(query.toLowerCase().trim())
     .replace(/নিভোৰায়/g, 'নিভৰয়া')
     .replace(/নিভোৰয়া/g, 'নিভৰয়া')
     .replace(/নিভাৰয়া/g, 'নিভৰয়া');
@@ -400,49 +418,39 @@ export function findRelatedDocument(query, documents = null) {
 export function verifyAndAlignWithDocument(rawAnswer, relatedDocument, mode = 'en') {
   if (!rawAnswer && !relatedDocument) return '';
 
-  const unavailablePhrases = [
-    'নথিৰ ভিত্তিতহে নিৰ্ভুল তথ্য',
-    'নথিত কোনো তথ্য দিয়া হোৱা নাই',
-    'উপলব্ধ নহয়',
-    'কোনো তথ্য দিয়া হোৱা নাই',
-    'কোনো তথ্য উপলব্ধ নহয়',
-    'তথ্য নাই',
-    'উল্লেখ নাই',
-    'পোৱা হোৱা নাই',
-    'not found in the official university documents',
-    'no information has been provided',
-    'no information',
-    'not available in the uploaded',
-    'not available',
-    'not found',
-    'not provided',
-    'no data',
-    'kono tothyo diya hua nai',
-    'kono tothyo nai',
-    'uplobdho nahoi',
-    'diya hua nai',
-    'not provided in the document',
-    'does not mention',
-    'does not contain'
-  ];
+  const trimmed = (rawAnswer || '').trim();
 
-  const lowerAnswer = (rawAnswer || '').toLowerCase();
-  const isUnavailable = unavailablePhrases.some(p => lowerAnswer.includes(p.toLowerCase()));
-
-  if (isUnavailable) {
-    if (mode === 'as_script') {
-      return 'এই বিষয়ে আপলোড কৰা নথিত কোনো তথ্য দিয়া হোৱা নাই বা উপলব্ধ নহয়।';
-    } else if (mode === 'as_roman') {
-      return 'Ei bisoyot upload kora document ot kono tothyo diya hua nai.';
-    } else {
-      return 'No information has been provided for this in the uploaded documents.';
+  // ONLY treat as unavailable if the entire response is a short refusal (< 140 chars)
+  // Substantial multi-sentence responses (>= 140 chars) contain real facts and must never be discarded!
+  if (trimmed.length > 0 && trimmed.length < 140) {
+    const explicitRefusals = [
+      'নথিৰ ভিত্তিতহে নিৰ্ভুল তথ্য',
+      'নথিত কোনো তথ্য দিয়া হোৱা নাই বা উপলব্ধ নহয়',
+      'কোনো তথ্য দিয়া হোৱা নাই',
+      'কোনো তথ্য উপলব্ধ নহয়',
+      'not found in the official university documents',
+      'no information has been provided for this in the uploaded documents',
+      'no information has been provided',
+      'kono tothyo diya hua nai',
+      'kono tothyo nai'
+    ];
+    const lowerAnswer = trimmed.toLowerCase();
+    const isExplicitRefusal = explicitRefusals.some(p => lowerAnswer.includes(p.toLowerCase()));
+    if (isExplicitRefusal) {
+      if (mode === 'as_script') {
+        return 'এই বিষয়ে আপলোড কৰা নথিত কোনো তথ্য দিয়া হোৱা নাই বা উপলব্ধ নহয়।';
+      } else if (mode === 'as_roman') {
+        return 'Ei bisoyot upload kora document ot kono tothyo diya hua nai.';
+      } else {
+        return 'No information has been provided for this in the uploaded documents.';
+      }
     }
   }
 
-  let verified = rawAnswer || '';
+  let verified = trimmed;
 
   // If user asked in Assamese script but response has no Assamese characters, fall back to document body if available
-  if (mode === 'as_script' && !/[\u0980-\u09FF]/.test(verified) && relatedDocument) {
+  if (mode === 'as_script' && !/[ঀ-৿]/.test(verified) && relatedDocument) {
     const rawContent = (relatedDocument.content || '').trim();
     const rawSummary = (relatedDocument.summary || '').trim();
     const docBody = rawContent.length > rawSummary.length ? rawContent : rawSummary;
@@ -453,7 +461,7 @@ ${docBody}`;
     }
   }
 
-  return stripUnwantedIntro(verified.trim());
+  return stripUnwantedIntro(verified);
 }
 
 
@@ -551,6 +559,8 @@ Do NOT reply in English. Every explanation, guideline, greeting, advice, paragra
 
 কঠোৰ বিশ্ববিদ্যালয়-কেন্দ্ৰিক নীতি (STRICT UNIVERSITY-ONLY MANDATE):
 আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (নিয়মাৱলী, সংবিধি, পৰীক্ষা, মূল্যায়ন, মেধা তালিকা, নামভৰ্তি, পাঠ্যক্ৰম, জলপানি, মাচুল, ছাত্ৰাবাস আৰু আধিকাৰিক জাননী) প্ৰশ্নৰ উত্তৰ দিবলৈ নিবেদিত।
+প্ৰচলিত আৰু আধুনিক প্রাতিষ্ঠানিক শব্দাৱলী (PREFERRED MODERN VOCABULARY): ছাত্ৰ-ছাত্ৰী আৰু বিশ্ববিদ্যালয়ৰ দৈনন্দিন প্ৰচলিত আধুনিক শব্দ ব্যৱহাৰ কৰক: 'বৃত্তি' বা 'জলপানি'ৰ সলনি সদায় 'স্কলাৰশ্বিপ' (Scholarship) ব্যৱহাৰ কৰক; 'ষাণ্মাসিক'ৰ সলনি 'ছেমিষ্টাৰ' (Semester); 'সময়সূচী'ৰ সলনি 'পৰীক্ষাৰ ৰুটিন / ৰুটিন' (Exam Routine); 'ছাত্ৰাবাস'ৰ সলনি 'হোষ্টেল' (Hostel); 'প্ৰৱেশ'ৰ সলনি 'এডমিশ্বন / নামভৰ্তি' (Admission); আৰু 'উপস্থিতি'ৰ লগতে 'এটেনডেন্স' (Attendance) ব্যৱহাৰ কৰক।
+
 যদি ব্যৱহাৰকাৰীয়ে বিশ্ববিদ্যালয় আৰু শৈক্ষিক ক্ষেত্ৰৰ বাহিৰৰ কোনো অপ্ৰাসংগিক প্ৰশ্ন কৰে (যেনে: ৰন্ধা-বঢ়া, চিনেমা বা চলচ্চিত্ৰ, মনোৰঞ্জন, সাধাৰণ বাহিৰা ৰাজনীতি বা অপ্ৰাসংগিক ব্যক্তিগত কথা), তেন্তে বিনম্ৰভাৱে জনাই দিয়ক যে আপুনি কেৱল বিশ্ববিদ্যালয় সম্বন্ধীয় অনুসন্ধানৰ বাবে নিবেদিত আৰু বিশ্ববিদ্যালয় সম্বন্ধীয় প্ৰশ্ন সুধিবলৈ অনুৰোধ জনাওক।`;
   } else {
     systemPrompt = `You are UniMitra, an intelligent bilingual university institutional AI assistant dedicated to Our University (${resolvedUnivName}).
@@ -642,7 +652,7 @@ ${docFullBody}`;
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 2048
+            maxOutputTokens: 4096
           }
         })
       });

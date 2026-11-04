@@ -1,3 +1,83 @@
+
+# =============================================================================
+# INPUT CANONICALIZATION MAP: Modern campus terms (বৃত্তি -> scholarship/স্কলাৰশ্বিপ)
+# =============================================================================
+INPUT_CANONICAL_MAP = [
+    # Scholarship: বৃত্তি / জলপানি -> স্কলাৰশ্বিপ & scholarship
+    (r'(?<![\u0980-\u09FF])বৃত্তিৰ(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপৰ'),
+    (r'(?<![\u0980-\u09FF])বৃত্তি(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপ'),
+    (r'(?<![\u0980-\u09FF])বৃত্তিবোৰ(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপসমূহ'),
+    (r'(?<![\u0980-\u09FF])বৃত্তিসমূহ(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপসমূহ'),
+    (r'(?<![\u0980-\u09FF])জলপানিৰ(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপৰ'),
+    (r'(?<![\u0980-\u09FF])জলপানি(?![\u0980-\u09FF])', 'স্কলাৰশ্বিপ'),
+    (r'\bbrittir\b', 'scholarship or'),
+    (r'\bbritti\b', 'scholarship'),
+    (r'\bjolpanir\b', 'scholarship or'),
+    (r'\bjolpani\b', 'scholarship'),
+    (r'\bzolpanir\b', 'scholarship or'),
+    (r'\bzolpani\b', 'scholarship'),
+
+    # Semester: ষাণ্মাসিক -> ছেমিষ্টাৰ & semester
+    (r'(?<![\u0980-\u09FF])ষাণ্মাসিকৰ(?![\u0980-\u09FF])', 'ছেমিষ্টাৰৰ'),
+    (r'(?<![\u0980-\u09FF])ষাণ্মাসিকত(?![\u0980-\u09FF])', 'ছেমিষ্টাৰত'),
+    (r'(?<![\u0980-\u09FF])ষাণ্মাসিক(?![\u0980-\u09FF])', 'ছেমিষ্টাৰ'),
+    (r'\bxanmaxikor\b', 'semester or'),
+    (r'\bxanmaxikot\b', 'semester ot'),
+    (r'\bxanmaxik\b', 'semester'),
+    (r'\bsanmasikor\b', 'semester or'),
+    (r'\bsanmasik\b', 'semester'),
+
+    # Hostel: ছাত্ৰাবাস / ছাত্ৰীনিবাস -> হোষ্টেল & hostel
+    (r'(?<![\u0980-\u09FF])ছাত্ৰাবাসৰ(?![\u0980-\u09FF])', 'হোষ্টেলৰ'),
+    (r'(?<![\u0980-\u09FF])ছাত্ৰাবাসত(?![\u0980-\u09FF])', 'হোষ্টেলত'),
+    (r'(?<![\u0980-\u09FF])ছাত্ৰাবাস(?![\u0980-\u09FF])', 'হোষ্টেল'),
+    (r'(?<![\u0980-\u09FF])ছাত্ৰীনিবাসৰ(?![\u0980-\u09FF])', 'ছোৱালী হোষ্টেলৰ'),
+    (r'(?<![\u0980-\u09FF])ছাত্ৰীনিবাসত(?![\u0980-\u09FF])', 'ছোৱালী হোষ্টেলত'),
+    (r'(?<![\u0980-\u09FF])ছাত্ৰীনিবাস(?![\u0980-\u09FF])', 'ছোৱালী হোষ্টেল'),
+    (r'\bsatrabasor\b', 'hostel or'),
+    (r'\bsatrabasot\b', 'hostel ot'),
+    (r'\bsatrabas\b', 'hostel'),
+    (r'\bchatrabasor\b', 'hostel or'),
+    (r'\bchatrabas\b', 'hostel'),
+
+    # Routine: সময়সূচী -> ৰুটিন & routine
+    (r'(?<![\u0980-\u09FF])সময়সূচীৰ(?![\u0980-\u09FF])', 'ৰুটিনৰ'),
+    (r'(?<![\u0980-\u09FF])সময়সূচী(?![\u0980-\u09FF])', 'ৰুটিন'),
+    (r'\bxomoyxusir\b', 'routine or'),
+    (r'\bxomoyxusi\b', 'routine'),
+    (r'\bsomoysusir\b', 'routine or'),
+    (r'\bsomoysusi\b', 'routine'),
+
+    # Admission: প্ৰৱেশ -> এডমিশ্বন & admission
+    (r'(?<![\u0980-\u09FF])প্ৰৱেশৰ(?![\u0980-\u09FF])', 'এডমিশ্বনৰ'),
+    (r'(?<![\u0980-\u09FF])প্ৰৱেশ(?![\u0980-\u09FF])', 'এডমিশ্বন'),
+    (r'\bprowexor\b', 'admission or'),
+    (r'\bprowex\b', 'admission'),
+    (r'\bprobeshor\b', 'admission or'),
+    (r'\bprobesh\b', 'admission'),
+
+    # Attendance: উপস্থিতি -> এটেনডেন্স & attendance
+    (r'(?<![\u0980-\u09FF])উপস্থিতিৰ(?![\u0980-\u09FF])', 'এটেনডেন্সৰ'),
+    (r'(?<![\u0980-\u09FF])উপস্থিতি(?![\u0980-\u09FF])', 'এটেনডেন্স'),
+    (r'\buposthitir\b', 'attendance or'),
+    (r'\buposthiti\b', 'attendance'),
+
+    # Fees: মাচুল -> ফী & fees
+    (r'(?<![\u0980-\u09FF])মাচুলৰ(?![\u0980-\u09FF])', 'ফীৰ'),
+    (r'(?<![\u0980-\u09FF])মাচুল(?![\u0980-\u09FF])', 'ফী'),
+    (r'\bmasulor\b', 'fees or'),
+    (r'\bmasul\b', 'fees'),
+]
+
+def canonicalize_input_terms(text: str) -> str:
+    """Replaces archaic or colloquial campus words with modern institutional terms in user input."""
+    if not text:
+        return text
+    result = text
+    for pattern, replacement in INPUT_CANONICAL_MAP:
+        result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+    return result
+
 """
 Assamese-English Input Understanding Layer (UniMitra AI)
 Specifically designed to recognize, normalize, and interpret Romanized Assamese,
@@ -375,7 +455,8 @@ class AssameseUnderstandingLayer:
         4. Synthesizes a non-intrusive Context Hint for the LLM.
         """
         cleaned_text = (query or "").strip()
-        normalized_query = cls.expand_abbreviations(cleaned_text)
+        cleaned_canonical = canonicalize_input_terms(cleaned_text)
+        normalized_query = cls.expand_abbreviations(cleaned_canonical)
         language_mode, is_romanized = cls.detect_language(normalized_query, requested_lang)
 
         assamese_meaning = ""
