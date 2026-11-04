@@ -115,7 +115,7 @@ class VectorStoreService:
             }
             salient_tokens = [t for t in raw_tokens if len(t) >= 2 and t not in stop_words]
 
-            # Ordinal & topper expansions
+            # Cross-Lingual & Ordinal Keyword Expansions
             expanded_tokens = list(salient_tokens)
             for t in salient_tokens:
                 if t in ("2nd", "second", "dui", "দ্বিতীয়"):
@@ -126,6 +126,18 @@ class VectorStoreService:
                     expanded_tokens.extend(["3rd", "third", "rank 3", "3."])
                 elif t in ("topper", "toppers", "শীৰ্ষ", "মেধা"):
                     expanded_tokens.extend(["topper", "merit", "rank", "marks", "result", "grade", "cgpa", "percentage"])
+                elif t in ("attendance", "attendence", "উপস্থিতি"):
+                    expanded_tokens.extend(["attendance", "উপস্থিতি", "75%"])
+                elif t in ("fee", "fees", "মাচুল", "মাছুল", "পৰিশোধ"):
+                    expanded_tokens.extend(["fee", "fees", "মাচুল", "মাছুল", "rs", "টকা"])
+                elif t in ("exam", "examination", "routine", "পৰীক্ষা", "ৰুটিন"):
+                    expanded_tokens.extend(["exam", "examination", "semester", "পৰীক্ষা", "ষাণ্মাসিক"])
+                elif t in ("hostel", "হোষ্টেল", "ছাত্ৰাবাস"):
+                    expanded_tokens.extend(["hostel", "হোষ্টেল", "ছাত্ৰাবাস", "distance", "দূৰত্ব"])
+                elif t in ("scholarship", "বৃত্তি", "জলপানি", "স্কলাৰশ্বিপ"):
+                    expanded_tokens.extend(["scholarship", "বৃত্তি", "জলপানি", "স্কলাৰশ্বিপ", "merit", "aid"])
+                elif t in ("admission", "eligibility", "ভৰ্তি", "নামভৰ্তি", "যোগ্যতা"):
+                    expanded_tokens.extend(["admission", "eligibility", "ভৰ্তি", "নামভৰ্তি", "যোগ্যতা"])
 
             # Deduplicate tokens
             unique_tokens = []
@@ -185,12 +197,24 @@ class VectorStoreService:
             if doc_ids_to_check:
                 placeholders = ",".join(["%s"] * len(doc_ids_to_check))
                 active_docs = execute_query(
-                    f"""SELECT id FROM documents WHERE id IN ({placeholders}) AND status = 'Indexed'::"DocStatus" AND approval_status = 'approved'::"ApprovalStatus" AND available_to_chatbot = true;""",
-
+                    f"""SELECT id, title, as_title, file_name, summary FROM documents WHERE id IN ({placeholders}) AND status = 'Indexed'::"DocStatus" AND approval_status = 'approved'::"ApprovalStatus" AND available_to_chatbot = true;""",
                     doc_ids_to_check
                 )
-                valid_doc_ids = set(str(row["id"]) for row in active_docs if row.get("id"))
-                combined_chunks = [c for c in combined_chunks if str(c.get("document_id")) in valid_doc_ids]
+                valid_doc_map = {str(row["id"]): row for row in active_docs if row.get("id")}
+                validated = []
+                for c in combined_chunks:
+                    d_id = str(c.get("document_id"))
+                    if d_id in valid_doc_map:
+                        doc_row = valid_doc_map[d_id]
+                        meta = dict(c.get("metadata") or {})
+                        meta["title"] = doc_row.get("title") or meta.get("title") or doc_row.get("file_name")
+                        meta["as_title"] = doc_row.get("as_title") or meta.get("as_title") or meta["title"]
+                        meta["file_name"] = doc_row.get("file_name") or meta.get("file_name")
+                        c["metadata"] = meta
+                        c["document_title"] = meta["title"]
+                        c["document_file_name"] = meta["file_name"]
+                        validated.append(c)
+                combined_chunks = validated
 
         return combined_chunks[:match_count]
 
@@ -232,10 +256,12 @@ class VectorStoreService:
                         page_number,
                         clause_reference,
                         content,
+                        cleaned_content,
+                        language,
                         token_count,
                         embedding,
                         metadata
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::vector, %s::jsonb);
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::vector, %s::jsonb);
                 """
 
                 insert_doc_chunks_sql = """
@@ -265,6 +291,8 @@ class VectorStoreService:
                             chunk.get("page_number"),
                             chunk.get("clause_reference"),
                             chunk.get("content", ""),
+                            chunk.get("cleaned_content", chunk.get("content", "")),
+                            chunk.get("language", "en"),
                             chunk.get("token_count", 0),
                             vector_str,
                             json.dumps(meta),

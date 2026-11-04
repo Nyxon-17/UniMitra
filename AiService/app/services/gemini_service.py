@@ -1277,66 +1277,33 @@ class GeminiService:
 
 
 
-            doc_title = chunk.get("metadata", {}).get("title") or chunk.get("clause_reference") or "University Statute"
-
-
+            doc_title = (
+                chunk.get("metadata", {}).get("title")
+                or chunk.get("document_title")
+                or chunk.get("metadata", {}).get("file_name")
+                or chunk.get("clause_reference")
+                or "University Statute"
+            )
+            as_doc_title = chunk.get("metadata", {}).get("as_title") or chunk.get("metadata", {}).get("asTitle") or doc_title
+            display_title = as_doc_title if lang in ("as", "as_script") else doc_title
+            file_name = chunk.get("metadata", {}).get("file_name") or chunk.get("document_file_name") or ""
 
             page_num = chunk.get("page_number")
-
-
-
             clause_ref = chunk.get("clause_reference") or f"Clause {i+1}"
-
-
-
             similarity = float(chunk.get("similarity", 0.0))
 
-
-
-
-
-
-
             context_blocks.append(
-
-
-
-                f"[Source {i+1}]: {doc_title} | {clause_ref} ({page_num})\nContent: {content}"
-
-
-
+                f"[Source {i+1}]: {display_title} | {clause_ref} ({page_num})\nContent: {content}"
             )
 
-
-
             citations.append({
-
-
-
                 "document_id": doc_id,
-
-
-
-                "document_title": doc_title,
-
-
-
+                "document_title": display_title,
+                "file_name": file_name,
                 "page_number": page_num if isinstance(page_num, int) else None,
-
-
-
                 "clause_reference": clause_ref,
-
-
-
                 "similarity_score": round(similarity, 4),
-
-
-
                 "snippet": content[:180] + ("..." if len(content) > 180 else ""),
-
-
-
             })
 
 
@@ -1504,18 +1471,14 @@ INSTRUCTIONS FOR THIS QUERY:
         # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
 
         candidate_models = [
-
-            "gemini-3-flash-preview",
-
-            settings.GEMINI_MODEL or "gemini-3-flash-preview",
-
-            "gemini-3.1-flash-lite",
-            "gemini-3.5-flash",
-
-            "gemini-3.8-flash",
-
-            "gemini-flash-latest",
-
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-flash-latest",
+        settings.GEMINI_MODEL or "gemini-3.5-flash",
+        "gemini-3.8-flash",
+        "gemini-flash-latest",
+        "gemini-3.1-flash-lite",
+        "gemini-3-flash-preview",
         ]
 
 
@@ -2110,7 +2073,196 @@ INSTRUCTIONS FOR THIS QUERY:
 
 
 
+
+    @classmethod
+    def translate_to_assamese(cls, text: str) -> Optional[str]:
+        """
+        Translates an English string into natural, official Standard Assamese (অসমীয়া)
+        using Google Gemini API with fallback across candidate models.
+        Preserves numbers, percentages, dates, codes, and proper nouns.
+        """
+        if not text or not text.strip():
+            return None
+        if not settings.GEMINI_API_KEY:
+            logger.warning("No GEMINI_API_KEY configured for translation.")
+            return None
+
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        candidate_models = [
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-flash-latest",
+        settings.GEMINI_MODEL or "gemini-3.5-flash",
+        "gemini-3.8-flash",
+        "gemini-flash-latest",
+        "gemini-3.1-flash-lite",
+        "gemini-3-flash-preview",
+        ]
+        unique_models = []
+        for m in candidate_models:
+            if m and m not in unique_models:
+                unique_models.append(m)
+
+        prompt = f"""You are a professional university academic translator specializing in English to Standard Assamese (অসমীয়া).
+Translate the following university document excerpt accurately into natural, official Assamese.
+Rules:
+- Preserve all numbers, percentages, fees, roll numbers, dates, course codes, and names accurately.
+- Do NOT add commentary, explanations, greetings, or preamble. Return ONLY the translated Assamese text.
+- Do NOT use markdown symbols like #, *, =, /.
+- Use Assamese daari ('।') to end sentences.
+
+Original English Text:
+{text}
+"""
+        config = types.GenerateContentConfig(
+            temperature=0.1,
+            max_output_tokens=4096,
+        )
+        for model_name in unique_models:
+            try:
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=config,
+                )
+                if resp and resp.text:
+                    return resp.text.strip()
+            except Exception as e:
+                logger.warning(f"Translation with model {model_name} failed: {e}. Trying next...")
+        return None
+
+    @classmethod
+    def translate_chunks_to_assamese(
+        cls,
+        chunks: List[Dict[str, Any]],
+        title: Optional[str] = None,
+    ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """
+        Translates a list of document chunks from English to Assamese.
+        Batch processes chunks to reduce API roundtrips and preserve context.
+        Returns: (translated_assamese_chunks, translated_assamese_title)
+        """
+        if not chunks:
+            return [], None
+
+        # Check if chunks are already in Assamese
+        sample_text = " ".join(c.get("content", "") for c in chunks[:3])
+        if cls.is_assamese(sample_text):
+            logger.info("Document content is already Assamese script. Skipping English-to-Assamese translation.")
+            return [], title
+
+        as_title = None
+        if title:
+            try:
+                as_title = cls.translate_to_assamese(f"Document Title: {title}")
+                if as_title and as_title.lower().startswith("document title:"):
+                    as_title = as_title[len("document title:"):].strip()
+            except Exception as e:
+                logger.warning(f"Failed to translate document title: {e}")
+
+        translated_chunks: List[Dict[str, Any]] = []
+        batch_size = 4
+        total_chunks = len(chunks)
+
+        for b_start in range(0, total_chunks, batch_size):
+            batch = chunks[b_start : b_start + batch_size]
+            prompt_segments = []
+            for idx, c in enumerate(batch):
+                prompt_segments.append(f"<<<CHUNK {idx + 1}>>>\n{c.get('content', '').strip()}")
+
+            batch_prompt = f"""You are a professional university academic translator.
+Translate each numbered English text block into natural, official Standard Assamese (অসমীয়া).
+Rules:
+- Preserve all numbers, percentages, fees, dates, clauses, and names accurately.
+- Do NOT add commentary, explanations, or introductory text.
+- Do NOT use markdown symbols like #, *, =, /.
+- Return the output using the exact delimiter format:
+<<<CHUNK 1>>>
+Assamese translation for block 1
+<<<CHUNK 2>>>
+Assamese translation for block 2
+
+English text blocks to translate:
+""" + "\n\n".join(prompt_segments)
+
+            translated_batch_texts: List[str] = []
+            if settings.GEMINI_API_KEY:
+                client = genai.Client(api_key=settings.GEMINI_API_KEY)
+                candidate_models = [
+                "gemini-3.5-flash",
+                "gemini-3.5-flash-lite",
+                "gemini-flash-latest",
+                settings.GEMINI_MODEL or "gemini-3.5-flash",
+                "gemini-3.8-flash",
+                "gemini-flash-latest",
+                "gemini-3.1-flash-lite",
+                "gemini-3-flash-preview",
+                ]
+                unique_models = []
+                for m in candidate_models:
+                    if m and m not in unique_models:
+                        unique_models.append(m)
+
+                config = types.GenerateContentConfig(
+                    temperature=0.1,
+                    max_output_tokens=4096,
+                )
+                for model_name in unique_models:
+                    try:
+                        resp = client.models.generate_content(
+                            model=model_name,
+                            contents=batch_prompt,
+                            config=config,
+                        )
+                        if resp and resp.text:
+                            raw_out = resp.text.strip()
+                            parts = re.split(r'<<<CHUNK \d+>>>', raw_out)
+                            parsed = [p.strip() for p in parts if p.strip()]
+                            if len(parsed) == len(batch):
+                                translated_batch_texts = parsed
+                                break
+                            elif len(parsed) > 0:
+                                while len(parsed) < len(batch):
+                                    parsed.append(batch[len(parsed)].get("content", ""))
+                                translated_batch_texts = parsed[:len(batch)]
+                                break
+                    except Exception as err:
+                        logger.warning(f"Batch translation with {model_name} failed: {err}")
+
+            # Fallback if batch translation failed
+            if not translated_batch_texts:
+                for c in batch:
+                    single_t = cls.translate_to_assamese(c.get("content", ""))
+                    translated_batch_texts.append(single_t if single_t else c.get("content", ""))
+
+            # Build translated chunk objects
+            for idx, c in enumerate(batch):
+                c_idx = total_chunks + b_start + idx
+                trans_text = translated_batch_texts[idx]
+                translated_chunks.append({
+                    "chunk_index": c_idx,
+                    "page_number": c.get("page_number", 1),
+                    "clause_reference": c.get("clause_reference", f"Clause {c_idx}"),
+                    "content": trans_text,
+                    "cleaned_content": trans_text,
+                    "language": "as",
+                    "token_count": len(trans_text.split()),
+                    "metadata": {
+                        **(c.get("metadata") or {}),
+                        "language": "as",
+                        "translated_from": "en",
+                        "is_translated": True,
+                        "page": c.get("page_number", 1),
+                        "clause": c.get("clause_reference"),
+                    },
+                })
+
+        logger.info(f"Successfully generated {len(translated_chunks)} Assamese translated chunks.")
+        return translated_chunks, as_title
+
+
 gemini_service = GeminiService()
+
 
 
 
