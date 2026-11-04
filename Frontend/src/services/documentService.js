@@ -61,120 +61,7 @@ export const INITIAL_CATEGORIES = [
   { id: 'CAT-08', name: 'Campus Facilities & Hostel Bylaws', asName: 'চৌহদ সুবিধা আৰু হোষ্টেল বিধি', code: 'CAMP-HOST', codeName: 'CAMP-HOST', count: 0 }
 ];
 
-export const INITIAL_DOCUMENTS = [
-  {
-    id: 'DOC-NUAL-2027-01',
-    title: 'NUAL Topper Student List 2027',
-    asTitle: 'এনইউএএল টপাৰ শিক্ষাৰ্থী মেধা তালিকা ২০২৭',
-    university: 'Nivoraya University',
-    category: 'Examinations & Evaluation Codes',
-    department: 'Examination Branch',
-    academicYear: '2026-2027',
-    publicationDate: '20 Feb 2027',
-    pages: 1,
-    fileSize: '18 KB',
-    fileType: 'PDF',
-    fileName: 'NUAL_Topper_Student_List_2027.pdf',
-    chunksCount: 8,
-    uploaderRole: 'Admin',
-    uploaderName: 'Office of the Controller of Examinations',
-    uploaderEmail: 'coe@nivoraya.ac.in',
-    uploadedAt: '20 Feb 2027, 10:00 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: false,
-    fileUrl: '/notices/NUAL_Topper_Student_List_2027.pdf',
-    sourceUrl: '/notices/NUAL_Topper_Student_List_2027.pdf',
-    summary: 'Official Convocation 2027 Merit List declaring University Toppers & Gold Medalists across graduating programmes. Rank 1: Sahid Ahmed (CGPA 9.84, B.Tech CSE, Gold Medalist & Chancellor\'s Award), Rank 2: Kuddus Haque (CGPA 9.79, B.Tech CSE, Silver Medalist), Rank 3: Priyom Borah (CGPA 9.76, B.Tech ECE, Bronze Medalist), Rank 4: Ananya Sharma (CGPA 9.68, B.Tech IT), Rank 5: Debojit Saikia (CGPA 9.62, M.Sc Physics), Rank 6: Rituraj Deka (CGPA 9.55, M.Sc Mathematics).',
-    citation: 'Nivoraya University Examination Gazette, Ref. NUAL/EXAM/TOPPER/2027/11, Page 1'
-  },
-  {
-    id: 'DOC-NUAL-2027-02',
-    title: 'NUAL Scholarship Notice 2027',
-    asTitle: 'এনইউএএল ছাত্ৰবৃত্তি আৰু আৰ্থিক অনুদান জাননী ২০২৭',
-    university: 'Nivoraya University',
-    category: 'Scholarships & Financial Aid',
-    department: 'Office of Students Welfare',
-    academicYear: '2027-2028',
-    publicationDate: '15 Jan 2027',
-    pages: 1,
-    fileSize: '11 KB',
-    fileType: 'PDF',
-    fileName: 'NUAL_Scholarship_Notice_2027.pdf',
-    chunksCount: 12,
-    uploaderRole: 'Admin',
-    uploaderName: 'Director of Students Welfare (DSW)',
-    uploaderEmail: 'dsw@nivoraya.ac.in',
-    uploadedAt: '15 Jan 2027, 11:30 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: false,
-    fileUrl: '/notices/NUAL_Scholarship_Notice_2027.pdf',
-    sourceUrl: '/notices/NUAL_Scholarship_Notice_2027.pdf',
-    summary: 'Official notification inviting online applications for prestigious state and central scholarship schemes: UGC Ishan Uday Scholarship (₹5,400/mo General Degree, ₹7,800/mo Technical Degree), Assam DHE Combined Merit Scholarship (₹6,000-8,000/yr), and Post-Matric SC/ST/OBC Scholarship via NSP Portal. Income ceiling ₹4.5 Lakhs/year. Application deadline: 31st March 2027.',
-    citation: 'Nivoraya University Scholarship Gazette, Ref. NUAL/SCHOL/NOTIF/2027/04, Page 1'
-  },
-  {
-    id: 'DOC-NUAL-2027-03',
-    title: 'NUAL Admission Notice 2027',
-    asTitle: 'এনইউএএল কেন্দ্ৰীয় নামভৰ্তি আৰু কাউন্সেলিং জাননী ২০২৭',
-    university: 'Nivoraya University',
-    category: 'Admissions & Eligibility Criteria',
-    department: 'Central Admission Committee',
-    academicYear: '2027-2028',
-    publicationDate: '10 Jan 2027',
-    pages: 1,
-    fileSize: '10 KB',
-    fileType: 'PDF',
-    fileName: 'NUAL_Admission_Notice_2027.pdf',
-    chunksCount: 10,
-    uploaderRole: 'Admin',
-    uploaderName: 'Dean, Academic Affairs',
-    uploaderEmail: 'dean_academic@nivoraya.ac.in',
-    uploadedAt: '10 Jan 2027, 09:15 AM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: false,
-    fileUrl: '/notices/NUAL_Admission_Notice_2027.pdf',
-    sourceUrl: '/notices/NUAL_Admission_Notice_2027.pdf',
-    summary: 'Central Admission & Counselling schedule for Postgraduate, Integrated M.Sc, B.Tech, and MBA programmes for 2027-2028. Selection via NUAL-ET Entrance Test (70% weightage) + qualifying degree marks (30% weightage). Entrance window: 22nd to 25th March 2027. 80% seats reserved for Assam permanent residents, 20% All India Open Merit.',
-    citation: 'Nivoraya University Central Admission Gazette, Ref. NUAL/ADM/COUNSEL/2027/01, Page 1'
-  },
-  {
-    id: 'DOC-NUAL-2027-04',
-    title: 'NUAL Hostel Information 2027',
-    asTitle: 'এনইউএএল চৌহদ হোষ্টেল আসন আবণ্টন আৰু আৱাসিক বিধি ২০২৭',
-    university: 'Nivoraya University',
-    category: 'Campus Facilities & Hostel Bylaws',
-    department: 'Board of Residential & Hostel Affairs',
-    academicYear: '2027-2028',
-    publicationDate: '05 Jan 2027',
-    pages: 1,
-    fileSize: '10 KB',
-    fileType: 'PDF',
-    fileName: 'NUAL_Hostel_Information_2027.pdf',
-    chunksCount: 8,
-    uploaderRole: 'Admin',
-    uploaderName: 'Chief Warden & Proctor',
-    uploaderEmail: 'warden@nivoraya.ac.in',
-    uploadedAt: '05 Jan 2027, 02:00 PM',
-    status: 'Indexed',
-    approvalStatus: 'approved',
-    availableToChatbot: true,
-    processingStage: 'Vector Indexed (100%)',
-    ocrApplied: false,
-    fileUrl: '/notices/NUAL_Hostel_Information_2027.pdf',
-    sourceUrl: '/notices/NUAL_Hostel_Information_2027.pdf',
-    summary: 'Campus Hostel Allocation Rules, Seat Matrix & Code of Conduct 2027. 6 halls of residence (Brahmaputra 220, Dihing 180, Lohit 150 for Boys; Subansiri 240, Kapili 200, Dhansiri 160 for Girls). Minimum distance criteria: 45 km from campus. Gate curfew: strictly 8:00 PM for all residential students. Anti-ragging compliance is mandatory.',
-    citation: 'Nivoraya University Hostel Gazette, Ref. NUAL/HOSTEL/INFO/2027/08, Page 1'
-  }
-];
+export const INITIAL_DOCUMENTS = [];
 
 export const documentService = {
   getDocuments: () => {
@@ -198,11 +85,12 @@ export const documentService = {
       const parsed = JSON.parse(stored);
       if (!Array.isArray(parsed)) return [];
 
-      // Filter out any explicitly deleted IDs
+      // Filter out any explicitly deleted IDs and legacy demo documents
       const filtered = parsed.filter(d => 
         d && 
         !deleted.has(d.id) && 
         (!d.uuid || !deleted.has(d.uuid)) &&
+        !d.id?.startsWith('DOC-NUAL-2027-') &&
         !d.id?.startsWith('DOC-NOT-') && 
         !d.id?.startsWith('DOC-GU-') && 
         !d.id?.startsWith('DOC-FAC-SUB-') && 
@@ -674,6 +562,31 @@ export const documentService = {
     } catch {}
   },
 
+
+  // Retry processing a failed or pending document
+  retryDocument: async (docId) => {
+    if (!docId) return null;
+    const docs = documentService.getDocuments();
+    const targetDoc = docs.find(d => d.id === docId || d.uuid === docId);
+    const backendId = targetDoc?.uuid || targetDoc?.id || docId;
+    try {
+      const res = await fetch(`${API_BASE}/documents/${backendId}/retry`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data) {
+          const updated = docs.map(d => (d.id === docId || d.uuid === docId ? { ...d, ...json.data } : d));
+          documentService.saveDocuments(updated);
+          return json.data;
+        }
+      }
+    } catch (e) {
+      console.warn('Document retry notice:', e);
+    }
+    return null;
+  },
   // Categories
   getCategories: () => {
     let baseCats = INITIAL_CATEGORIES;

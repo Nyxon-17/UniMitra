@@ -19,6 +19,10 @@ export const ABBREVIATION_MAP = {
   kio: 'kio',
   kyon: 'kio',
   kba: 'kiba',
+  bikhoye: 'bisoye',
+  bikhoy: 'bisoy',
+  bikhoyot: 'bisoyot',
+  kowa: 'kuwa',
   ghrt: 'ghorot',
   ghor: 'ghor',
   ghr: 'ghor',
@@ -89,7 +93,7 @@ export const ROMANIZED_ASSAMESE_LEXICON = new Set([
   'gao', 'gaon', 'shohor', 'nohor', 'rasta',
   'paani', 'gaakheer', 'saah', 'chai', 'saani', 'bhaat',
   'bohi', 'kitap', 'kolom', 'routine',
-  'axomiya', 'asomiya', 'asom', 'assam', 'sosa', 'misa'
+  'axomiya', 'asomiya', 'asom', 'assam', 'sosa', 'misa', 'bikhoy', 'bikhoye', 'bikhoyot', 'kowa', 'bisoy', 'bisoye', 'bisoyot'
 ]);
 
 export const ROMANIZED_PHRASES = [

@@ -77,10 +77,14 @@ class VectorStoreService:
         # 2. Fallback direct SQL query if RPC returned empty or failed
         if not vector_results:
             direct_sql = """
-                SELECT id, document_id, chunk_index, page_number, clause_reference, 
-                       content, 1 - (embedding <=> %s::vector) AS similarity, metadata
-                FROM ai_document_chunks
-                ORDER BY embedding <=> %s::vector ASC
+                SELECT c.id, c.document_id, c.chunk_index, c.page_number, c.clause_reference, 
+                       c.content, 1 - (c.embedding <=> %s::vector) AS similarity, c.metadata
+                FROM ai_document_chunks c
+                JOIN documents d ON d.id = c.document_id
+                WHERE d.status = 'Indexed'::"DocStatus"
+                  AND d.approval_status = 'approved'::"ApprovalStatus"
+                  AND d.available_to_chatbot = true
+                ORDER BY c.embedding <=> %s::vector ASC
                 LIMIT %s;
             """
             try:
@@ -137,10 +141,14 @@ class VectorStoreService:
                     params.append(f"%{tok}%")
 
                 kw_sql = f"""
-                    SELECT id, document_id, chunk_index, page_number, clause_reference,
-                           content, 0.88 AS similarity, metadata
-                    FROM ai_document_chunks
-                    WHERE {' OR '.join(like_clauses)}
+                    SELECT c.id, c.document_id, c.chunk_index, c.page_number, c.clause_reference,
+                           c.content, 0.88 AS similarity, c.metadata
+                    FROM ai_document_chunks c
+                    JOIN documents d ON d.id = c.document_id
+                    WHERE d.status = 'Indexed'::"DocStatus"
+                      AND d.approval_status = 'approved'::"ApprovalStatus"
+                      AND d.available_to_chatbot = true
+                      AND ({' OR '.join(like_clauses)})
                     LIMIT {match_count};
                 """
                 try:
@@ -171,6 +179,19 @@ class VectorStoreService:
         combined_chunks = list(chunk_map.values())
         combined_chunks.sort(key=lambda x: float(x.get("similarity", 0.0)), reverse=True)
 
+        # Active Document Validation: verify that every chunk strictly belongs to an active, approved document
+        if combined_chunks:
+            doc_ids_to_check = tuple(set(str(c.get("document_id")) for c in combined_chunks if c.get("document_id")))
+            if doc_ids_to_check:
+                placeholders = ",".join(["%s"] * len(doc_ids_to_check))
+                active_docs = execute_query(
+                    f"""SELECT id FROM documents WHERE id IN ({placeholders}) AND status = 'Indexed'::"DocStatus" AND approval_status = 'approved'::"ApprovalStatus" AND available_to_chatbot = true;""",
+
+                    doc_ids_to_check
+                )
+                valid_doc_ids = set(str(row["id"]) for row in active_docs if row.get("id"))
+                combined_chunks = [c for c in combined_chunks if str(c.get("document_id")) in valid_doc_ids]
+
         return combined_chunks[:match_count]
 
     @staticmethod
@@ -195,11 +216,12 @@ class VectorStoreService:
         try:
             conn = get_db_connection()
             with conn.cursor() as cur:
-                # Remove prior chunks if re-indexing document
-                cur.execute(
-                    "DELETE FROM ai_document_chunks WHERE document_id = %s;",
-                    (doc_uuid,),
-                )
+                # Remove prior chunks if re-indexing or replacing document
+                cur.execute("DELETE FROM ai_document_chunks WHERE document_id = %s OR document_id = %s;", (doc_uuid, document_id))
+                try:
+                    cur.execute("DELETE FROM document_chunks WHERE document_id = %s;", (doc_uuid,))
+                except Exception:
+                    pass
 
                 insert_sql = """
                     INSERT INTO ai_document_chunks (
@@ -214,6 +236,13 @@ class VectorStoreService:
                         embedding,
                         metadata
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::vector, %s::jsonb);
+                """
+
+                insert_doc_chunks_sql = """
+                    INSERT INTO document_chunks (
+                        id, document_id, chunk_index, page_number, clause_reference,
+                        content, token_count, metadata, created_at
+                    ) VALUES (gen_random_uuid(), %s, %s, %s, %s, %s, %s, %s::jsonb, NOW());
                 """
 
                 for chunk, emb in zip(chunks, embeddings):
@@ -241,6 +270,21 @@ class VectorStoreService:
                             json.dumps(meta),
                         ),
                     )
+                    try:
+                        cur.execute(
+                            insert_doc_chunks_sql,
+                            (
+                                doc_uuid,
+                                chunk.get("chunk_index", 0),
+                                chunk.get("page_number"),
+                                chunk.get("clause_reference"),
+                                chunk.get("content", ""),
+                                chunk.get("token_count", 0),
+                                json.dumps(meta),
+                            )
+                        )
+                    except Exception:
+                        pass
                     inserted_count += 1
 
             return inserted_count
@@ -250,6 +294,39 @@ class VectorStoreService:
         finally:
             if conn:
                 conn.close()
+
+
+    @staticmethod
+    def delete_document(document_id: str) -> bool:
+        """
+        Permanently deletes all vectors, chunks, processing jobs, and document records
+        associated with a given document identifier (UUID or customId).
+        """
+        if not document_id:
+            return False
+        doc_uuid = resolve_document_uuid(document_id)
+        try:
+            execute_mutation(
+                "DELETE FROM ai_document_chunks WHERE document_id = %s OR document_id = %s;",
+                (doc_uuid, document_id)
+            )
+            execute_mutation(
+                "DELETE FROM document_processing_jobs WHERE document_id = %s OR document_id = %s;",
+                (doc_uuid, document_id)
+            )
+            execute_mutation(
+                "DELETE FROM document_chunks WHERE document_id = %s;",
+                (doc_uuid,)
+            )
+            execute_mutation(
+                "DELETE FROM documents WHERE id = %s OR custom_id = %s;",
+                (doc_uuid, document_id)
+            )
+            logger.info(f"Successfully purged vector data and database records for document: {document_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error deleting document {document_id} from vector store: {e}")
+            return False
 
 
 vector_store = VectorStoreService()

@@ -37,7 +37,8 @@ router.post(
 // Admin workflow actions
 router.patch('/:id/approval', authenticate, requireAdmin, validate(updateApprovalSchema), documentController.updateApproval);
 router.patch('/:id/archive', authenticate, requireAdmin, documentController.archiveDocument);
-router.delete('/:id', authenticate, requireAdmin, documentController.deleteDocument);
+router.delete('/:id', authenticate, requireFaculty, documentController.deleteDocument);
+router.post('/:id/retry', authenticate, requireFaculty, documentController.retryDocument);
 
 export default router;
 

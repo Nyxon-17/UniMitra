@@ -478,14 +478,25 @@ export const AdminConsole = ({
     triggerToast('Document archive status toggled successfully.');
   };
 
+  const handleRetryDoc = async (id) => {
+    triggerToast('Retrying document processing & vector indexing...');
+    const result = await documentService.retryDocument(id);
+    if (result) {
+      setDocuments(documentService.getDocuments());
+      triggerToast('Document successfully reprocessed and indexed!');
+    } else {
+      triggerToast('Document re-processing encountered an error. Check document storage file.');
+    }
+  };
+
   const handleDeleteDoc = (id) => {
     setConfirmPopup({
       title: 'Delete Document',
       message: 'Are you sure you want to permanently delete this document from institutional storage?',
       confirmText: 'Delete Permanently',
       confirmColor: 'bg-red-600 hover:bg-red-700 text-white',
-      onConfirm: () => {
-        documentService.deleteDocument(id);
+      onConfirm: async () => {
+        await documentService.deleteDocument(id);
         setDocuments(documentService.getDocuments());
         triggerToast('Document deleted from institutional repository.');
         setConfirmPopup(null);
@@ -1547,6 +1558,15 @@ export const AdminConsole = ({
                               title="Open authentic PDF in new tab"
                             >
                               Inspect
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRetryDoc(doc.id)}
+                              className="px-2.5 py-1 rounded-lg border border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 font-bold text-[11px] cursor-pointer"
+                              title="Retry parsing and vector indexing"
+                            >
+                              Retry
                             </button>
 
                             <button

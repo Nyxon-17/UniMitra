@@ -405,14 +405,34 @@ export const deleteDocument = async (idOrCustomId) => {
   // 1. Permanently delete all vector embeddings and chunks from Python AI Service / pgvector
   try {
     await aiServiceClient.deleteDocument(doc.id);
-    if (doc.customId) {
+    if (doc.customId && doc.customId !== doc.id) {
       await aiServiceClient.deleteDocument(doc.customId);
     }
   } catch (aiErr) {
     logger.warn({ err: aiErr.message, docId: doc.id }, 'AI vector deletion notification');
   }
 
-  // 2. Remove binary file from Supabase Storage bucket
+  // 2. Direct raw SQL execution on PostgreSQL to purge any chunks/jobs in pgvector tables
+  try {
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM ai_document_chunks WHERE document_id = $1 OR document_id = $2`,
+      doc.id,
+      doc.customId || doc.id
+    );
+  } catch (e) {
+    logger.warn({ err: e.message }, 'Failed raw delete on ai_document_chunks');
+  }
+  try {
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM document_processing_jobs WHERE document_id = $1 OR document_id = $2`,
+      doc.id,
+      doc.customId || doc.id
+    );
+  } catch (e) {
+    logger.warn({ err: e.message }, 'Failed raw delete on document_processing_jobs');
+  }
+
+  // 3. Remove binary file from Supabase Storage bucket
   if (doc.storagePath) {
     try {
       await supabaseAdmin.storage.from(STORAGE_BUCKETS.DOCUMENTS).remove([doc.storagePath]);
@@ -421,7 +441,7 @@ export const deleteDocument = async (idOrCustomId) => {
     }
   }
 
-  // 3. Delete database chunks and document record
+  // 4. Delete database chunks and document record
   await prisma.documentChunk.deleteMany({
     where: { documentId: doc.id },
   });
@@ -514,4 +534,69 @@ export const deleteCategory = async (idOrCode) => {
   });
 
   return { id: cat.id, code: cat.code, deleted: true };
+};
+
+/**
+ * 8. Retry Document Processing & Vector Ingestion
+ */
+export const retryDocument = async (idOrCustomId) => {
+  const doc = await prisma.document.findFirst({
+    where: {
+      OR: [{ id: idOrCustomId }, { customId: idOrCustomId }],
+    },
+    include: { university: true, category: true, uploader: true },
+  });
+
+  if (!doc) {
+    throw ApiError.notFound('Document not found for retry processing.');
+  }
+
+  if (!doc.storagePath) {
+    throw ApiError.badRequest('Document does not have a physical storage file to retry processing.');
+  }
+
+  // Set processing stage to Vector Ingesting
+  await prisma.document.update({
+    where: { id: doc.id },
+    data: { processingStage: 'Vector Ingesting' },
+  });
+
+  try {
+    const { data: fileBlob, error: downloadErr } = await supabaseAdmin.storage
+      .from(STORAGE_BUCKETS.DOCUMENTS)
+      .download(doc.storagePath);
+
+    if (downloadErr || !fileBlob) {
+      throw new Error(downloadErr?.message || 'Failed to download stored document file');
+    }
+
+    const fileBuffer = Buffer.from(await fileBlob.arrayBuffer());
+    const result = await aiServiceClient.processDocument(doc.id, fileBuffer, doc.fileName, {
+      title: doc.title,
+      asTitle: doc.asTitle,
+      university: doc.university?.code || 'UNIVERSAL',
+      category: doc.category?.code || 'GENERAL',
+    });
+
+    const isSuccess = Boolean(result?.success);
+    const updated = await prisma.document.update({
+      where: { id: doc.id },
+      data: {
+        processingStage: isSuccess ? 'Vector Indexed (100%)' : 'Processing Failed',
+        status: isSuccess ? 'Indexed' : doc.status,
+        chunksCount: result?.chunks_created || doc.chunksCount,
+        pages: result?.pages_extracted || doc.pages,
+        availableToChatbot: isSuccess && doc.approvalStatus === 'approved',
+      },
+      include: { university: true, category: true, uploader: true },
+    });
+
+    return formatDocumentResponse(updated);
+  } catch (err) {
+    await prisma.document.update({
+      where: { id: doc.id },
+      data: { processingStage: 'Processing Failed' },
+    });
+    throw ApiError.internal(`Failed to reprocess document: ${err.message}`);
+  }
 };

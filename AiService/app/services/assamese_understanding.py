@@ -31,6 +31,10 @@ ABBREVIATION_MAP: Dict[str, str] = {
     "kio": "kio",
     "kyon": "kio",
     "kba": "kiba",
+    "bikhoye": "bisoye",
+    "bikhoy": "bisoy",
+    "bikhoyot": "bisoyot",
+    "kowa": "kuwa",
     # Locations & Nouns
     "ghrt": "ghorot",
     "ghor": "ghor",
@@ -114,7 +118,7 @@ ROMANIZED_ASSAMESE_LEXICON: Set[str] = set([
     "masul", "maasul", "fee", "fees", "khuju", "khuja", "hudhi", "hudhisu",
     "hudhibo", "hudhibone", "hudhok", "hudha", "janibo", "janisane",
     "bujai", "bujaba", "bujabo", "bhitort", "bahirot", "majot",
-    "bisoy", "bisoye", "bisoyot", "neki", "aseneki", "asenki", "hoboneki"
+    "bisoy", "bisoye", "bisoyot", "bikhoy", "bikhoye", "bikhoyot", "kowa", "neki", "aseneki", "asenki", "hoboneki"
 ])
 
 # Multi-word Romanized Assamese trigger phrases

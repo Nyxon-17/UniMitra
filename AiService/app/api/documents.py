@@ -205,3 +205,20 @@ async def ingest_document(
         text_content=full_extracted_text,
         chunks=chunks,
     )
+
+
+@router.delete("/{document_id}")
+async def delete_document_endpoint(
+    document_id: str,
+    _: bool = Depends(verify_internal_secret),
+):
+    """
+    Deletes document chunks, embeddings, processing jobs, and parent records from the database.
+    """
+    logger.info(f"Received request to delete document: {document_id}")
+    success = vector_store.delete_document(document_id)
+    return {
+        "success": success,
+        "deleted_document_id": document_id,
+        "message": f"Document {document_id} and associated vector embeddings purged from database."
+    }
