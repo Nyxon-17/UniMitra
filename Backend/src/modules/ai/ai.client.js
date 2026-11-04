@@ -77,6 +77,23 @@ class AiServiceClient {
   /**
    * Send audio to Python STT (Speech-to-Text)
    */
+/**
+   * Delete document vectors and chunks from Python AI Service / pgvector
+   */
+  async deleteDocument(documentId) {
+    try {
+      const res = await this.client.delete(`/api/ai/documents/${documentId}`, {
+        headers: {
+          'X-Internal-Secret': this.secret,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      logger.warn({ err: err.message, documentId }, 'Python AI Service document vector deletion notification');
+      return null;
+    }
+  }
+
   async transcribeAudio(audioBuffer, language = 'as', mimeType = 'audio/webm', mode = 'codemix') {
     try {
       const form = new FormData();

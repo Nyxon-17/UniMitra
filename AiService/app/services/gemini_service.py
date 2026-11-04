@@ -31,172 +31,25 @@ _GEMINI_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 # Institutional Knowledge Benchmarks for North-East & Assam Universities
 
 INSTITUTIONAL_BENCHMARKS = [
-
     {
-
-        "keywords": ["উত্তীৰ্ণ", "পাছ", "নম্বৰ", "passing", "minimum marks", "pass criteria", "40%"],
-
-        "as_answer": "নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ স্নাতক মহলাৰ (CBCS/FYUGP) নিয়মাৱলী অনুসৰি, পৰীক্ষাৰ্থীয়ে অন্তৰ্ৱৰ্তী মূল্যায়ন (In-Semester) আৰু অন্তিম ষাণ্মাসিক পৰীক্ষা (End-Semester) দুয়োটাতে সুকীয়াকৈ নূন্যতম ৪০% নম্বৰ লাভ কৰিব লাগিব। এটা বিষয়ত ৪০% তকৈ কম নম্বৰ পালে সেই বিষয়ত উত্তীৰ্ণ ঘোষণা কৰা নহয়।",
-
-        "en_answer": "According to Dibrugarh and Gauhati University undergraduate examination ordinances (NEP/CBCS), candidates must secure a minimum of 40% marks separately in both Continuous Assessment (In-Semester) and End-Semester Theory/Practical examinations to pass each course.",
-
-        "source": "Nivoraya University Examination Ordinance 2024",
-
-        "page": "Clause 8.2, Page 14",
-
-        "confidence": "99.4% Grounded Match",
-
-        "domain": "Examination Regulations",
-
-    },
-
-    {
-
-        "keywords": ["মেডিকেল", "উপস্থিতি", "ৰেহাই", "condonation", "attendance", "medical", "75%", "65%", "shortage"],
-
-        "as_answer": "বিশ্ববিদ্যালয়ৰ শৈক্ষিক বিধিমলা অনুসৰি, প্ৰতি ষাণ্মাসিকত পৰীক্ষাত বহিবলৈ নূন্যতম ৭৫% শ্ৰেণী উপস্থিতি বাধ্যতামূলক। চিকিৎসাজনিত জৰুৰী কাৰণত বিভাগীয় মুৰব্বীৰ (HoD) লিখিত অনুমোদন সাপেক্ষে সৰ্বাধিক ১০% উপস্থিতি ৰেহাই (Condonation) দিয়া হয়, যাৰ ফলত নূন্যতম ৬৫% উপস্থিতি থাকিলে পৰীক্ষাত অৱতীৰ্ণ হোৱাৰ অনুমতি লাভ কৰিব পাৰি।",
-
-        "en_answer": "Under statutory academic ordinances, a minimum of 75% class attendance is mandatory in each semester. A medical condonation of up to 10% is permissible upon recommendation of the Head of the Department (HoD) supported by certified hospital documents, bringing the minimum required attendance down to 65%.",
-
-        "source": "Nivoraya University Attendance Regulations 2024",
-
-        "page": "Section 4.3, Page 9",
-
-        "confidence": "98.8% Grounded Match",
-
-        "domain": "Academic Ordinances",
-
-    },
-
-    {
-
-        "keywords": ["ঈশান উদয়", "জলপানি", "বৃত্তি", "ishan uday", "scholarship", "income", "পাৰিবাৰিক আয়", "4.5"],
-
-        "as_answer": "ইউজিচিৰ (UGC) ঈশান উদয় বিশেষ ছাত্ৰবৃত্তিৰ অধীনত সাধাৰণ পাঠ্যক্ৰমৰ বাবে মাহে ৫,৪০০ টকা আৰু পেছাদাৰী পাঠ্যক্ৰমৰ বাবে মাহে ৭,৮০০ টকা প্ৰদান কৰা হয়। ইয়াৰ বাবে প্ৰাৰ্থী উত্তৰ-পূৰ্বাঞ্চলৰ বাসিন্দা হ’ব লাগিব আৰু তেওঁলোকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ’ব লাগিব। আবেদনৰ সৈতে স্থায়ী বাসস্থান প্ৰমাণপত্ৰ (PRC) আৰু আয় প্ৰমাণপত্ৰ সংলগ্ন কৰা অপৰিহাৰ্য।",
-
-        "en_answer": "The UGC Ishan Uday Special Scholarship for North Eastern Region (NER) grants INR 5,400/month for General Degree courses and INR 7,800/month for Technical/Medical courses. Domicile candidates of the North Eastern states whose annual parental family income does not exceed INR 4.5 Lakhs are eligible.",
-
-        "source": "UGC Ishan Uday Special Scholarship Framework",
-
-        "page": "Clause 3.1 & 4.2, Page 5",
-
-        "confidence": "99.1% Grounded Match",
-
-        "domain": "Financial Aid & Scholarships",
-
-    },
-
-    {
-
-        "keywords": ["পুনৰীক্ষণ", "ৰে-ইভালুৱেচন", "মাচুল", "re-evaluation", "scrutiny", "fee", "350", "20 days"],
-
-        "as_answer": "পৰীক্ষাৰ ফলাফল ঘোষণাৰ ২০ দিনৰ ভিতৰত বিশ্ববিদ্যালয়ৰ পৰীক্ষা পৰ্টেলৰ জৰিয়তে উত্তৰবহী পুনৰীক্ষণৰ (Re-evaluation) বাবে আবেদন কৰিব পাৰি। প্ৰতিখন পত্ৰৰ বাবে নিৰ্ধাৰিত মাচুল ৩৫০ টকা। এজন শিক্ষাৰ্থীয়ে এটা ষাণ্মাসিকত সৰ্বাধিক ৩ খন পত্ৰৰ বাবে পুনৰীক্ষণ আবেদন দাখিল কৰিব পাৰে।",
-
-        "en_answer": "Under university evaluation rules, students can apply for answer script re-evaluation within 20 days of results declaration. The statutory fee is INR 350 per course paper, and candidates can request scrutiny for up to a maximum of 3 papers in a single semester.",
-
-        "source": "Examination Evaluation Bylaws & Scrutiny Code",
-
-        "page": "Section 12, Page 22",
-
-        "confidence": "98.5% Grounded Match",
-
-        "domain": "Examination Guidelines",
-
-    },
-
-    {
-
-        "keywords": ["হোষ্টেল", "hostel", "distance", "দূৰত্ব", "allotment", "35 km"],
-
-        "as_answer": "বিশ্ববিদ্যালয়ৰ ছাত্ৰাৱাস আৰু ছাত্ৰীনিবাসত আসন আৱণ্টন মেধা আৰু ভৌগোলিক দূৰত্বৰ ভিত্তিত কৰা হয়। নিয়ম অনুসৰি, শিক্ষাৰ্থীৰ স্থায়ী বাসস্থান বিশ্ববিদ্যালয় চৌহদৰ পৰা নূন্যতম ৩৫ কিলোমিটাৰতকৈ অধিক দূৰত্বত অৱস্থিত হ’ব লাগিব। ইয়াৰ উপৰিও সকলো আৱাসীয়ে ৰেগিং বিৰোধী শপতনামা দাখিল কৰা বাধ্যতামূলক।",
-
-        "en_answer": "University hostel allotment is strictly governed by merit-cum-distance criteria. A student’s permanent home residence must be located at a minimum distance of greater than 35 km from the university campus. Submission of an anti-ragging affidavit is mandatory for all hostel residents.",
-
-        "source": "Hostel Bylaws & Campus Residential Ordinances",
-
-        "page": "Clause 5.1, Page 8",
-
-        "confidence": "97.9% Grounded Match",
-
-        "domain": "Campus Facilities",
-
-    },
-
-    {
-
-        "keywords": ["cas", "পদোন্নতি", "promotion", "ugc", "অধ্যাপক", "api score", "assistant professor"],
-
-        "as_answer": "ইউজিচি ২০১৮ ৰ সংশোধিত অধিসূচনা অনুসৰি, সহকাৰী অধ্যাপকৰ পৰা সহযোগী অধ্যাপক পদলৈ পদোন্নতিৰ (CAS) বাবে পিএইচ.ডি. ডিগ্ৰী, নূন্যতম ৮ বছৰৰ শিক্ষাদানৰ অভিজ্ঞতা, নিৰ্ধাৰিত API নম্বৰ আৰু UGC-Care তালিকাভুক্ত আলোচনীত নিৰ্ধাৰিত গৱেষণা প্ৰবন্ধ প্ৰকাশ হোৱাটো বাধ্যতামূলক।",
-
-        "en_answer": "According to UGC 2018 regulations, Career Advancement Scheme (CAS) promotion from Assistant Professor (Senior Scale / Selection Grade) to Associate Professor requires a mandatory PhD degree, 8 years of teaching experience, requisite API PBAS research score, and UGC-CARE listed peer-reviewed publications.",
-
-        "source": "UGC Regulations on Minimum Qualifications (CAS Amendment)",
-
-        "page": "Appendix II, Table 1, Page 68",
-
-        "confidence": "98.2% Grounded Match",
-
-        "domain": "Faculty Regulations",
-
-    },
-
-    {
-
-        "keywords": ["phd", "পিএইচডি", "supervision", "quota", "তত্ত্বাবধান", "গৱেষক"],
-
-        "as_answer": "বিশ্ববিদ্যালয়ৰ পিএইচ.ডি. নিয়মাৱলী অনুসৰি, গৱেষক তত্ত্বাবধানৰ সৰ্বাধিক কোটা নিৰ্ধাৰণ কৰা হৈছে: এগৰাকী অধ্যাপকে সৰ্বাধিক ৮ জন, সহযোগী অধ্যাপকে ৬ জন আৰু সহকাৰী অধ্যাপকে ৪ জন গৱেষকক একে সময়তে নিৰ্দেশনা প্ৰদান কৰিব পাৰে।",
-
-        "en_answer": "Under doctoral research ordinances, the maximum permissible PhD supervision quota at any given time is: Professor (up to 8 scholars), Associate Professor (up to 6 scholars), and Assistant Professor (up to 4 scholars).",
-
-        "source": "Statutory Research & Doctoral Ordinances",
-
-        "page": "Section 9, Page 22",
-
-        "confidence": "98.7% Grounded Match",
-
-        "domain": "Research Ordinances",
-
-    },
-
-    {
-
-        "keywords": ["নমস্কাৰ", "নমস্কার", "হেল্ল", "হাই", "hello", "hi", "hey", "greetings", "good morning", "good evening"],
-
-        "as_answer": "নমস্কাৰ! আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ? বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি বা ছাত্ৰবৃত্তি সম্পৰ্কে সুধিব পাৰে।",
-
-        "en_answer": "Hello! How can I help you today regarding university regulations, exam passing criteria, admissions, scholarships, or campus facilities?",
-
+        "keywords": ["নমস্কাৰ", "নমস্কার", "হেল্ল", "হাই", "hello", "hi", "hey", "hii", "hiii", "greetings", "good morning", "good evening"],
+        "as_answer": "নমস্কাৰ! মই ইউনিমিত্র (UniMitra), নিভৰয়া বিশ্ববিদ্যালয়ৰ বাবে নিবেদিত AI সহায়ক। বিশ্ববিদ্যালয় প্ৰশাসনে আপলোড কৰা সংবিধি আৰু নথিসমূহৰ ভিত্তিত নিৰ্ভুল তথ্য প্ৰদান কৰিবলৈ মই সাজু। আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ?",
+        "en_answer": "Hello! I am UniMitra, the official AI academic assistant for Nivoraya University. I provide verified answers strictly based on official university documents and regulations uploaded by the administration. How can I assist you today?",
         "source": "UniMitra Bilingual Assistant",
-
         "page": "Official Orientation",
-
         "confidence": "100% Grounded Match",
-
         "domain": "General Assistance",
-
     },
-
     {
-
         "keywords": ["unimitra", "ইউনিমিত্র", "who are you", "আপুনি কোন", "what is unimitra"],
-
-        "as_answer": "মই ইউনিমিত্র (UniMitra), অসমৰ বিশ্ববিদ্যালয়সমূহৰ (ডিব্ৰুগড়, গুৱাহাটী আদি) বাবে এক আধুনিক দ্বিভাষিক AI সহায়ক। নিয়মাৱলী আৰু জাননীৰ তথ্য প্ৰদান কৰোঁ।",
-
-        "en_answer": "I am UniMitra, an official AI university assistance platform designed for students, faculty, and administrative staff across universities in Assam (Nivoraya University, Gauhati University, etc.).",
-
+        "as_answer": "মই ইউনিমিত্র (UniMitra), নিভৰয়া বিশ্ববিদ্যালয়ৰ বাবে নিবেদিত আধুনিক দ্বিভাষিক AI প্রাতিষ্ঠানিক সহায়ক। মই কেৱল বিশ্ববিদ্যালয় কৰ্তৃপক্ষই আপলোড কৰা আধিকাৰিক নথিৰ ভিত্তিতহে উত্তৰ প্ৰদান কৰোঁ।",
+        "en_answer": "I am UniMitra, the official AI academic assistant for Nivoraya University. I provide accurate answers directly grounded in official university documents uploaded by the administration.",
         "source": "UniMitra Knowledge Repository",
-
         "page": "System Overview",
-
         "confidence": "100% Grounded Match",
-
         "domain": "General Assistance",
-
     },
-
 ]
-
-
 
 ASSAMESE_SYSTEM_PROMPT = """আপুনি UniMitra, বিশ্ববিদ্যালয়ৰ বাবে নিবেদিত এক শক্তিশালী দ্বিভাষিক AI প্রাতিষ্ঠানিক সহায়ক।
 ১. বিশ্ববিদ্যালয়-কেন্দ্ৰিক নীতি (STRICT UNIVERSITY-ONLY MANDATE): আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (যেনে বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, সংবিধি, পৰীক্ষা ব্যৱস্থা, মূল্যায়ন, বেকলগ নিয়ম, মেধা বা টপাৰ তালিকা, নামভৰ্তি, পাঠ্যক্ৰম, জলপানি, মাচুল, ছাত্ৰাবাস আৰু আধিকাৰিক জাননী) প্ৰশ্নৰ উত্তৰ দিব লাগিব। বিশ্ববিদ্যালয়ৰ বাহিৰৰ কোনো অপ্ৰাসংগিক প্ৰশ্ন কৰিলে (যেনে: ৰন্ধা-বঢ়া, চিনেমা বা চলচ্চিত্ৰ, মনোৰঞ্জন, বাহিৰা ৰাজনীতি, অপ্ৰাসংগিক ব্যক্তিগত কথা বা সাধাৰণ অপ্ৰাসংগিক অনুসন্ধান) বিনম্ৰভাৱে কওক যে আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ বাবে নিবেদিত আৰু বিশ্ববিদ্যালয় সম্বন্ধীয় প্ৰশ্ন সুধিবলৈ অনুৰোধ জনাওক।
@@ -809,6 +662,43 @@ class GeminiService:
 
 
 
+        # Strict Closed-Domain Guard: When no institutional document chunks exist,
+        # do NOT allow the model to invent answers on its own.
+        if not context_blocks:
+            greetings = ["hi", "hello", "hey", "namaskar", "নমস্কাৰ", "নমস্কার", "who are you", "what is unimitra", "help"]
+            is_greeting = any(clean_query.lower().startswith(g) or clean_query.lower() == g for g in greetings)
+            if not is_greeting:
+                if lang in ("as", "as_script"):
+                    return {
+                        "answer": "এই বিষয়ৰ তথ্য বিশ্ববিদ্যালয় প্ৰশাসনে আপলোড কৰা কোনো আধিকাৰিক নথিত উপলব্ধ নহয়। ইউনিমিত্রই কেৱল আপলোড আৰু অনুমোদিত প্ৰতিষ্ঠানিক নথিৰ ভিত্তিতহে নিৰ্ভুল তথ্য প্ৰদান কৰে আৰু নিজে কোনো তথ্য অনুমান নকৰে। অনুগ্ৰহ কৰি বিশ্ববিদ্যালয় প্ৰশাসন বা পৰীক্ষা নিয়ন্ত্ৰকৰ কাৰ্যালয়ৰ সৈতে যোগাযোগ কৰক।",
+                        "source": "Institutional Repository",
+                        "page": "Grounding Notice",
+                        "confidence": "100% Policy Grounded",
+                        "domain": "Document Availability",
+                        "is_unverified": False,
+                        "citations": []
+                    }
+                elif lang == "as_roman":
+                    return {
+                        "answer": "Ei bisoyor tothyo administration e upload kora university r kono official document ot uplobdho nahoi. UniMitra e keval uploaded official document or porahe uttor diye aru nijor pora guess nokore. Onugroh kori administration or logot contact korok.",
+                        "source": "Institutional Repository",
+                        "page": "Grounding Notice",
+                        "confidence": "100% Policy Grounded",
+                        "domain": "Document Availability",
+                        "is_unverified": False,
+                        "citations": []
+                    }
+                else:
+                    return {
+                        "answer": "This information is not found in the official university documents uploaded to the repository. UniMitra operates strictly on approved institutional records and does not generate unverified information on its own. Please consult official circulars or contact university administration.",
+                        "source": "Institutional Repository",
+                        "page": "Grounding Notice",
+                        "confidence": "100% Policy Grounded",
+                        "domain": "Document Availability",
+                        "is_unverified": False,
+                        "citations": []
+                    }
+
         full_context = "\n\n".join(context_blocks)
 
 
@@ -841,16 +731,21 @@ INSTRUCTIONS FOR THIS QUERY:
 1. STRICT LANGUAGE MATCHING: {lang_mandate}
 2. Direct Answer: Formulate a direct, accurate, and authoritative answer without preamble or boilerplate introduction. Cite the document title and page/clause.
 3. If the user asks for specific ranks, positions, or entities (e.g. "2nd topper", "second rank", "merit list", "passing criteria", "minimum attendance"), carefully examine the document chunks and tables above, and pinpoint the exact record requested.
-4. UNIVERSITY DOMAIN CONSTRAINT: Check if the user question is related to university, academics, exams, syllabus, admissions, scholarships, hostels, or campus administration. If the user question is completely outside the university or academic domain (e.g., cooking recipes, movies, external politics, jokes, or non-academic chit-chat), politely decline to answer, stating that UniMitra is strictly dedicated to answering university and academic inquiries."""
+4. STRICT PDF FIDELITY & PRE-OUTPUT FACTUAL CHECK:
+   - When Statutory Institutional Context Chunks are provided above, your answer MUST BE 100% FAITHFUL to the provided text.
+   - Every single fact, number, curfew time (e.g. 8:00 PM), distance threshold (e.g. 45 km), residence hall name, student name, and regulation MUST strictly match the context chunks.
+   - DO NOT hallucinate or import generic assumptions (do NOT claim 9:30 PM curfew, 24/7 Wi-Fi, or unrelated hall names if they are not in the chunks).
+   - Before finishing your output, cross-check each fact against the context chunks.
+5. UNIVERSITY DOMAIN CONSTRAINT: Check if the user question is related to university, academics, exams, syllabus, admissions, scholarships, hostels, or campus administration. If the user question is completely outside the university or academic domain (e.g., cooking recipes, movies, external politics, jokes, or non-academic chit-chat), politely decline to answer, stating that UniMitra is strictly dedicated to answering university and academic inquiries."""
 
 
 
         # 3. Model candidate list: Prioritize active, high-speed Gemini Flash models
         candidate_models = [
-            settings.GEMINI_MODEL or "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            settings.GEMINI_MODEL or "gemini-3-flash-preview",
             "gemini-3.1-flash-lite",
-            "gemini-3.1-flash-lite-preview",
-            "gemini-3.5-flash-lite",
+            "gemini-3.8-flash",
             "gemini-flash-latest",
         ]
 

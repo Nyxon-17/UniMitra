@@ -370,6 +370,9 @@ class UniversityService {
 
   loadConfig() {
     try {
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return DEFAULT_UNIVERSITY_CONFIG;
+      }
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -415,8 +418,10 @@ class UniversityService {
   saveConfig(data) {
     try {
       this.data = data;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
+      }
     } catch (err) {
       console.error('Error saving university config:', err);
     }
@@ -808,7 +813,12 @@ class UniversityService {
     }
 
     // 1. Search in Approved Uploaded Documents (Faculty/Admin Ingested)
-    if (approvedDocs && approvedDocs.length > 0) {
+    // Anti-Hallucination Mandate: When institutional documents are active,
+    // the system answers strictly from uploaded documents and never generates static guesses.
+    if (approvedDocs !== undefined) {
+      if (!Array.isArray(approvedDocs) || approvedDocs.length === 0) {
+        return null;
+      }
       const qTokens = lower.split(/[\s,?.!]+/).filter((w) => w.length > 2);
       for (const doc of approvedDocs) {
         const fullContent = (doc.content || doc.summary || '');
@@ -851,6 +861,7 @@ class UniversityService {
           };
         }
       }
+      return null;
     }
 
     // 2. Specialized Check: Attendance & Condonation

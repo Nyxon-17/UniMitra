@@ -974,10 +974,16 @@ const DashboardAiAssistantInner = ({
         setSessions(updated);
       }
 
+      const responseText = res?.answer || (
+        currentLang === 'as'
+          ? 'বিশ্ববিদ্যালয়ৰ আধিকাৰিক নথিসমূহৰ ভিত্তিত এই বিষয়ে অনুসন্ধান কৰা হৈছে। অনুগ্ৰহ কৰি নিৰ্দিষ্ট বিভাগ বা জাননীৰ বিষয়ে স্পষ্টকৈ সুধক।'
+          : 'Processing university records for this query. Please specify your question or circular details.'
+      );
+
       const aiResponse = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: res.answer,
+        text: responseText,
         source: res.source,
         page: res.page,
         confidence: res.confidence,
@@ -1005,6 +1011,19 @@ const DashboardAiAssistantInner = ({
     } catch (err) {
       if (err?.name !== 'AbortError' && !controller.signal.aborted) {
         console.error('Chat error:', err);
+        const fallbackText = currentLang === 'as'
+          ? 'অনুৰোধ প্ৰক্ৰিয়া কৰাত কিছু সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ সুধক।'
+          : 'I encountered an issue processing your request. Please ask your question again.';
+        const fallbackMsg = {
+          id: Date.now() + 1,
+          sender: 'ai',
+          text: fallbackText,
+          source: univProfile?.name || 'UniMitra AI',
+          page: 'Guidance',
+          confidence: 'Standard Notice',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, fallbackMsg]);
       }
     } finally {
       if (abortControllerRef.current === controller) {
@@ -1583,14 +1602,16 @@ const DashboardAiAssistantInner = ({
               >
                 {/* AI Header with Logo inside the bubble */}
                 {msg.sender === 'ai' && (
-                  <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
-                    <img 
-                      src="/unimitra-bot.webp" 
-                      alt="AI Logo" 
-                      className="w-5 h-5 shrink-0 object-contain rounded-full select-none hover:[transform:perspective(400px)_rotateY(360deg)] transition-transform duration-700 cursor-pointer"
-                    />
-                    <span className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
-                      {univProfile.name || 'UniMitra'} AI
+                  <div className="flex items-center space-x-2.5 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative shrink-0">
+                      <img 
+                        src="/unimitra-bot.webp" 
+                        alt="UniMitra Assistant Logo" 
+                        className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                      />
+                    </div>
+                    <span className="text-xs sm:text-[13px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
+                      {univProfile.name || 'UniMitra'} AI Assistant
                     </span>
                   </div>
                 )}
@@ -1754,22 +1775,26 @@ const DashboardAiAssistantInner = ({
             </div>
           ))}
 
-          {/* Thinking / Loading Animation with Cancel Query Button */}
+          {/* Typing Animation (3 dots moving up and down) with Cancel Query Button */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
-              <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center shrink-0">
-                <VoiceAssistantLogo className="w-7 h-7 sm:w-8 sm:h-8" isSpeaking={true} animated={true} />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative shrink-0 mt-1">
+                <img 
+                  src="/unimitra-bot.webp" 
+                  alt="UniMitra Assistant Logo" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                />
               </div>
-              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4] flex items-center justify-between gap-3 shadow-xs">
-                <span>
-                  {currentLang === 'as' 
-                    ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী পৰীক্ষা কৰি থকা হৈছে...` 
-                    : `Retrieving verified statutory records from ${univProfile.name} knowledge base...`}
-                </span>
+              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 flex items-center gap-3 shadow-xs">
+                <div className="flex items-center space-x-1.5 py-1 px-0.5" aria-label="AI is typing...">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                </div>
                 <button
                   type="button"
                   onClick={cancelQuery}
-                  className="px-2 py-0.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-[11px] font-bold border border-red-300 dark:border-red-800/40 cursor-pointer transition-colors shrink-0 flex items-center space-x-1"
+                  className="px-2 py-0.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-[11px] font-bold border border-red-300 dark:border-red-800/40 cursor-pointer transition-colors shrink-0 flex items-center space-x-1 ml-1"
                   title="Cancel response generation"
                 >
                   <StopIcon className="w-3 h-3 text-red-500" />

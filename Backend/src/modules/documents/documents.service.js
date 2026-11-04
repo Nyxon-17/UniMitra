@@ -397,9 +397,31 @@ export const deleteDocument = async (idOrCustomId) => {
   });
 
   if (!doc) {
-    throw ApiError.notFound('Document not found for deletion.');
+    // Notify AI vector service even if local DB row is absent
+    aiServiceClient.deleteDocument(idOrCustomId).catch(() => {});
+    return { id: idOrCustomId, deleted: true };
   }
 
+  // 1. Permanently delete all vector embeddings and chunks from Python AI Service / pgvector
+  try {
+    await aiServiceClient.deleteDocument(doc.id);
+    if (doc.customId) {
+      await aiServiceClient.deleteDocument(doc.customId);
+    }
+  } catch (aiErr) {
+    logger.warn({ err: aiErr.message, docId: doc.id }, 'AI vector deletion notification');
+  }
+
+  // 2. Remove binary file from Supabase Storage bucket
+  if (doc.storagePath) {
+    try {
+      await supabaseAdmin.storage.from(STORAGE_BUCKETS.DOCUMENTS).remove([doc.storagePath]);
+    } catch (storageErr) {
+      logger.warn({ err: storageErr.message, storagePath: doc.storagePath }, 'Storage file delete notice');
+    }
+  }
+
+  // 3. Delete database chunks and document record
   await prisma.documentChunk.deleteMany({
     where: { documentId: doc.id },
   });

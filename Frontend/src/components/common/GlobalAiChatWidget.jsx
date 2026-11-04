@@ -1217,11 +1217,19 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
                 </span>
               </div>
             ) : loading ? (
-              <div className="flex flex-col items-center py-3 space-y-2">
-                <SparklesIcon className="w-6 h-6 text-[#FF933E] dark:text-[#03C988] animate-spin" />
-                <span className="text-xs font-bold text-[#000000]/70 dark:text-[#FFFFFF]/70">
-                  {currentLang === 'as' ? 'উত্তৰ প্ৰস্তুত কৰা হৈছে...' : 'Checking official ordinances...'}
-                </span>
+              <div className="flex flex-col items-center py-3 space-y-2.5">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center relative shrink-0">
+                  <img 
+                    src="/unimitra-bot.webp" 
+                    alt="UniMitra Assistant Logo" 
+                    className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn select-none cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center space-x-1.5 py-1 px-1" aria-label="AI is typing...">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF933E] dark:bg-[#03C988] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF933E] dark:bg-[#03C988] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF933E] dark:bg-[#03C988] typing-dot" />
+                </div>
                 <button
                   type="button"
                   onClick={cancelQuery}
@@ -1235,10 +1243,26 @@ export const GlobalAiChatWidget = ({ currentLang = 'en', onToggleLang, studentIn
             ) : currentResult ? (
               /* Verified Spoken Result View */
               <div className="w-full space-y-2 text-left">
+                {/* AI Assistant Logo Header */}
+                <div className="flex items-center justify-between pb-1.5 border-b border-black/5 dark:border-white/5">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center relative shrink-0">
+                      <img 
+                        src="/unimitra-bot.webp" 
+                        alt="UniMitra Assistant Logo" 
+                        className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
+                      {univProfile?.name || 'UniMitra'} AI Assistant
+                    </span>
+                  </div>
+                  <span className="text-[#03C988] shrink-0 font-black text-[10px]">{currentResult.confidence}</span>
+                </div>
+
                 {/* Spoken Query Banner */}
-                <div className="flex items-center justify-between text-[10px] text-[#000000]/50 dark:text-[#FFFFFF]/50 font-bold border-b border-black/5 dark:border-white/5 pb-1">
+                <div className="flex items-center justify-between text-[10px] text-[#000000]/50 dark:text-[#FFFFFF]/50 font-bold pb-1">
                   <span className="truncate max-w-[200px]">"{currentResult.question}"</span>
-                  <span className="text-[#03C988] shrink-0 font-black">{currentResult.confidence}</span>
                 </div>
 
                 {/* Spoken Response text */}

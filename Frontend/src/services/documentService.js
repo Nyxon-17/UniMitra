@@ -1,5 +1,5 @@
-import { universityService } from './universityService';
-import { pdfStorage } from './pdfStorage';
+import { universityService } from './universityService.js';
+import { pdfStorage } from './pdfStorage.js';
 
 // Centralized Institutional Document & Ingestion Management Service
 // Integrates with Supabase PostgreSQL and Supabase Storage via Node.js Backend Gateway
@@ -178,7 +178,7 @@ export const INITIAL_DOCUMENTS = [
 
 export const documentService = {
   getDocuments: () => {
-    if (typeof window === 'undefined') return [];
+    if (typeof window === 'undefined') return INITIAL_DOCUMENTS.filter(d => !getDeletedDocIds().has(d.id));
     const stored = localStorage.getItem(STORAGE_KEY);
     const deleted = getDeletedDocIds();
 
@@ -631,10 +631,27 @@ export const documentService = {
     if (targetDoc?.uuid) {
       markDocDeleted(targetDoc.uuid);
     }
+    if (targetDoc?.fileName) {
+      markDocDeleted(targetDoc.fileName);
+    }
 
+    // 1. Purge local PDF binary storage & in-memory blob URLs
+    try {
+      pdfStorage.deletePdf(docId);
+      if (targetDoc?.uuid) pdfStorage.deletePdf(targetDoc.uuid);
+      if (targetDoc?.fileName) pdfStorage.deletePdf(targetDoc.fileName);
+      if (typeof window !== 'undefined' && window.__uploadedPdfBlobs) {
+        window.__uploadedPdfBlobs.delete(docId);
+        if (targetDoc?.uuid) window.__uploadedPdfBlobs.delete(targetDoc.uuid);
+        if (targetDoc?.fileName) window.__uploadedPdfBlobs.delete(targetDoc.fileName);
+      }
+    } catch {}
+
+    // 2. Remove document from local repository & notify subscribers
     const updated = docs.filter(doc => doc.id !== docId && (!targetDoc?.uuid || doc.uuid !== targetDoc.uuid));
     documentService.saveDocuments(updated);
 
+    // 3. Dispatch delete to Node.js Backend Gateway
     const backendId = targetDoc?.uuid || docId;
     try {
       await fetch(`${API_BASE}/documents/${backendId}`, {
@@ -644,6 +661,17 @@ export const documentService = {
     } catch (e) {
       // offline handled
     }
+
+    // 4. Dispatch delete directly to Python AI Service vector database
+    try {
+      const aiBase = typeof window !== 'undefined' && window.location?.hostname === 'localhost' 
+        ? 'http://localhost:8000' 
+        : (import.meta.env?.VITE_AI_SERVICE_URL || 'http://localhost:8000');
+      await fetch(`${aiBase}/api/ai/documents/${backendId}`, {
+        method: 'DELETE',
+        headers: { 'X-Internal-Secret': 'unimitra_internal_ai_secret_2026' }
+      });
+    } catch {}
   },
 
   // Categories
