@@ -17,8 +17,6 @@ VALID_SARVAM_LANGUAGES = {
     "en": "en-IN",
     "en-in": "en-IN",
     "en_in": "en-IN",
-    "unknown": "unknown",
-    "auto": "unknown",
 }
 
 MAX_AUDIO_SIZE_BYTES = 25 * 1024 * 1024  # 25 MB max limit
@@ -44,12 +42,14 @@ class SarvamSTTService:
     def resolve_language_code(self, lang_input: Optional[str]) -> str:
         """
         Maps user or frontend language identifiers to Sarvam BCP-47 codes.
-        Defaults to 'as-IN' for Assamese contexts or 'unknown' for auto-detection.
+        Defaults strictly to 'as-IN' for Assamese contexts.
         """
         if not lang_input:
             return "as-IN"
         normalized = lang_input.strip().lower()
-        return VALID_SARVAM_LANGUAGES.get(normalized, "as-IN")
+        if normalized in ("en", "en-in", "en_in", "english"):
+            return "en-IN"
+        return "as-IN"
 
     def resolve_mode(self, mode_input: Optional[str], lang_input: Optional[str] = None) -> str:
         """

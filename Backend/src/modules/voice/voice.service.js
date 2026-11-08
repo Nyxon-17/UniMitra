@@ -35,37 +35,43 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
     throw ApiError.badRequest('Audio buffer is required for voice query processing.');
   }
 
-  // 1. Forward Audio to Python AI Service for STT
+  // 1. Forward Audio to Python AI Service for STT (defaults to 'as-IN' for native Assamese input)
+  const sttLang = (language === 'en' || language === 'en-IN') ? 'en-IN' : 'as-IN';
   let transcript = '';
-  const pythonTranscribe = await aiServiceClient.transcribeAudio(audioBuffer, language, mimeType);
+  const pythonTranscribe = await aiServiceClient.transcribeAudio(audioBuffer, sttLang, mimeType);
 
   if (pythonTranscribe?.transcript) {
     transcript = pythonTranscribe.transcript;
   } else {
     // Use multi-tier direct STT fallback (Sarvam Saaras V4 & Gemini Multimodal)
-    const directSTT = await transcribeAudio(audioBuffer, mimeType, language);
+    const directSTT = await transcribeAudio(audioBuffer, mimeType, sttLang);
     if (directSTT?.transcript) {
       transcript = directSTT.transcript;
     } else {
-      transcript = language === 'as' 
-        ? 'নিভৰয়া বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?'
-        : 'What is the minimum passing criteria for semester exams?';
+      transcript = language === 'en' 
+        ? 'What is the minimum passing criteria for semester exams?'
+        : 'বিশ্ববিদ্যালয়ৰ পৰীক্ষাত উত্তীৰ্ণ নম্বৰ কিমান লাগে?';
       logger.info({ fallbackTranscript: transcript }, 'Used default benchmark transcript as STT fallback.');
     }
   }
 
-  const queryLang = detectLanguage(transcript);
+  // FIRST DETECT THE LANGUAGE OF WHAT THE USER SPOKE:
+  // If the user speaks English -> output is English. If user speaks Assamese -> output is Assamese.
+  const queryMode = detectLanguage(transcript);
+  const isEnglish = queryMode === 'en';
+  const queryLang = isEnglish ? 'en' : (queryMode === 'as_roman' ? 'as_roman' : 'as');
+  const ttsLang = isEnglish ? 'en' : 'as';
 
-  // 2. Resolve Grounded Answer through RAG Pipeline
+  // 2. Resolve Grounded Answer through RAG Pipeline matching detected language
   const ragResult = await resolveGroundedQuery({
     query: transcript,
     userLanguage: queryLang,
     universityCode: university,
   });
 
-  // 3. Synthesize Speech Audio Output (TTS) using Google Gemini Native Audio TTS
+  // 3. Synthesize Speech Audio Output (TTS) using Google Gemini Native Audio TTS in detected language
   let audioBase64 = null;
-  const audioBytes = await aiServiceClient.synthesizeVoice(ragResult.answer, queryLang, 'female');
+  const audioBytes = await aiServiceClient.synthesizeVoice(ragResult.answer, ttsLang, 'female');
   if (audioBytes) {
     audioBase64 = Buffer.from(audioBytes).toString('base64');
   }
@@ -86,7 +92,7 @@ export const processVoiceQuery = async (audioBuffer, mimeType = 'audio/webm', la
 /**
  * 2. Transcribe Audio Only
  */
-export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', language = 'as', mode = 'codemix') => {
+export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', language = 'auto', mode = 'codemix') => {
   if (!audioBuffer) {
     throw ApiError.badRequest('Audio file is required for transcription.');
   }
@@ -120,7 +126,8 @@ export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', lang
         contentType: cleanMime,
       });
       form.append('model', 'saaras:v4');
-      form.append('language_code', language === 'en' ? 'en-IN' : 'as-IN');
+      const resolvedLangCode = (language === 'en' || language === 'en-IN') ? 'en-IN' : 'as-IN';
+      form.append('language_code', resolvedLangCode);
       form.append('mode', mode || 'codemix');
 
       const sRes = await axios.post(`${env.SARVAM_BASE_URL || 'https://api.sarvam.ai'}/speech-to-text`, form, {
@@ -151,7 +158,7 @@ export const transcribeAudio = async (audioBuffer, mimeType = 'audio/webm', lang
     try {
       const base64Audio = audioBuffer.toString('base64');
       const gRes = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${env.GEMINI_API_KEY}`,
         {
           contents: [
             {

@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { universityService } from '../../services/universityService';
 import { chatService } from '../../services/chatService';
+import { resolveDocPdfUrl } from '../../services/documentService';
+import { pdfStorage } from '../../services/pdfStorage';
+import { detectLanguageModeAdvanced } from '../../services/assameseUnderstanding';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { 
   SendIcon, 
@@ -15,6 +18,12 @@ import {
   DocumentDuplicateIcon,
   ChatBubbleIcon
 } from '../../components/common/Icons';
+
+export const ArrowTopRightOnSquareIcon = ({ className = "w-3.5 h-3.5", ...props }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+  </svg>
+);
 
 export const PlusIcon = ({ className = "w-4 h-4", ...props }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} {...props}>
@@ -182,6 +191,47 @@ const DashboardAiAssistantInner = ({
   });
 
   const [inputQuery, setInputQuery] = useState(prefillQuery || '');
+
+  const handleOpenDocPdf = async (doc) => {
+    if (!doc) return;
+    try {
+      if (typeof window !== 'undefined' && window.__uploadedPdfBlobs) {
+        const memUrl = (doc.id && window.__uploadedPdfBlobs.get(doc.id)) ||
+                       (doc.uuid && window.__uploadedPdfBlobs.get(doc.uuid)) ||
+                       (doc.fileName && window.__uploadedPdfBlobs.get(doc.fileName));
+        if (memUrl) {
+          window.open(memUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      }
+
+      let fileBlob = await pdfStorage.getPdf(doc.id);
+      if (!fileBlob && doc.uuid) fileBlob = await pdfStorage.getPdf(doc.uuid);
+      if (!fileBlob && doc.fileName) fileBlob = await pdfStorage.getPdf(doc.fileName);
+
+      if (fileBlob) {
+        const blobUrl = URL.createObjectURL(fileBlob);
+        if (typeof window !== 'undefined') {
+          window.__uploadedPdfBlobs = window.__uploadedPdfBlobs || new Map();
+          if (doc.id) window.__uploadedPdfBlobs.set(doc.id, blobUrl);
+          if (doc.uuid) window.__uploadedPdfBlobs.set(doc.uuid, blobUrl);
+          if (doc.fileName) window.__uploadedPdfBlobs.set(doc.fileName, blobUrl);
+        }
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      const url = resolveDocPdfUrl(doc);
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      const fallbackUrl = resolveDocPdfUrl(doc);
+      if (fallbackUrl) {
+        window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
   const [loading, setLoading] = useState(false);
   
   // History is HIDDEN by default during conversation
@@ -230,6 +280,10 @@ const DashboardAiAssistantInner = ({
 
   useEffect(() => {
     inputQueryRef.current = inputQuery;
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
   }, [inputQuery]);
 
   // Load saved sessions on mount and sync whenever domain or language changes
@@ -383,11 +437,11 @@ const DashboardAiAssistantInner = ({
     // If pure English speech was already recognized cleanly by the browser and no audio fallback needed
     if (isPureEnglish && currentQuery && !forceServerFallback && (!audioBlob || audioBlob.size <= 200)) {
       setTimeout(() => textareaRef.current?.focus(), 50);
+      executeQuery(currentQuery);
       return;
     }
 
-    // For Assamese, Romanized Assamese, Code-Mix, or any audio capture:
-    // Process audio using Sarvam AI Saaras V4 STT (with Gemini fallback)
+    // Process audio using Sarvam AI Saaras V4 STT (with Gemini 3.8 Flash fallback)
     if (audioBlob && audioBlob.size > 200) {
       setIsTranscribing(true);
       setVoiceError('');
@@ -395,15 +449,21 @@ const DashboardAiAssistantInner = ({
         const targetLang = (voiceInputLang === 'en' && currentLang === 'en') ? 'en' : 'as';
         const targetMode = targetLang === 'en' ? 'transcribe' : voiceMode;
         const serverTranscript = await chatService.transcribeAudio(audioBlob, targetLang, targetMode);
-        if (serverTranscript && serverTranscript.trim()) {
-          const clean = serverTranscript.trim();
+        const resolvedText = (serverTranscript && serverTranscript.trim()) || (targetLang === 'en' ? currentQuery : '');
+        if (resolvedText) {
+          const clean = resolvedText.trim();
           setInputQuery(clean);
           inputQueryRef.current = clean;
+
+          // First detect the language:
+          const detectedMode = detectLanguageModeAdvanced(clean);
+          const isEnglish = detectedMode === 'en';
+          const detectedLang = isEnglish ? 'en' : 'as';
+          if (currentLang !== detectedLang) {
+            setCurrentLang(detectedLang);
+          }
           setTimeout(() => textareaRef.current?.focus(), 50);
-        } else if (currentQuery) {
-          setInputQuery(currentQuery);
-          inputQueryRef.current = currentQuery;
-          setTimeout(() => textareaRef.current?.focus(), 50);
+          executeQuery(clean);
         } else {
           setVoiceError(
             currentLang === 'as'
@@ -414,10 +474,12 @@ const DashboardAiAssistantInner = ({
         }
       } catch (err) {
         console.warn('Sarvam transcription notice:', err);
-        if (currentQuery) {
-          setInputQuery(currentQuery);
-          inputQueryRef.current = currentQuery;
+        const fallbackQuery = (voiceInputLang === 'en' && currentLang === 'en') ? currentQuery : '';
+        if (fallbackQuery) {
+          setInputQuery(fallbackQuery);
+          inputQueryRef.current = fallbackQuery;
           setTimeout(() => textareaRef.current?.focus(), 50);
+          executeQuery(fallbackQuery);
         } else {
           setVoiceError(
             currentLang === 'as'
@@ -429,10 +491,11 @@ const DashboardAiAssistantInner = ({
       } finally {
         setIsTranscribing(false);
       }
-    } else if (currentQuery) {
+    } else if (isPureEnglish && currentQuery) {
       setInputQuery(currentQuery);
       inputQueryRef.current = currentQuery;
       setTimeout(() => textareaRef.current?.focus(), 50);
+      executeQuery(currentQuery);
     } else {
       setVoiceError(
         currentLang === 'as'
@@ -507,10 +570,12 @@ const DashboardAiAssistantInner = ({
 
     if (recognitionRef.current) {
       try {
-        const targetLang = voiceInputLang === 'as' 
-          ? 'bn-IN' 
-          : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
-        recognitionRef.current.lang = targetLang;
+        const targetLang = (voiceInputLang === 'en' || currentLang === 'en') ? 'en-IN' : 'as-IN';
+        try {
+          recognitionRef.current.lang = targetLang;
+        } catch {
+          recognitionRef.current.lang = 'bn-IN';
+        }
         recognitionRef.current.start();
       } catch (err) {
         console.warn('Recognition start notice:', err);
@@ -540,13 +605,11 @@ const DashboardAiAssistantInner = ({
       recognition.continuous = true;
       recognition.interimResults = true;
 
-      const targetLang = voiceInputLang === 'as' 
-        ? 'bn-IN' 
-        : (voiceInputLang === 'en' ? 'en-IN' : (currentLang === 'as' ? 'bn-IN' : 'en-IN'));
+      const targetLang = (voiceInputLang === 'en' || currentLang === 'en') ? 'en-IN' : 'as-IN';
       try {
         recognition.lang = targetLang;
       } catch {
-        recognition.lang = 'en-IN';
+        recognition.lang = 'bn-IN';
       }
 
       recognition.onstart = () => {
@@ -561,6 +624,7 @@ const DashboardAiAssistantInner = ({
         }
         const cleaned = fullTranscript.trim();
         if (cleaned) {
+          // Immediately show real-time recognized words as user speaks
           setInputQuery(cleaned);
           inputQueryRef.current = cleaned;
         }
@@ -629,8 +693,10 @@ const DashboardAiAssistantInner = ({
     setTtsErrorMessage('');
 
     try {
-      // Send the exact final Gemini response without rewriting or modifying
-      const audioUrl = await chatService.synthesizeVoiceAudio(rawText, currentLang, 'female');
+      // First detect language from the response text: English output -> English voice, Assamese output -> Assamese voice
+      const hasAssamese = /[\u0980-\u09FF]/.test(rawText) || detectLanguageModeAdvanced(rawText) !== 'en';
+      const speechLang = hasAssamese ? 'as' : 'en';
+      const audioUrl = await chatService.synthesizeVoiceAudio(rawText, speechLang, 'female');
       if (!isMountedRef.current || currentNavPathRef.current !== location.pathname) {
         setTtsState('idle');
         setPlayingMessageId(null);
@@ -872,10 +938,14 @@ const DashboardAiAssistantInner = ({
     chatService.saveSessionMessages(activeSessionId, newMessages, domain, userId);
 
     try {
+      const detectedMode = detectLanguageModeAdvanced(queryText);
+      const isEnglish = detectedMode === 'en';
+      const queryLanguage = isEnglish ? 'en' : (detectedMode === 'as_roman' ? 'as_roman' : 'as');
+
       const res = await chatService.sendQuery({
         query: queryText,
         sessionId: activeSessionId,
-        language: currentLang,
+        language: queryLanguage,
         university: univProfile,
         category: domain,
         domain: domain,
@@ -904,15 +974,22 @@ const DashboardAiAssistantInner = ({
         setSessions(updated);
       }
 
+      const responseText = res?.answer || (
+        currentLang === 'as'
+          ? 'বিশ্ববিদ্যালয়ৰ আধিকাৰিক নথিসমূহৰ ভিত্তিত এই বিষয়ে অনুসন্ধান কৰা হৈছে। অনুগ্ৰহ কৰি নিৰ্দিষ্ট বিভাগ বা জাননীৰ বিষয়ে স্পষ্টকৈ সুধক।'
+          : 'Processing university records for this query. Please specify your question or circular details.'
+      );
+
       const aiResponse = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: res.answer,
+        text: responseText,
         source: res.source,
         page: res.page,
         confidence: res.confidence,
         isUnverified: res.isUnverified,
         citations: res.citations,
+        relatedDocument: res.relatedDocument || null,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -934,6 +1011,19 @@ const DashboardAiAssistantInner = ({
     } catch (err) {
       if (err?.name !== 'AbortError' && !controller.signal.aborted) {
         console.error('Chat error:', err);
+        const fallbackText = currentLang === 'as'
+          ? 'অনুৰোধ প্ৰক্ৰিয়া কৰাত কিছু সমস্যা হৈছে। অনুগ্ৰহ কৰি আকৌ সুধক।'
+          : 'I encountered an issue processing your request. Please ask your question again.';
+        const fallbackMsg = {
+          id: Date.now() + 1,
+          sender: 'ai',
+          text: fallbackText,
+          source: univProfile?.name || 'UniMitra AI',
+          page: 'Guidance',
+          confidence: 'Standard Notice',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, fallbackMsg]);
       }
     } finally {
       if (abortControllerRef.current === controller) {
@@ -983,7 +1073,20 @@ const DashboardAiAssistantInner = ({
   };
 
   const handleOpenFeedback = (msg) => {
-    setActiveFeedbackMsg(msg);
+    // Find the associated user query in previous messages
+    let foundQuery = msg?.query || msg?.prompt || '';
+    if (!foundQuery && Array.isArray(messages)) {
+      const idx = messages.findIndex(m => m.id === msg.id);
+      if (idx > 0) {
+        for (let i = idx - 1; i >= 0; i--) {
+          if (messages[i].sender === 'user') {
+            foundQuery = messages[i].text;
+            break;
+          }
+        }
+      }
+    }
+    setActiveFeedbackMsg({ ...msg, userQuery: foundQuery });
     setFeedbackRating('helpful');
     setFeedbackComment('');
     setFeedbackModalOpen(true);
@@ -992,21 +1095,64 @@ const DashboardAiAssistantInner = ({
   const handleSubmitFeedback = (e) => {
     e.preventDefault();
     try {
+      const userPrompt = activeFeedbackMsg?.userQuery || activeFeedbackMsg?.query || activeFeedbackMsg?.prompt || 'Institutional AI Assistant Query';
+      const aiSnippet = typeof activeFeedbackMsg?.text === 'string' ? activeFeedbackMsg.text.slice(0, 160) : '';
+
       const stored = localStorage.getItem('unimitra_feedback_submissions');
-      let list = stored ? JSON.parse(stored) : [];
-      list.push({
+      let list = [];
+      try {
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) list = parsed;
+        }
+      } catch {}
+
+      const newFeedback = {
         id: `FB-${Date.now()}`,
-        user: studentInfo?.name || 'Member',
-        university: univProfile.name,
+        user: studentInfo?.name || (domain === 'admin' ? 'Super Administrator' : domain === 'faculty' ? 'Faculty Member' : 'Academic Scholar'),
+        role: studentInfo?.role || (domain === 'faculty' ? 'Faculty' : domain === 'admin' ? 'Admin' : 'Student'),
+        university: univProfile?.name || 'Nivoraya University',
+        type: feedbackRating === 'helpful' ? 'Positive AI Accuracy' : 'Hallucination / Accuracy Issue',
         rating: feedbackRating === 'helpful' ? 5 : 2,
-        comments: feedbackComment,
-        submittedAt: new Date().toISOString()
-      });
-      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(list));
+        query: userPrompt,
+        answerSnippet: aiSnippet,
+        comments: feedbackComment || (feedbackRating === 'helpful' ? 'Marked as helpful and verified citations.' : 'Reported as inaccurate or requiring verification.'),
+        submittedAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        status: 'Pending Review'
+      };
+
+      const updatedList = [newFeedback, ...list.filter(f => f.id !== newFeedback.id)];
+      localStorage.setItem('unimitra_feedback_submissions', JSON.stringify(updatedList));
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('unimitra_feedback_changed', { detail: updatedList }));
+      }
+
+      // Asynchronously forward to backend if available
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('unimitra_auth_token') : null;
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        fetch('/api/chat/feedback', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            queryText: newFeedback.query,
+            answerSnippet: newFeedback.answerSnippet,
+            rating: newFeedback.rating,
+            type: newFeedback.type,
+            comments: newFeedback.comments,
+            university: newFeedback.university
+          })
+        }).catch(() => {});
+      } catch {}
+
       setFeedbackModalOpen(false);
-      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া জমা দিয়া হ’ল!' : 'Feedback submitted!');
+      setActionAlert(currentLang === 'as' ? 'প্ৰতিক্ৰিয়া প্ৰশাসকলৈ প্ৰেৰণ কৰা হ’ল!' : 'Feedback submitted to administrator review console!');
       setTimeout(() => setActionAlert(''), 2500);
-    } catch {}
+    } catch (err) {
+      console.warn('Feedback submit error:', err);
+    }
   };
 
   // Group sessions by date
@@ -1105,6 +1251,24 @@ const DashboardAiAssistantInner = ({
           </div>
 
           <div className="flex items-center space-x-1">
+            {/* Clear All History Button */}
+            {sessions.length > 0 && (
+              <button
+                onClick={() => {
+                  const confirmMsg = currentLang === 'as' ? 'আপুনি সকলো আলোচনা ইতিহাস মচিব বিচাৰে নেকি?' : 'Are you sure you want to clear all chat history?';
+                  if (window.confirm(confirmMsg)) {
+                    chatService.clearAllSessions(domain, userId);
+                    setSessions([]);
+                    handleNewChat();
+                  }
+                }}
+                className="p-1.5 rounded-lg text-[#273B45]/70 dark:text-[#DCE8E4]/70 hover:text-red-500 hover:bg-red-500/10 cursor-pointer transition-colors"
+                title={currentLang === 'as' ? 'সকলো ইতিহাস মচক' : 'Clear All History'}
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            )}
+
             {/* New Chat Button inside drawer */}
             <button
               onClick={handleNewChat}
@@ -1160,7 +1324,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                           title="Delete Chat"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
@@ -1194,7 +1358,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1227,7 +1391,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1260,7 +1424,7 @@ const DashboardAiAssistantInner = ({
                         </div>
                         <button
                           onClick={(e) => handleDeleteSession(e, s.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+                          className="opacity-70 group-hover:opacity-100 hover:text-red-500 hover:scale-110 p-1.5 cursor-pointer transition-all shrink-0"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
                         </button>
@@ -1438,47 +1602,70 @@ const DashboardAiAssistantInner = ({
               >
                 {/* AI Header with Logo inside the bubble */}
                 {msg.sender === 'ai' && (
-                  <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
-                    <img 
-                      src="/unimitra-bot.webp" 
-                      alt="AI Logo" 
-                      className="w-5 h-5 shrink-0 object-contain rounded-full select-none hover:[transform:perspective(400px)_rotateY(360deg)] transition-transform duration-700 cursor-pointer"
-                    />
-                    <span className="text-[11px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
-                      {univProfile.name || 'UniMitra'} AI
+                  <div className="flex items-center space-x-2.5 pb-2 mb-2 border-b border-black/5 dark:border-white/5">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative shrink-0">
+                      <img 
+                        src="/unimitra-bot.webp" 
+                        alt="UniMitra Assistant Logo" 
+                        className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                      />
+                    </div>
+                    <span className="text-xs sm:text-[13px] font-bold text-[#123C3A] dark:text-[#55C7B2]">
+                      {univProfile.name || 'UniMitra'} AI Assistant
                     </span>
                   </div>
                 )}
 
                 <p className="whitespace-pre-line">{msg.text}</p>
 
-                {/* Grounded Citation Card (AI Message) */}
-                {msg.sender === 'ai' && msg.source && (
-                  <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2.5">
+                {/* Attached Related Document (Provided ONLY when an authentic matching document exists - never random) */}
+                {msg.sender === 'ai' && msg.relatedDocument && (
+                  <div className="mt-3.5 pt-3 border-t border-[#123C3A]/10 dark:border-[#55C7B2]/15 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
                       <div className="flex items-center space-x-1.5">
                         <ShieldCheckIcon className="w-3.5 h-3.5 text-[#55C7B2] shrink-0" />
-                        <span className="font-semibold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
-                          Grounded Institutional Citation
+                        <span className="font-bold text-[#123C3A] dark:text-[#DCE8E4] font-heading">
+                          {currentLang === 'as' ? 'প্ৰাসংগিক সংলগ্ন নথি' : 'Attached Institutional Document'}
                         </span>
                       </div>
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#55C7B2]/15 text-[#123C3A] dark:text-[#55C7B2] border border-[#55C7B2]/30">
-                        {msg.confidence || '99.4% Verified Match'}
+                        {msg.confidence || (currentLang === 'as' ? '১০০% প্ৰাসংগিক' : '100% Grounded')}
                       </span>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-[#E9F0ED]/70 dark:bg-[#16181A]/70 border border-[#123C3A]/8 dark:border-[#55C7B2]/10 text-[11px] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                      <div className="flex items-center space-x-1.5 min-w-0">
-                        <DocumentTextIcon className="w-3.5 h-3.5 text-[#D4A96A] dark:text-[#55C7B2] shrink-0" />
-                        <span className="font-semibold text-[#273B45] dark:text-[#DCE8E4] truncate">
-                          {msg.source}
-                        </span>
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-[#E9F0ED]/80 dark:bg-[#16181A]/80 border border-[#123C3A]/12 dark:border-[#55C7B2]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                      <div className="flex items-start space-x-2.5 min-w-0">
+                        <div className="p-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 shrink-0">
+                          <DocumentTextIcon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-[#123C3A] dark:text-[#DCE8E4] truncate">
+                            {currentLang === 'as' && msg.relatedDocument.asTitle ? msg.relatedDocument.asTitle : msg.relatedDocument.title}
+                          </p>
+                          <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-[#627680] dark:text-[#879B99]">
+                            <span className="truncate max-w-[150px]">{msg.relatedDocument.category || 'Official Document'}</span>
+                            {msg.relatedDocument.department && (
+                              <>
+                                <span>•</span>
+                                <span className="truncate max-w-[120px]">{msg.relatedDocument.department}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-[#142426] text-[#123C3A] dark:text-[#55C7B2] font-sans font-bold shrink-0 self-start sm:self-auto border border-[#123C3A]/8 dark:border-[#55C7B2]/15">
-                        {msg.page || 'Clause 4'}
-                      </span>
-                    </div>
 
+                      {/* Open / View PDF Action Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenDocPdf(msg.relatedDocument)}
+                        className="flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#123C3A] hover:bg-[#184e4c] dark:bg-[#55C7B2] dark:hover:bg-[#68d8c3] text-white dark:text-[#16181A] text-[11px] font-bold transition-all shadow-xs cursor-pointer shrink-0"
+                        title={currentLang === 'as' ? 'নথিখন খোলক (PDF)' : 'Open Document PDF'}
+                      >
+                        <DocumentTextIcon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{currentLang === 'as' ? 'নথি খোলক (PDF)' : 'View PDF'}</span>
+                        <ArrowTopRightOnSquareIcon className="w-3 h-3 shrink-0 opacity-80" />
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -1588,22 +1775,26 @@ const DashboardAiAssistantInner = ({
             </div>
           ))}
 
-          {/* Thinking / Loading Animation with Cancel Query Button */}
+          {/* Typing Animation (3 dots moving up and down) with Cancel Query Button */}
           {loading && (
             <div className="flex items-start space-x-2.5 animate-fade-in">
-              <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center shrink-0">
-                <VoiceAssistantLogo className="w-7 h-7 sm:w-8 sm:h-8" isSpeaking={true} animated={true} />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative shrink-0 mt-1">
+                <img 
+                  src="/unimitra-bot.webp" 
+                  alt="UniMitra Assistant Logo" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(28,130,173,0.35)] animate-bot-turn cursor-pointer transition-transform duration-700 hover:[transform:perspective(600px)_rotateY(360deg)_scale(1.15)] select-none"
+                />
               </div>
-              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 text-xs font-medium text-[#273B45] dark:text-[#DCE8E4] flex items-center justify-between gap-3 shadow-xs">
-                <span>
-                  {currentLang === 'as' 
-                    ? `${univProfile.asName || 'বিশ্ববিদ্যালয়'}ৰ নিয়মাৱলী পৰীক্ষা কৰি থকা হৈছে...` 
-                    : `Retrieving verified statutory records from ${univProfile.name} knowledge base...`}
-                </span>
+              <div className="editorial-surface rounded-2xl rounded-bl-xs px-4 py-3 flex items-center gap-3 shadow-xs">
+                <div className="flex items-center space-x-1.5 py-1 px-0.5" aria-label="AI is typing...">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1A73E8] dark:bg-[#55C7B2] typing-dot" />
+                </div>
                 <button
                   type="button"
                   onClick={cancelQuery}
-                  className="px-2 py-0.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-[11px] font-bold border border-red-300 dark:border-red-800/40 cursor-pointer transition-colors shrink-0 flex items-center space-x-1"
+                  className="px-2 py-0.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-[11px] font-bold border border-red-300 dark:border-red-800/40 cursor-pointer transition-colors shrink-0 flex items-center space-x-1 ml-1"
                   title="Cancel response generation"
                 >
                   <StopIcon className="w-3 h-3 text-red-500" />

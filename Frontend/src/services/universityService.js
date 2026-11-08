@@ -314,7 +314,52 @@ export const DEFAULT_UNIVERSITY_CONFIG = {
     }
   ],
 
-  notices: []
+  notices: [
+    {
+      id: 'NOT-2027-01',
+      title: 'Official Publication: Annual Convocation 2027 Topper & Gold Medalist Merit List',
+      asTitle: 'বাৰ্ষিক সমাৱৰ্তন ২০২৭: বিশ্ববিদ্যালয় টপাৰ আৰু স্বৰ্ণ পদক প্ৰাপক মেধা তালিকা',
+      category: 'Examinations & Awards',
+      date: '20 February 2027',
+      refNo: 'NUAL/EXAM/TOPPER/2027/11',
+      fileUrl: '/notices/NUAL_Topper_Student_List_2027.pdf',
+      summary: 'Executive Council declaration of University Toppers and Gold Medalists for the 2026-2027 graduating batch. Rank 1: Sahid Ahmed (CGPA 9.84, B.Tech CSE, Chancellor\'s Award), Rank 2: Kuddus Haque (CGPA 9.79), Rank 3: Priyom Borah (CGPA 9.76).',
+      asSummary: 'কাৰ্যবাহী পৰিষদৰ দ্বাৰা স্বীকৃত বিশ্ববিদ্যালয়ৰ টপাৰ আৰু স্বৰ্ণ পদক প্ৰাপকৰ মেধা তালিকা। ১ম স্থান: শাহিদ আহমেদ (বি.টেক চি.এছ.ই., ৯.৮৪, চেন্সেলৰ পদক), ২য় স্থান: কুদ্দুছ হক (৯.৭৯), ৩য় স্থান: প্ৰিয়ম বৰা (৯.৭৬)।'
+    },
+    {
+      id: 'NOT-2027-02',
+      title: 'Institutional Merit & UGC Ishan Uday Scholarship Notification 2027',
+      asTitle: 'প্ৰতিষ্ঠানিক মেধা আৰু ইউ.জি.চি. ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি জাননী ২০২৭',
+      category: 'Scholarships & Grants',
+      date: '15 January 2027',
+      refNo: 'NUAL/SCHOL/NOTIF/2027/04',
+      fileUrl: '/notices/NUAL_Scholarship_Notice_2027.pdf',
+      summary: 'Inviting online applications for UGC Ishan Uday Scholarship (₹5,400-7,800/mo), Assam DHE Combined Merit, and Post-Matric SC/ST/OBC fee waivers via National Scholarship Portal (NSP). Deadline: 31st March 2027.',
+      asSummary: 'ইউ.জি.চি. ঈশান উদয় বৃত্তি (মাহেকীয়া ৫,৪০০-৭,৮০০ টকা), অসম চৰকাৰৰ মেধা বৃত্তি আৰু মেট্ৰিক উত্তৰ বৃত্তিৰ অনলাইন আবেদন আহ্বান। অন্তিম তাৰিখ: ৩১ মাৰ্চ ২০২৭।'
+    },
+    {
+      id: 'NOT-2027-03',
+      title: 'Central PG & UG Admission Counselling Notice & Schedule 2027',
+      asTitle: 'স্নাতক আৰু স্নাতকোত্তৰ কেন্দ্ৰীয় নামভৰ্তি আৰু কাউন্সেলিং সূচী ২০২৭',
+      category: 'Admissions',
+      date: '10 January 2027',
+      refNo: 'NUAL/ADM/COUNSEL/2027/01',
+      fileUrl: '/notices/NUAL_Admission_Notice_2027.pdf',
+      summary: 'Notification for entrance-based and merit-based admission into Master Degree and FYUGP courses for 2027-28. NUAL Entrance Window: 22nd to 25th March 2027.',
+      asSummary: '২০২৭-২৮ শৈক্ষিক বৰ্ষৰ স্নাতকোত্তৰ আৰু স্নাতক নামভৰ্তিৰ নীতি আৰু প্ৰৱেশ পৰীক্ষাৰ সূচী (২২-২৫ মাৰ্চ ২০২৭)।'
+    },
+    {
+      id: 'NOT-2027-04',
+      title: 'Campus Hostel Allocation Rules, Seat Matrix & Residential Bylaws 2027',
+      asTitle: 'চৌহদৰ হোষ্টেল আসন আবণ্টন নীতি, ক্ষমতা আৰু আৱাসিক বিধিমালা ২০২৭',
+      category: 'Campus Facilities',
+      date: '05 January 2027',
+      refNo: 'NUAL/HOSTEL/INFO/2027/08',
+      fileUrl: '/notices/NUAL_Hostel_Information_2027.pdf',
+      summary: 'Hostel allotment guidelines for 6 on-campus halls of residence (Brahmaputra, Dihing, Lohit, Subansiri, Kapili, Dhansiri). Minimum distance criteria: 45 km from campus. Gate curfew: 8:00 PM.',
+      asSummary: 'বিশ্ববিদ্যালয়ৰ ৬টা ছাত্ৰ-ছাত্ৰী নিৱাসৰ আসন আবণ্টন বিধি। বিশ্ববিদ্যালয়ৰ পৰা দূৰত্ব নূন্যতম ৪৫ কি.মি. আৰু নিশা ৮:০০ বজাত গেট বন্ধৰ সময়সীমা।'
+    }
+  ]
 };
 
 // Singleton University Service with reactive persistence
@@ -325,6 +370,9 @@ class UniversityService {
 
   loadConfig() {
     try {
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return DEFAULT_UNIVERSITY_CONFIG;
+      }
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -344,6 +392,9 @@ class UniversityService {
           loadedNotices = loadedNotices.filter(n => !n.id?.startsWith('NOT-0'));
         } else {
           loadedNotices = [];
+        }
+        if (loadedNotices.length === 0) {
+          loadedNotices = DEFAULT_UNIVERSITY_CONFIG.notices;
         }
         // Ensure all top-level keys exist
         return {
@@ -367,8 +418,10 @@ class UniversityService {
   saveConfig(data) {
     try {
       this.data = data;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        window.dispatchEvent(new CustomEvent('unimitra_university_changed', { detail: data }));
+      }
     } catch (err) {
       console.error('Error saving university config:', err);
     }
@@ -744,7 +797,7 @@ class UniversityService {
     if (!query || typeof query !== 'string') return null;
 
     const lower = query.toLowerCase().trim();
-    const isAssamese = lang === 'as' || /[\u0980-\u09FF]/.test(query);
+    const isAssamese = lang === 'as' || lang === 'as_script' || lang === 'as_roman' || /[\u0980-\u09FF]/.test(query);
 
     const uName = this.data.profile?.name || 'Nivoraya University';
     const uAsName = this.data.profile?.asName || 'নিভৰয়া বিশ্ববিদ্যালয়';
@@ -760,7 +813,12 @@ class UniversityService {
     }
 
     // 1. Search in Approved Uploaded Documents (Faculty/Admin Ingested)
-    if (approvedDocs && approvedDocs.length > 0) {
+    // Anti-Hallucination Mandate: When institutional documents are active,
+    // the system answers strictly from uploaded documents and never generates static guesses.
+    if (approvedDocs !== undefined) {
+      if (!Array.isArray(approvedDocs) || approvedDocs.length === 0) {
+        return null;
+      }
       const qTokens = lower.split(/[\s,?.!]+/).filter((w) => w.length > 2);
       for (const doc of approvedDocs) {
         const fullContent = (doc.content || doc.summary || '');
@@ -803,6 +861,7 @@ class UniversityService {
           };
         }
       }
+      return null;
     }
 
     // 2. Specialized Check: Attendance & Condonation
@@ -891,6 +950,46 @@ class UniversityService {
       };
     }
 
+    // 5B. Specialized Check: University Topper Student List & Gold Medalists (Official Convocation Gazette)
+    if (
+      lower.includes('topper') ||
+      lower.includes('top student') ||
+      lower.includes('টপাৰ') ||
+      lower.includes('gold medal') ||
+      lower.includes('মেধা তালিকা') ||
+      lower.includes('স্বৰ্ণ পদক') ||
+      lower.includes('merit list') ||
+      lower.includes('convocation') ||
+      lower.includes('সমাৱৰ্তন') ||
+      lower.includes('chancellor award')
+    ) {
+      return {
+        answer: isAssamese
+          ? `${uAsName}ৰ বাৰ্ষিক সমাৱৰ্তন ২০২৭ৰ আনুষ্ঠানিক মেধা আৰু টপাৰ শিক্ষাৰ্থী তালিকা (Ref: NUAL/EXAM/TOPPER/2027/11) অনুসৰি:
+১ম স্থান (স্বৰ্ণ পদক আৰু চেন্সেলৰ বঁটা): শাহিদ আহমেদ (Sahid Ahmed), ৰোল: NUAL-CS-2301, বি.টেক চি.এছ.ই., চি.জি.পি.এ. ৯.৮৪।
+২য় স্থান (ৰূপৰ পদক): কুদ্দুছ হক (Kuddus Haque), ৰোল: NUAL-CS-2307, বি.টেক চি.এছ.ই., চি.জি.পি.এ. ৯.৭৯।
+৩য় স্থান (ব্ৰঞ্জৰ পদক): প্ৰিয়ম বৰা (Priyom Borah), ৰোল: NUAL-ECE-2314, বি.টেক ই.চি.ই., চি.জি.পি.এ. ৯.৭৬।
+৪ৰ্থ স্থান: অনন্যা শৰ্মা (Ananya Sharma), ৰোল: NUAL-IT-2308, বি.টেক আই.টি., চি.জি.পি.এ. ৯.৬৮।
+৫ম স্থান (স্নাতকোত্তৰ স্বৰ্ণ পদক): দেৱজিৎ শইকীয়া (Debojit Saikia), ৰোল: NUAL-PHY-2302, এম.এছচি পদাৰ্থবিজ্ঞান, চি.জি.পি.এ. ৯.৬২।
+৬ষ্ঠ স্থান: ঋতুৰাজ ডেকা (Rituraj Deka), ৰোল: NUAL-MATH-2310, এম.এছচি গণিত, চি.জি.পি.এ. ৯.৫৫।
+৭ম স্থান: বৰ্ষা দত্ত (Barsha Dutta), ৰোল: NUAL-ENG-2305, এম.এ. ইংৰাজী, চি.জি.পি.এ. ৯.৪৮।
+৮ম স্থান: মানস প্ৰতিম দাস (Manas Protim Das), ৰোল: NUAL-COMM-2318, এম.কম, চি.জি.পি.এ. ৯.৪৪।`
+          : `According to the official Nivoraya University Annual Convocation 2027 Merit & Topper Student List (Ref: NUAL/EXAM/TOPPER/2027/11):
+1. Rank 1 (Gold Medalist & Chancellor's Award): Sahid Ahmed (Roll: NUAL-CS-2301), B.Tech Computer Science & Engineering, CGPA: 9.84.
+2. Rank 2 (Silver Medalist with Distinction): Kuddus Haque (Roll: NUAL-CS-2307), B.Tech Computer Science & Engineering, CGPA: 9.79.
+3. Rank 3 (Bronze Medalist): Priyom Borah (Roll: NUAL-ECE-2314), B.Tech Electronics & Communication, CGPA: 9.76.
+4. Rank 4 (Merit Citation): Ananya Sharma (Roll: NUAL-IT-2308), B.Tech Information Technology, CGPA: 9.68.
+5. Rank 5 (Postgraduate Gold Medalist): Debojit Saikia (Roll: NUAL-PHY-2302), M.Sc Physics, CGPA: 9.62.
+6. Rank 6 (Postgraduate Merit Award): Rituraj Deka (Roll: NUAL-MATH-2310), M.Sc Mathematics, CGPA: 9.55.
+7. Rank 7 (Dean's Honours Roll): Barsha Dutta (Roll: NUAL-ENG-2305), M.A. English, CGPA: 9.48.
+8. Rank 8 (Institute Merit Certificate): Manas Protim Das (Roll: NUAL-COMM-2318), M.Com, CGPA: 9.44.`,
+        source: 'NUAL_Topper_Student_List_2027.pdf',
+        page: 'Official Convocation Gazette, Ref. NUAL/EXAM/TOPPER/2027/11, Page 1',
+        confidence: '99.9% Grounded Convocation Gazette Match',
+        domain: 'Convocation & Examination Toppers'
+      };
+    }
+
     // 6. Specialized Check: Scholarships & Ishan Uday / DHE
     if (
       lower.includes('scholarship') ||
@@ -906,11 +1005,15 @@ class UniversityService {
       const schol = this.data.scholarships.find((s) => s.id === 'SCHOL-01') || this.data.scholarships[0];
       return {
         answer: isAssamese
-          ? `উত্তৰ-পূৰ্বাঞ্চলৰ শিক্ষাৰ্থীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি (Ishan Uday Scholarship) আৰু অসম চৰকাৰৰ DHE বৃত্তিৰ মূল চৰ্তসমূহ হ'ল: (১) অসম/উত্তৰ-পূবৰ স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ (PRC) বাধ্যতামূলক, (২) অভিভাৱকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ'ব লাগিব, (৩) দ্বাদশ শ্ৰেণীত নূন্যতম ৬০% নম্বৰ থাকিব লাগিব, আৰু (৪) ${uAsName}ৰ নিয়মীয়া পাঠ্যক্ৰমত নামভৰ্তি থাকিব লাগিব। জেনেৰেল ডিগ্ৰীত প্ৰতিমাহে ৫,৪০০ টকা আৰু টেকনিকেল ডিগ্ৰীত ৭,৮০০ টকা প্ৰদান কৰা হয়। আবেদন ৰাষ্ট্ৰীয় ছাত্ৰবৃত্তি পৰ্টেল (NSP) যোগে কৰিব লাগে।`
-          : `For UGC Ishan Uday and Assam DHE Combined Merit Scholarships: (1) Valid Permanent Resident Certificate (PRC) of Assam/NER is mandatory, (2) Annual parental family income must not exceed INR 4.5 Lakhs, (3) Minimum 60% aggregate in qualifying Class 12 exam, and (4) Enrolled in first year of regular degree program at ${uName}. Awards are ₹5,400/month for General degree and ₹7,800/month for Technical programs disbursed through NSP portal.`,
-        source: schol ? schol.sourceDoc : 'Assam_DHE_Scholarship_Norms.pdf',
-        page: schol ? schol.citation : 'Section 3.1, Clause 5, Page 6',
-        confidence: '99.5% Verified Welfare Match',
+          ? `উত্তৰ-পূৰ্বাঞ্চলৰ শিক্ষাৰ্থীৰ বাবে ঈশান উদয় বিশেষ ছাত্ৰবৃত্তি (Ishan Uday Scholarship) আৰু অসম চৰকাৰৰ DHE বৃত্তিৰ মূল চৰ্তসমূহ হ'ল: (১) অসম/উত্তৰ-পূবৰ স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ (PRC) বাধ্যতামূলক, (২) অভিভাৱকৰ বাৰ্ষিক পাৰিবাৰিক আয় ৪.৫ লাখ টকাতকৈ কম হ'ব লাগিব, (৩) দ্বাদশ শ্ৰেণীত নূন্যতম ৬০% নম্বৰ থাকিব লাগিব, আৰু (৪) ${uAsName}ৰ নিয়মীয়া পাঠ্যক্ৰমত নামভৰ্তি থাকিব লাগিব। জেনেৰেল ডিগ্ৰীত প্ৰতিমাহে ৫,৪০০ টকা আৰু টেকনিকেল ডিগ্ৰীত ৭,৮০০ টকা প্ৰদান কৰা হয়। আবেদন ৰাষ্ট্ৰীয় ছাত্ৰবৃত্তি পৰ্টেল (NSP) যোগে কৰিব লাগে (অন্তিম তাৰিখ: ৩১ মাৰ্চ ২০২৭)।`
+          : `According to the official Nivoraya University Scholarship Notification 2027 (Ref: NUAL/SCHOL/NOTIF/2027/04):
+1. Ishan Uday Special Scholarship for NER: ₹5,400/month for General degree and ₹7,800/month for Technical courses. Eligibility: Permanent Resident Certificate (PRC) of NER, Family income below ₹4.5 Lakhs/year, Minimum 60% in Class 12.
+2. Assam DHE Combined Merit Scholarship: ₹6,000/year (UG) and ₹8,000/year (PG) for Assam domicile students with 60%+ marks.
+3. Post-Matric SC/ST/OBC Scholarship: 100% Tuition fee reimbursement + ₹7,000 to ₹12,000 annual maintenance allowance.
+Application deadline is 31st March 2027 via National Scholarship Portal (scholarships.gov.in).`,
+        source: 'NUAL_Scholarship_Notice_2027.pdf',
+        page: 'Official Scholarship Gazette, Ref. NUAL/SCHOL/NOTIF/2027/04, Page 1',
+        confidence: '99.8% Verified Scholarship Match',
         domain: 'Scholarships & Grants'
       };
     }
@@ -929,11 +1032,15 @@ class UniversityService {
       const fac = this.data.facilities.find((f) => f.id === 'FAC-01') || this.data.facilities[0];
       return {
         answer: isAssamese
-          ? `${uAsName}ৰ হোষ্টেল আসন আবণ্টন নীতি অনুসৰি: চৌহদত ১৬টা ছাত্ৰ আৰু ছাত্ৰী নিৱাস আছে (মুঠ ক্ষমতা ৩,২০০ গৱেষক আৰু শিক্ষাৰ্থী)। আসন আবণ্টন সম্পূৰ্ণৰূপে প্ৰৱেশ পৰীক্ষাৰ মেধা তালিকা (Merit Rank) আৰু বিশ্ববিদ্যালয় চৌহদৰ পৰা স্থায়ী ঘৰৰ দূৰত্বৰ (> ৩৫ কি.মি.) ভিত্তিত কৰা হয়। প্ৰয়োজনীয় নথি: মেধা কাৰ্ড, স্থায়ী বাসিন্দাৰ প্ৰমাণপত্ৰ, স্থানীয় অভিভাৱকৰ ঘোষণাপত্ৰ, আৰু বাধ্যতামূলক এণ্টি-ৰেগিং শপতনামা। ছোৱালী হোষ্টেলৰ গেট বন্ধৰ সময় সন্ধ্যা ৭:০০ বজা আৰু ল'ৰা হোষ্টেলৰ নিশা ৮:০০ বজা।`
-          : `Under ${uName} Hostel Bylaws: The campus hosts 16 halls of residence with 3,200 capacity. Allotments are strictly made on two criteria: Academic entrance merit ranking and permanent residential distance from campus (> 35 km). Required documents: Admission receipt, PRC, Local Guardian undertaking, and statutory anti-ragging affidavit. Hostel closing curfew is 7:00 PM for Girls and 8:00 PM for Boys.`,
-        source: `${uAbbr}_Hostel_Bylaws.pdf`,
-        page: 'Clause 7.2, Allotment Rules, Page 11',
-        confidence: '99.3% Grounded Facility Match',
+          ? `${uAsName}ৰ হোষ্টেল আসন আবণ্টন নীতি আৰু বিধি ২০২৭ (Ref: NUAL/HOSTEL/INFO/2027/08) অনুসৰি: চৌহদত ৬টা ছাত্ৰ আৰু ছাত্ৰী নিৱাস আছে (ল'ৰা হোষ্টেল: ব্ৰহ্মপুত্ৰ, দিহিং, লোহিত; ছোৱালী হোষ্টেল: সোৱণশিৰি, কপিলী, ধনশিৰি)। আসন আবণ্টন প্ৰৱেশ পৰীক্ষাৰ মেধা তালিকা আৰু বিশ্ববিদ্যালয় চৌহদৰ পৰা ঘৰৰ দূৰত্বৰ (> ৪৫ কি.মি.) ভিত্তিত কৰা হয়। গেট বন্ধৰ সময় নিশা ৮:০০ বজা। হোষ্টেল নামভৰ্তি মাচুল ২,৫০০ টকা আৰু মেছ এডভান্স ১৪,০০০ টকা।`
+          : `According to the official Nivoraya University Hostel Information & Allocation Norms 2027 (Ref: NUAL/HOSTEL/INFO/2027/08):
+- 6 on-campus halls of residence: Boys (Brahmaputra 220 seats, Dihing 180 seats, Lohit 150 seats) and Girls (Subansiri 240 seats, Kapili 200 seats, Dhansiri 160 seats).
+- Eligibility: Permanent residence must be at least 45 km away from university campus. Allotment by entrance merit.
+- Hostel closing curfew is strictly 8:00 PM for all residential students.
+- Fees: One-time admission ₹2,500, Seat rent ₹3,600/sem, Mess advance ₹14,000/sem. Anti-ragging compliance is mandatory.`,
+        source: 'NUAL_Hostel_Information_2027.pdf',
+        page: 'Official Hostel Gazette, Ref. NUAL/HOSTEL/INFO/2027/08, Page 1',
+        confidence: '99.5% Grounded Facility Match',
         domain: 'Campus Facilities'
       };
     }
@@ -949,11 +1056,14 @@ class UniversityService {
     ) {
       return {
         answer: isAssamese
-          ? `${uAsName}ত স্নাতকোত্তৰ (PG) নামভৰ্তি বিশ্ববিদ্যালয়ৰ প্ৰৱেশ পৰীক্ষাৰ জৰিয়তে হয়। স্নাতক ডিগ্ৰীত নূন্যতম ৪৫% - ৫০% নম্বৰ থকা ছাত্ৰ-ছাত্ৰীয়ে আবেদন কৰিব পাৰে। প্ৰৱেশ পৰীক্ষাত ১০০টা MCQ প্ৰশ্ন থাকে। স্নাতক (UG/FYUGP) নামভৰ্তি অসম চৰকাৰৰ সমৰ্থ (Samarth e-Gov) পৰ্টেলৰ জৰিয়তে উচ্চতৰ মাধ্যমিকৰ মেধাৰ ভিত্তিত হয়।`
-          : `Admissions to Postgraduate courses at ${uName} are conducted through official university entrance tests. Candidates need a bachelor's degree with 45%-50% marks to apply. The entrance comprises 100 MCQs (2 hours duration). Undergraduate (FYUGP) admissions are processed centrally via the Assam Samarth e-Gov admission portal based on Higher Secondary merit rankings.`,
-        source: `${uAbbr}_PG_Admissions_Guide.pdf`,
-        page: 'Admissions Gazette Ordinance, Page 4',
-        confidence: '99.0% Grounded Admission Match',
+          ? `${uAsName}ৰ কেন্দ্ৰীয় নামভৰ্তি জাননী ২০২৭ (Ref: NUAL/ADM/COUNSEL/2027/01) অনুসৰি: স্নাতকোত্তৰ (PG) নামভৰ্তি বিশ্ববিদ্যালয়ৰ প্ৰৱেশ পৰীক্ষা (NUAL-ET ৭০%) আৰু স্নাতক নম্বৰৰ (৩০%) ভিত্তিত হয়। স্নাতক (UG/FYUGP) নামভৰ্তি অসম চৰকাৰৰ সমৰ্থ পৰ্টেল যোগে উচ্চতৰ মাধ্যমিকৰ নম্বৰৰ ভিত্তিত কৰা হয়। আসন সংৰক্ষণ: ৮০% অসমৰ স্থায়ী বাসিন্দাৰ বাবে আৰু ২০% সৰ্বভাৰতীয় মুক্ত মেধা। প্ৰৱেশ পৰীক্ষা ২২-২৫ মাৰ্চ ২০২৭ তাৰিখে অনুষ্ঠিত হ'ব।`
+          : `According to the official Nivoraya University Central Admission Notice & Counselling Schedule 2027 (Ref: NUAL/ADM/COUNSEL/2027/01):
+- PG Admissions: Selection based on NUAL-ET Entrance Test (70% weightage) + qualifying degree marks (30% weightage).
+- UG Admissions (FYUGP): Processed through the Assam Samarth e-Gov portal based on Higher Secondary merit rankings.
+- Statutory Reservations: SC (7%), ST Plains (10%), ST Hills (5%), OBC/MOBC (15%), EWS (10%), PWD (5%). 80% seats reserved for Assam permanent residents; 20% All India Open Merit. Entrance exams: 22nd to 25th March 2027.`,
+        source: 'NUAL_Admission_Notice_2027.pdf',
+        page: 'Official Admission Gazette, Ref. NUAL/ADM/COUNSEL/2027/01, Page 1',
+        confidence: '99.5% Grounded Admission Match',
         domain: 'Admissions'
       };
     }

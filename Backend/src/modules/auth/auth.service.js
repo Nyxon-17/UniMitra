@@ -510,13 +510,20 @@ export const loginAdminCredentials = async ({ email, password }) => {
     where: { email: normalizedEmail },
   });
 
-  // Auto-seed default admin if logging in with default credentials for the first time
-  if (!admin && normalizedEmail === 'admin@unimitra.edu.in' && password === 'admin@unimitra') {
-    const passwordHash = await bcrypt.hash('admin@unimitra', 10);
+  const envSuperEmail = (env.SUPER_ADMIN_EMAIL || 'admin@unimitra.edu.in').toLowerCase().trim();
+  const envSuperPassword = env.SUPER_ADMIN_PASSWORD || 'admin@unimitra';
+  const envSuperName = env.SUPER_ADMIN_NAME || 'Super Administrator';
+
+  // Auto-seed default admin if logging in with default/env credentials for the first time
+  if (!admin && (
+    (normalizedEmail === envSuperEmail && password === envSuperPassword) ||
+    (normalizedEmail === 'admin@unimitra.edu.in' && password === 'admin@unimitra')
+  )) {
+    const passwordHash = await bcrypt.hash(password, 10);
     admin = await prisma.profile.create({
       data: {
-        email: 'admin@unimitra.edu.in',
-        fullName: 'System Administrator',
+        email: normalizedEmail,
+        fullName: envSuperName,
         passwordHash,
         role: 'super_admin',
         department: 'Institutional Governance',
@@ -525,7 +532,7 @@ export const loginAdminCredentials = async ({ email, password }) => {
         preferredLang: 'en',
       },
     });
-    logger.info('Auto-seeded default Super Admin account (admin@unimitra.edu.in)');
+    logger.info(`Auto-seeded default Super Admin account (${normalizedEmail})`);
   }
 
   if (!admin) {
@@ -668,6 +675,8 @@ export const getProfileById = async (id) => {
 export const updateProfile = async (id, updateData) => {
   const data = {};
   if (updateData.fullName) data.fullName = updateData.fullName;
+  if (updateData.email) data.email = updateData.email.toLowerCase().trim();
+  if (updateData.password) data.passwordHash = await bcrypt.hash(updateData.password, 10);
   if (updateData.department !== undefined) data.department = updateData.department;
   if (updateData.designation !== undefined) data.designation = updateData.designation;
   if (updateData.preferredLanguage) data.preferredLang = updateData.preferredLanguage;

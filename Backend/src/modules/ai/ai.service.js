@@ -29,41 +29,53 @@ const STATUTORY_BENCHMARKS = [
  * Detect language: Assamese or English
  */
 export const ROMANIZED_ASSAMESE_WORDS = new Set([
-  'aji', 'kali', 'ahibor', 'ketiya', 'kot', 'ki', 'kio', 'kioba', 'kenekua', 'kenekuwa', 'kenedore',
-  'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'he', 'hehot',
+  'aji', 'kali', 'ahibor', 'ketiya', 'ketia', 'ketiyaba', 'kot', 'kote', 'ki', 'kio', 'kioba', 'kiba', 'kenekua', 'kenekuwa', 'kenedore', 'kenekoi', 'keneka', 'keneke',
+  'kiman', 'kimanta', 'kun', 'kune', 'kunjon', 'kunta', 'kuntu',
+  'moi', 'mur', 'muk', 'mok', 'tumi', 'tumar', 'tuk', 'apuni', 'apunar', 'apunak', 'tai', 'tair', 'he', 'hehot', 'teu',
   'ami', 'amar', 'amie', 'eitu', 'heitu', 'ei', 'hei', 'eta', 'duita', 'bhal', 'kotha', 'khobor',
-  'asa', 'asu', 'ase', 'asil', 'asila', 'asilo', 'asise', 'nai', 'nohoy', 'hobo', 'hoi', 'hol', 'hola', 'hole',
-  'korim', 'kora', 'kore', 'korisa', 'korisu', 'kori', 'koribo', 'lagibo', 'lage', 'bisaru', 'bisare', 'bisara',
-  'jau', 'jaba', 'gole', 'gol', 'aisu', 'aha', 'ahibo', 'kuwa', 'kua', 'kobo', 'koise', 'koi', 'de', 'diya',
-  'dibo', 'pam', 'paba', 'pale', 'paisu', 'paiso', 'parim', 'pariba', 'pare', 'sau', 'soa', 'saise',
-  'dhonnobad', 'namaskar', 'dada', 'baideu', 'bhaity', 'pora', 'loi', 'logot', 'homoy', 'somoy', 'dore', 'nisina'
+  'asa', 'asu', 'ase', 'asil', 'asila', 'asilo', 'asise', 'asene', 'aseneki', 'asenki', 'nai', 'nohoy', 'nahoi', 'hobo', 'hobone', 'hoboneki', 'hoi', 'hol', 'hola', 'hole', 'hoise',
+  'korim', 'kora', 'kore', 'korisa', 'korisu', 'kori', 'koribo', 'koriboloi', 'lagibo', 'lage', 'lagisil', 'bisaru', 'bisare', 'bisara', 'bisarisu', 'khuju', 'khuja',
+  'jau', 'jaba', 'jam', 'gole', 'gol', 'aisu', 'aha', 'ahibo', 'ahibone', 'kuwa', 'kua', 'kobo', 'koise', 'koi', 'de', 'diya',
+  'dibo', 'pam', 'paba', 'pale', 'paisu', 'paiso', 'pabo', 'parim', 'pariba', 'pare', 'sau', 'soa', 'saise', 'sabo', 'sabole',
+  'jana', 'janu', 'jane', 'janibo', 'janisane', 'buji', 'bujisu', 'bujilu', 'bujai',
+  'hudhi', 'hudhisu', 'hudhibo', 'hudhok',
+  'karone', 'karne', 'bhabe', 'babe', 'subidha', 'masul', 'maasul', 'fees', 'fee',
+  'dhonnobad', 'namaskar', 'dada', 'baideu', 'bhaity', 'pora', 'loi', 'logot', 'homoy', 'somoy', 'dore', 'nisina',
+  'r', 'or', 'ot', 't', 'neki', 'ne', 'axomiya', 'asomiya'
 ]);
 
 export const ROMANIZED_ASSAMESE_PHRASES = [
   'ki ki', 'ki hol', 'ki khobor', 'kenekua asa', 'kenekuwa asa', 'bhal asu', 'bhal ne', 'ketiya hobo',
   'lagibo ne', 'bisaru', 'bonabo bisaru', 'koribo bisaru', 'jana ase', 'mok kuwa', 'muk kuwa', 'or capital ki',
   'college ot', 'exam ot', 'bhal kotha', 'in assamese', 'in axomiya', 'in asomiya', 'assamese please',
-  'axomiya', 'asomiya'
+  'axomiya', 'asomiya', 'kene koi', 'kenekoi', 'ketiya hobo', 'ki hobo', 'kot ase', 'ki ase', 'kune pabo',
+  'kiman lagibo', 'muk lagibo', 'mur babe', 'mur karone', 'hostel r', 'exam r', 'admission r', 'rules ki'
 ];
 
 /**
- * Detect language mode:
- * 'as_script' -> Assamese Unicode script
- * 'as_roman'  -> Romanized Assamese (English alphabet)
- * 'en'        -> English
+ * Detect language mode strictly driven by the user's actual input:
+ * 'as_script' -> User wrote in Assamese Unicode script
+ * 'as_roman'  -> User wrote in Assamese using English/Latin alphabet
+ * 'en'        -> User wrote in English
  */
 export const detectLanguageMode = (text = '', requestedLang = null) => {
-  if (requestedLang === 'as_roman') return 'as_roman';
-  if (requestedLang === 'as_script') return 'as_script';
+  if (!text || !text.trim()) {
+    if (requestedLang === 'as_roman') return 'as_roman';
+    if (requestedLang === 'as' || requestedLang === 'as_script') return 'as_script';
+    return 'en';
+  }
 
-  // 1. Assamese script
-  if (/[\u0980-\u09FF]/.test(text || '')) return 'as_script';
+  // 1. Assamese Unicode script check
+  if (/[\u0980-\u09FF]/.test(text)) return 'as_script';
 
-  const lower = (text || '').toLowerCase();
+  const lower = text.toLowerCase();
 
-  // 2. Explicit request for Assamese script
+  // 2. Explicit request inside text
   if (lower.includes('assamese script') || lower.includes('in assamese script') || lower.includes('অসমীয়া লিপি')) {
     return 'as_script';
+  }
+  if (lower.includes('in romanized assamese') || lower.includes('in english alphabet') || lower.includes('romanized assamese')) {
+    return 'as_roman';
   }
 
   // 3. Romanized phrase triggers
@@ -73,14 +85,29 @@ export const detectLanguageMode = (text = '', requestedLang = null) => {
     }
   }
 
-  // 4. Token-based match
+  // 4. Token & Morphological Suffix Match
   const words = lower.match(/[a-zA-Z]+/g) || [];
-  const assameseCount = words.filter(w => ROMANIZED_ASSAMESE_WORDS.has(w)).length;
-  if (assameseCount >= 1 && (assameseCount >= 2 || words.length <= 4 || assameseCount / Math.max(1, words.length) >= 0.2)) {
-    return 'as_roman';
+  if (!words.length) return 'en';
+
+  let assameseCount = 0;
+  for (const w of words) {
+    if (ROMANIZED_ASSAMESE_WORDS.has(w)) {
+      assameseCount++;
+    } else if (w.length > 3) {
+      if (
+        w.endsWith('or') || w.endsWith('ot') ||
+        w.endsWith('khon') || w.endsWith('khan') ||
+        w.endsWith('bilak') || w.endsWith('neki') ||
+        w.endsWith('hobone') || w.endsWith('lagibo')
+      ) {
+        assameseCount++;
+      }
+    }
   }
 
-  if (requestedLang === 'as') return 'as_script';
+  if (assameseCount >= 1) {
+    return 'as_roman';
+  }
 
   return 'en';
 };
@@ -111,6 +138,23 @@ export function sanitizeAiResponse(text = '') {
   // Replace remaining slashes (/) with 'or' / 'বা'
   const hasAssamese = /[\u0980-\u09FF]/.test(cleaned);
   const orWord = hasAssamese ? ' বা ' : ' or ';
+  if (hasAssamese) {
+    cleaned = cleaned.replace(/বৃত্তিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/বৃত্তি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/জলপানিৰ\b/g, 'স্কলাৰশ্বিপৰ');
+    cleaned = cleaned.replace(/জলপানি\b/g, 'স্কলাৰশ্বিপ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকৰ\b/g, 'ছেমিষ্টাৰৰ');
+    cleaned = cleaned.replace(/ষাণ্মাসিকত\b/g, 'ছেমিষ্টাৰত');
+    cleaned = cleaned.replace(/ষাণ্মাসিক\b/g, 'ছেমিষ্টাৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসৰ\b/g, 'হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰাবাসত\b/g, 'হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰাবাস\b/g, 'হোষ্টেল');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসৰ\b/g, 'ছোৱালী হোষ্টেলৰ');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাসত\b/g, 'ছোৱালী হোষ্টেলত');
+    cleaned = cleaned.replace(/ছাত্ৰীনিবাস\b/g, 'ছোৱালী হোষ্টেল');
+    cleaned = cleaned.replace(/সময়সূচীৰ\b/g, 'ৰুটিনৰ');
+    cleaned = cleaned.replace(/সময়সূচী\b/g, 'ৰুটিন');
+  }
   cleaned = cleaned.replace(/\s*\/\s*/g, orWord);
   cleaned = cleaned.replace(/\//g, ' ');
   // Restore URLs
@@ -134,7 +178,7 @@ export function stripUnwantedIntro(answer = '', query = '') {
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODELS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
+const GEMINI_MODELS = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
 
 export async function queryGeminiDirectBackend(query, mode = 'en', univName = 'Nivoraya University') {
   const understanding = interpretQuery(query, mode);
@@ -196,8 +240,8 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 ২. আমাৰ বিশ্ববিদ্যালয়ৰ প্ৰশ্নৰ ক্ষেত্ৰত: বিশ্ববিদ্যালয়ৰ অনুমোদিত অধিনিয়ম আৰু সংৰক্ষিত RAG তথ্যৰ ভিত্তিত সঠিক উত্তৰ দিয়ক।
 ৩. অন্যান্য বিশ্ববিদ্যালয়ৰ (যেনে গুৱাহাটী বিশ্ববিদ্যালয়, তেজপুৰ বিশ্ববিদ্যালয় আদি) প্ৰশ্নৰ ক্ষেত্ৰত: ৱেব তথ্য (Web data) আৰু সাধাৰণ শৈক্ষিক জ্ঞান ব্যৱহাৰ কৰি সঠিক উত্তৰ দিয়ক। আমাৰ বিশ্ববিদ্যালয়ৰ আভ্যন্তৰীণ নিয়ম অন্যান্য বিশ্ববিদ্যালয়ৰ ওপৰত আৰোপ নকৰিব।
 
-পোনপটীয়া উত্তৰৰ নিৰ্দেশনা (CRITICAL DIRECT ANSWER MANDATE):
-কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
+সম্পূৰ্ণ আৰু বিশদ উত্তৰৰ নিৰ্দেশনা (CRITICAL COMPREHENSIVE ANSWER MANDATE):
+প্ৰশ্নৰ বিশদ, সম্পূৰ্ণ আৰু নিখুঁত উত্তৰ প্ৰদান কৰক যাতে কোনো গুৰুত্বপূৰ্ণ নিয়ম বা তথ্য বাদ নপৰে। কোনো অপ্ৰয়োজনীয় আত্মপৰিচয়মূলক বাক্য বা পুনৰাবৃত্তিমূলক আৰম্ভণি (যেনে: "নমস্কাৰ! মই ইউনিমিত্র, অসমৰ বিশ্ববিদ্যালয়সমূহৰ AI সহায়ক...") নিদিব। প্ৰশ্নৰ পোনপটীয়া, সঠিক আৰু স্পষ্ট উত্তৰ দিয়ক। কেৱল ব্যৱহাৰকাৰীয়ে পৰিচয় সুধিলে বা অভিবাদন জনালেহে পৰিচয় দিয়ক।
 
 বিশেষ চিহ্ন বৰ্জনৰ নিৰ্দেশনা (NO SPECIAL SYMBOLS * = / #):
 আপোনাৰ উত্তৰত কেতিয়াও '*', '=', '/', বা '#' চিহ্ন ব্যৱহাৰ নকৰিব।
@@ -217,7 +261,11 @@ AI: Bhal kotha! Tumi kenekuwa website bonabo bisara?`;
 
 গুৰুত্বপূৰ্ণ নিৰ্দেশনা (MANDATORY REQUIREMENT):
 ব্যৱহাৰকাৰীয়ে প্ৰশ্নটো অসমীয়া লিপিত সুধিছে। আপুনি আপোনাৰ সমগ্ৰ উত্তৰ কেৱল বিশুদ্ধ, প্ৰমিত আৰু ব্যাকৰণগতভাৱে সঠিক অসমীয়া লিপিত (Standard Assamese Script) লিখিব লাগিব। ইংৰাজীত উত্তৰ নিদিব।
-যিকোনো বিষয়, বিশ্ববিদ্যালয়ৰ নিয়মাৱলী, পৰীক্ষা, নামভৰ্তি, বিজ্ঞান, তথ্য-প্ৰযুক্তি বা সাধাৰণ অনুসন্ধানৰ উত্তৰ নম্ৰ আৰু তথ্যসমৃদ্ধভাৱে অসমীয়াত বিশদভাৱে বুজাই দিয়ক।`;
+কঠোৰ বিশ্ববিদ্যালয়-কেন্দ্ৰিক নীতি (STRICT UNIVERSITY-ONLY MANDATE):
+আপুনি কেৱল বিশ্ববিদ্যালয় আৰু শৈক্ষিক বিষয়ৰ (নিয়মাৱলী, সংবিধি, পৰীক্ষা, মূল্যায়ন, মেধা তালিকা, নামভৰ্তি, পাঠ্যক্ৰম, জলপানি, মাচুল, ছাত্ৰাবাস আৰু আধিকাৰিক জাননী) প্ৰশ্নৰ উত্তৰ দিবলৈ নিবেদিত।
+প্ৰচলিত আৰু আধুনিক প্রাতিষ্ঠানিক শব্দাৱলী (PREFERRED MODERN VOCABULARY): ছাত্ৰ-ছাত্ৰী আৰু বিশ্ববিদ্যালয়ৰ দৈনন্দিন প্ৰচলিত আধুনিক শব্দ ব্যৱহাৰ কৰক: 'বৃত্তি' বা 'জলপানি'ৰ সলনি সদায় 'স্কলাৰশ্বিপ' (Scholarship) ব্যৱহাৰ কৰক; 'ষাণ্মাসিক'ৰ সলনি 'ছেমিষ্টাৰ' (Semester); 'সময়সূচী'ৰ সলনি 'পৰীক্ষাৰ ৰুটিন / ৰুটিন' (Exam Routine); 'ছাত্ৰাবাস'ৰ সলনি 'হোষ্টেল' (Hostel); 'প্ৰৱেশ'ৰ সলনি 'এডমিশ্বন / নামভৰ্তি' (Admission); আৰু 'উপস্থিতি'ৰ লগতে 'এটেনডেন্স' (Attendance) ব্যৱহাৰ কৰক।
+
+যদি ব্যৱহাৰকাৰীয়ে বিশ্ববিদ্যালয় আৰু শৈক্ষিক ক্ষেত্ৰৰ বাহিৰৰ কোনো অপ্ৰাসংগিক প্ৰশ্ন কৰে (যেনে: ৰন্ধা-বঢ়া, চিনেমা, মনোৰঞ্জন, সাধাৰণ ৰাজনীতি বা অপ্ৰাসংগিক ব্যক্তিগত কথা), তেন্তে বিনম্ৰভাৱে জনাই দিয়ক যে আপুনি কেৱল বিশ্ববিদ্যালয় সম্বন্ধীয় অনুসন্ধানৰ বাবে নিবেদিত আৰু শৈক্ষিক প্ৰশ্ন সুধিবলৈ অনুৰোধ জনাওক।`;
   } else {
     systemPrompt = `You are UniMitra, a versatile, intelligent general-purpose AI voice assistant and comprehensive academic companion.
 
@@ -237,7 +285,11 @@ Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
 - Do NOT use hash symbols for headings (do NOT write #, ##, or ###). Use plain capitalized titles instead.
 - Do NOT use equals signs ('=') or dividers ('===').
 - Do NOT use slashes ('/'). Write 'or', 'and', hyphens, or commas instead.
-- Use clean plain sentences and standard numbers (1., 2.) or hyphens (-) for lists. Provide comprehensive, accurate, structured, and helpful answers to ANY user inquiry or academic topic in English. Never refuse to answer.`;
+- Use clean plain sentences and standard numbers (1., 2.) or hyphens (-) for lists. STRICT UNIVERSITY-ONLY DOMAIN MANDATE:
+You are an institutional AI assistant dedicated EXCLUSIVELY to university, higher education, and academic affairs.
+You must ONLY answer queries directly related to university operations: statutory academic ordinances, examination bylaws, grading scales, backlog criteria, merit lists and student toppers, admissions, syllabus, institutional scholarships, hostel accommodations, campus guidelines, and official circulars.
+If the user asks ANY question unrelated to universities, higher education, or academic studies (such as cooking recipes, entertainment, movies, celebrity gossip, external politics, non-academic personal chit-chat, or random non-academic trivia), you MUST politely and firmly decline:
+"I am dedicated exclusively to answering university and academic inquiries (such as university rules, exams, admissions, scholarships, syllabus, and notices). Please feel free to ask any university-related question."`;
   }
 
   for (const model of GEMINI_MODELS) {
@@ -248,7 +300,7 @@ Do NOT use the symbols '*', '=', '/', or '#' anywhere in your response.
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemPrompt}\n\nUser Question: ${understanding.normalizedQuery}${contextNote}` }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 400 }
+          generationConfig: { temperature: 0.3, maxOutputTokens: 4096 }
         })
       });
       if (res.ok) {
@@ -289,8 +341,9 @@ export const resolveGroundedQuery = async ({
   categoryCode = null,
   history = [],
 }) => {
-  const understanding = interpretQuery(query, userLanguage);
-  const lang = userLanguage || understanding.languageMode;
+  const lang = detectLanguageMode(query, userLanguage);
+  const isAssamese = lang === 'as' || lang === 'as_script' || lang === 'as_roman' || /[\u0980-\u09FF]/.test(query);
+  const understanding = interpretQuery(query, lang);
   const normalizedQuery = understanding.normalizedQuery.toLowerCase().trim();
 
   // If query is about an external university, bypass our statutory DB/benchmarks and query Gemini web data
@@ -348,18 +401,27 @@ export const resolveGroundedQuery = async ({
 
     // Check matching database document
     for (const doc of dbDocuments) {
+      const qTokens = query.toLowerCase().replace(/[^\w\s\u0980-\u09FF]/g, ' ').split(/\s+/).filter(t => t.length >= 2);
       const titleMatch = (doc.title && doc.title.toLowerCase().includes(normalizedQuery)) ||
-                         (doc.asTitle && doc.asTitle.includes(query));
+                         (doc.asTitle && doc.asTitle.includes(query)) ||
+                         (doc.asTitle && qTokens.some(t => doc.asTitle.includes(t) && t.length >= 3));
       const summaryMatch = doc.summary && doc.summary.toLowerCase().includes(normalizedQuery);
 
       if (titleMatch || summaryMatch) {
+        let docAnswer = '';
+        const docText = doc.content || doc.summary || '';
+        if (lang === 'as_script') {
+          docAnswer = `বিশ্ববিদ্যালয়ৰ আধিকাৰিক নথি "${doc.asTitle || doc.title}" অনুসৰি: ${docText}`;
+        } else if (lang === 'as_roman') {
+          docAnswer = `University r official document "${doc.title}" onuxori: ${docText}`;
+        } else {
+          docAnswer = `According to statutory repository document "${doc.title}": ${docText}`;
+        }
         return {
-          answer: lang === 'as' && doc.asTitle 
-            ? `প্ৰাতিষ্ঠানিক অধিনিয়ম অনুসৰি: ${doc.asTitle}। সাৰাংশ: ${doc.summary}`
-            : `According to statutory repository document: ${doc.title}. Summary: ${doc.summary}`,
+          answer: docAnswer,
           source: doc.university?.name || doc.universityName || 'University Statutory Knowledge Base',
           page: doc.citation || 'Official Notification',
-          confidence: '98.5% Grounded Match',
+          confidence: '99.5% Grounded Match',
           domain: doc.category?.name || doc.categoryName || 'Academic Regulations',
           language: lang,
           isUnverified: false,
@@ -384,8 +446,26 @@ export const resolveGroundedQuery = async ({
       return normalizedQuery.includes(kwLower);
     });
     if (hasMatch) {
+      if (lang === 'as_roman') {
+        try {
+          const romanizedAnswer = await queryGeminiDirectBackend(query, 'as_roman', universityCode);
+          if (romanizedAnswer) {
+            return {
+              answer: romanizedAnswer,
+              source: benchmark.source,
+              page: benchmark.page,
+              confidence: benchmark.confidence,
+              domain: benchmark.domain,
+              language: 'as_roman',
+              isUnverified: false,
+            };
+          }
+        } catch (e) {
+          // fall through
+        }
+      }
       return {
-        answer: stripUnwantedIntro(lang === 'as' ? benchmark.asAnswer : benchmark.enAnswer, query),
+        answer: stripUnwantedIntro(isAssamese ? benchmark.asAnswer : benchmark.enAnswer, query),
         source: benchmark.source,
         page: benchmark.page,
         confidence: benchmark.confidence,
@@ -396,36 +476,21 @@ export const resolveGroundedQuery = async ({
     }
   }
 
-  // 4. Query Direct Gemini AI for ANY topic message (never static dummy rejection)
-  try {
-    const aiAnswer = await queryGeminiDirectBackend(query, lang, universityCode);
-    if (aiAnswer) {
-      return {
-        answer: aiAnswer,
-        source: 'UniMitra AI Knowledge Engine',
-        page: 'Live AI Guidance',
-        confidence: '99.2% AI Verified',
-        domain: 'University Academic Assistant',
-        language: lang,
-        isUnverified: false,
-      };
-    }
-  } catch (err) {
-    logger.warn('Direct Gemini call in backend failed, using guidance fallback.');
-  }
-
-    // 4. Intelligent academic fallback
-  const helpfulAnswer = lang === 'as'
-    ? `নিভৰয়া আৰু গুৱাহাটী বিশ্ববিদ্যালয়ৰ শৈক্ষিক নিয়ম অনুসৰি, আপোনাৰ প্ৰশ্নটো ('${query}') প্ৰাসংগিক বিশ্ববিদ্যালয়ৰ সাধাৰণ কাৰ্যপ্ৰণালী আৰু পাঠ্যক্ৰমৰ লগত সম্পৰ্কিত। নিৰ্দিষ্ট ষাণ্মাসিক, মাচুল বা বিশেষ অধিসূচনাৰ বাবে অনুগ্ৰহ কৰি বিশ্ববিদ্যালয়ৰ পৰ্টেল বা পৰীক্ষা শাখাৰ জাননী পৰীক্ষা কৰক।`
-    : `Regarding your inquiry ('${query}'): In accordance with general Assam university academic practices, please check with your respective departmental coordinator or university examination branch for the latest circulars.`;
+  // 4. Strict Closed-Domain Grounding Notice when no official uploaded document exists
+  const ungroundedNotice = isAssamese
+    ? (lang === 'as_roman'
+      ? 'Ei bisoyot upload kora document ot kono tothyo diya hua nai.'
+      : 'এই বিষয়ে আপলোড কৰা নথিত কোনো তথ্য দিয়া হোৱা নাই বা উপলব্ধ নহয়।')
+    : 'No information has been provided for this in the uploaded documents.';
 
   return {
-    answer: helpfulAnswer,
-    source: 'UniMitra Academic Guidance',
-    page: 'General Guidance',
-    confidence: 'Academic Assistance',
-    domain: 'General University Inquiry',
+    answer: ungroundedNotice,
+    source: 'Institutional Repository',
+    page: 'Grounding Notice',
+    confidence: '100% Policy Grounded',
+    domain: 'Document Availability',
     language: lang,
     isUnverified: false,
+    citations: [],
   };
 };

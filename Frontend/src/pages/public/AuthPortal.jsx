@@ -122,11 +122,11 @@ export const AuthPortal = ({
     password: '',
   });
 
-  // 3. Super Admin Form State
+  // 3. Super Admin Form State (Empty inputs without auto-filled values)
   const [adminLogin, setAdminLogin] = useState({
-    superName: 'System Administrator',
-    superEmail: 'admin@unimitra.edu.in',
-    superPassword: 'admin@unimitra',
+    superName: '',
+    superEmail: '',
+    superPassword: '',
   });
 
   // Department options for faculty

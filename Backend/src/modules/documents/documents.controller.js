@@ -96,3 +96,12 @@ export const deleteCategory = async (req, res, next) => {
   }
 };
 
+
+export const retryDocument = async (req, res, next) => {
+  try {
+    const doc = await documentService.retryDocument(req.params.id);
+    return ApiResponse.success(res, doc, 'Document processing retried successfully.');
+  } catch (err) {
+    next(err);
+  }
+};

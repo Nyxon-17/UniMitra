@@ -20,6 +20,9 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().default('placeholder-service-role-key'),
   JWT_SECRET: z.string().min(8).default('unimitra-super-secret-jwt-key-change-in-production-2026'),
   JWT_EXPIRES_IN: z.string().default('7d'),
+  SUPER_ADMIN_NAME: z.string().default('Super Administrator'),
+  SUPER_ADMIN_EMAIL: z.string().default('admin@unimitra.edu.in'),
+  SUPER_ADMIN_PASSWORD: z.string().default('admin@unimitra'),
   AI_SERVICE_URL: z.string().url().default('http://localhost:8000'),
   AI_SERVICE_SECRET: z.string().default('unimitra_internal_ai_secret_2026'),
   CORS_ORIGIN: z.string().default('http://localhost:5173,http://localhost:3000'),
@@ -27,6 +30,7 @@ const envSchema = z.object({
   BAKBAK_API_KEY: z.string().default('eX2lWnCNyy6JtU6KgUhBC4rpE6o8Bluw'),
   SARVAM_API_KEY: z.string().default('sk_rpxvjns7_HBb8Pp89bNVWzfv4mCWpSlkC'),
   SARVAM_BASE_URL: z.string().default('https://api.sarvam.ai'),
+  GEMINI_API_KEY: z.string().default(''),
   // Brevo SMTP Config
   SMTP_HOST: z.string().default('smtp-relay.brevo.com'),
   SMTP_PORT: z.string().default('587').transform(Number),

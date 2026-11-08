@@ -9,6 +9,7 @@ from app.core.security import verify_internal_secret
 from app.models.response_models import DocumentIngestResponse
 from app.services.document_parser import document_parser
 from app.services.embedding_service import embedding_service
+from app.services.gemini_service import gemini_service
 from app.services.vector_store import resolve_document_uuid, vector_store
 
 logger = logging.getLogger("unimitra.api.documents")
@@ -145,6 +146,49 @@ async def ingest_document(
 
     # Resolve doc_uuid and ensure parent document row exists in PostgreSQL
     doc_uuid = resolve_document_uuid(document_id)
+
+    # 3. Bilingual Language Identification & Assamese Translation
+    sample_text = " ".join(c.get("content", "") for c in chunks[:3])
+    is_assamese_doc = gemini_service.is_assamese(sample_text)
+    orig_lang = "as" if is_assamese_doc else "en"
+
+    doc_title = meta_dict.get("title") or file.filename or "University Document"
+    as_title = meta_dict.get("asTitle") or meta_dict.get("as_title")
+
+    for idx, c in enumerate(chunks):
+        c["chunk_index"] = idx
+        c["language"] = orig_lang
+        c["cleaned_content"] = c.get("content", "")
+        meta = c.get("metadata") or {}
+        meta["language"] = orig_lang
+        meta["page"] = c.get("page_number", 1)
+        meta["clause"] = c.get("clause_reference")
+        meta["title"] = doc_title
+        if as_title:
+            meta["as_title"] = as_title
+        c["metadata"] = meta
+
+    as_chunks = []
+    if orig_lang == "en":
+        try:
+            logger.info(f"Translating {len(chunks)} English chunks into Assamese using Gemini API...")
+            as_chunks, gen_as_title = gemini_service.translate_chunks_to_assamese(
+                chunks=chunks,
+                title=doc_title,
+            )
+            if gen_as_title and not as_title:
+                as_title = gen_as_title
+                meta_dict["asTitle"] = gen_as_title
+                meta_dict["as_title"] = gen_as_title
+                for c in chunks:
+                    c["metadata"]["as_title"] = as_title
+        except Exception as trans_err:
+            logger.warning(f"Bilingual translation notice: {trans_err}")
+
+    # Combine original chunks and translated Assamese chunks
+    all_chunks = list(chunks) + list(as_chunks)
+    logger.info(f"Total indexing payload: {len(all_chunks)} chunks ({len(chunks)} original {orig_lang}, {len(as_chunks)} translated Assamese)")
+
     doc_uuid = ensure_document_record(
         doc_uuid=doc_uuid,
         custom_id=document_id,
@@ -155,21 +199,21 @@ async def ingest_document(
         meta_dict=meta_dict,
     )
 
-    # 3. Generate Multilingual E5 Embeddings ('passage: ' prefix)
-    passages = [c["content"] for c in chunks]
+    # 4. Generate Multilingual E5 Embeddings ('passage: ' prefix)
+    passages = [c["content"] for c in all_chunks]
     embeddings = embedding_service.embed_passages(passages)
 
-    # 4. Store Chunks & Vectors in Supabase PostgreSQL
+    # 5. Store Chunks & Vectors in Supabase PostgreSQL
     inserted_count = vector_store.insert_document_chunks(
         document_id=doc_uuid,
         university_code=univ_code,
         category_code=cat_code,
-        chunks=chunks,
+        chunks=all_chunks,
         embeddings=embeddings,
         doc_metadata=meta_dict,
     )
 
-    # 5. Record Job in document_processing_jobs
+    # 6. Record Job in document_processing_jobs
     job_sql = """
         INSERT INTO document_processing_jobs (
             document_id, stage, progress_percentage, pages_total, 
@@ -178,15 +222,15 @@ async def ingest_document(
     """
     execute_mutation(job_sql, (doc_uuid, "COMPLETED", 100, len(pages), inserted_count, ocr_needed))
 
-    # 6. Update document status in documents table
+    # 7. Update document status in documents table
     update_doc_sql = """
         UPDATE documents 
         SET chunks_count = %s, pages = %s, processing_stage = 'Vector Indexed (100%%)', 
             status = 'Indexed'::"DocStatus", approval_status = 'approved'::"ApprovalStatus",
-            available_to_chatbot = true, updated_at = NOW()
+            available_to_chatbot = true, as_title = COALESCE(%s, as_title), updated_at = NOW()
         WHERE id = %s OR custom_id = %s;
     """
-    execute_mutation(update_doc_sql, (inserted_count, len(pages), doc_uuid, document_id))
+    execute_mutation(update_doc_sql, (inserted_count, len(pages), as_title, doc_uuid, document_id))
 
     duration = round(time.time() - start_time, 2)
     logger.info(f"Ingestion complete: {inserted_count} chunks indexed in {duration}s.")
@@ -205,3 +249,20 @@ async def ingest_document(
         text_content=full_extracted_text,
         chunks=chunks,
     )
+
+
+@router.delete("/{document_id}")
+async def delete_document_endpoint(
+    document_id: str,
+    _: bool = Depends(verify_internal_secret),
+):
+    """
+    Deletes document chunks, embeddings, processing jobs, and parent records from the database.
+    """
+    logger.info(f"Received request to delete document: {document_id}")
+    success = vector_store.delete_document(document_id)
+    return {
+        "success": success,
+        "deleted_document_id": document_id,
+        "message": f"Document {document_id} and associated vector embeddings purged from database."
+    }

@@ -25,7 +25,9 @@ class Settings(BaseSettings):
 
     # Generative AI & Embeddings
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-flash-lite-latest"
+    GEMINI_MODEL: str = "gemini-3-flash-preview"
+    GEMINI_TTS_MODEL: str = "gemini-3.8-flash-tts"
+    GEMINI_TTS_VOICE: str = "Kore"
     EMBEDDING_MODEL: str = "intfloat/multilingual-e5-base"
     EMBEDDING_DIM: int = 768
 

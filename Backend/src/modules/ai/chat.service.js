@@ -312,7 +312,7 @@ export const submitFeedback = async (user, feedbackData) => {
       type: feedbackData.type || 'Accurate Citation',
       rating: feedbackData.rating ? Number(feedbackData.rating) : 5,
       comments: feedbackData.comments || '',
-      answerSnippet: feedbackData.answerSnippet || '',
+      answerSnippet: feedbackData.queryText || feedbackData.answerSnippet || '',
       universityName: feedbackData.university || 'General University',
       status: 'Pending Admin Review',
     },

@@ -64,7 +64,8 @@ export const DashboardSidebar = ({
     { id: 'assistant', label: 'Faculty AI Workspace', asLabel: 'শৈক্ষিক AI সহায়ক', icon: ChatBubbleIcon },
     { id: 'regulations', label: 'Academic Regulations & Workload', asLabel: 'শৈক্ষিক নিয়মাৱলী আৰু কৰ্মভাৰ', icon: BuildingLibraryIcon },
     { id: 'faculty-documents', label: 'Authorized Documents', asLabel: 'অনুমোদিত প্ৰতিষ্ঠানিক নথিপত্ৰ', icon: DocumentTextIcon },
-    { id: 'faculty-saved', label: 'Saved Reference Circulars', asLabel: 'সংৰক্ষিত জাননীসমূহ', icon: DocumentTextIcon },
+    { id: 'history', label: 'Previous Queries', asLabel: 'পূৰ্বৰ বাৰ্তালাপ', icon: ClockIcon },
+    { id: 'feedback', label: 'Submit Feedback', asLabel: 'প্ৰতিক্ৰিয়া প্ৰেৰণ', icon: CheckCircleIcon },
     { id: 'profile', label: 'Faculty Profile', asLabel: 'অধ্যাপক প্ৰফাইল', icon: UserIcon },
   ];
 
@@ -188,8 +189,18 @@ export const DashboardSidebar = ({
           {/* Secure Sign Out Action */}
           <button
             onClick={() => {
-              if (window.confirm("Are you sure you want to sign out from the university assistant?")) {
-                if (onSignOut) onSignOut();
+              if (window.showUniMitraConfirm) {
+                window.showUniMitraConfirm({
+                  title: currentLang === 'as' ? 'লগ-আউট নিশ্চিতকৰণ' : 'Sign Out Confirmation',
+                  message: currentLang === 'as' ? 'আপুনি নিশ্চিতনে যে আপুনি বিশ্ববিদ্যালয় সহায়ক প’ৰ্টেলৰ পৰা লগ-আউট কৰিব বিচাৰে?' : 'Are you sure you want to sign out from the university assistant?',
+                  confirmText: currentLang === 'as' ? 'লগ-আউট কৰক' : 'Sign Out',
+                  confirmColor: 'bg-red-600 hover:bg-red-700 text-white',
+                  onConfirm: () => {
+                    if (onSignOut) onSignOut();
+                  }
+                });
+              } else if (onSignOut) {
+                onSignOut();
               }
             }}
             className="w-full flex items-center space-x-2.5 px-3.5 py-2 rounded-xl text-xs font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/25 transition-colors cursor-pointer border border-red-200/60 dark:border-red-900/40"

@@ -526,7 +526,9 @@ export const DashboardSyllabus = ({
               </button>
               <button
                 onClick={() => {
-                  alert(`Downloading official syllabus document for ${previewPdfModal.code}`);
+                  if (window.showUniMitraToast) {
+                    window.showUniMitraToast(`Downloading official syllabus document for ${previewPdfModal.code}...`, 'success');
+                  }
                   setPreviewPdfModal(null);
                 }}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#FF933E] hover:bg-[#E87A24] dark:bg-[#03C988] dark:hover:bg-[#02B377] text-white dark:text-[#000000] transition-colors cursor-pointer shadow-md"
